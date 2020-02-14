@@ -10,7 +10,6 @@ root = true
 # Don't use tabs for indentation.
 [*]
 indent_style = space
-# (Please don't specify an indent_size here; that has too many unintended consequences.)
 
 # Code files
 [*.{cs,csx,vb,vbx}]
@@ -93,6 +92,21 @@ dotnet_style_prefer_conditional_expression_over_assignment = true:silent
 dotnet_style_prefer_conditional_expression_over_return = true:silent
 
 ###############################
+# Naming Conventions          #
+###############################
+
+# Style Definitions
+dotnet_naming_style.pascal_case_style.capitalization             = pascal_case
+
+# Use PascalCase for constant fields  
+dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style    = pascal_case_style
+dotnet_naming_symbols.constant_fields.applicable_kinds            = field
+dotnet_naming_symbols.constant_fields.applicable_accessibilities  = *
+dotnet_naming_symbols.constant_fields.required_modifiers          = const
+
+###############################
 # C# Code Style Rules         #
 ###############################
 
@@ -165,6 +179,10 @@ csharp_space_after_dot = false
 csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
 
+###############################
+# Code Analysis Severity      #
+###############################
+
 # CA1054: Uri parameters should not be strings
 dotnet_diagnostic.CA1054.severity = none
 
@@ -177,14 +195,16 @@ dotnet_diagnostic.CA1812.severity = none
 # CA1820: Test for empty strings using length
 dotnet_diagnostic.CA1820.severity = none
 
-# Auto generated Assembly Hook file
-
 # CA1303: Do not pass literals as localized parameters
-dotnet_diagnostic.CA1303.severity = suggestion
+dotnet_diagnostic.CA1303.severity = none
 
 # CA1031: Do not catch general exception types
 dotnet_diagnostic.CA1031.severity = none
 
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = none
+
+# Auto generated Assembly Hook file
 [NUnit.AssemblyHooks.cs]
 # CA1707: Classes should not contain names with underscores
 dotnet_diagnostic.CA1707.severity = none
