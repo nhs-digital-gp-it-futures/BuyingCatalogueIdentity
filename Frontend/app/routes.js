@@ -1,7 +1,6 @@
 import express from 'express';
 import logger from './logger';
 import { errorHandler } from './pages/error/errorHandler';
-import { withCatch } from './common/helpers/routerHelper';
 
 const router = express.Router();
 

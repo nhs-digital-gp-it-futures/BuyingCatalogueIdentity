@@ -4,23 +4,6 @@ import routes from './routes';
 
 jest.mock('./logger');
 
-const mockPreviewContext = {
-  solutionHeader: {
-    id: '100000-001',
-    name: 'Write on Time',
-    supplierName: 'Really Kool Corporation',
-    isFoundation: true,
-    lastUpdated: '1996-03-15T10:00:00',
-  },
-  returnToDashboardUrl: '/supplier/solution/100000-001',
-  sections: {
-    'solution-description': { answers: {} },
-    features: { answers: {} },
-    'contact-details': { answers: {} },
-    capabilities: { answers: {} },
-  },
-};
-
 describe('GET /healthcheck', () => {
   it('should return the correct status and text', () => {
     const app = new App().createApp();
