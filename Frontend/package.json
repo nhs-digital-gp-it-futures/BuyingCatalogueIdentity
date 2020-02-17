@@ -14,7 +14,6 @@
     "lint:css": "sass-lint 'app/**/*.scss' -v -q",
     "nuke": "npm run clean && rm -rf node_modules/",
     "start:dev": "cross-env LOGGER_LEVEL=info babel-node server",
-    "start:dev-local": "cross-env LOGGER_LEVEL=info API_HOST=http://localhost:57772 DOCUMENT_HOST=http://localhost:63600 babel-node server",
     "start": "cross-env NODE_ENV=production npm run build && babel-node server",
     "test:ui": "cross-env NODE_ENV=test LOGGER_LEVEL=off babel-node testcafeRunner.js",
     "test:integration": "cross-env NODE_ENV=pipeline LOGGER_LEVEL=off babel-node testcafeRunner.js",
