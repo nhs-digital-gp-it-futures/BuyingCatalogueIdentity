@@ -1,6 +1,7 @@
 import express from 'express';
 import logger from './logger';
 import { errorHandler } from './pages/error/errorHandler';
+import { getLoginPageContext } from './pages/login/controller';
 
 const router = express.Router();
 
@@ -11,7 +12,8 @@ router.get('/healthcheck', async (req, res) => {
 
 router.get('/login', async (req, res) => {
   logger.info('navigating to login page');
-  res.send('Identity Server - Login Page');
+  const context = getLoginPageContext();
+  res.render('pages/login/template', context);
 });
 
 router.get('*', (req, res, next) => next({
