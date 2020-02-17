@@ -9,6 +9,11 @@ router.get('/healthcheck', async (req, res) => {
   res.send('Identity Server - Frontend - is Running!!!');
 });
 
+router.get('/login', async (req, res) => {
+  logger.info('navigating to login page');
+  res.send('Identity Server - Login Page');
+});
+
 router.get('*', (req, res, next) => next({
   status: 404,
   message: 'Incorrect url - please check it is valid and try again',
