@@ -28,11 +28,10 @@ describe('routes', () => {
         .get('/login')
         .expect(200)
         .then((res) => {
-          expect(res.text).toBe('Identity Server - Login Page');
+          expect(res.text.includes('data-test-id="login-page"')).toEqual(true);
         });
     });
   });
-
 
   describe('Error handler', () => {
   });
