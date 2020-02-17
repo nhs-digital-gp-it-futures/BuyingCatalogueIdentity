@@ -22,7 +22,7 @@
     "watch": "concurrently \"npm run watch:scss\" \"npm run watch:js\"  \"npm start:dev\"",
     "watch:scss": "npm run build:css -- -w",
     "watch:js": "webpack --w",
-    "webpack": "webpack",
+    "webpack": "webpack"
   },
   "author": "Fawad Ali",
   "contributors": [
