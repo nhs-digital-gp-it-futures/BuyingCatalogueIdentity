@@ -23,7 +23,6 @@
     "watch:scss": "npm run build:css -- -w",
     "watch:js": "webpack --w",
     "webpack": "webpack",
-    "debug": "babel-node server --inspect"
   },
   "author": "Fawad Ali",
   "contributors": [
