@@ -62,7 +62,7 @@ describe('login page', () => {
     });
   }));
 
-  it('should render a forgotten password viewDataLink component', createTestHarness(setup, (harness) => {
+  it('should render a request account viewDataLink component', createTestHarness(setup, (harness) => {
     harness.request(context, ($) => {
       const requestAccountLink = $('[data-test-id="request-account-link"]');
       expect(requestAccountLink.length).toEqual(1);

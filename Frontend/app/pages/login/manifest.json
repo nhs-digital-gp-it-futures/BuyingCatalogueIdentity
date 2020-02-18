@@ -2,7 +2,7 @@
   "title": "Buying Catalogue log in",
   "description": "Enter your details to access the full functionality of this website.",
   "emailFieldTextLabel": "Email address",
-  "passwordFieldTextLabel": "EPassword",
+  "passwordFieldTextLabel": "Password",
   "passwordResetLinkText": "Forgot password?",
   "buttonText": "Log in",
   "requestAccountLinkText": "Don't have an account? Request one now"
