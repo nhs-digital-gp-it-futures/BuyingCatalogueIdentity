@@ -6,3 +6,8 @@
 
 // Application styles
 @import '../pages/error/error';
+@import '../pages/login/login';
+
+body {
+  background-color: $color_nhsuk-blue;
+}

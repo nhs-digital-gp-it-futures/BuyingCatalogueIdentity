@@ -1,0 +1,17 @@
+{% from 'components/input/macro.njk' import input %}
+
+{% macro textField(params) %}
+  <div data-test-id="{{ params.dataTestId }}">
+    <div data-test-id="text-field-input" class="{{ params.classes }}">
+      {{ input({
+        id: params.id,
+        name: params.id,
+        label: {
+          text: params.label
+        },
+        value: params.data,
+        type: params.type
+      }) }}
+    </div>
+  </div>
+{% endmacro %}
