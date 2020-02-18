@@ -49,7 +49,7 @@ test('should display the forgotten password link', async (t) => {
   await t
     .expect(passwordLink.exists).ok()
     .expect(await extractInnerText(passwordLink)).eql(manifest.passwordResetLinkText);
-    // .expect(passwordLink.getAttribute('href')).eql('');
+  // .expect(passwordLink.getAttribute('href')).eql('');
 });
 
 test('should display the log in button', async (t) => {
