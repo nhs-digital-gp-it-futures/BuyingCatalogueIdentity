@@ -24,7 +24,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody]LoginViewModel viewModel)
         {
-            viewModel = viewModel.ThrowIfNull();
+            viewModel.ThrowIfNull();
 
             var context = await _interaction.GetAuthorizationContextAsync(viewModel.ReturnUrl);
 

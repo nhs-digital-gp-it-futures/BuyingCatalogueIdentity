@@ -11,7 +11,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         {
             var request = httpContext.ThrowIfNull().Request;
 
-            diagnosticContext = diagnosticContext.ThrowIfNull();
+            diagnosticContext.ThrowIfNull();
 
             // Set all the common properties available for every request
             diagnosticContext.Set("Host", request.Host);
