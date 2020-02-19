@@ -16,6 +16,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Environment = environment;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "ASP.net needs this to not be static")]
         public void ConfigureServices(IServiceCollection services)
         {
             var builder = services.AddIdentityServer(options => options.IssuerUri = "http://localhost:8070")

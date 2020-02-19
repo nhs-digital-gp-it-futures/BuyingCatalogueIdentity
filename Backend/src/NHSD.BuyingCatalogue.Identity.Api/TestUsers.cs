@@ -9,7 +9,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 {
     public sealed class TestUsers
     {
-        public static List<TestUser> Users = new List<TestUser>
+        public static readonly List<TestUser> Users = new List<TestUser>
         {
             new TestUser{SubjectId = "818727", Username = "michael", Password = "michael",
                 Claims =
