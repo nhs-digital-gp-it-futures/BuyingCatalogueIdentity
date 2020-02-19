@@ -1,0 +1,14 @@
+.git
+.vs
+.vscode
+.dockerignore
+.editorconfig
+.env
+.gitignore
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+
+bin
+obj
+*.*proj.user
