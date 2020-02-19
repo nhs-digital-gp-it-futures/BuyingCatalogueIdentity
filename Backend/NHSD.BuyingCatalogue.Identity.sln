@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Api", "src\NHSD.BuyingCatalogue.Identity.Api\NHSD.BuyingCatalogue.Identity.Api.csproj", "{6EA90EA5-8073-4CF8-B186-08C3D249CD25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api", "src\NHSD.BuyingCatalogue.Identity.Api\NHSD.BuyingCatalogue.Identity.Api.csproj", "{6EA90EA5-8073-4CF8-B186-08C3D249CD25}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{33728341-9F25-493F-942A-8766990C2F9A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2A3F346A-9455-45F7-8348-7BEDFB7024EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{6C536770-4D47-43B6-8E56-39116686665C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Api.SampleClient", "samples\NHSD.BuyingCatalogue.Identity.Api.SampleClient\NHSD.BuyingCatalogue.Identity.Api.SampleClient.csproj", "{A91558A0-B286-4D52-9DA0-36A265785DB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,12 +23,17 @@ Global
 		{6EA90EA5-8073-4CF8-B186-08C3D249CD25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EA90EA5-8073-4CF8-B186-08C3D249CD25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EA90EA5-8073-4CF8-B186-08C3D249CD25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A91558A0-B286-4D52-9DA0-36A265785DB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A91558A0-B286-4D52-9DA0-36A265785DB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A91558A0-B286-4D52-9DA0-36A265785DB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A91558A0-B286-4D52-9DA0-36A265785DB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6EA90EA5-8073-4CF8-B186-08C3D249CD25} = {33728341-9F25-493F-942A-8766990C2F9A}
+		{A91558A0-B286-4D52-9DA0-36A265785DB9} = {6C536770-4D47-43B6-8E56-39116686665C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A081915E-3D8B-4509-9F67-1971797275B2}
