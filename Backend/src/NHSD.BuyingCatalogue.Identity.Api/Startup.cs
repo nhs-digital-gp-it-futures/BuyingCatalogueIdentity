@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
+using Serilog;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
@@ -26,6 +28,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseSerilogRequestLogging(opts =>
+            {
+                opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
+                opts.GetLevel = LogHelper.ExcludeHealthChecks;
+            });
+
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
