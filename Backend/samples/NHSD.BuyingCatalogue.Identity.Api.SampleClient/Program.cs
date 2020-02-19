@@ -25,8 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             {
                 Address = discoveryDocument.TokenEndpoint,
                 ClientId = "SampleClient",
-                ClientSecret = "SampleClient",
-
+                ClientSecret = "SampleClientSecret",
                 Scope = "SampleResource"
             });
 

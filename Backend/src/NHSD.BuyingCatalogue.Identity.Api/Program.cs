@@ -35,7 +35,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Host terminated unexpectedly.");
-                return 1;
+                throw;
             }
             finally
             {
