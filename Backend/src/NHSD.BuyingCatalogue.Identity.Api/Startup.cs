@@ -7,6 +7,7 @@ using Serilog;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "ASP.net needs this to not be static")]
     public sealed class Startup
     {
         public IWebHostEnvironment Environment { get; }

@@ -9,7 +9,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
     {
         public static void EnrichFromRequest(IDiagnosticContext diagnosticContext, HttpContext httpContext)
         {
-            var request = httpContext.Request;
+            var request = httpContext.ThrowIfNull().Request;
+
+            diagnosticContext.ThrowIfNull();
 
             // Set all the common properties available for every request
             diagnosticContext.Set("Host", request.Host);

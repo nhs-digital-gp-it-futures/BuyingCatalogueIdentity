@@ -4,6 +4,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
@@ -23,6 +24,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody]LoginViewModel viewModel)
         {
+            viewModel.ThrowIfNull();
+
             var context = await _interaction.GetAuthorizationContextAsync(viewModel.ReturnUrl);
 
             var user = TestUsers.Users
