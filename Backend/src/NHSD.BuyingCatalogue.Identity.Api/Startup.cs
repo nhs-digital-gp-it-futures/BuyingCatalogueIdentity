@@ -30,8 +30,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var identityResourceSection = Configuration.GetSection("identityResources");
 
             var clients = clientSection.Get<ClientSettingsCollection>();
-            var resources = resourceSection.Get<ResourceSettingsCollection>();
-            var identityResources = identityResourceSection.Get<IdentityResourceSettingsCollection>();
+            var resources = resourceSection.Get<ApiResourceSettingCollection>();
+            var identityResources = identityResourceSection.Get<IdentityResourceSettingCollection>();
 
             var builder = services.AddIdentityServer(options => options.IssuerUri = issuerUrl)
                 .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))

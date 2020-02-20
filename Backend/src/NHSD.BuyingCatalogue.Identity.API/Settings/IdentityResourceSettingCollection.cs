@@ -3,7 +3,7 @@ using IdentityServer4.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
-    public sealed class IdentityResourceSettingsCollection : List<IdentityResourceSetting>
+    public sealed class IdentityResourceSettingCollection : List<IdentityResourceSetting>
     {
     }
 
