@@ -5,7 +5,7 @@ using IdentityServer4.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
-    public sealed class ClientSettingsCollection : List<ClientSetting>
+    public sealed class ClientSettingCollection : List<ClientSetting>
     {
     }
 

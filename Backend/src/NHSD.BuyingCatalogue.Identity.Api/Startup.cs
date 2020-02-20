@@ -29,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var resourceSection = Configuration.GetSection("resources");
             var identityResourceSection = Configuration.GetSection("identityResources");
 
-            var clients = clientSection.Get<ClientSettingsCollection>();
+            var clients = clientSection.Get<ClientSettingCollection>();
             var resources = resourceSection.Get<ApiResourceSettingCollection>();
             var identityResources = identityResourceSection.Get<IdentityResourceSettingCollection>();
 
