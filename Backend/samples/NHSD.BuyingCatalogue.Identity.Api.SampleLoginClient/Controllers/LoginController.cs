@@ -1,6 +1,12 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleLoginClient.Controllers
 {
@@ -14,22 +20,39 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleLoginClient.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string redirectUrl)
+        public IActionResult Index(string returnUrl)
         {
-            ViewBag.RedirectUrl = redirectUrl;
+            ViewBag.ReturnUrl = returnUrl;
             return View("Index");
         }
 
         [HttpPost]
-        public ActionResult Index(string username, string password, string redirectUrl)
+        public async Task<IActionResult> Index(string username, string password, string returnUrl)
         {
-            //create http client
-            using var client = new HttpClient();
+            // discover endpoints from metadata
+            var client = new HttpClient();
+            var putObject = JsonConvert.SerializeObject(new {username, password, returnUrl});
+            var response = await client.PostAsync("http://localhost:52598/api/Authenticate/Login"
+                , new StringContent(putObject.ToString(), Encoding.UTF8, "application/json"));
+            
 
-
-
-
-            return View("Index");
+            if (!response.IsSuccessStatusCode)
+            {
+                return Problem("We're all doomed!");
+            }
+            
+            foreach (var header in response.Headers)
+            {
+                if (header.Key == "Set-Cookie")
+                {
+                    foreach (var cKey in header.Value)
+                    {
+                        var parts = cKey.Split('=');
+                        Response.Cookies.Append(parts[0], parts[1]);
+                    }
+                }
+            }
+            return Redirect("http://localhost:52598/api/Authenticate/Login");
         }
     }
 }

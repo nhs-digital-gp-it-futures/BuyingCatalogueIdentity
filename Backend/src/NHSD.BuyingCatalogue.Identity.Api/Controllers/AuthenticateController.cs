@@ -22,6 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         }
 
         [HttpPost]
+        [Route("Login")]
         public async Task<IActionResult> Login([FromBody]LoginViewModel viewModel)
         {
             viewModel.ThrowIfNull();
@@ -38,6 +39,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             }
 
             return Unauthorized();
+        }
+
+        [HttpGet]
+        [Route("Error")]
+        public async Task<IActionResult> Error(string errorId)
+        {
+            // retrieve error details from identityserver
+            var message = await _interaction.GetErrorContextAsync(errorId);
+            
+            return Ok(message);
         }
     }
 }

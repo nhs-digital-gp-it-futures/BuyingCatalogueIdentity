@@ -36,7 +36,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 .AddCookie("Cookies")
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "http://localhost:8070";
+                    options.Authority = "http://localhost:52598/";
                     options.RequireHttpsMetadata = false;
 
                     options.ClientId = "SampleClient";
@@ -60,7 +60,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
