@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             viewModel.ThrowIfNull();
 
-            var context = await _interaction.GetAuthorizationContextAsync(viewModel.ReturnUrl);
+            var context = await _interaction.GetAuthorizationContextAsync(viewModel.ReturnUrl.AbsoluteUri);
 
             var user = TestUsers.Users
                 .FirstOrDefault(usr => usr.Password == viewModel.Password && usr.Username == viewModel.Username);
