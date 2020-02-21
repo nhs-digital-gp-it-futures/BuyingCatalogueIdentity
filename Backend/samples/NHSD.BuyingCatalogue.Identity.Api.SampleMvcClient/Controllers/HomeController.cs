@@ -1,20 +1,12 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
 {
-    public class HomeController : Controller
+    public sealed class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
         public IActionResult Index()
         {
             return View();
