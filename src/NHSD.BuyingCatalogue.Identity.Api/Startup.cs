@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
     {
         private readonly IConfiguration Configuration;
         public IWebHostEnvironment Environment { get; }
-
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var loginUrl = Configuration.GetSection("loginUrl").Get<string>();
             var logoutUrl = Configuration.GetSection("logoutUrl").Get<string>();
             var errorUrl = Configuration.GetSection("errorUrl").Get<string>();
-            
+
             var clientSection = Configuration.GetSection("clients");
             var resourceSection = Configuration.GetSection("resources");
             var identityResourceSection = Configuration.GetSection("identityResources");
@@ -38,6 +36,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var resources = resourceSection.Get<ApiResourceSettingCollection>();
             var identityResources = identityResourceSection.Get<IdentityResourceSettingCollection>();
 
+            Log.Logger.Information("Clients: {@clients}", clients);
+            Log.Logger.Information("Resources: {@resources}", resources);
+            Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
+            
             var builder = services.AddIdentityServer(options =>
                 {
                     options.IssuerUri = issuerUrl;
@@ -51,7 +53,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddControllers();
             builder.AddDeveloperSigningCredential();
-            services.AddTransient<IReturnUrlParser, Infrastructure.ReturnUrlParser>();
         }
 
         public void Configure(IApplicationBuilder app)
