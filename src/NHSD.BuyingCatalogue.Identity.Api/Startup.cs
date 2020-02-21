@@ -37,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var identityResources = identityResourceSection.Get<IdentityResourceSettingCollection>();
 
             Log.Logger.Information("Clients: {@clients}", clients);
-            Log.Logger.Information("Resources: {@resources}", resources);
+            Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             
             var builder = services.AddIdentityServer(options =>
