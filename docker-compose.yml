@@ -9,6 +9,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ISSUERURL=http://localhost:8070
+      - CLIENTS__0__ALLOWEDGRANTTYPES=ClientCredentials
     networks:
       - nhsd_bcnetwork
     ports:
