@@ -15,7 +15,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
     {
         private readonly IConfiguration Configuration;
         public IWebHostEnvironment Environment { get; }
-
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,6 +24,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api
         public void ConfigureServices(IServiceCollection services)
         {
             var issuerUrl = Configuration.GetSection("issuerUrl").Get<string>();
+            var loginUrl = Configuration.GetSection("loginUrl").Get<string>();
+            var logoutUrl = Configuration.GetSection("logoutUrl").Get<string>();
+            var errorUrl = Configuration.GetSection("errorUrl").Get<string>();
+
             var clientSection = Configuration.GetSection("clients");
             var resourceSection = Configuration.GetSection("resources");
             var identityResourceSection = Configuration.GetSection("identityResources");
@@ -33,11 +36,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var resources = resourceSection.Get<ApiResourceSettingCollection>();
             var identityResources = identityResourceSection.Get<IdentityResourceSettingCollection>();
 
-            var builder = services.AddIdentityServer(options => options.IssuerUri = issuerUrl)
+            Log.Logger.Information("Clients: {@clients}", clients);
+            Log.Logger.Information("Api Resources: {@resources}", resources);
+            Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
+            
+            var builder = services.AddIdentityServer(options =>
+                {
+                    options.IssuerUri = issuerUrl;
+                    options.UserInteraction.LoginUrl = loginUrl;
+                    options.UserInteraction.LogoutUrl = logoutUrl;
+                    options.UserInteraction.ErrorUrl = errorUrl;
+                })
                 .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
                 .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
                 .AddInMemoryClients(clients.Select(x => x.ToClient()));
 
+            services.AddControllers();
             builder.AddDeveloperSigningCredential();
         }
 
@@ -53,8 +67,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseRouting();
             app.UseIdentityServer();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

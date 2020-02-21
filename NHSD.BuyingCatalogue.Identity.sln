@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.SampleResource", "samples\NHSD.BuyingCatalogue.Identity.Api.SampleResource\NHSD.BuyingCatalogue.Identity.Api.SampleResource.csproj", "{630AA19C-7C7E-4D3E-991B-146DF60AE552}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Api.UnitTests", "tests\NHSD.BuyingCatalogue.Identity.Api.UnitTests\NHSD.BuyingCatalogue.Identity.Api.UnitTests.csproj", "{FC677410-373F-44AC-9517-139F58A3BEA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.UnitTests", "tests\NHSD.BuyingCatalogue.Identity.Api.UnitTests\NHSD.BuyingCatalogue.Identity.Api.UnitTests.csproj", "{FC677410-373F-44AC-9517-139F58A3BEA5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient", "samples\NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient\NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.csproj", "{FB25D302-2ECE-46E8-87D2-74D512897E31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{FC677410-373F-44AC-9517-139F58A3BEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC677410-373F-44AC-9517-139F58A3BEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC677410-373F-44AC-9517-139F58A3BEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB25D302-2ECE-46E8-87D2-74D512897E31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB25D302-2ECE-46E8-87D2-74D512897E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB25D302-2ECE-46E8-87D2-74D512897E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB25D302-2ECE-46E8-87D2-74D512897E31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 		{A91558A0-B286-4D52-9DA0-36A265785DB9} = {6C536770-4D47-43B6-8E56-39116686665C}
 		{630AA19C-7C7E-4D3E-991B-146DF60AE552} = {6C536770-4D47-43B6-8E56-39116686665C}
 		{FC677410-373F-44AC-9517-139F58A3BEA5} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
+		{FB25D302-2ECE-46E8-87D2-74D512897E31} = {6C536770-4D47-43B6-8E56-39116686665C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A081915E-3D8B-4509-9F67-1971797275B2}

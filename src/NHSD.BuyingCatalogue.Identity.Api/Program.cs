@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -12,6 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
         public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
+                .Destructure.ByTransforming<ClientSetting>(c => new { c.AllowOfflineAccess, c.AllowedGrantTypes, c.AllowedScopes, c.ClientId, c.ClientName, c.PostLogoutRedirectUrls, c.RedirectUrls, c.RequireClientSecret, c.RequireConsent })
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .MinimumLevel.Override("System", LogEventLevel.Warning)
