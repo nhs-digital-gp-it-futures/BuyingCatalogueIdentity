@@ -1,6 +1,4 @@
-using System;
-
-namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Models
+﻿namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Models
 {
     public class ErrorViewModel
     {

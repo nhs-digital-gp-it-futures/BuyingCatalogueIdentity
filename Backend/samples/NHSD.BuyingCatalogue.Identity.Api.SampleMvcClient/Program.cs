@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
 {
-    public class Program
+    public sealed class Program
     {
         public static void Main(string[] args)
         {
