@@ -1,4 +1,6 @@
-﻿@{
+﻿@model NHSD.BuyingCatalogue.Identity.Api.ViewModels.LoginViewModel
+
+@{
     ViewData["PageTitle"] = "NHSD Buying Catalogue Login";
     ViewData["PageDescription"] = "Welcome to the login page for the NHSD Buying Catalogue.";
 }
@@ -15,37 +17,30 @@
             </div>
             <div class="nhsuk-grid-row">
                 <div class="nhsuk-grid-column-one-half">
-                    <form method="post" action="/login?redirecturl=undefined">
+
+                    <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                        <input type="hidden" asp-for="ReturnUrl" />
 
                         <div data-test-id="email-field">
                             <div data-test-id="text-field-input" class="">
-
                                 <div class="nhsuk-form-group">
-                                    <label class="nhsuk-label" for="email">
-                                        Email address
-                                    </label>
-                                    <input class="nhsuk-input" id="email" name="email" type="text">
+                                    <label asp-for="Username" class="nhsuk-label">Email</label>
+                                    <input asp-for="Username" class="nhsuk-input" />
                                 </div>
-
                             </div>
                         </div>
 
                         <div data-test-id="password-field">
                             <div data-test-id="text-field-input" class="bc-c-login-form-password-field">
-
-
                                 <div class="nhsuk-form-group">
-                                    <label class="nhsuk-label" for="password">
-                                        Password
-                                    </label>
-                                    <input class="nhsuk-input" id="password" name="password" type="password">
+                                    <label asp-for="Password" class="nhsuk-label">Password</label>
+                                    <input asp-for="Password" class="nhsuk-input" type="password" />
                                 </div>
-
                             </div>
                         </div>
 
                         <div data-test-id="forgot-password-link" class="bc-c-data-link bc-c-login-page-link">
-                            <a href="a" target="_blank">
+                            <a asp-action="ResetPassword" asp-route-returnurl="@ViewData["ReturnUrl"]" target="_blank">
                                 Forgot password?
                             </a>
                         </div>
@@ -55,11 +50,10 @@
                         </button>
 
                         <div data-test-id="request-account-link" class="bc-c-data-link bc-c-login-page-link ">
-                            <a href="a" target="_blank">
+                            <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" target="_blank">
                                 Don&#39;t have an account? Request one now
                             </a>
                         </div>
-
                     </form>
                 </div>
             </div>
