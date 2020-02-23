@@ -47,10 +47,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
             await HttpContext.SignInAsync(user.SubjectId, user.Username);
 
-            // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
-            if (_interaction.IsValidReturnUrl(viewModel.ReturnUrl))
+            string returnUrl = viewModel.ReturnUrl;
+            if (_interaction.IsValidReturnUrl(returnUrl))
             {
-                return Redirect(viewModel.ReturnUrl);
+                return Redirect(returnUrl);
             }
 
             return Redirect("~/");
