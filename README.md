@@ -9,14 +9,10 @@ This application uses **.NET core** to provide an API capable of runnning Linux 
 ### Overview of the application code
 This repository uses **.NET Core** and **Docker**.
 
-It contains three main endpoints
+It contains one endpoint
 
-- account/login/returnUrl
-  - Returns a view.
-- account/login/viewModel
-  - Returns a redirect, depending if the users credentials are correct.
-- api/authenticate/logout
-  - Removes a token, making sure the user cannot access authorised pages. 
+- account/login?returnUrl=
+  - Returns a HTML view.
 
 The application is broken down into the following project libraries:
 
@@ -47,7 +43,7 @@ docker-compose up -d --build
 
 This will start the API in a docker container.
 
-You can verifity that the API has launched correctly by navigating to the following url via any web browser, using the following test data. This should successfully log in a user and bring back a return url.
+You can verify that the API has launched correctly by navigating to the following url via any web browser, using the following test data. This should successfully log in a user and bring back a return url.
 
 Navigate to **http://localhost:8070/account/login**. 
 
@@ -63,3 +59,4 @@ docker-compose down -v
 ```
 
 ### Running the Integration Tests
+TO BE COMPLETED
