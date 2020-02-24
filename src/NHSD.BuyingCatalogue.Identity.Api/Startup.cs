@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
+using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
@@ -34,7 +35,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddIdentityServer(options =>
             {
-                options.IssuerUri = "null";
+                options.IssuerUri = "my_auth";
             })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
@@ -55,6 +56,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             if (_environment.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
             }
 

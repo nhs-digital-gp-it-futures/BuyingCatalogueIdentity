@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
 {
@@ -22,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
             services.AddControllersWithViews();
 
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
+            var authority = Configuration.GetSection("authority");
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "Cookies";
@@ -31,13 +32,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 .AddCookie("Cookies")
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "http://localhost:52598/";
+                    options.Authority = authority.Value;
                     options.RequireHttpsMetadata = false;
-
                     options.ClientId = "SampleClient";
                     options.ClientSecret = "SampleClientSecret";
                     options.ResponseType = "code";
-
+                    options.Scope.Add("SampleResource");
                     options.SaveTokens = true;
                 });
         }
@@ -48,6 +48,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                IdentityModelEventSource.ShowPII = true;
             }
             else
             {
