@@ -1,17 +1,25 @@
-# BuyingCatalogueIdentity - Service architecture for the NHS Digital Buying Catalogue Identity .Net Core application
+# Buying Catalogue Identity - Authentication & authorization service for the NHS Digital Buying Catalogue
 
 ## IMPORTANT NOTES!
 **You can use either the latest version of Visual Studio or .NET CLI for Windows, Mac and Linux**.
 
-### Architecture overview
-This application uses **.NET core** to provide an API capable of runnning Linux or Windows.
+### Requirements
 
-### Overview of the application code
-This repository uses **.NET Core** and **Docker**.
+- .NET Core Version 3.1
+- Docker
+- Nodejs Version 12.16.1
+
+> Before you begin please install **.NET Core 3.1**, **Nodejs 12.16.1** & **Docker** on your machine.
+
+## Overview
+This application uses **.NET core** to provide an identity service currently implemented with IdentityServer 4 wrapping ASP.NET Identity. It is used to provide token-based authentication and API access control in the Buying Catalogue associated services.
+
+### Project structure
+This repository uses **.NET Core**, **Nodejs** and **Docker**.
 
 It contains one endpoint
 
-- account/login?returnUrl=
+- account/login
   - Returns a HTML view.
 
 The application is broken down into the following project libraries:
@@ -23,38 +31,24 @@ The application is broken down into the following project libraries:
 - API.IntegrationTests
   - Contains all of the integration tests for the API project.
 
-## Setting up your development enviroment for the Buying Catalogue Identity
+## Running the Application
 
-### Requirements
+To start up the web application, run the following command from the root directory of the repository.
 
-- .NET Core Version 3.1
-- Docker
-
-> Before you begin please install **.NET Core 3.1** & **Docker** on your machine.
-
-## Running the API
-
-### Running
-To start up the API, run the command from the root directory of the repository.
-
-```bash
+```
 docker-compose up -d --build
 ```
 
-This will start the API in a docker container.
+This will start the application in a docker container. You can verify that the service has launched correctly by navigating to the following url via any web browser.
 
-You can verify that the API has launched correctly by navigating to the following url via any web browser, using the following test data. This should successfully log in a user and bring back a return url.
+```
+http://localhost:8070/account/login
+```
 
-Navigate to **http://localhost:8070/account/login**. 
+### To stop the application 
+To stop the application, run the following command from the root directory of the repository, which will stop the service within the docker container.
 
-**Email Address** - Michael
-
-**Password** - Michael
-
-### Stopping 
-To stop the API, run the following command from the root directory of the repository, which will stop the API docker container.
-
-```bash
+```
 docker-compose down -v
 ```
 
