@@ -11,3 +11,5 @@ Dockerfile
 bin
 obj
 *.*proj.user
+
+src\NHSD.BuyingCatalogue.Identity.Api\node_modules
