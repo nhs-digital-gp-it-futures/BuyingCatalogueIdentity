@@ -1,0 +1,2 @@
+﻿CREATE LOGIN NHSDUser
+WITH PASSWORD = '$(NHSDPassword)';
