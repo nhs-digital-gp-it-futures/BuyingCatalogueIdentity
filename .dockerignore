@@ -12,4 +12,4 @@ bin
 obj
 *.*proj.user
 
-src\NHSD.BuyingCatalogue.Identity.Api\node_modules
+**/node_modules
