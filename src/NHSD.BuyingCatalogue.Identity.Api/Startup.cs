@@ -13,46 +13,36 @@ namespace NHSD.BuyingCatalogue.Identity.Api
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "ASP.net needs this to not be static")]
     public sealed class Startup
     {
-        private readonly IConfiguration Configuration;
-        public IWebHostEnvironment Environment { get; }
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
+
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
-            Configuration = configuration;
-            Environment = environment;
+            _configuration = configuration;
+            _environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var issuerUrl = Configuration.GetSection("issuerUrl").Get<string>();
-            var loginUrl = Configuration.GetSection("loginUrl").Get<string>();
-            var logoutUrl = Configuration.GetSection("logoutUrl").Get<string>();
-            var errorUrl = Configuration.GetSection("errorUrl").Get<string>();
-
-            var clientSection = Configuration.GetSection("clients");
-            var resourceSection = Configuration.GetSection("resources");
-            var identityResourceSection = Configuration.GetSection("identityResources");
-
-            var clients = clientSection.Get<ClientSettingCollection>();
-            var resources = resourceSection.Get<ApiResourceSettingCollection>();
-            var identityResources = identityResourceSection.Get<IdentityResourceSettingCollection>();
+            var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
+            var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
+            var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
 
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
-            
-            var builder = services.AddIdentityServer(options =>
-                {
-                    options.IssuerUri = issuerUrl;
-                    options.UserInteraction.LoginUrl = loginUrl;
-                    options.UserInteraction.LogoutUrl = logoutUrl;
-                    options.UserInteraction.ErrorUrl = errorUrl;
-                })
-                .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
-                .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
-                .AddInMemoryClients(clients.Select(x => x.ToClient()));
+
+            services.AddIdentityServer(options =>
+            {
+                options.IssuerUri = "null";
+            })
+            .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
+            .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
+            .AddInMemoryClients(clients.Select(x => x.ToClient()))
+            .AddDeveloperSigningCredential();
 
             services.AddControllers();
-            builder.AddDeveloperSigningCredential();
+            services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -63,14 +53,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 opts.GetLevel = LogHelper.ExcludeHealthChecks;
             });
 
-            if (Environment.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseRouting();
+
+            app.UseStaticFiles();
             app.UseIdentityServer();
+            app.UseRouting();
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
             });
         }

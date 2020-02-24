@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
@@ -9,40 +8,55 @@ using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [AllowAnonymous]
-    public sealed class AuthenticateController : Controller
+    public sealed class AccountController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
-
-        public AuthenticateController(IIdentityServerInteractionService interaction)
+        
+        public AccountController(
+            IIdentityServerInteractionService interaction)
         {
             _interaction = interaction;
         }
 
+        [HttpGet]
+        public IActionResult Login(string returnUrl = "/")
+        {
+            LoginViewModel loginViewModel = new LoginViewModel
+            {
+                ReturnUrl = returnUrl
+            };
+
+            ViewData["ReturnUrl"] = returnUrl;
+
+            return View(loginViewModel);
+        }
+
         [HttpPost]
-        [Route("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginViewModel viewModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
             viewModel.ThrowIfNull();
-
-            var context = await _interaction.GetAuthorizationContextAsync(viewModel.ReturnUrl.AbsoluteUri);
 
             var user = TestUsers.Users
                 .FirstOrDefault(usr => usr.Password == viewModel.Password && usr.Username == viewModel.Username);
 
-            if (user != null && context != null)
+            if (user is null)
             {
-                await HttpContext.SignInAsync(user.SubjectId, user.Username);
-                return new JsonResult(new { RedirectUrl = viewModel.ReturnUrl, IsOk = true });
+                return Unauthorized();
             }
 
-            return Unauthorized();
+            await HttpContext.SignInAsync(user.SubjectId, user.Username);
+
+            string returnUrl = viewModel.ReturnUrl;
+            if (_interaction.IsValidReturnUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return Redirect("~/");
         }
 
         [HttpGet]
-        [Route("Error")]
         public async Task<IActionResult> Error(string errorId)
         {
             // retrieve error details from identityserver

@@ -342,3 +342,6 @@ docker/out
 
 # System Files
 .DS_Store
+
+# Minified CSS files
+*.min.css
