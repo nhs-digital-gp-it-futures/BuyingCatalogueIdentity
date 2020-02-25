@@ -11,3 +11,5 @@ Dockerfile
 bin
 obj
 *.*proj.user
+
+**/node_modules
