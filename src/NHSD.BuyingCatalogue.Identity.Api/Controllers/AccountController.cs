@@ -1,29 +1,47 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
+using IdentityServer4.Events;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Http;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
+using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
     public sealed class AccountController : Controller
     {
+        private readonly IClientStore _clientStore;
+        private readonly IEventService _events;
         private readonly IIdentityServerInteractionService _interaction;
-        
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+
         public AccountController(
-            IIdentityServerInteractionService interaction)
+            IClientStore clientStore,
+            IEventService events,
+            IIdentityServerInteractionService interaction,
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager)
         {
+            _clientStore = clientStore;
+            _events = events;
             _interaction = interaction;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = "/")
+        public IActionResult Login(Uri returnUrl)
         {
+            if (returnUrl == null)
+                returnUrl = new Uri("~/", UriKind.Relative);
+
             LoginViewModel loginViewModel = new LoginViewModel
             {
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -35,25 +53,53 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
-            viewModel.ThrowIfNull();
+            viewModel.ThrowIfNull(nameof(viewModel));
 
-            var user = TestUsers.Users
-                .FirstOrDefault(usr => usr.Password == viewModel.Password && usr.Username == viewModel.Username);
+            var returnUrl = viewModel.ReturnUrl.ToString();
 
-            if (user is null)
+            // Check if we are in the context of an authorization request
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+
+            LoginViewModel NewLoginViewModel() =>
+                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, Username = context?.LoginHint };
+
+            if (!ModelState.IsValid)
+                return View(NewLoginViewModel());
+
+            var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
+            if (!result.Succeeded)
             {
-                return Unauthorized();
+                await _events.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
+                ModelState.AddModelError(string.Empty, "Invalid username or password");
+
+                return View(NewLoginViewModel());
             }
 
-            await HttpContext.SignInAsync(user.SubjectId, user.Username);
+            var user = await _userManager.FindByNameAsync(viewModel.Username);
+            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
 
-            string returnUrl = viewModel.ReturnUrl;
-            if (_interaction.IsValidReturnUrl(returnUrl))
+            if (context != null)
             {
+                if (await _clientStore.IsPkceClientAsync(context.ClientId))
+                {
+                    // If the client is PKCE then we assume it's native, so this change in how to
+                    // return the response is for better UX for the end user.
+                    return View("Redirect", new RedirectViewModel(viewModel.ReturnUrl));
+                }
+
+                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
                 return Redirect(returnUrl);
             }
 
-            return Redirect("~/");
+            // Request for a local page
+            if (Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            if (string.IsNullOrEmpty(returnUrl))
+                return Redirect("~/");
+
+            // User might have clicked on a malicious link - should be logged
+            throw new Exception("Invalid return URL");
         }
 
         [HttpGet]
@@ -61,7 +107,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             // retrieve error details from identityserver
             var message = await _interaction.GetErrorContextAsync(errorId);
-            
+
             return Ok(message);
         }
     }
