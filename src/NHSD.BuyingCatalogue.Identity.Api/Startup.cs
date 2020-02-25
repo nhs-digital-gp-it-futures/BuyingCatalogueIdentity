@@ -34,9 +34,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
 
             services.AddIdentityServer(options =>
-            {
-                options.IssuerUri = "my_auth";
-            })
+                {
+                    options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
+                })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
