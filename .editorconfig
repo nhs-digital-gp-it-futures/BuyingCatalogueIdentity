@@ -183,17 +183,8 @@ csharp_preserve_single_line_blocks = true
 # Code Analysis Severity      #
 ###############################
 
-# CA1056: Internal classes should be instantiated
-dotnet_diagnostic.CA1812.severity = none
-
 # CA1303: Do not pass literals as localized parameters
 dotnet_diagnostic.CA1303.severity = none
 
 # CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.CA2007.severity = none
-
-# CA1054: Uri parameters should not be strings
-dotnet_diagnostic.CA1054.severity = none
-
-# CA1056: Uri properties should not be strings
-dotnet_diagnostic.CA1056.severity = none
