@@ -18,21 +18,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly ScenarioContext _context;
       
-
         private readonly IEnumerable<string> _emailAddresses;
         private readonly IEnumerable<string> _passwords;
 
-        private IWebDriver driver;
-        private WebDriverWait wait;
+        private readonly IWebDriver driver;
+        private readonly WebDriverWait wait;
 
         private const string Invalid = "Invalid";
-        private const string ClientId = "SampleClient";
-        private const string ClientSecret = "SampleClientSecret";
 
         public LoginSteps(ScenarioContext context)
         {
             _context = context;
-         //   _response = new HttpResponseMessage();
             _emailAddresses = _context["EmailAddresses"] as IEnumerable<string>;
             _passwords = _context["Passwords"] as IEnumerable<string>;
             ChromeOptions options = new ChromeOptions();
@@ -52,22 +48,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"the client is using valid client ID and valid secret")]
         public void GivenTheClientIsUsingValidClientIDAndValidSecret()
         {
-            _context["ClientId"] = ClientId;
-            _context["ClientSecret"] = ClientSecret;
+            _context["ApiPort"] = "8072";
         }
 
         [Given(@"the client is using valid client ID and invalid secret")]
         public void GivenTheClientIsUsingValidClientIDAndInvalidSecret()
         {
-            _context["ClientId"] = ClientId;
-            _context["ClientSecret"] = ClientSecret + Invalid;
-        }
-
-        [Given(@"the client is using invalid client ID and valid secret")]
-        public void GivenTheClientIsUsingInvalidClientIDAndValidSecret()
-        {
-            _context["ClientId"] = ClientId + Invalid;
-            _context["ClientSecret"] = ClientSecret;
+            _context["ApiPort"] = "8073";
         }
 
         [Given(@"the credentials for the client are valid")]
@@ -97,7 +84,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
 
-            driver.Navigate().GoToUrl("http://localhost:8072/Home/Privacy");
+            driver.Navigate().GoToUrl($"http://localhost:{_context["ApiPort"]}/Home/Privacy");
         }
 
         [Then(@"the user is redirected to the login screen")]
@@ -126,6 +113,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public void ThenTheResponseShouldNotContainUnauthorised()
         {
             driver.FindElement(By.Id("response")).Text.Should().NotBe(("Unauthorised"));
+        }
+
+        [Then(@"an error is displayed on the login screen")]
+        public void ThenAnErrorIsDisplayedOnTheLoginScreen()
+        {
+            driver.FindElement(By.Id("something")).
         }
 
         public void Dispose()

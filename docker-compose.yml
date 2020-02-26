@@ -44,8 +44,8 @@ services:
         - "8072:80"
 
   nhsd.buyingcatalogue.identity.api.samplemvcclient.invalidsecret:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-samplemvcclient:${TAG:-latest}
-    container_name: identity_api_sample_mvc_client.invalidsecret
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-samplemvcclient-invalidsecret:${TAG:-latest}
+    container_name: identity_api_sample_mvc_client_invalidsecret
     build: 
         context: .
         dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient/Dockerfile
@@ -53,6 +53,7 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         - AUTHORITY=http://host.docker.internal:8070
         - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
+        - CLIENTSECRET=Invalid
     networks:
         - nhsd_bcnetwork
     ports:
