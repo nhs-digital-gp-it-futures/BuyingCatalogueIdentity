@@ -37,8 +37,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 {
                     options.Authority = authority.Value;
                     options.RequireHttpsMetadata = false;
-                    options.ClientId = "SampleClient";
-                    options.ClientSecret = "SampleClientSecret";
+                    options.ClientId = clientId;
+                    options.ClientSecret = clientSecret;
                     options.ResponseType = "code";
                     options.Scope.Add("SampleResource");
                     options.SaveTokens = true;

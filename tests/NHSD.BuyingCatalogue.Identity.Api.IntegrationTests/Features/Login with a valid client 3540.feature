@@ -1,6 +1,6 @@
 ﻿Feature: Login With Valid Client
 	As a Authority User
-	I want to login to the system
+	I want to login to the Buying Catalogue
 	So that I can view records
 
 Background: 
@@ -11,26 +11,24 @@ Background:
 @3540
 Scenario: 1. Logging in with an existing client with valid credentials
 	Given the client is using valid client ID and valid secret 
-	And the credentials for the client are valid
     When the user navigates to a restricted web page
     Then the user is redirected to the login screen
-    When a login request is made
+    When a login request is made with username alice and password Pass123$
     Then the user is redirected to the restricted web page
     And the response should not contain unauthorised
 
 @3540
 Scenario: 2. Logging in with an existing client with invalid username
 	Given the client is using valid client ID and valid secret 
-    And the credentials for the client have an invalid username
     When the user navigates to a restricted web page
     Then the user is redirected to the login screen
-    When a login request is made
+    When a login request is made with username InvalidUser and password Pass123$
     Then the user is redirected to the login screen
 
 @3540
 Scenario: 3. Logging in with an existing client with invalid password
 	Given the client is using valid client ID and valid secret 
-    And the credentials for the client have an invalid password
+    When a login request is made with username alice and password InvalidPass123!
     When the user navigates to a restricted web page
     Then the user is redirected to the login screen
     When a login request is made

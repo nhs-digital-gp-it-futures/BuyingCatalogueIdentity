@@ -14,12 +14,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context = context;
         }
 
-
         [Given(@"There are Users in the database")]
         public void GivenThereAreUsersInTheDatabase(Table table)
         {
             var users = table.CreateSet<UserTable>();
 
+            // TODO: Do something with these, either verify them in the DB or create them
             _context["EmailAddresses"] = users.Select(x => x.EmailAddress);
             _context["Passwords"] = users.Select(x => x.Password);
         }
