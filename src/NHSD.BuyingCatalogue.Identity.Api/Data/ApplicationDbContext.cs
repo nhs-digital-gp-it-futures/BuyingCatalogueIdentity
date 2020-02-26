@@ -6,6 +6,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Data
 {
     public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<Organisation> Organisations { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
