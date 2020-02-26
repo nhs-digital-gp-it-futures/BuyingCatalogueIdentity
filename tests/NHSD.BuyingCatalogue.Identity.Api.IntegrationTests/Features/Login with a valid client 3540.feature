@@ -6,7 +6,7 @@
 Background: 
     Given There are Users in the database
         | EmailAddress | Password |
-        | michael      | michael  |
+        | alice        | Pass123$ |
 
 @3540
 Scenario: 1. Logging in with an existing client with valid credentials
