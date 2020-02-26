@@ -28,8 +28,7 @@ Scenario: 2. Logging in with an existing client with invalid username
 @3540
 Scenario: 3. Logging in with an existing client with invalid password
 	Given the client is using valid client ID and valid secret 
-    When a login request is made with username alice and password InvalidPass123!
     When the user navigates to a restricted web page
     Then the user is redirected to the login screen
-    When a login request is made
+    When a login request is made with username alice and password InvalidPass123!
     Then the user is redirected to the login screen
