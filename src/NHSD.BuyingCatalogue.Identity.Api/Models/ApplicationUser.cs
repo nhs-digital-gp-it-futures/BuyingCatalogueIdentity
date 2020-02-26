@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Models
 {
-    public class ApplicationUser : IdentityUser
+    public sealed class ApplicationUser : IdentityUser
     {
     }
 }

@@ -38,29 +38,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
 
-            // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
-            services.Configure<IISOptions>(iis =>
-            {
-                iis.AuthenticationDisplayName = "Windows";
-                iis.AutomaticAuthentication = false;
-            });
-
-            // configures IIS in-proc settings
-            services.Configure<IISServerOptions>(iis =>
-            {
-                iis.AuthenticationDisplayName = "Windows";
-                iis.AutomaticAuthentication = false;
-            });
-
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer(options =>
                 {
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
                     options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
                 })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))

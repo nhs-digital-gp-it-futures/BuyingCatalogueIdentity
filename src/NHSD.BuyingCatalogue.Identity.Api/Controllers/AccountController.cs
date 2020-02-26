@@ -14,20 +14,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
     public sealed class AccountController : Controller
     {
         private readonly IClientStore _clientStore;
-        private readonly IEventService _events;
+        private readonly IEventService _eventService;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
             IClientStore clientStore,
-            IEventService events,
+            IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager)
         {
             _clientStore = clientStore;
-            _events = events;
+            _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -56,8 +56,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             viewModel.ThrowIfNull(nameof(viewModel));
 
             var returnUrl = viewModel.ReturnUrl.ToString();
-
-            // Check if we are in the context of an authorization request
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
 
             LoginViewModel NewLoginViewModel() =>
@@ -69,14 +67,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
             if (!result.Succeeded)
             {
-                await _events.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
+                await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
                 ModelState.AddModelError(string.Empty, "Invalid username or password");
 
                 return View(NewLoginViewModel());
             }
 
             var user = await _userManager.FindByNameAsync(viewModel.Username);
-            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
 
             if (context != null)
             {
@@ -91,7 +89,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return Redirect(returnUrl);
             }
 
-            // Request for a local page
             if (Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 

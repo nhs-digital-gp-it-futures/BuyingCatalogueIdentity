@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels
 {
-    public class RedirectViewModel
+    public sealed class RedirectViewModel
     {
         public RedirectViewModel(Uri redirectUrl) => RedirectUrl = redirectUrl;
 
