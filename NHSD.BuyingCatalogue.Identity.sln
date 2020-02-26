@@ -21,7 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identi
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "NHSD.BuyingCatalogue.Identity.UserDatabase", "src\NHSD.BuyingCatalogue.Identity.UserDatabase\NHSD.BuyingCatalogue.Identity.UserDatabase.sqlproj", "{649E5E09-31C8-453B-826D-78CF3FB621B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.csproj", "{AA3F369F-A4FC-4AFE-878A-952F13688352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.csproj", "{AA3F369F-A4FC-4AFE-878A-952F13688352}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{6E8AC1BC-9163-4D3A-A887-880C114C74E7}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

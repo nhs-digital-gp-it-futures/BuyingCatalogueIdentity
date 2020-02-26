@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using FluentAssertions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 
@@ -14,6 +17,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     internal class LoginSteps : IDisposable
     {
         private readonly ScenarioContext _context;
+      
+
         private readonly IEnumerable<string> _emailAddresses;
         private readonly IEnumerable<string> _passwords;
 
@@ -27,6 +32,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public LoginSteps(ScenarioContext context)
         {
             _context = context;
+         //   _response = new HttpResponseMessage();
             _emailAddresses = _context["EmailAddresses"] as IEnumerable<string>;
             _passwords = _context["Passwords"] as IEnumerable<string>;
             ChromeOptions options = new ChromeOptions();
@@ -119,7 +125,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the response should not contain unauthorised")]
         public void ThenTheResponseShouldNotContainUnauthorised()
         {
-            //!driver.FindElement(By.Id("response")).Text.Should.Be("Invalid");
+            driver.FindElement(By.Id("response")).Text.Should().NotBe(("Unauthorised"));
         }
 
         public void Dispose()

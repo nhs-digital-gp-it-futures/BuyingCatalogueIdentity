@@ -7,8 +7,10 @@
 Scenario: 1. Logging in with an invalid client ID with valid credentials
     Given the client is using invalid client ID and valid secret
 	And the credentials for the client are valid
-	When a login request is made with redirect URL http://callum.is.great.com
-	#Then something bad will happen
+    When the user navigates to a restricted web page
+    Then the user is redirected to the login screen
+    When a login request is made
+    Then an invalid client error is returned
 
 @3540
 Scenario: 2. Logging in with an invalid client secret with valid credentials
