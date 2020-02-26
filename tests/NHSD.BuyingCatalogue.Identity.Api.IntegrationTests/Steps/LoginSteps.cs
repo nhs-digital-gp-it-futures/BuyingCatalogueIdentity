@@ -115,12 +115,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             driver.FindElement(By.Id("response")).Text.Should().NotBe(("Unauthorised"));
         }
 
-        [Then(@"an error is displayed on the login screen")]
-        public void ThenAnErrorIsDisplayedOnTheLoginScreen()
-        {
-            driver.FindElement(By.Id("something")).
-        }
-
         public void Dispose()
         {
             driver?.Quit();

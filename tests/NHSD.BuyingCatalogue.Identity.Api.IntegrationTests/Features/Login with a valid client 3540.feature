@@ -26,7 +26,6 @@ Scenario: 2. Logging in with an existing client with invalid username
     Then the user is redirected to the login screen
     When a login request is made
     Then the user is redirected to the login screen
-    And an error is displayed on the login screen
 
 @3540
 Scenario: 3. Logging in with an existing client with invalid password
@@ -35,4 +34,4 @@ Scenario: 3. Logging in with an existing client with invalid password
     When the user navigates to a restricted web page
     Then the user is redirected to the login screen
     When a login request is made
-    Then a failed response is received with Unauthorized
+    Then the user is redirected to the login screen
