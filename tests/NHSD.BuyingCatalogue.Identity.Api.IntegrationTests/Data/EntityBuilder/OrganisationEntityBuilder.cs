@@ -10,7 +10,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data.EntityBuilder
     {
         private readonly ApplicationDbContext _context;
         private readonly OrganisationEntity _organisationEntity;
-        private readonly DbContextOptions<ApplicationDbContext> _options;
 
         public static OrganisationEntityBuilder Create()
         {
@@ -19,8 +18,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data.EntityBuilder
 
         public OrganisationEntityBuilder()
         {
-            _options = new DbContextOptions<ApplicationDbContext>();
-            _context = new ApplicationDbContext(_options);
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=true;User ID=NHSD;Password=DisruptTheMarket1!");
+            _context = new ApplicationDbContext(optionsBuilder.Options);
 
             _organisationEntity = new OrganisationEntity()
             {

@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class OrganisationsSteps
     {
         private ScenarioContext _context;
-        private readonly string _organisationUrl = "api/v1/Organisations";
+        private readonly string _organisationUrl = "http://localhost:8070/api/v1/Organisations";
 
         public OrganisationsSteps(ScenarioContext context)
         {

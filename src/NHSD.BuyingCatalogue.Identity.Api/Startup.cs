@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
 using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
@@ -56,6 +57,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
             .AddDeveloperSigningCredential();
+
+            services.AddTransient<IOrganisationRepository, OrganisationRepository>();
 
             services.AddControllers();
             services.AddControllersWithViews();
