@@ -42,7 +42,37 @@ services:
         - nhsd_bcnetwork
     ports:
         - "8072:80"
+
+  nhsd.buyingcatalogue.identity.api.samplemvcclient.invalidsecret:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-samplemvcclient-invalidsecret:${TAG:-latest}
+    container_name: identity_api_sample_mvc_client_invalidsecret
+    build: 
+        context: .
+        dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient/Dockerfile
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - AUTHORITY=http://host.docker.internal:8070
+        - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
+        - CLIENTSECRET=Invalid
+    networks:
+        - nhsd_bcnetwork
+    ports:
+        - "8073:80"
     
+  selenium-hub:
+    image: selenium/hub
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+  chrome:
+    image: selenium/node-chrome
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
 networks: 
   nhsd_bcnetwork:
     name: nhsd_bcnetwork
