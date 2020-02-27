@@ -13,3 +13,5 @@ obj
 *.*proj.user
 
 **/node_modules
+**/*.dbmdl
+**/*.jfm
