@@ -6,7 +6,7 @@ using OpenQA.Selenium.Support.UI;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 {
-    public class SeleniumContext : IDisposable
+    public sealed class SeleniumContext : IDisposable
     {
         public IWebDriver WebDriver { get; }
         public WebDriverWait WebWaiter{ get; }

@@ -6,7 +6,7 @@ using TechTalk.SpecFlow;
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    internal class LoginSteps
+    internal sealed class LoginSteps
     {
         private readonly ScenarioContext _context;
         private readonly SeleniumContext _seleniumContext;

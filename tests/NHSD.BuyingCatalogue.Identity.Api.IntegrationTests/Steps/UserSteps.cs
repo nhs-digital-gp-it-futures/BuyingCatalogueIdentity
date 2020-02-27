@@ -5,7 +5,7 @@ using TechTalk.SpecFlow.Assist;
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    internal class UserSteps
+    internal sealed class UserSteps
     {
         private readonly ScenarioContext _context;
 
