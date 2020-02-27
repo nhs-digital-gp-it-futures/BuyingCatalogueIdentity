@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Events;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
+using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
@@ -18,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-
+        
         public AccountController(
             IClientStore clientStore,
             IEventService eventService,
@@ -98,13 +102,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             // User might have clicked on a malicious link - should be logged
             throw new Exception("Invalid return URL");
         }
+        
+		[HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutViewModel logoutViewModel)
+        {
+            logoutViewModel.ThrowIfNull(nameof(logoutViewModel));
+
+            await HttpContext.SignOutAsync();
+
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+            LogoutRequest logoutRequest = await _interaction.GetLogoutContextAsync(logoutViewModel.LogoutId);
+            return LocalRedirect(logoutRequest?.PostLogoutRedirectUri);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Error(string errorId)
         {
             // retrieve error details from identityserver
             var message = await _interaction.GetErrorContextAsync(errorId);
-
+            
             return Ok(message);
         }
     }

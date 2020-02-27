@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels
+namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 {
     public sealed class LoginViewModel
     {
