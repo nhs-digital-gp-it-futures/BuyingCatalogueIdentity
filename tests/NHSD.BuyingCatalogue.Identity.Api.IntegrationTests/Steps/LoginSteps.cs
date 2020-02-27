@@ -19,9 +19,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"the user navigates to the login page with return url (.*)")]
         public void WhenTheUserNavigatesToTheLoginPage(string returnUrl)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Clear();
-            //Home/Privacy
             _seleniumContext.WebDriver.Navigate().GoToUrl($"http://host.docker.internal:8070/account/login?returnUrl={returnUrl}");
         }
 
