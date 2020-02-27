@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,25 +25,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
 
             var clientId = Configuration.GetSection("clientId").Value;
             var clientSecret = Configuration.GetSection("clientSecret").Value;
-
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
             var authority = Configuration.GetSection("authority");
+
             services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = "Cookies";
-                    options.DefaultChallengeScheme = "oidc";
-                })
-                .AddCookie("Cookies")
-                .AddOpenIdConnect("oidc", options =>
-                {
-                    options.Authority = authority.Value;
-                    options.RequireHttpsMetadata = false;
-                    options.ClientId = clientId;
-                    options.ClientSecret = clientSecret;
-                    options.ResponseType = "code";
-                    options.Scope.Add("SampleResource");
-                    options.SaveTokens = true;
-                });
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddOpenIdConnect(options =>
+            {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.Authority = authority.Value;
+                options.SignedOutRedirectUri = "http://localhost:8072";
+                options.ClientId = clientId;
+                options.ClientSecret = clientSecret;
+                options.ResponseType = "code";
+                options.SaveTokens = true;
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.RequireHttpsMetadata = false;
+                options.Scope.Add("SampleResource");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

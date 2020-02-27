@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4;
 using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -102,6 +103,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             // User might have clicked on a malicious link - should be logged
             throw new Exception("Invalid return URL");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            }
+
+            LogoutRequest context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (context?.ShowSignoutPrompt == false)
+            {
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            }
+
+            var vm = new LogoutViewModel
+            {
+                LogoutId = logoutId
+            };
+
+            return View(vm);
+        }
         
 		[HttpPost]
         [ValidateAntiForgeryToken]
@@ -110,11 +133,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             logoutViewModel.ThrowIfNull(nameof(logoutViewModel));
 
             await HttpContext.SignOutAsync();
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
 
             HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
 
             LogoutRequest logoutRequest = await _interaction.GetLogoutContextAsync(logoutViewModel.LogoutId);
-            return LocalRedirect(logoutRequest?.PostLogoutRedirectUri);
+            return Redirect(logoutRequest?.PostLogoutRedirectUri);
         }
 
         [HttpGet]
