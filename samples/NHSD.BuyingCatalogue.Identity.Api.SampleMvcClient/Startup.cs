@@ -22,6 +22,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
         {
             services.AddControllersWithViews();
 
+            var clientId = Configuration.GetSection("clientId").Value;
+            var clientSecret = Configuration.GetSection("clientSecret").Value;
+
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
             var authority = Configuration.GetSection("authority");
             services.AddAuthentication(options =>
@@ -34,8 +37,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 {
                     options.Authority = authority.Value;
                     options.RequireHttpsMetadata = false;
-                    options.ClientId = "SampleClient";
-                    options.ClientSecret = "SampleClientSecret";
+                    options.ClientId = clientId;
+                    options.ClientSecret = clientSecret;
                     options.ResponseType = "code";
                     options.Scope.Add("SampleResource");
                     options.SaveTokens = true;
