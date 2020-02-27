@@ -47,13 +47,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the Organisations list is returned with the following values")]
         public async Task ThenTheOrganisationsListIsReturnedWithTheFollowingValues(Table table)
         {
-            var organisations = table.CreateInstance<OrganisationTable>();
+            var organisations = table.CreateSet<OrganisationTable>();
 
-            var response = _context["Response"] as HttpRequestMessage;
+            var response = _context["Response"] as HttpResponseMessage;
             response.Should().NotBeNull();
 
             var content = JToken.Parse(await response.Content.ReadAsStringAsync());
-            content.Select(t => t.Value<string>().Should().BeEquivalentTo(organisations.Name));
+            content.Count().Should().Be(organisations.Count());
         }
 
 

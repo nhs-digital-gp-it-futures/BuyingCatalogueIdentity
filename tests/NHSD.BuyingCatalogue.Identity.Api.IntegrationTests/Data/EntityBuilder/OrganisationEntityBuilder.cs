@@ -36,6 +36,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data.EntityBuilder
             var organisation = new Organisation(Guid.NewGuid(), _organisationEntity.Name, _organisationEntity.OdsCode);
 
             _context.Organisations.Add(organisation);
+
+            // Issue: Not updating the database, wrong credentials
+            _context.SaveChanges();
         }
 
         public OrganisationEntityBuilder WithId(Guid id)
@@ -60,11 +63,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data.EntityBuilder
         {
             _organisationEntity.LastUpdated = lastUpdated;
             return this;
-        }
-
-        public OrganisationEntity Build()
-        {
-            return _organisationEntity;
         }
     }
 }
