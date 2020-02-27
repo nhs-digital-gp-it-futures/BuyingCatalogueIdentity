@@ -10,25 +10,6 @@ Background:
 
 @3540
 Scenario: 1. Logging in with an existing client with valid credentials
-	Given the client is using valid client ID and valid secret 
-    When the user navigates to a restricted web page
-    Then the user is redirected to the login screen
+    When the user navigates to the login page with return url http://localhost:8072
     When a login request is made with username alice and password Pass123$
-    Then the user is redirected to the restricted web page
-    And the response should not contain unauthorised
-
-@3540
-Scenario: 2. Logging in with an existing client with invalid username
-	Given the client is using valid client ID and valid secret 
-    When the user navigates to a restricted web page
-    Then the user is redirected to the login screen
-    When a login request is made with username InvalidUser and password Pass123$
-    Then the user is redirected to the login screen
-
-@3540
-Scenario: 3. Logging in with an existing client with invalid password
-	Given the client is using valid client ID and valid secret 
-    When the user navigates to a restricted web page
-    Then the user is redirected to the login screen
-    When a login request is made with username alice and password InvalidPass123!
-    Then the user is redirected to the login screen
+    Then The user is redirected to http://localhost:8072

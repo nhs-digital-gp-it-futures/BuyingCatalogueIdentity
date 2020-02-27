@@ -1,91 +1,42 @@
-﻿using System;
-using System.IO;
-using System.Net.Http;
-using FluentAssertions;
+﻿using System.Net.Http;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    internal class LoginSteps : IDisposable
+    internal class LoginSteps
     {
         private readonly ScenarioContext _context;
-      
-        private readonly IWebDriver _driver;
-        private readonly WebDriverWait _wait;
-
-        public LoginSteps(ScenarioContext context)
+        private readonly SeleniumContext _seleniumContext;
+        public LoginSteps(ScenarioContext context, SeleniumContext seleniumContext)
         {
             _context = context;
-            ChromeOptions options = new ChromeOptions();
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                options.AddArguments("--start-maximized");
-            }
-            else
-            {
-                options.AddArguments("--headless");
-            }
-            
-            _driver = new ChromeDriver(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), options);
-            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            _seleniumContext = seleniumContext;
         }
 
-        [Given(@"the client is using valid client ID and valid secret")]
-        public void GivenTheClientIsUsingValidClientIDAndValidSecret()
-        {
-            _context["ApiPort"] = "8072";
-        }
-
-        [Given(@"the client is using valid client ID and invalid secret")]
-        public void GivenTheClientIsUsingValidClientIDAndInvalidSecret()
-        {
-            _context["ApiPort"] = "8073";
-        }
-
-        [When(@"the user navigates to a restricted web page")]
-        public void WhenTheUserNavigatesToARestrictedWebPage()
+        [When(@"the user navigates to the login page with return url (.*)")]
+        public void WhenTheUserNavigatesToTheLoginPage(string returnUrl)
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
-
-            _driver.Navigate().GoToUrl($"http://localhost:{_context["ApiPort"]}/Home/Privacy");
-        }
-
-        [Then(@"the user is redirected to the login screen")]
-        public void ThenTheUserIsRedirectedToTheLoginScreen()
-        {
-            _wait.Until(x => x.Title.Contains("Login"));
-
-            _driver.FindElement(By.TagName("form"));
+            //Home/Privacy
+            _seleniumContext.WebDriver.Navigate().GoToUrl($"http://host.docker.internal:8070/account/login?returnUrl={returnUrl}");
         }
 
         [When(@"a login request is made with username (.*) and password (.*)")]
         public void WhenALoginRequestIsMade(string username, string password)
         {
-            _driver.FindElement(By.Name("Username")).SendKeys(username);
-            _driver.FindElement(By.Name("Password")).SendKeys(password);
-            _driver.FindElement(By.TagName("form")).Submit();
+            _seleniumContext.WebDriver.FindElement(By.Name("Username")).SendKeys(username);
+            _seleniumContext.WebDriver.FindElement(By.Name("Password")).SendKeys(password);
+            _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
-        [Then(@"the user is redirected to the restricted web page")]
-        public void ThenTheUserIsRedirectedToTheRestrictedWebPage()
+        [Then(@"The user is redirected to (.*)")]
+        public void ThenTheUserIsRedirectedTo(string url)
         {
-            _wait.Until(x => x.Title.Contains("Congratulations!"));
-        }
-
-        [Then(@"the response should not contain unauthorised")]
-        public void ThenTheResponseShouldNotContainUnauthorised()
-        {
-            _driver.FindElement(By.Id("response")).Text.Should().NotBe(("Unauthorised"));
-        }
-
-        public void Dispose()
-        {
-            _driver?.Quit();
+            _seleniumContext.WebWaiter.Until(x => x.Url == url);
         }
     }
 }
