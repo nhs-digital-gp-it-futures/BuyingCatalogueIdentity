@@ -23,9 +23,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
         {
             services.AddControllersWithViews();
 
-            var clientId = Configuration.GetSection("clientId").Value;
-            var clientSecret = Configuration.GetSection("clientSecret").Value;
-            var authority = Configuration.GetSection("authority");
+            var clientId = Configuration.GetValue<string>("clientId");
+            var clientSecret = Configuration.GetValue<string>("clientSecret");
+            var authority = Configuration.GetValue<string>("authority");
+            var signedOutRedirectUri = Configuration.GetValue<string>("SignedOutRedirectUri");
 
             services.AddAuthentication(options =>
             {
@@ -33,11 +34,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddOpenIdConnect(options =>
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = authority.Value;
-                options.SignedOutRedirectUri = "http://localhost:8072";
+                options.Authority = authority;
+                options.SignedOutRedirectUri = signedOutRedirectUri;
                 options.ClientId = clientId;
                 options.ClientSecret = clientSecret;
                 options.ResponseType = "code";
