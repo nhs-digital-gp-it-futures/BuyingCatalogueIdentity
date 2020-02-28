@@ -44,10 +44,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
             }
             else
             {
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(JArray.Parse(content));
-                ViewBag.Response = JArray.Parse(content);
+                ViewBag.Response = "Authorized With Sample Resource";
             }
+            Console.WriteLine(ViewBag.Response);
             return View();
         }
 

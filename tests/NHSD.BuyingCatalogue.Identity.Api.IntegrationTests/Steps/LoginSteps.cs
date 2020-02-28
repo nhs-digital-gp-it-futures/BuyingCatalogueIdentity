@@ -1,4 +1,7 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
@@ -8,18 +11,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class LoginSteps
     {
+        private readonly Dictionary<string, string> HostUrls = new Dictionary<string, string>
+        {
+            {"identity server", "http://host.docker.internal:8070/"},
+            {"client", "http://host.docker.internal:8072/" }
+        };
+
         private readonly ScenarioContext _context;
         private readonly SeleniumContext _seleniumContext;
+
         public LoginSteps(ScenarioContext context, SeleniumContext seleniumContext)
         {
             _context = context;
             _seleniumContext = seleniumContext;
         }
 
-        [When(@"the user navigates to the login page with return url (.*)")]
-        public void WhenTheUserNavigatesToTheLoginPage(string returnUrl)
+        [When(@"the user navigates to a restricted web page")]
+        public void WhenTheUserNavigatesToTheLoginPage()
         {
-            _seleniumContext.WebDriver.Navigate().GoToUrl($"http://host.docker.internal:8070/account/login?returnUrl={returnUrl}");
+            _seleniumContext.WebDriver.Navigate().GoToUrl("http://host.docker.internal:8072/home/privacy");
         }
 
         [When(@"a login request is made with username (.*) and password (.*)")]
@@ -30,10 +40,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
-        [Then(@"The user is redirected to (.*)")]
-        public void ThenTheUserIsRedirectedTo(string url)
+        [Then(@"the user is redirected to (identity server|client) page (.*)")]
+        public void ThenTheUserIsRedirectedTo(string target, string url)
         {
-            _seleniumContext.WebWaiter.Until(x => x.Url == url);
+            _seleniumContext.WebWaiter.Until(x => x.Url.StartsWith($"{HostUrls[target]}{url}",StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Then(@"the page contains paragraph with text (.*)")]
+        public void ThenThePageVerifiesItCouldTalkToTheSampleResource(string text)
+        {
+            _seleniumContext.WebDriver.FindElement(By.Id("sampleResourceResult")).Text.Should().Be(text);
         }
     }
 }
