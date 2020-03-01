@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityServer4;
 using IdentityServer4.Events;
-using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
@@ -23,19 +20,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        
+        private readonly ILogoutService _logoutService;
+
         public AccountController(
             IClientStore clientStore,
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogoutService logoutService)
         {
             _clientStore = clientStore;
             _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
             _userManager = userManager;
+            _logoutService = logoutService;
         }
 
         [HttpGet]
@@ -107,38 +107,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
-            if (User.Identity.IsAuthenticated == false)
-            {
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
-            }
-
-            LogoutRequest context = await _interaction.GetLogoutContextAsync(logoutId);
-            if (context?.ShowSignoutPrompt == false)
-            {
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
-            }
-
-            var vm = new LogoutViewModel
+            return await Logout(new LogoutViewModel
             {
                 LogoutId = logoutId
-            };
-
-            return View(vm);
+            });
         }
-        
-		[HttpPost]
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout(LogoutViewModel logoutViewModel)
         {
             logoutViewModel.ThrowIfNull(nameof(logoutViewModel));
 
-            await HttpContext.SignOutAsync();
-            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await _logoutService.SignOutAsync(logoutViewModel);
+            string postLogoutRedirectUri = await _logoutService.GetPostLogoutRedirectUri(logoutViewModel.LogoutId);
 
-            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
-
-            LogoutRequest logoutRequest = await _interaction.GetLogoutContextAsync(logoutViewModel.LogoutId);
-            return Redirect(logoutRequest?.PostLogoutRedirectUri);
+            return Redirect(postLogoutRedirectUri);
         }
 
         [HttpGet]
@@ -146,7 +130,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             // retrieve error details from identityserver
             var message = await _interaction.GetErrorContextAsync(errorId);
-            
+
             return Ok(message);
         }
     }
