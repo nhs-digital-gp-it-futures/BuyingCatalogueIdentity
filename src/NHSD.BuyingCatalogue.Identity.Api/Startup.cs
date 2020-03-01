@@ -10,9 +10,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
-using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
@@ -38,6 +38,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
 
+            services.AddScoped<ILogoutService, LogoutService>();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));
 
@@ -45,12 +47,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer(options =>
-                {
-                    options.Events.RaiseFailureEvents = true;
-                    options.Events.RaiseErrorEvents = true;
-                    options.Events.RaiseSuccessEvents = true;
-                    options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
-                })
+            {
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+                options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
+            })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
@@ -59,15 +61,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddControllers();
             services.AddControllersWithViews();
-            services.AddAuthentication();
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseSerilogRequestLogging(opts =>
             {
-                opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
-                opts.GetLevel = LogHelper.ExcludeHealthChecks;
+                opts.EnrichDiagnosticContext = Infrastructure.LogHelper.EnrichFromRequest;
+                opts.GetLevel = Infrastructure.LogHelper.ExcludeHealthChecks;
             });
 
             if (_environment.IsDevelopment())
@@ -80,8 +81,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseRouting();
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();

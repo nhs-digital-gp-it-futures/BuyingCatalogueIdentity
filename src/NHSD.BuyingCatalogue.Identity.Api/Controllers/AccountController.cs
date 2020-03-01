@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
+using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
@@ -18,19 +20,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogoutService _logoutService;
 
         public AccountController(
             IClientStore clientStore,
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogoutService logoutService)
         {
             _clientStore = clientStore;
             _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
             _userManager = userManager;
+            _logoutService = logoutService;
         }
 
         [HttpGet]
@@ -97,6 +102,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
             // User might have clicked on a malicious link - should be logged
             throw new Exception("Invalid return URL");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            return await Logout(new LogoutViewModel
+            {
+                LogoutId = logoutId
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutViewModel logoutViewModel)
+        {
+            logoutViewModel.ThrowIfNull(nameof(logoutViewModel));
+
+            await _logoutService.SignOutAsync(logoutViewModel);
+            string postLogoutRedirectUri = await _logoutService.GetPostLogoutRedirectUri(logoutViewModel.LogoutId);
+
+            return Redirect(postLogoutRedirectUri);
         }
 
         [HttpGet]

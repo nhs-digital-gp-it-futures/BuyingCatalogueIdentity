@@ -27,6 +27,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - CLIENTS__0__REDIRECTURLS__0=http://localhost:8072/signin-oidc
+      - CLIENTS__0__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc
       - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
@@ -59,6 +60,7 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         - AUTHORITY=http://host.docker.internal:8070
         - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
+        - SIGNEDOUTREDIRECTURI=http://host.docker.internal:8072
     networks:
         - nhsd_bcnetwork
     ports:
