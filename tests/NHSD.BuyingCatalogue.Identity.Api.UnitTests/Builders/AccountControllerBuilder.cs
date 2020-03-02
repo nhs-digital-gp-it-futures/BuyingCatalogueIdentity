@@ -1,9 +1,7 @@
 ﻿using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Identity;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders

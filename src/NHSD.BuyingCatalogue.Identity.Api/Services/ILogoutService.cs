@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
+using IdentityServer4.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     public interface ILogoutService
     {
-        Task<string> GetPostLogoutRedirectUri(string logoutId);
+        Task<LogoutRequest> GetLogoutRequest(string logoutId);
 
-        Task SignOutAsync(LogoutViewModel logoutViewModel);
+        Task SignOutAsync(LogoutRequest logoutViewModel);
     }
 }

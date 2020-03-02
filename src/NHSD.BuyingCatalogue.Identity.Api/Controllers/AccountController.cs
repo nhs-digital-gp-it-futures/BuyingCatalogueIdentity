@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IdentityServer4.Events;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
@@ -119,10 +120,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             logoutViewModel.ThrowIfNull(nameof(logoutViewModel));
 
-            await _logoutService.SignOutAsync(logoutViewModel);
-            string postLogoutRedirectUri = await _logoutService.GetPostLogoutRedirectUri(logoutViewModel.LogoutId);
+            LogoutRequest logoutRequest = await _logoutService.GetLogoutRequest(logoutViewModel.LogoutId);
 
-            return Redirect(postLogoutRedirectUri);
+            await _logoutService.SignOutAsync(logoutRequest);
+
+            return Redirect(logoutRequest?.PostLogoutRedirectUri);
         }
 
         [HttpGet]

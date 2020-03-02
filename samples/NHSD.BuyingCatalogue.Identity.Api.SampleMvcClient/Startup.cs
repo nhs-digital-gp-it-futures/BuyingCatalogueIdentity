@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
 {
@@ -41,7 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 options.SignedOutRedirectUri = signedOutRedirectUri;
                 options.ClientId = clientId;
                 options.ClientSecret = clientSecret;
-                options.ResponseType = "code";
+                options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = false;

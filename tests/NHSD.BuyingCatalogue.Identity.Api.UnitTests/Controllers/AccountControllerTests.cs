@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
@@ -16,13 +17,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task Logout_WhenLogoutIdIsNull_ReturnsRedirectResult()
         {
-            const string expectedPostDirectUrl = "localhost";
+            var expectedLogoutRequest = LogoutRequestBuilder
+                .Create()
+                .Build();
 
             var logoutServiceMock = new Mock<ILogoutService>();
-            logoutServiceMock.Setup(x => x.SignOutAsync(It.IsAny<LogoutViewModel>()))
-                .Returns(Task.CompletedTask);
-            logoutServiceMock.Setup(x => x.GetPostLogoutRedirectUri(It.IsAny<string>()))
-                .ReturnsAsync(expectedPostDirectUrl);
+            logoutServiceMock.Setup(x => x.GetLogoutRequest(It.IsAny<string>()))
+                .ReturnsAsync(expectedLogoutRequest);
 
             using var sut = new AccountControllerBuilder()
                 .WithLogoutService(logoutServiceMock.Object)
@@ -31,19 +32,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             const string expectedLogoutId = null;
             var actual = await sut.Logout(expectedLogoutId);
             
-            actual.Should().BeEquivalentTo(new RedirectResult(expectedPostDirectUrl));
+            actual.Should().BeEquivalentTo(new RedirectResult(expectedLogoutRequest.PostLogoutRedirectUri));
         }
 
         [Test]
         public async Task Logout_WhenEmptyLogoutViewModel_ReturnsRedirectResult()
         {
-            const string expectedPostDirectUrl = "localhost";
+            var expectedLogoutRequest = LogoutRequestBuilder
+                .Create()
+                .Build();
 
             var logoutServiceMock = new Mock<ILogoutService>();
-            logoutServiceMock.Setup(x => x.SignOutAsync(It.IsAny<LogoutViewModel>()))
-                .Returns(Task.CompletedTask);
-            logoutServiceMock.Setup(x => x.GetPostLogoutRedirectUri(It.IsAny<string>()))
-                .ReturnsAsync(expectedPostDirectUrl);
+            logoutServiceMock.Setup(x => x.GetLogoutRequest(It.IsAny<string>()))
+                .ReturnsAsync(expectedLogoutRequest);
 
             using var sut = new AccountControllerBuilder()
                 .WithLogoutService(logoutServiceMock.Object)
@@ -52,19 +53,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             LogoutViewModel expectedLogoutViewModel = new LogoutViewModel();
             var actual = await sut.Logout(expectedLogoutViewModel);
             
-            actual.Should().BeEquivalentTo(new RedirectResult(expectedPostDirectUrl));
+            actual.Should().BeEquivalentTo(new RedirectResult(expectedLogoutRequest.PostLogoutRedirectUri));
         }
 
         [Test]
         public async Task Logout_WhenEmptyLogoutViewModel_LogoutServiceSignOutCalledOnce()
         {
-            const string expectedPostDirectUrl = "localhost";
+            var expectedLogoutRequest = LogoutRequestBuilder
+                .Create()
+                .Build();
 
             var logoutServiceMock = new Mock<ILogoutService>();
-            logoutServiceMock.Setup(x => x.SignOutAsync(It.IsAny<LogoutViewModel>()))
+            logoutServiceMock.Setup(x => x.SignOutAsync(It.IsAny<LogoutRequest>()))
                 .Returns(Task.CompletedTask);
-            logoutServiceMock.Setup(x => x.GetPostLogoutRedirectUri(It.IsAny<string>()))
-                .ReturnsAsync(expectedPostDirectUrl);
+            logoutServiceMock.Setup(x => x.GetLogoutRequest(It.IsAny<string>()))
+                .ReturnsAsync(expectedLogoutRequest);
 
             using var sut = new AccountControllerBuilder()
                 .WithLogoutService(logoutServiceMock.Object)
@@ -73,19 +76,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             LogoutViewModel expectedLogoutViewModel = new LogoutViewModel();
             await sut.Logout(expectedLogoutViewModel);
 
-            logoutServiceMock.Verify(x => x.SignOutAsync(It.Is<LogoutViewModel>(actual => actual.Equals(expectedLogoutViewModel))), Times.Once);
+            logoutServiceMock.Verify(x => x.SignOutAsync(It.Is<LogoutRequest>(actual => actual.Equals(expectedLogoutRequest))), Times.Once);
         }
 
         [Test]
         public async Task Logout_WhenEmptyLogoutViewModel_LogoutServiceGetPostLogoutRedirectUriCalledOnce()
         {
-            const string expectedPostDirectUrl = "localhost";
+            var expectedLogoutRequest = LogoutRequestBuilder
+                .Create()
+                .Build();
 
             var logoutServiceMock = new Mock<ILogoutService>();
-            logoutServiceMock.Setup(x => x.SignOutAsync(It.IsAny<LogoutViewModel>()))
-                .Returns(Task.CompletedTask);
-            logoutServiceMock.Setup(x => x.GetPostLogoutRedirectUri(It.IsAny<string>()))
-                .ReturnsAsync(expectedPostDirectUrl);
+            logoutServiceMock.Setup(x => x.GetLogoutRequest(It.IsAny<string>()))
+                .ReturnsAsync(expectedLogoutRequest);
 
             using var sut = new AccountControllerBuilder()
                 .WithLogoutService(logoutServiceMock.Object)
@@ -93,7 +96,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             await sut.Logout(new LogoutViewModel());
 
-            logoutServiceMock.Verify(x => x.GetPostLogoutRedirectUri(
+            logoutServiceMock.Verify(x => x.GetLogoutRequest(
                 It.Is<string>(actual => actual == null)), Times.Once);
         }
 

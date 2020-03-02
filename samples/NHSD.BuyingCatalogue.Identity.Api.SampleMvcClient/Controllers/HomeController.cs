@@ -72,7 +72,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
             _logger.LogInformation("Stop Logging out user from client");
 
             var homeUrl = Url.Action(nameof(Index), "Home");
-            return new SignOutResult(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = homeUrl });
+            return SignOut(new AuthenticationProperties { RedirectUri = homeUrl }, OpenIdConnectDefaults.AuthenticationScheme);
         }
     }
 }
