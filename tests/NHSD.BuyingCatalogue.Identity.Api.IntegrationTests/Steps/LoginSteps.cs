@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using OpenQA.Selenium;
@@ -11,18 +9,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class LoginSteps
     {
-        private readonly Dictionary<string, string> HostUrls = new Dictionary<string, string>
-        {
-            {"identity server", "http://host.docker.internal:8070/"},
-            {"client", "http://host.docker.internal:8072/" }
-        };
-
-        private readonly ScenarioContext _context;
         private readonly SeleniumContext _seleniumContext;
 
-        public LoginSteps(ScenarioContext context, SeleniumContext seleniumContext)
+        public LoginSteps(SeleniumContext seleniumContext)
         {
-            _context = context;
             _seleniumContext = seleniumContext;
         }
 
