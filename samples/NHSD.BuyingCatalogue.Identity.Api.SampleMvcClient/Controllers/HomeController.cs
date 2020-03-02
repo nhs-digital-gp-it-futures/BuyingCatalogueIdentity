@@ -42,6 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
             apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             var address = _configuration.GetSection("sampleResourceUrl");
             var response = await apiClient.GetAsync(address.Value);
+
             if (!response.IsSuccessStatusCode)
             {
                 ViewBag.Response = response.ReasonPhrase;
@@ -49,10 +50,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
             }
             else
             {
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(JArray.Parse(content));
-                ViewBag.Response = JArray.Parse(content);
+                ViewBag.Response = "Authorized With Sample Resource";
             }
+
             return View();
         }
 
