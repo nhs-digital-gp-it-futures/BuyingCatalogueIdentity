@@ -68,7 +68,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (!result.Succeeded)
             {
                 await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
-                ModelState.AddModelError(string.Empty, "Invalid username or password");
+                ModelState.AddModelError(string.Empty, "Enter a valid email address and password");
 
                 return View(NewLoginViewModel());
             }
