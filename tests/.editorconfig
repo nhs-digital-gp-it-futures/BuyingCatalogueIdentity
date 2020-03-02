@@ -1,0 +1,10 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+
+[*.cs]
+
+###############################
+# Code Analysis Severity      #
+###############################
+
+# CA1812: AccountControllerTests is an internal class that is apparently never instantiated. If so, remove the code from the assembly. If this class is intended to contain only static members, make it static (Shared in Visual Basic).
+dotnet_diagnostic.CA1812.severity = none

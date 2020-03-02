@@ -1,0 +1,22 @@
+﻿@model NHSD.BuyingCatalogue.Identity.Api.ViewModels.ErrorViewModel
+@{
+    ViewData["PageTitle"] = "Error";
+}
+
+<div class="nhsuk-width-container">
+    <main class="nhsuk-main-wrapper" id="maincontent">
+        <div data-test-id="error-page" class="bc-t-font-color--white">
+            <div class="nhsuk-grid-row">
+                <div class="nhsuk-grid-column-two-thirds">
+                    <h1 data-test-id="error-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">Error</h1>
+                    <h2 data-test-id="error-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">An error occurred while processing your request.</h2>
+
+                    @if (Model.ShowMessage)
+                    {
+                        <p>@Model.Message</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

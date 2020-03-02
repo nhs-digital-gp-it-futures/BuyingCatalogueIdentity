@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IdentityServer4.Events;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Identity.Api.Exceptions;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
@@ -55,26 +58,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             viewModel.ThrowIfNull(nameof(viewModel));
 
-            var returnUrl = viewModel.ReturnUrl.ToString();
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            var returnUrl = viewModel.ReturnUrl?.ToString();
+            AuthorizationRequest context = await _interaction.GetAuthorizationContextAsync(returnUrl);
 
             LoginViewModel NewLoginViewModel() =>
-                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, Username = context?.LoginHint };
+                new LoginViewModel {ReturnUrl = viewModel.ReturnUrl, Username = context?.LoginHint};
 
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
 
-            var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
-            if (!result.Succeeded)
-            {
-                await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
-                ModelState.AddModelError(string.Empty, "Invalid username or password");
-
+            var signedIn = await SignIn(viewModel, context);
+            if (!signedIn)
                 return View(NewLoginViewModel());
-            }
 
-            var user = await _userManager.FindByNameAsync(viewModel.Username);
-            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+            await RaiseLoginSuccess(viewModel, context);
 
             if (context != null)
             {
@@ -92,20 +89,37 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            if (string.IsNullOrEmpty(returnUrl))
+            if (string.IsNullOrWhiteSpace(returnUrl))
                 return Redirect("~/");
 
-            // User might have clicked on a malicious link - should be logged
-            throw new Exception("Invalid return URL");
+            // Return URL could be malicious
+            throw new InvalidReturnUrlException();
         }
 
-        [HttpGet]
         public async Task<IActionResult> Error(string errorId)
         {
             // retrieve error details from identityserver
             var message = await _interaction.GetErrorContextAsync(errorId);
 
-            return Ok(message);
+            return View(new ErrorViewModel { Message = message?.ErrorDescription });
+        }
+
+        private async Task RaiseLoginSuccess(LoginViewModel viewModel, AuthorizationRequest context)
+        {
+            ApplicationUser user = await _userManager.FindByNameAsync(viewModel.Username);
+            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+        }
+
+        private async Task<bool> SignIn(LoginViewModel viewModel, AuthorizationRequest context)
+        {
+            SignInResult result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
+            if (result.Succeeded)
+                return true;
+
+            await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
+            ModelState.AddModelError(string.Empty, "Invalid username or password");
+
+            return false;
         }
     }
 }
