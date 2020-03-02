@@ -10,6 +10,22 @@ Background:
 
 @3540
 Scenario: 1. Logging in with an existing client with valid credentials
-    When the user navigates to the login page with return url http://localhost:8072
+    When the user navigates to a restricted web page
+    Then the user is redirected to page account/login
     When a login request is made with username alice and password Pass123$
-    Then The user is redirected to http://localhost:8072
+    Then the user is redirected to page home/privacy
+    And the page contains element with ID sampleResourceResult with text Authorized With Sample Resource
+
+@3540
+Scenario: 2. Logging in with an existing client with invalid username
+    When the user navigates to a restricted web page
+    Then the user is redirected to page account/login
+    When a login request is made with username Invalid and password Pass123$
+    Then the user is redirected to page account/login
+
+@3540
+Scenario: 3. Logging in with an existing client with invalid password
+    When the user navigates to a restricted web page
+    Then the user is redirected to page account/login
+    When a login request is made with username alice and password Invalid
+    Then the user is redirected to page account/login
