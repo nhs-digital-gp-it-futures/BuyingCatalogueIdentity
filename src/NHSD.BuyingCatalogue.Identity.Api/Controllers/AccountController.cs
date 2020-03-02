@@ -62,7 +62,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             AuthorizationRequest context = await _interaction.GetAuthorizationContextAsync(returnUrl);
 
             LoginViewModel NewLoginViewModel() =>
-                new LoginViewModel {ReturnUrl = viewModel.ReturnUrl, Username = context?.LoginHint};
+                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, Username = context?.LoginHint };
 
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
