@@ -37,6 +37,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
             apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             var address = _configuration.GetSection("sampleResourceUrl");
             var response = await apiClient.GetAsync(address.Value);
+
             if (!response.IsSuccessStatusCode)
             {
                 ViewBag.Response = response.ReasonPhrase;
@@ -46,7 +47,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
             {
                 ViewBag.Response = "Authorized With Sample Resource";
             }
-            Console.WriteLine(ViewBag.Response);
+
             return View();
         }
 

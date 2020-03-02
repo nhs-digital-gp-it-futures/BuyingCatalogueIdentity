@@ -46,10 +46,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebWaiter.Until(x => x.Url.StartsWith($"{HostUrls[target]}{url}",StringComparison.OrdinalIgnoreCase));
         }
 
-        [Then(@"the page contains paragraph with text (.*)")]
-        public void ThenThePageVerifiesItCouldTalkToTheSampleResource(string text)
+        [Then(@"the page contains element with ID (.*) with text (.*)")]
+        public void ThenThePageVerifiesItCouldTalkToTheSampleResource(string id, string text)
         {
-            _seleniumContext.WebDriver.FindElement(By.Id("sampleResourceResult")).Text.Should().Be(text);
+            _seleniumContext.WebDriver.FindElement(By.Id(id)).Text.Should().Be(text);
         }
     }
 }
