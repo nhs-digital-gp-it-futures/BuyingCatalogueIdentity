@@ -27,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         }
 
         [When(@"the user navigates to a restricted web page")]
-        public void WhenTheUserNavigatesToTheLoginPage()
+        public void WhenTheUserNavigatesToARestrictedPage()
         {
             _seleniumContext.WebDriver.Navigate().GoToUrl("http://host.docker.internal:8072/home/privacy");
         }
@@ -40,10 +40,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
-        [Then(@"the user is redirected to (identity server|client) page (.*)")]
-        public void ThenTheUserIsRedirectedTo(string target, string url)
+        [Then(@"the user is redirected to page (.*)")]
+        public void ThenTheUserIsRedirectedTo(string url)
         {
-            _seleniumContext.WebWaiter.Until(x => x.Url.StartsWith($"{HostUrls[target]}{url}",StringComparison.OrdinalIgnoreCase));
+            _seleniumContext.WebWaiter.Until(x => new Uri(x.Url).AbsolutePath.EndsWith(url, StringComparison.OrdinalIgnoreCase));
         }
 
         [Then(@"the page contains element with ID (.*) with text (.*)")]
