@@ -36,9 +36,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
             result.Should().NotBe(null);
 
             var objectResult = result as OkObjectResult;
-            objectResult.Value.Should().BeOfType<GetAllOrganisationsResponseViewModel>();
+            objectResult.Value.Should().BeOfType<GetAllOrganisationsViewModel>();
 
-            var organisationResult = objectResult.Value as GetAllOrganisationsResponseViewModel;
+            var organisationResult = objectResult.Value as GetAllOrganisationsViewModel;
 
             organisationResult.Organisations.Count().Should().Be(0);
         }
@@ -60,9 +60,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
             result.Should().NotBe(null);
 
             var objectResult = result as OkObjectResult;
-            objectResult.Value.Should().BeOfType<GetAllOrganisationsResponseViewModel>();
+            objectResult.Value.Should().BeOfType<GetAllOrganisationsViewModel>();
 
-            var organisationResult = objectResult.Value as GetAllOrganisationsResponseViewModel;
+            var organisationResult = objectResult.Value as GetAllOrganisationsViewModel;
 
             organisationResult.Organisations.Count().Should().Be(1);
 
@@ -91,9 +91,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
             result.Should().NotBe(null);
 
             var objectResult = result as OkObjectResult;
-            objectResult.Value.Should().BeOfType<GetAllOrganisationsResponseViewModel>();
+            objectResult.Value.Should().BeOfType<GetAllOrganisationsViewModel>();
 
-            var organisationResult = objectResult.Value as GetAllOrganisationsResponseViewModel;
+            var organisationResult = objectResult.Value as GetAllOrganisationsViewModel;
 
             organisationResult.Organisations.Count().Should().Be(3);
 

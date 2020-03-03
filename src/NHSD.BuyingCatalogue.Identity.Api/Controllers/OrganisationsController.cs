@@ -29,11 +29,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetAll()
         {
-            IEnumerable<Organisation> organisationModelList = await _organisationRepository.ListOrganisationsAsync();
+            IEnumerable<Organisation> organisationsList = await _organisationRepository.ListOrganisationsAsync();
 
-            return Ok(new GetAllOrganisationsResponseViewModel
+            return Ok(new GetAllOrganisationsViewModel
             {
-                Organisations = organisationModelList.Select(x => new OrganisationViewModel
+                Organisations = organisationsList.Select(x => new OrganisationViewModel
                 {
                     OrganisationId = x.Id,
                     Name = x.Name,

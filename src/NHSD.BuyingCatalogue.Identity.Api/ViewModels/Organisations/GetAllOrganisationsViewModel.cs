@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Organisations
 {
-    public sealed class GetAllOrganisationsResponseViewModel
+    public sealed class GetAllOrganisationsViewModel
     {
         public IEnumerable<OrganisationViewModel> Organisations { get; set; }
     }
