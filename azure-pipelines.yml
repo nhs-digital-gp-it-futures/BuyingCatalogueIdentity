@@ -1,0 +1,93 @@
+trigger:
+- master
+- development
+
+pool:
+  vmImage: windows-2019
+
+jobs:
+- job: build
+  displayName: Build app and run tests
+
+  steps:
+  - task: MSBuild@1
+    displayName: 'Build GPITFutures ISAPI Database'
+    inputs:
+      solution: '**/*.sqlproj'
+      clean: true
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(agent.builddirectory)'
+      Contents: '**'
+      TargetFolder: '$(build.artifactstagingdirectory)\sql'
+      CleanTargetFolder: true
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\sql'
+      ArtifactName: 'sql'
+      publishLocation: 'Container'
+
+- job: dockerBuildAndPush
+  displayName: Build and push docker containers to the acr
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+
+  - task: UseDotNet@2
+    displayName: 'Use DotNet Core 3.1'
+    inputs:
+      version: 3.1.x
+      includePreviewVersions: false
+
+  - script: |
+      docker-compose up -d --build
+    displayName: 'Docker up'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run unit tests'
+    inputs:
+      command: test
+      projects: '**/*UnitTests.csproj'
+      arguments: '-v n  --collect "Code coverage"'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run Integration tests'
+    inputs:
+      command: test
+      projects: '**/*IntegrationTests.csproj'
+      arguments: '-v n'
+    enabled: false
+
+  - script: |
+      docker-compose down -v
+    displayName: 'Docker down'
+
+  - task: DockerInstaller@0
+    inputs:
+      dockerVersion: '18.09.9'
+
+  - task: DockerCompose@0
+    displayName: 'Build: Dev'
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'NHSAPP-BuyingCatalogue (Non-Prod)'
+      azureContainerRegistry: '{"loginServer":"gpitfuturesdevacr.azurecr.io", "id" : "/subscriptions/7b12a8a2-f06f-456f-b6f9-aa2d92e0b2ec/resourceGroups/gpitfutures-dev-rg-acr/providers/Microsoft.ContainerRegistry/registries/gpitfuturesdevacr"}'
+      dockerComposeFile: '**/docker-compose-build.yml'
+      action: 'Build services'
+      additionalImageTags: '$(Build.BuildNumber)'
+      includeSourceTags: true
+
+  - task: DockerCompose@0
+    displayName: 'Push: Dev'
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'NHSAPP-BuyingCatalogue (Non-Prod)'
+      azureContainerRegistry: '{"loginServer":"gpitfuturesdevacr.azurecr.io", "id" : "/subscriptions/7b12a8a2-f06f-456f-b6f9-aa2d92e0b2ec/resourceGroups/gpitfutures-dev-rg-acr/providers/Microsoft.ContainerRegistry/registries/gpitfuturesdevacr"}'
+      dockerComposeFile: '**/docker-compose-build.yml'
+      action: 'Push services'
+      additionalImageTags: '$(Build.BuildNumber)'
+      includeSourceTags: true
