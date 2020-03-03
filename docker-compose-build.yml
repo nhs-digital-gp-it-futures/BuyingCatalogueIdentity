@@ -20,15 +20,9 @@ services:
     build: 
       context: src/NHSD.BuyingCatalogue.Identity.UserDatabase
     container_name: identity_api_user_db
-    volumes:
-      - nhsd_identity_user_db_volume:/var/opt/mssql/
-    networks:
-      - nhsd_bcnetwork
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=MyTestPassword123!
       - MSSQL_PID=Express
       - DB_NAME=${NHSD_LOCAL_DB_NAME:-CatalogueUsers}
       - NHSD_PASSWORD=DisruptTheMarket1!
-    ports:
-      - "${NHSD_LOCAL_DB_PORT:-1533}:1433"
