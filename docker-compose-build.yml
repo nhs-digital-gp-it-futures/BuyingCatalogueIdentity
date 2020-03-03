@@ -3,7 +3,7 @@ version: '3.5'
 services:
 
   nhsd.buyingcatalogue.identity.api:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-api:${TAG:-latest}
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
     container_name: identity_api
     build: 
       context: .
