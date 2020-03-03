@@ -60,7 +60,6 @@ jobs:
       command: test
       projects: '**/*IntegrationTests.csproj'
       arguments: '-v n'
-    enabled: false
 
   - script: |
       docker-compose down -v
