@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             _eventService = eventService;
         }
 
-        public async Task<LogoutRequest> GetLogoutRequest(string logoutId)
+        public async Task<LogoutRequest> GetLogoutRequestAsync(string logoutId)
         {
             return await _identityServerInteractionService.GetLogoutContextAsync(logoutId);
         }

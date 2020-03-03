@@ -5,7 +5,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     public interface ILogoutService
     {
-        Task<LogoutRequest> GetLogoutRequest(string logoutId);
+        Task<LogoutRequest> GetLogoutRequestAsync(string logoutId);
 
         Task SignOutAsync(LogoutRequest logoutViewModel);
     }

@@ -108,19 +108,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
-            return await Logout(new LogoutViewModel
+            if (string.IsNullOrWhiteSpace(logoutId))
             {
-                LogoutId = logoutId
-            });
-        }
+                throw new ArgumentNullException(nameof(logoutId));
+            }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout(LogoutViewModel logoutViewModel)
-        {
-            logoutViewModel.ThrowIfNull(nameof(logoutViewModel));
-
-            LogoutRequest logoutRequest = await _logoutService.GetLogoutRequest(logoutViewModel.LogoutId);
+            LogoutRequest logoutRequest = await _logoutService.GetLogoutRequestAsync(logoutId);
 
             await _logoutService.SignOutAsync(logoutRequest);
 
