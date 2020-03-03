@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
