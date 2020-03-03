@@ -61,6 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             _logger.LogInformation("Start Logging out user from client");
