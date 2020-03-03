@@ -20,8 +20,8 @@ Scenario: 1. Get all of the organisations
         | Organisation 2 | Ods 2   |
         | Organisation 3 | Ods 3   |
 
-#@5146
-#Scenario: 2. Service Failure
-#	Given the call to the database to set the field will fail
-#	When a GET request is made for the Organisations section
-#	Then a response with status code 500 is returned
+@5146
+Scenario: 2. Service Failure
+	Given the call to the database to set the field will fail
+	When a GET request is made for the Organisations section
+	Then a response with status code 500 is returned

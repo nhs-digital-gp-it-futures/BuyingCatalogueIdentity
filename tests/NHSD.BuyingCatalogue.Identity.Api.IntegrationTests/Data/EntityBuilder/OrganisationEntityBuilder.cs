@@ -11,15 +11,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data.EntityBuilder
         private readonly ApplicationDbContext _context;
         private readonly OrganisationEntity _organisationEntity;
 
-        public static OrganisationEntityBuilder Create()
+        public static OrganisationEntityBuilder Create(string config)
         {
-            return new OrganisationEntityBuilder();
+            return new OrganisationEntityBuilder(config);
         }
 
-        public OrganisationEntityBuilder()
+        public OrganisationEntityBuilder(string config)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=true;User ID=NHSD;Password=DisruptTheMarket1!");
+            optionsBuilder.UseSqlServer(config);
             _context = new ApplicationDbContext(optionsBuilder.Options);
 
             _organisationEntity = new OrganisationEntity()
@@ -36,8 +36,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data.EntityBuilder
             var organisation = new Organisation(Guid.NewGuid(), _organisationEntity.Name, _organisationEntity.OdsCode);
 
             _context.Organisations.Add(organisation);
-
-            // Issue: Not updating the database, wrong credentials
             _context.SaveChanges();
         }
 

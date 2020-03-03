@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
@@ -17,7 +18,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
 
         public async Task<IEnumerable<Organisation>> ListOrganisationsAsync()
         {
-            return await _context.Organisations.ToListAsync();
+            return await _context.Organisations.OrderBy(c=>c.Name).ToListAsync();
         }
     }
 }
