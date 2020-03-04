@@ -16,7 +16,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests
                 .AddEnvironmentVariables()
                 .Build();
 
-            Database.ResetUser(config.GetConnectionString("CatalogueUsersAdmin"));
             objectContainer.RegisterInstanceAs<IConfigurationRoot>(config);
         }
     }
