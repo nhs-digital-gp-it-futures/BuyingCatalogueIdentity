@@ -24,25 +24,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 
         public Client ToClient()
         {
-            var client = new Client();
-            client.ClientId = ClientId;
-            client.ClientName = ClientName;
-            client.AllowedGrantTypes = AllowedGrantTypes switch
+            var allowedGrantTypes = AllowedGrantTypes switch
             {
                 "ClientCredentials" => GrantTypes.ClientCredentials,
                 "Code" => GrantTypes.Code,
-                _ => client.AllowedGrantTypes
+                _ => new Client().AllowedGrantTypes
             };
-            client.AllowOfflineAccess = AllowOfflineAccess;
-            client.RequireClientSecret = RequireClientSecret;
-            client.ClientSecrets = new[] { new Secret(Secret?.ToSha256()) };
-            client.RequireConsent = RequireConsent;
-            client.RedirectUris = RedirectUrls?.ToList();
-            client.PostLogoutRedirectUris = PostLogoutRedirectUrls?.ToList();
-            client.AllowedScopes = AllowedScopes?.ToList();
-            client.RequirePkce = true;
 
-            return client;
+            return new Client
+            {
+                ClientId = ClientId,
+                ClientName = ClientName,
+                AllowOfflineAccess = AllowOfflineAccess,
+                RequireClientSecret = RequireClientSecret,
+                ClientSecrets = new[] {new Secret(Secret?.ToSha256())},
+                RequireConsent = RequireConsent,
+                RedirectUris = RedirectUrls?.ToList(),
+                PostLogoutRedirectUris = PostLogoutRedirectUrls?.ToList(),
+                AllowedScopes = AllowedScopes?.ToList(),
+                AllowedGrantTypes = allowedGrantTypes,
+                RequirePkce = true
+            };
         }
     }
 }

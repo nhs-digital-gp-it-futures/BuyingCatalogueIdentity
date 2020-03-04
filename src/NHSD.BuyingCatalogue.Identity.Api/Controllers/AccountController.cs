@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
+using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
@@ -17,17 +19,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+		private readonly ILogoutService _logoutService;
 
         public AccountController(
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogoutService logoutService)
         {
             _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
             _userManager = userManager;
+			_logoutService = logoutService;
         }
 
         [HttpGet]
@@ -53,7 +58,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             viewModel.ThrowIfNull(nameof(viewModel));
 
             var returnUrl = viewModel.ReturnUrl?.ToString();
-            AuthorizationRequest context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
 
             LoginViewModel NewLoginViewModel() =>
                 new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, Username = context?.LoginHint };
@@ -70,8 +75,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (context == null)
                 return LocalRedirect(returnUrl);
 
-            // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
-            return Redirect(returnUrl);
+                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                return Redirect(returnUrl);
+            }
+            
+		[HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            if (string.IsNullOrWhiteSpace(logoutId))
+            {
+                throw new ArgumentNullException(nameof(logoutId));
+            }
+
+            LogoutRequest logoutRequest = await _logoutService.GetLogoutRequestAsync(logoutId);
+
+            await _logoutService.SignOutAsync(logoutRequest);
+
+            return Redirect(logoutRequest?.PostLogoutRedirectUri);
         }
 
         public IActionResult Error()
