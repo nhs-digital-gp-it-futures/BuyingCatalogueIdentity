@@ -76,30 +76,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             await sut.Logout(expectedLogoutId);
 
             logoutServiceMock.Verify(x => x.GetLogoutRequestAsync(
-                It.Is<string>(actual => actual == null)), Times.Once);
+                It.Is<string>(actual => expectedLogoutId.Equals(actual, StringComparison.Ordinal))), Times.Once);
         }
 
-        [Test]
-        public void Logout_WhenLogoutIdIsNull_ShouldThrowArgumentNullException()
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("  ")]
+        public void Logout_WhenInvalidLogoutId_ShouldThrowArgumentNullException(string logoutId)
         {
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
                 using var sut = new AccountControllerBuilder()
                     .Build();
 
-                await sut.Logout(null);
-            });
-        }
-
-        [Test]
-        public void Logout_WhenLogoutIdIsEmpty_ShouldThrowArgumentNullException()
-        {
-            Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                using var sut = new AccountControllerBuilder()
-                    .Build();
-
-                await sut.Logout(string.Empty);
+                await sut.Logout(logoutId);
             });
         }
     }
