@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
@@ -14,20 +13,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
     public sealed class AccountController : Controller
     {
-        private readonly IClientStore _clientStore;
         private readonly IEventService _eventService;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
-            IClientStore clientStore,
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager)
         {
-            _clientStore = clientStore;
             _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
@@ -73,13 +69,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
             if (context == null)
                 return LocalRedirect(returnUrl);
-
-            if (await _clientStore.IsPkceClientAsync(context.ClientId))
-            {
-                // If the client is PKCE then we assume it's native, so this change in how to
-                // return the response is for better UX for the end user.
-                return View("Redirect", new RedirectViewModel(viewModel.ReturnUrl));
-            }
 
             // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
             return Redirect(returnUrl);

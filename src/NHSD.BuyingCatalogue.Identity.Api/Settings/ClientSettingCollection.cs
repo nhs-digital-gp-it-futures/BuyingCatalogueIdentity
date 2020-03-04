@@ -40,6 +40,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
             client.RedirectUris = RedirectUrls?.ToList();
             client.PostLogoutRedirectUris = PostLogoutRedirectUrls?.ToList();
             client.AllowedScopes = AllowedScopes?.ToList();
+            client.RequirePkce = true;
+
             return client;
         }
     }
