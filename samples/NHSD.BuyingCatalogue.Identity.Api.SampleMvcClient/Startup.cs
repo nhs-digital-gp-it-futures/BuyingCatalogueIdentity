@@ -15,6 +15,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
         public IConfiguration Configuration { get; }

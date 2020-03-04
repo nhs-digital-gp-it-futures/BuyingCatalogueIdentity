@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
+using NHSD.BuyingCatalogue.Identity.Api.Factories;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
@@ -45,6 +46,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 
             services.AddIdentityServer(options =>
                 {
@@ -88,8 +91,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseRouting();
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
