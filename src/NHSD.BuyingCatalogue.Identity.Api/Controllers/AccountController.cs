@@ -6,11 +6,9 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NHSD.BuyingCatalogue.Identity.Api.Exceptions;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
@@ -67,52 +65,40 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
 
-            var signedIn = await SignIn(viewModel, context);
+            var signedIn = await SignInAsync(viewModel, context);
             if (!signedIn)
                 return View(NewLoginViewModel());
 
-            await RaiseLoginSuccess(viewModel, context);
+            await RaiseLoginSuccessAsync(viewModel, context);
 
-            if (context != null)
+            if (context == null)
+                return LocalRedirect(returnUrl);
+
+            if (await _clientStore.IsPkceClientAsync(context.ClientId))
             {
-                if (await _clientStore.IsPkceClientAsync(context.ClientId))
-                {
-                    // If the client is PKCE then we assume it's native, so this change in how to
-                    // return the response is for better UX for the end user.
-                    return View("Redirect", new RedirectViewModel(viewModel.ReturnUrl));
-                }
-
-                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                return Redirect(returnUrl);
+                // If the client is PKCE then we assume it's native, so this change in how to
+                // return the response is for better UX for the end user.
+                return View("Redirect", new RedirectViewModel(viewModel.ReturnUrl));
             }
 
-            if (Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
-
-            if (string.IsNullOrWhiteSpace(returnUrl))
-                return Redirect("~/");
-
-            // Return URL could be malicious
-            throw new InvalidReturnUrlException();
+            // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+            return Redirect(returnUrl);
         }
 
-        public async Task<IActionResult> Error(string errorId)
+        public IActionResult Error()
         {
-            // retrieve error details from identityserver
-            var message = await _interaction.GetErrorContextAsync(errorId);
-
-            return View(new ErrorViewModel { Message = message?.ErrorDescription });
+            return View("Error");
         }
 
-        private async Task RaiseLoginSuccess(LoginViewModel viewModel, AuthorizationRequest context)
+        private async Task RaiseLoginSuccessAsync(LoginViewModel viewModel, AuthorizationRequest context)
         {
             ApplicationUser user = await _userManager.FindByNameAsync(viewModel.Username);
             await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
         }
 
-        private async Task<bool> SignIn(LoginViewModel viewModel, AuthorizationRequest context)
+        private async Task<bool> SignInAsync(LoginViewModel viewModel, AuthorizationRequest context)
         {
-            SignInResult result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
+            var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
             if (result.Succeeded)
                 return true;
 
