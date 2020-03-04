@@ -15,10 +15,10 @@ BEGIN
 	DECLARE @bobPassword AS nvarchar(200) = N'AQAAAAEAACcQAAAAEOzr1Zwpoo1pKsTa+S65mBZVG4GIy6IYH/IAED6TvBA+FIMg8u/xb0b/cfexV7SHNw==';
 
 	INSERT INTO dbo.AspNetUsers(Id, AccessFailedCount, ConcurrencyStamp, EmailConfirmed, LockoutEnabled,
-		NormalizedUserName, PasswordHash, PhoneNumberConfirmed, SecurityStamp, TwoFactorEnabled, UserName)
+		NormalizedUserName, PasswordHash, PhoneNumberConfirmed, SecurityStamp, TwoFactorEnabled, UserName, PrimaryOrganisationId, OrganisationFunction)
 	VALUES
-	(@aliceId, 0, NEWID(), 0, 1, 'ALICE', @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, 'alice'),
-	(@bobId, 0, NEWID(), 0, 1, 'BOB', @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, 'bob');
+	(@aliceId, 0, NEWID(), 0, 1, 'ALICE', @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, 'alice', NEWID(), 'Authority'),
+	(@bobId, 0, NEWID(), 0, 1, 'BOB', @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, 'bob', NEWID(), 'Buyer');
 
 	INSERT INTO dbo.AspNetUserClaims (ClaimType, ClaimValue, UserId)
 	VALUES

@@ -43,6 +43,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                     options.ResponseType = "code";
                     options.Scope.Add("SampleResource");
                     options.SaveTokens = true;
+                    options.GetClaimsFromUserInfoEndpoint = true;
                 });
         }
 
