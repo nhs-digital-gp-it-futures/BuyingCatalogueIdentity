@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IdentityServer4.Events;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
@@ -55,8 +56,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             viewModel.ThrowIfNull(nameof(viewModel));
 
-            var returnUrl = viewModel.ReturnUrl.ToString();
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            var returnUrl = viewModel.ReturnUrl?.ToString();
+            AuthorizationRequest context = await _interaction.GetAuthorizationContextAsync(returnUrl);
 
             LoginViewModel NewLoginViewModel() =>
                 new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, Username = context?.LoginHint };
@@ -64,48 +65,47 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
 
-            var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
-            if (!result.Succeeded)
-            {
-                await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
-                ModelState.AddModelError(string.Empty, "Invalid username or password");
-
+            var signedIn = await SignInAsync(viewModel, context);
+            if (!signedIn)
                 return View(NewLoginViewModel());
-            }
 
-            var user = await _userManager.FindByNameAsync(viewModel.Username);
-            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+            await RaiseLoginSuccessAsync(viewModel, context);
 
-            if (context != null)
+            if (context == null)
+                return LocalRedirect(returnUrl);
+
+            if (await _clientStore.IsPkceClientAsync(context.ClientId))
             {
-                if (await _clientStore.IsPkceClientAsync(context.ClientId))
-                {
-                    // If the client is PKCE then we assume it's native, so this change in how to
-                    // return the response is for better UX for the end user.
-                    return View("Redirect", new RedirectViewModel(viewModel.ReturnUrl));
-                }
-
-                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                return Redirect(returnUrl);
+                // If the client is PKCE then we assume it's native, so this change in how to
+                // return the response is for better UX for the end user.
+                return View("Redirect", new RedirectViewModel(viewModel.ReturnUrl));
             }
 
-            if (Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
-
-            if (string.IsNullOrEmpty(returnUrl))
-                return Redirect("~/");
-
-            // User might have clicked on a malicious link - should be logged
-            throw new Exception("Invalid return URL");
+            // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+            return Redirect(returnUrl);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Error(string errorId)
+        public IActionResult Error()
         {
-            // retrieve error details from identityserver
-            var message = await _interaction.GetErrorContextAsync(errorId);
+            return View("Error");
+        }
 
-            return Ok(message);
+        private async Task RaiseLoginSuccessAsync(LoginViewModel viewModel, AuthorizationRequest context)
+        {
+            ApplicationUser user = await _userManager.FindByNameAsync(viewModel.Username);
+            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+        }
+
+        private async Task<bool> SignInAsync(LoginViewModel viewModel, AuthorizationRequest context)
+        {
+            var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
+            if (result.Succeeded)
+                return true;
+
+            await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
+            ModelState.AddModelError(string.Empty, "Invalid username or password");
+
+            return false;
         }
     }
 }

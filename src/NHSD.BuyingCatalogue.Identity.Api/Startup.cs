@@ -79,6 +79,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Account/Error");
+            }
 
             app.UseStaticFiles();
             app.UseIdentityServer();
