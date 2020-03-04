@@ -6,6 +6,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
     public sealed class LoginViewModel
     {
         [Required(ErrorMessage = "Enter your password")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         public Uri ReturnUrl { get; set; }
