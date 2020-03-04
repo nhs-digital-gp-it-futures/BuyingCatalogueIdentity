@@ -11,9 +11,9 @@ using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
+using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
-using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
@@ -39,6 +39,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
 
+            services.AddScoped<ILogoutService, LogoutService>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));
 
@@ -69,8 +70,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
         {
             app.UseSerilogRequestLogging(opts =>
             {
-                opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
-                opts.GetLevel = LogHelper.ExcludeHealthChecks;
+                opts.EnrichDiagnosticContext = Infrastructure.LogHelper.EnrichFromRequest;
+                opts.GetLevel = Infrastructure.LogHelper.ExcludeHealthChecks;
             });
 
             if (_environment.IsDevelopment())
