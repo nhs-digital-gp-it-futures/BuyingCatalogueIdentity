@@ -6,3 +6,4 @@
 :r ../Tables/AspNetRoles.sql
 :r ../Tables/AspNetRoleClaims.sql
 :r ../Tables/AspNetUserRoles.sql
+:r ../Tables/Organisations.sql

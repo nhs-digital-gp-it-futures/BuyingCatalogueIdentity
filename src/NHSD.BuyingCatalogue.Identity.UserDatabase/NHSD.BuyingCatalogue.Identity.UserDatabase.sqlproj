@@ -79,6 +79,7 @@
     <Build Include="Indexes\UserNameIndex.sql" />
     <Build Include="Security\Logins\NHSD.sql" />
     <Build Include="Security\Users\NHSD.sql" />
+    <Build Include="Tables\Organisations.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="NHSDPassword">
