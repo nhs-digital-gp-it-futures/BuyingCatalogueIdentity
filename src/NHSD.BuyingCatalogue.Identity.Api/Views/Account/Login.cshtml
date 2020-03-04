@@ -40,7 +40,6 @@
                                         Password
                                     </label>
                                     <input asp-for="Password" class="nhsuk-input" type="password" />
-
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
                             </div>
@@ -56,7 +55,7 @@
                             Log in
                         </button>
 
-                        @Html.ValidationSummary(true)
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                         <div data-test-id="request-account-link" class="bc-c-data-link bc-c-login-page-link ">
                             <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" target="_blank">
