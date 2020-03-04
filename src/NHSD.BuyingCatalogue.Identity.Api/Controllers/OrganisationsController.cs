@@ -9,10 +9,10 @@ using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Organisations;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
+    [Authorize]
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces("application/json")]
-    [AllowAnonymous]
     public sealed class OrganisationsController : ControllerBase
     {
         private readonly IOrganisationRepository _organisationRepository;

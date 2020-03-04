@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -62,7 +64,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddControllers();
             services.AddControllersWithViews();
-            services.AddAuthentication();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -83,6 +84,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseRouting();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
