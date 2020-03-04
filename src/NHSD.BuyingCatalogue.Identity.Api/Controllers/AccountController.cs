@@ -1,36 +1,38 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IdentityServer4.Events;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
+using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
     public sealed class AccountController : Controller
     {
-        private readonly IClientStore _clientStore;
         private readonly IEventService _eventService;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+		private readonly ILogoutService _logoutService;
 
         public AccountController(
-            IClientStore clientStore,
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogoutService logoutService)
         {
-            _clientStore = clientStore;
             _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
             _userManager = userManager;
+			_logoutService = logoutService;
         }
 
         [HttpGet]
@@ -55,7 +57,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             viewModel.ThrowIfNull(nameof(viewModel));
 
-            var returnUrl = viewModel.ReturnUrl.ToString();
+            var returnUrl = viewModel.ReturnUrl?.ToString();
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
 
             LoginViewModel NewLoginViewModel() =>
@@ -64,48 +66,55 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
 
-            var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
-            if (!result.Succeeded)
-            {
-                await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
-                ModelState.AddModelError(string.Empty, "Enter a valid email address and password");
-
+            var signedIn = await SignInAsync(viewModel, context);
+            if (!signedIn)
                 return View(NewLoginViewModel());
-            }
 
-            var user = await _userManager.FindByNameAsync(viewModel.Username);
-            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+            await RaiseLoginSuccessAsync(viewModel, context);
 
-            if (context != null)
-            {
-                if (await _clientStore.IsPkceClientAsync(context.ClientId))
-                {
-                    // If the client is PKCE then we assume it's native, so this change in how to
-                    // return the response is for better UX for the end user.
-                    return View("Redirect", new RedirectViewModel(viewModel.ReturnUrl));
-                }
+            if (context == null)
+                return LocalRedirect(returnUrl);
 
                 // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
                 return Redirect(returnUrl);
             }
+            
+		[HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            if (string.IsNullOrWhiteSpace(logoutId))
+            {
+                throw new ArgumentNullException(nameof(logoutId));
+            }
 
-            if (Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
+            LogoutRequest logoutRequest = await _logoutService.GetLogoutRequestAsync(logoutId);
 
-            if (string.IsNullOrEmpty(returnUrl))
-                return Redirect("~/");
+            await _logoutService.SignOutAsync(logoutRequest);
 
-            // User might have clicked on a malicious link - should be logged
-            throw new Exception("Invalid return URL");
+            return Redirect(logoutRequest?.PostLogoutRedirectUri);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Error(string errorId)
+        public IActionResult Error()
         {
-            // retrieve error details from identityserver
-            var message = await _interaction.GetErrorContextAsync(errorId);
+            return View("Error");
+        }
 
-            return Ok(message);
+        private async Task RaiseLoginSuccessAsync(LoginViewModel viewModel, AuthorizationRequest context)
+        {
+            ApplicationUser user = await _userManager.FindByNameAsync(viewModel.Username);
+            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+        }
+
+        private async Task<bool> SignInAsync(LoginViewModel viewModel, AuthorizationRequest context)
+        {
+            var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, false, true);
+            if (result.Succeeded)
+                return true;
+
+            await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
+            ModelState.AddModelError(string.Empty, "Invalid username or password");
+
+            return false;
         }
     }
 }
