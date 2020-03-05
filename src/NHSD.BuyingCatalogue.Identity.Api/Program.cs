@@ -13,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
         public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .Destructure.ByTransforming<ClientSetting>(c => new { c.AllowOfflineAccess, c.AllowedGrantTypes, c.AllowedScopes, c.ClientId, c.ClientName, c.PostLogoutRedirectUrls, c.RedirectUrls, c.RequireClientSecret, c.RequireConsent })
+                .Destructure.ByTransforming<ClientSetting>(c => new { c.AllowOfflineAccess, c.AllowedGrantTypes, c.AllowedScopes, c.ClientId, c.ClientName, c.PostLogoutRedirectUrls, c.RedirectUrls, c.RequireClientSecret, c.RequireConsent, RequirePKCE = c.RequirePkce })
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .MinimumLevel.Override("System", LogEventLevel.Warning)
