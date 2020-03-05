@@ -16,7 +16,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
         public string AllowedGrantTypes { get; set; }
         public bool AllowOfflineAccess { get; set; }
         public bool RequireClientSecret { get; set; }
-        public bool RequirePKCE { get; set; }
+        public bool RequirePkce { get; set; }
         public string Secret { get; set; }
         public bool RequireConsent { get; set; }
         public IEnumerable<string> RedirectUrls { get; set; }
@@ -38,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
                 ClientName = ClientName,
                 AllowOfflineAccess = AllowOfflineAccess,
                 RequireClientSecret = RequireClientSecret,
-                RequirePkce = RequirePKCE,
+                RequirePkce = RequirePkce,
                 ClientSecrets = new[] {new Secret(Secret?.ToSha256())},
                 RequireConsent = RequireConsent,
                 RedirectUris = RedirectUrls?.ToList(),
