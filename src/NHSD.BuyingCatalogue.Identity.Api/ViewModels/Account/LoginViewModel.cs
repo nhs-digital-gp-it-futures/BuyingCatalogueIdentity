@@ -5,12 +5,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 {
     public sealed class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Enter your password")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         public Uri ReturnUrl { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Enter your email address")]
         public string Username { get; set; }
     }
 }
