@@ -1,18 +1,289 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using IdentityServer4.Events;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
+using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
+using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 using NUnit.Framework;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 {
     [TestFixture]
 	public sealed class AccountControllerTests
 	{
+        [Test]
+        public void Error_ReturnsExpectedView()
+        {
+            using var controller = new AccountControllerBuilder().Build();
+
+            var result = controller.Error() as ViewResult;
+
+            Assert.NotNull(result);
+            result.ViewName.Should().Be("Error");
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_FailedSignIn_AddsValidationError()
+        {
+            using var controller = new AccountControllerBuilder()
+                .WithSignInManager(SignInResult.Failed)
+                .Build();
+
+            await controller.Login(new LoginViewModel());
+
+            var modelState = controller.ModelState;
+
+            modelState.IsValid.Should().BeFalse();
+            modelState.Count.Should().Be(1);
+
+            (string key, ModelStateEntry entry) = modelState.First();
+            key.Should().Be(string.Empty);
+            entry.Errors.Count.Should().Be(1);
+            entry.Errors.First().ErrorMessage.Should().Be("Enter a valid email address and password");
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_FailedSignIn_ReturnsExpectedView()
+        {
+            using var controller = new AccountControllerBuilder()
+                .WithSignInManager(SignInResult.Failed)
+                .Build();
+
+            var result = await controller.Login(new LoginViewModel()) as ViewResult;
+
+            Assert.NotNull(result);
+
+            var viewModel = result.Model as LoginViewModel;
+            Assert.NotNull(viewModel);
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_FailedSignInWithContext_RaisesLoginFailureEvent()
+        {
+            const string clientId = "ClientId";
+            const string username = "UncleBob";
+
+            int eventCount = 0;
+            UserLoginFailureEvent raisedEvent = null;
+
+            void EventCallback(UserLoginFailureEvent evt)
+            {
+                eventCount++;
+                raisedEvent = evt;
+            }
+
+            using var controller = new AccountControllerBuilder()
+                .WithEventService<UserLoginFailureEvent>(EventCallback)
+                .WithIdentityServerInteractionService(new AuthorizationRequest { ClientId = clientId })
+                .WithSignInManager(SignInResult.Failed)
+                .Build();
+
+            await controller.Login(new LoginViewModel { Username = username });
+
+            eventCount.Should().Be(1);
+            Assert.NotNull(raisedEvent);
+            raisedEvent.ClientId.Should().Be(clientId);
+            raisedEvent.Message.Should().Be("invalid credentials");
+            raisedEvent.Username.Should().Be(username);
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_FailedSignInWithNullContext_RaisesLoginFailureEvent()
+        {
+            const string username = "UncleBob";
+
+            int eventCount = 0;
+            UserLoginFailureEvent raisedEvent = null;
+
+            void EventCallback(UserLoginFailureEvent evt)
+            {
+                eventCount++;
+                raisedEvent = evt;
+            }
+
+            using var controller = new AccountControllerBuilder()
+                .WithEventService<UserLoginFailureEvent>(EventCallback)
+                .WithSignInManager(SignInResult.Failed)
+                .Build();
+
+            await controller.Login(new LoginViewModel { Username = username });
+
+            eventCount.Should().Be(1);
+            Assert.NotNull(raisedEvent);
+            raisedEvent.ClientId.Should().BeNull();
+            raisedEvent.Message.Should().Be("invalid credentials");
+            raisedEvent.Username.Should().Be(username);
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_InvalidViewModelWithoutAnyValues_ReturnsExpectedView()
+        {
+            using var controller = new AccountControllerBuilder().Build();
+
+            controller.ModelState.AddModelError(string.Empty, "Fake error!");
+
+            var result = await controller.Login(new LoginViewModel()) as ViewResult;
+
+            Assert.NotNull(result);
+
+            var viewModel = result.Model as LoginViewModel;
+            Assert.NotNull(viewModel);
+            viewModel.ReturnUrl.Should().BeNull();
+            viewModel.Password.Should().BeNull();
+            viewModel.Username.Should().BeNull();
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_InvalidViewModelWithValues_ReturnsExpectedView()
+        {
+            const string loginHint = "LoginHint";
+
+            var uri = new Uri("http://www.foobar.com/");
+
+            var inputModel = new LoginViewModel
+            {
+                Password = "Password",
+                ReturnUrl = uri,
+                Username = "NotLoginHint"
+            };
+
+            var request = new AuthorizationRequest { LoginHint = loginHint };
+
+            using var controller = new AccountControllerBuilder()
+                .WithIdentityServerInteractionService(request, uri.ToString())
+                .Build();
+
+            controller.ModelState.AddModelError(string.Empty, "Fake error!");
+
+            var result = await controller.Login(inputModel) as ViewResult;
+            Assert.NotNull(result);
+
+            var viewModel = result.Model as LoginViewModel;
+            Assert.NotNull(viewModel);
+            viewModel.ReturnUrl.Should().BeEquivalentTo(uri);
+            viewModel.Password.Should().BeNull();
+            viewModel.Username.Should().BeEquivalentTo(loginHint);
+        }
+
+        [Test]
+        public void Login_LoginViewModel_NullViewModel_ThrowsException()
+        {
+            static async Task Login()
+            {
+                using var controller = new AccountControllerBuilder().Build();
+                await controller.Login((LoginViewModel)null);
+            }
+
+            Assert.ThrowsAsync<ArgumentNullException>(Login);
+        }
+        [Test]
+        public async Task Login_LoginViewModel_SuccessfulSignInWithContext_ReturnsRedirectResult()
+        {
+            const string goodUrl = "https://www.realclient.co.uk/";
+
+            using var controller = new AccountControllerBuilder()
+                .WithIdentityServerInteractionService(new AuthorizationRequest())
+                .WithSignInManager(SignInResult.Success)
+                .WithUserManager(new ApplicationUser())
+                .Build();
+
+            var result = await controller.Login(
+                new LoginViewModel { ReturnUrl = new Uri(goodUrl) }) as RedirectResult;
+
+            Assert.NotNull(result);
+            result.Url.Should().Be(goodUrl);
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_SuccessfulSignInWithNullContext_RaisesLoginSuccessEvent()
+        {
+            int eventCount = 0;
+            UserLoginSuccessEvent raisedEvent = null;
+
+            void EventCallback(UserLoginSuccessEvent evt)
+            {
+                eventCount++;
+                raisedEvent = evt;
+            }
+
+            const string userId = "UserId";
+            const string username = "UncleBob";
+
+            using var controller = new AccountControllerBuilder()
+                .WithEventService<UserLoginSuccessEvent>(EventCallback)
+                .WithSignInManager(SignInResult.Success)
+                .WithUserManager(new ApplicationUser { Id = userId, UserName = username })
+                .Build();
+
+            await controller.Login(new LoginViewModel { ReturnUrl = new Uri("~/", UriKind.Relative) });
+
+            eventCount.Should().Be(1);
+            Assert.NotNull(raisedEvent);
+            raisedEvent.ClientId.Should().BeNull();
+            raisedEvent.DisplayName.Should().Be(username);
+            raisedEvent.Message.Should().BeNull();
+            raisedEvent.SubjectId.Should().Be(userId);
+            raisedEvent.Username.Should().Be(username);
+        }
+
+        [Test]
+        public async Task Login_LoginViewModel_SuccessfulSignInWithNullContextAndValidReturnUrl_ReturnsLocalRedirectResult()
+        {
+            const string rootUrl = "~/";
+            
+            using var controller = new AccountControllerBuilder()
+                .WithSignInManager(SignInResult.Success)
+                .WithUserManager(new ApplicationUser())
+                .Build();
+
+            var result = await controller.Login(
+                new LoginViewModel { ReturnUrl = new Uri(rootUrl, UriKind.Relative) }) as LocalRedirectResult;
+
+            Assert.NotNull(result);
+            result.Url.Should().Be(rootUrl);
+        }
+        [Test]
+        public void Login_Uri_NullReturnUrl_ReturnsViewResultWithRootUrl()
+        {
+            var expectedUri = new Uri("~/", UriKind.Relative);
+
+            using var controller = new AccountControllerBuilder().Build();
+
+            var result = controller.Login((Uri)null) as ViewResult;
+
+            Assert.NotNull(result);
+            result.ViewData["ReturnUrl"].Should().BeEquivalentTo(expectedUri);
+
+            var viewModel = result.Model as LoginViewModel;
+            Assert.NotNull(viewModel);
+            viewModel.ReturnUrl.Should().BeEquivalentTo(expectedUri);
+        }
+
+        [Test]
+        public void Login_Uri_WithReturnUrl_ReturnsViewResultWithReturnUrl()
+        {
+            var uri = new Uri("http://www.foobar.com/");
+
+            using var controller = new AccountControllerBuilder().Build();
+
+            var result = controller.Login(uri) as ViewResult;
+
+            Assert.NotNull(result);
+            result.ViewData["ReturnUrl"].Should().Be(uri);
+
+            var viewModel = result.Model as LoginViewModel;
+            Assert.NotNull(viewModel);
+            viewModel.ReturnUrl.Should().Be(uri);
+        }
+
         [Test]
         public async Task Logout_WhenLogoutIdIsNotNullOrEmpty_ReturnsRedirectResult()
         {
@@ -30,7 +301,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             const string expectedLogoutId = "123";
             var actual = await sut.Logout(expectedLogoutId);
-            
+
             actual.Should().BeEquivalentTo(new RedirectResult(expectedLogoutRequest.PostLogoutRedirectUri));
         }
 
