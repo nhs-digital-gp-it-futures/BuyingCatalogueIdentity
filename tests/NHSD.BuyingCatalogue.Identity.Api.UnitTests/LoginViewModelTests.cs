@@ -10,11 +10,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
     [TestFixture]
     internal sealed class LoginViewModelTests
     {
+        private const string Password = "Password";
+        private const string Username = "User";
+
         [Test]
-        [TestCase(null, null, "Enter your password", "Enter your email address")]
-        [TestCase("Password", null, "Enter your email address")]
-        [TestCase(null, "User", "Enter your password")]
-        [TestCase("Password", "User")]
+        [TestCase(null, null, LoginViewModel.ErrorMessages.PasswordRequired, LoginViewModel.ErrorMessages.UsernameRequired)]
+        [TestCase(Password, null, LoginViewModel.ErrorMessages.UsernameRequired)]
+        [TestCase(null, Username, LoginViewModel.ErrorMessages.PasswordRequired)]
+        [TestCase(Password, Username)]
         public void InvalidModel_HasExpectedValidationErrorsFoo(string password, string username, params string[] expectedErrors)
         {
             var errors = new List<ValidationResult>();

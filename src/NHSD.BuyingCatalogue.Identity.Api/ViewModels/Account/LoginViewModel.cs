@@ -5,13 +5,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 {
     public sealed class LoginViewModel
     {
-        [Required(ErrorMessage = "Enter your password")]
+        [Required(ErrorMessage = ErrorMessages.PasswordRequired)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
         public Uri ReturnUrl { get; set; }
 
-        [Required(ErrorMessage = "Enter your email address")]
+        [Required(ErrorMessage = ErrorMessages.UsernameRequired)]
         public string Username { get; set; }
+
+        internal static class ErrorMessages
+        {
+            internal const string PasswordRequired = "Enter your password";
+            internal const string UsernameRequired = "Enter your email address";
+        }
     }
 }
