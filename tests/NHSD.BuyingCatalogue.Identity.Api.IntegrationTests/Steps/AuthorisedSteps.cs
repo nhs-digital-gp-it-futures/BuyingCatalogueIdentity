@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 using TechTalk.SpecFlow;
@@ -23,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var client = new HttpClient();
 
             var discoveryDocument =
-                await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest{ Address = "http://localhost:8070", });
+                await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest{ Address = "http://docker.for.win.localhost:8070/", });
 
             if (discoveryDocument.IsError)
             {
@@ -31,33 +31,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 return;
             }
 
+            // request token
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
-                ClientId = "SampleClient",
-                ClientSecret = "SampleClientSecret",
+                ClientId = "TokenClient",
+                ClientSecret = "TokenSecret",
                 Scope = "SampleResource"
             });
-
-            var tokenResponsew = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
-            {
-                Address = discoveryDocument.TokenEndpoint,
-
-                ClientId = "SampleClient",
-                ClientSecret = "SampleClientSecret",
-                Scope = "ClientCredentials",
-
-                UserName = "alice",
-                Password = "Pass123$"
-            });
-
-            //var a = await client.RequestTokenAsync(new TokenRequest() {
-            //    Address = discoveryDocument.TokenEndpoint,
-            //    GrantType = "Code",
-
-            //    ClientId = "SampleClient",
-            //    ClientSecret = "SampleClientSecret",
-            //});
 
             if (tokenResponse.IsError)
             {
@@ -65,9 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 return;
             }
 
-            var apiClient = new HttpClient();
-            apiClient.SetBearerToken(tokenResponse.AccessToken);
+            _context["AccessToken"] = tokenResponse.AccessToken;
         }
-
     }
 }

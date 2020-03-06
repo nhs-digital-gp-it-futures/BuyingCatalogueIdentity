@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data.EntityBuilder;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -16,8 +17,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class OrganisationsSteps
     {
         private readonly ScenarioContext _context;
-        private readonly IConfiguration _config;
-        private readonly string _organisationUrl = "http://localhost:8070/api/v1/Organisations";
+        private readonly IConfigurationRoot _config;
+        private readonly string _organisationUrl = "http://docker.for.win.localhost:8075/api/v1/Organisations";
 
         public OrganisationsSteps(ScenarioContext context, IConfigurationRoot config)
         {
@@ -26,28 +27,40 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         }
 
         [Given(@"Organisations exist")]
-        public void GivenOrganisationsExist(Table table)
+        public async Task GivenOrganisationsExist(Table table)
         {
             foreach (var organisation in table.CreateSet<OrganisationTable>())
             {
-                OrganisationEntityBuilder
-                    .Create(_config.GetConnectionString("CatalogueUsers"))
-                    .WithName(organisation.Name)
-                    .WithOdsCode(organisation.OdsCode)
-                    .Insert();
+                await InsertOrganisationsAsync(organisation);
             }
+        }
+     
+        private async Task InsertOrganisationsAsync(OrganisationTable organisationTable)
+        {
+            var organisation = OrganisationEntityBuilder
+                .Create()
+                .WithName(organisationTable.Name)
+                .WithOdsCode(organisationTable.OdsCode)
+                .Build();
+
+            await organisation.InsertAsync(_config.GetConnectionString("CatalogueUsers"));
         }
 
         [Given(@"the call to the database to set the field will fail")]
-        public void GivenTheCallToTheDatabaseToSetTheFieldWillFail()
+        public async Task GivenTheCallToTheDatabaseToSetTheFieldWillFail()
         {
-            Database.DropUser(_config.GetConnectionString("CatalogueUsersAdmin"));
+            await Database.DropUser(_config.GetConnectionString("CatalogueUsersAdmin"));
         }
         
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {
+            string bearerToken = _context["AccessToken"].ToString();
+            
             using var client = new HttpClient();
+           client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+            //var sampleResource = "http://localhost:8071/Identity";
 
             var response = await client.GetAsync(new Uri(_organisationUrl));
 
@@ -62,7 +75,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var response = _context["Response"] as HttpResponseMessage;
             response.Should().NotBeNull();
 
-            var content = JToken.Parse(await response.Content.ReadAsStringAsync());
+            var contentA = await response.Content.ReadAsStringAsync();
+
+            var content = JToken.Parse(contentA);
             var organisationsContent = content.SelectToken("organisations").ToList();
             organisationsContent.Count().Should().Be(organisations.Count());
 
@@ -74,7 +89,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             organisationsContent[2].SelectToken("name").Value<string>().Should().Be(organisations[2].Name);
             organisationsContent[2].SelectToken("odsCode").Value<string>().Should().Be(organisations[2].OdsCode);
-
         }
 
         private class OrganisationTable

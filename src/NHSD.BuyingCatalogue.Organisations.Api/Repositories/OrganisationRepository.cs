@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NHSD.BuyingCatalogue.Identity.Api.Data;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Data;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
+namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
     public sealed class OrganisationRepository : IOrganisationRepository
     {

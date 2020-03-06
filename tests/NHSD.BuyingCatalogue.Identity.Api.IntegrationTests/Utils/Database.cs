@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using Dapper;
 using Microsoft.Extensions.Configuration;
-using NHSD.BuyingCatalogue.Identity.Api.Data;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
@@ -9,29 +11,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
     public sealed class Database
     {
         [BeforeScenario]
-        public void Reset(IConfigurationRoot config)
+        public async Task Reset(IConfigurationRoot config)
         {
-            using var context = GetContext(config.GetConnectionString("CatalogueUsersAdmin"));
-
-            context.Database.ExecuteSqlRaw("ALTER ROLE db_owner ADD MEMBER [NHSD];");
-
-            context.Organisations.RemoveRange(context.Organisations);
-
-            context.SaveChanges();
+            using IDbConnection databaseConnection = new SqlConnection(config.GetConnectionString("CatalogueUsersAdmin"));
+            await databaseConnection.ExecuteAsync("ALTER ROLE db_owner ADD MEMBER [NHSD];");
+            await databaseConnection.ExecuteAsync("DELETE FROM Organisations");
         }
 
-        public static void DropUser(string config)
+        public static async Task DropUser(string connectionString)
         {
-            using var context = GetContext(config);
-
-            context.Database.ExecuteSqlRaw("ALTER ROLE db_owner DROP MEMBER [NHSD];");
-        }
-
-        private static ApplicationDbContext GetContext(string config)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer(config);
-            return new ApplicationDbContext(optionsBuilder.Options);
+            using IDbConnection databaseConnection = new SqlConnection(connectionString);
+            await databaseConnection.ExecuteAsync("ALTER ROLE db_owner DROP MEMBER [NHSD];");
         }
     }
 }

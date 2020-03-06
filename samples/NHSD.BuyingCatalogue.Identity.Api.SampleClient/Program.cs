@@ -19,13 +19,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
                 Console.WriteLine(discoveryDocument.Error);
                 return;
             }
+
             // request token
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
-                ClientId = "SampleClient",
-                ClientSecret = "SampleClientSecret",
-               // GrantType = OidcConstants.GrantTypes.AuthorizationCode,
+                ClientId = "TokenClient",
+                ClientSecret = "TokenSecret",
                 Scope = "SampleResource"
             });
 
