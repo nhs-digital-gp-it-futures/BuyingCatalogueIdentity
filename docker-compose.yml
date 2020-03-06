@@ -26,24 +26,8 @@ services:
       dockerfile: src/NHSD.BuyingCatalogue.Identity.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-
-      - CLIENTS__0__REDIRECTURLS__0=http://localhost:8072/signin-oidc
-      - CLIENTS__0__REDIRECTURLS__1=http://host.docker.internal:8072/signin-oidc
-      - CLIENTS__0__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc
-      - CLIENTS__0__AllowedGrantTypes=Code
-
-      - CLIENTS__1__REDIRECTURLS__0=http://localhost:8072/signin-oidc
-      - CLIENTS__1__REDIRECTURLS__1=http://host.docker.internal:8072/signin-oidc
-      - CLIENTS__1__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc
-      - CLIENTS__1__AllowedGrantTypes=Code
-
-      - CLIENTS__2__REDIRECTURLS__0=http://localhost:8072/signin-oidc
-      - CLIENTS__2__REDIRECTURLS__1=http://host.docker.internal:8072/signin-oidc
-      - CLIENTS__2__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc
-      - CLIENTS__2__AllowedGrantTypes=ClientCredentials
-
       - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
-      - ISSUERURL=http://docker.for.win.localhost:8070/
+      - ISSUERURL=http://host.docker.internal:8070/
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
     networks:
@@ -59,7 +43,7 @@ services:
         dockerfile: src/NHSD.BuyingCatalogue.Organisations.Api/Dockerfile
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://docker.for.win.localhost:8070/
+        - AUTHORITY=http://host.docker.internal:8070/
         - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db

@@ -21,9 +21,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public async Task GivenAnAuthorityUserIsLoggedIn()
         {
             var client = new HttpClient();
-
+            
             var discoveryDocument =
-                await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest{ Address = "http://docker.for.win.localhost:8070/", });
+                await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
+                {
+                    Policy = new DiscoveryPolicy {RequireHttps = false},
+                    Address = "http://host.docker.internal:8070/",
+                });
 
             if (discoveryDocument.IsError)
             {

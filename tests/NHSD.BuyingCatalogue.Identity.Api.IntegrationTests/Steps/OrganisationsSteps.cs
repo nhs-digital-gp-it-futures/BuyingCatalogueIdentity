@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FluentAssertions;
+using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -18,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly ScenarioContext _context;
         private readonly IConfigurationRoot _config;
-        private readonly string _organisationUrl = "http://docker.for.win.localhost:8075/api/v1/Organisations";
+        private readonly string _organisationUrl = "http://localhost:8075/api/v1/Organisations";
 
         public OrganisationsSteps(ScenarioContext context, IConfigurationRoot config)
         {
@@ -58,8 +59,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             string bearerToken = _context["AccessToken"].ToString();
             
             using var client = new HttpClient();
-           client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-
+           client.SetBearerToken(bearerToken);
             //var sampleResource = "http://localhost:8071/Identity";
 
             var response = await client.GetAsync(new Uri(_organisationUrl));
