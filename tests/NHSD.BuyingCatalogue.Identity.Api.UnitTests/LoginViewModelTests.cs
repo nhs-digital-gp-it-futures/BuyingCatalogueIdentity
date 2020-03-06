@@ -8,6 +8,7 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     internal sealed class LoginViewModelTests
     {
         private const string Password = "Password";

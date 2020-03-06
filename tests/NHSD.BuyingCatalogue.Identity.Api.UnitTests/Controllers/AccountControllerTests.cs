@@ -2,24 +2,23 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityServer4.Events;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 using NUnit.Framework;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using SignInResult = NHSD.BuyingCatalogue.Identity.Api.Services.SignInResult;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 {
     [TestFixture]
-	public sealed class AccountControllerTests
-	{
+    [Parallelizable(ParallelScope.All)]
+    public sealed class AccountControllerTests
+    {
         [Test]
         public void Error_ReturnsExpectedView()
         {
@@ -35,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         public async Task Login_LoginViewModel_FailedSignIn_AddsValidationError()
         {
             using var controller = new AccountControllerBuilder()
-                .WithSignInManager(SignInResult.Failed)
+                .WithSignInResult(new SignInResult(false))
                 .Build();
 
             await controller.Login(new LoginViewModel());
@@ -48,14 +47,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             (string key, ModelStateEntry entry) = modelState.First();
             key.Should().Be(string.Empty);
             entry.Errors.Count.Should().Be(1);
-            entry.Errors.First().ErrorMessage.Should().Be(AccountController.LoginFailure.ErrorMessage);
+            entry.Errors.First().ErrorMessage.Should().Be(AccountController.SignInErrorMessage);
         }
 
         [Test]
         public async Task Login_LoginViewModel_FailedSignIn_ReturnsExpectedView()
         {
             using var controller = new AccountControllerBuilder()
-                .WithSignInManager(SignInResult.Failed)
+                .WithSignInResult(new SignInResult(false))
                 .Build();
 
             var result = await controller.Login(new LoginViewModel()) as ViewResult;
@@ -67,67 +66,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Login_LoginViewModel_FailedSignInWithContext_RaisesLoginFailureEvent()
-        {
-            const string clientId = "ClientId";
-            const string username = "UncleBob";
-
-            int eventCount = 0;
-            UserLoginFailureEvent raisedEvent = null;
-
-            void EventCallback(UserLoginFailureEvent evt)
-            {
-                eventCount++;
-                raisedEvent = evt;
-            }
-
-            using var controller = new AccountControllerBuilder()
-                .WithEventService<UserLoginFailureEvent>(EventCallback)
-                .WithIdentityServerInteractionService(new AuthorizationRequest { ClientId = clientId })
-                .WithSignInManager(SignInResult.Failed)
-                .Build();
-
-            await controller.Login(new LoginViewModel { Username = username });
-
-            eventCount.Should().Be(1);
-            Assert.NotNull(raisedEvent);
-            raisedEvent.ClientId.Should().Be(clientId);
-            raisedEvent.Message.Should().Be(AccountController.LoginFailure.EventMessage);
-            raisedEvent.Username.Should().Be(username);
-        }
-
-        [Test]
-        public async Task Login_LoginViewModel_FailedSignInWithNullContext_RaisesLoginFailureEvent()
-        {
-            const string username = "UncleBob";
-
-            int eventCount = 0;
-            UserLoginFailureEvent raisedEvent = null;
-
-            void EventCallback(UserLoginFailureEvent evt)
-            {
-                eventCount++;
-                raisedEvent = evt;
-            }
-
-            using var controller = new AccountControllerBuilder()
-                .WithEventService<UserLoginFailureEvent>(EventCallback)
-                .WithSignInManager(SignInResult.Failed)
-                .Build();
-
-            await controller.Login(new LoginViewModel { Username = username });
-
-            eventCount.Should().Be(1);
-            Assert.NotNull(raisedEvent);
-            raisedEvent.ClientId.Should().BeNull();
-            raisedEvent.Message.Should().Be(AccountController.LoginFailure.EventMessage);
-            raisedEvent.Username.Should().Be(username);
-        }
-
-        [Test]
         public async Task Login_LoginViewModel_InvalidViewModelWithoutAnyValues_ReturnsExpectedView()
         {
-            using var controller = new AccountControllerBuilder().Build();
+            using var controller = new AccountControllerBuilder()
+                .WithSignInResult(new SignInResult(false))
+                .Build();
 
             controller.ModelState.AddModelError(string.Empty, "Fake error!");
 
@@ -153,13 +96,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             {
                 Password = "Password",
                 ReturnUrl = uri,
-                Username = "NotLoginHint"
+                Username = "NotLoginHint",
             };
 
-            var request = new AuthorizationRequest { LoginHint = loginHint };
-
             using var controller = new AccountControllerBuilder()
-                .WithIdentityServerInteractionService(request, uri.ToString())
+                .WithSignInResult(new SignInResult(false, loginHint: loginHint))
                 .Build();
 
             controller.ModelState.AddModelError(string.Empty, "Fake error!");
@@ -185,15 +126,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             Assert.ThrowsAsync<ArgumentNullException>(Login);
         }
+
         [Test]
-        public async Task Login_LoginViewModel_SuccessfulSignInWithContext_ReturnsRedirectResult()
+        public async Task Login_LoginViewModel_SuccessfulSignInWithTrustedReturnUrl_ReturnsRedirectResult()
         {
             const string goodUrl = "https://www.realclient.co.uk/";
 
             using var controller = new AccountControllerBuilder()
-                .WithIdentityServerInteractionService(new AuthorizationRequest())
-                .WithSignInManager(SignInResult.Success)
-                .WithUserManager(new ApplicationUser())
+                .WithSignInResult(new SignInResult(true, true))
                 .Build();
 
             var result = await controller.Login(
@@ -204,45 +144,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Login_LoginViewModel_SuccessfulSignInWithNullContext_RaisesLoginSuccessEvent()
-        {
-            int eventCount = 0;
-            UserLoginSuccessEvent raisedEvent = null;
-
-            void EventCallback(UserLoginSuccessEvent evt)
-            {
-                eventCount++;
-                raisedEvent = evt;
-            }
-
-            const string userId = "UserId";
-            const string username = "UncleBob";
-
-            using var controller = new AccountControllerBuilder()
-                .WithEventService<UserLoginSuccessEvent>(EventCallback)
-                .WithSignInManager(SignInResult.Success)
-                .WithUserManager(new ApplicationUser { Id = userId, UserName = username })
-                .Build();
-
-            await controller.Login(new LoginViewModel { ReturnUrl = new Uri("~/", UriKind.Relative) });
-
-            eventCount.Should().Be(1);
-            Assert.NotNull(raisedEvent);
-            raisedEvent.ClientId.Should().BeNull();
-            raisedEvent.DisplayName.Should().Be(username);
-            raisedEvent.Message.Should().BeNull();
-            raisedEvent.SubjectId.Should().Be(userId);
-            raisedEvent.Username.Should().Be(username);
-        }
-
-        [Test]
-        public async Task Login_LoginViewModel_SuccessfulSignInWithNullContextAndValidReturnUrl_ReturnsLocalRedirectResult()
+        public async Task Login_LoginViewModel_SuccessfulSignInWithUntrustedReturnUrl_ReturnsLocalRedirectResult()
         {
             const string rootUrl = "~/";
-            
+
             using var controller = new AccountControllerBuilder()
-                .WithSignInManager(SignInResult.Success)
-                .WithUserManager(new ApplicationUser())
+                .WithSignInResult(new SignInResult(true))
                 .Build();
 
             var result = await controller.Login(
@@ -251,6 +158,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             Assert.NotNull(result);
             result.Url.Should().Be(rootUrl);
         }
+
         [Test]
         public void Login_Uri_NullReturnUrl_ReturnsViewResultWithRootUrl()
         {
