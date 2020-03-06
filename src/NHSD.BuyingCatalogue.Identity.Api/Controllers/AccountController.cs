@@ -110,10 +110,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (result.Succeeded)
                 return true;
 
-            await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, "invalid credentials", clientId: context?.ClientId));
-            ModelState.AddModelError(string.Empty, "Enter a valid email address and password");
+            await _eventService.RaiseAsync(new UserLoginFailureEvent(viewModel.Username, LoginFailure.EventMessage, clientId: context?.ClientId));
+            ModelState.AddModelError(string.Empty, LoginFailure.ErrorMessage);
 
             return false;
+        }
+
+        internal static class LoginFailure
+        {
+            internal const string ErrorMessage = "Enter a valid email address and password";
+            internal const string EventMessage = "Invalid credentials";
         }
     }
 }

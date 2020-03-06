@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
+using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
@@ -47,7 +48,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             (string key, ModelStateEntry entry) = modelState.First();
             key.Should().Be(string.Empty);
             entry.Errors.Count.Should().Be(1);
-            entry.Errors.First().ErrorMessage.Should().Be("Enter a valid email address and password");
+            entry.Errors.First().ErrorMessage.Should().Be(AccountController.LoginFailure.ErrorMessage);
         }
 
         [Test]
@@ -91,7 +92,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             eventCount.Should().Be(1);
             Assert.NotNull(raisedEvent);
             raisedEvent.ClientId.Should().Be(clientId);
-            raisedEvent.Message.Should().Be("invalid credentials");
+            raisedEvent.Message.Should().Be(AccountController.LoginFailure.EventMessage);
             raisedEvent.Username.Should().Be(username);
         }
 
@@ -119,7 +120,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             eventCount.Should().Be(1);
             Assert.NotNull(raisedEvent);
             raisedEvent.ClientId.Should().BeNull();
-            raisedEvent.Message.Should().Be("invalid credentials");
+            raisedEvent.Message.Should().Be(AccountController.LoginFailure.EventMessage);
             raisedEvent.Username.Should().Be(username);
         }
 
