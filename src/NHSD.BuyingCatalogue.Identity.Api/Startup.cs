@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -40,14 +41,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
 
-            services.AddScoped<ILogoutService, LogoutService>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>()
+                .AddScoped<ILogoutService, LogoutService>();
 
             services.AddIdentityServer(options =>
                 {
@@ -60,6 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
+            .AddProfileService<ProfileService>()
             .AddDeveloperSigningCredential();
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
