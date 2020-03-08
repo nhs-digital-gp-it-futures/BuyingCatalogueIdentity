@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using NHSD.BuyingCatalogue.Identity.Api.Constants;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 
@@ -22,9 +23,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Factories
 
             ClaimsIdentity claimsIdentity = await base.GenerateClaimsAsync(user);
 
-            claimsIdentity.AddClaim(new Claim("primaryOrganisation", user.PrimaryOrganisationId.ToString()));
-            claimsIdentity.AddClaim(new Claim("organisationFunction", user.OrganisationFunction ?? ""));
-            claimsIdentity.AddClaim(new Claim("email", user.Email ?? ""));
+            claimsIdentity.AddClaim(new Claim(CustomClaimTypes.PrimaryOrganisationId, user.PrimaryOrganisationId.ToString()));
+            claimsIdentity.AddClaim(new Claim(CustomClaimTypes.OrganisationFunction, user.OrganisationFunction ?? ""));
 
             return claimsIdentity;
         }

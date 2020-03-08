@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -51,17 +50,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddScoped<ILogoutService, LogoutService>();
 
             services.AddIdentityServer(options =>
-                {
-                    options.Events.RaiseFailureEvents = true;
-                    options.Events.RaiseErrorEvents = true;
-                    options.Events.RaiseSuccessEvents = true;
-                    options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
-                })
+            {
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+                options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
+            })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
-            .AddProfileService<ProfileService>()
+            .AddProfileService<ApplicationUserProfileService>()
             .AddDeveloperSigningCredential();
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();

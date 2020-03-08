@@ -1,0 +1,23 @@
+﻿@model NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.ViewModels.UserInfoViewModel
+
+@{
+    ViewData["Title"] = "User Information";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Here are your additional details.</p>
+
+<br />
+
+@if (User.Identity.IsAuthenticated)
+{
+    <table>
+        @foreach (var claim in Model.UserClaims)
+        {
+            <tr>
+                <td>@claim.Type</td>
+                <td>@claim.Value</td>
+            </tr>
+        }
+    </table>
+}

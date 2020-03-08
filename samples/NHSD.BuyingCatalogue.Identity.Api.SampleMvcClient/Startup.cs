@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Net.Http.Headers;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
 {
@@ -31,6 +33,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
             var authority = Configuration.GetValue<string>("authority");
             var signedOutRedirectUri = Configuration.GetValue<string>("SignedOutRedirectUri");
 
+            services.AddHttpClient("IdentityClient", client =>
+            {
+                client.BaseAddress = new Uri("http://host.docker.internal:8070");
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            });
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -46,9 +55,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 options.ClientSecret = clientSecret;
                 options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SaveTokens = true;
-                options.GetClaimsFromUserInfoEndpoint = true;
+                options.GetClaimsFromUserInfoEndpoint = false;
                 options.RequireHttpsMetadata = false;
                 options.Scope.Add("SampleResource");
+                options.Scope.Add("organisation");
             });
         }
 
