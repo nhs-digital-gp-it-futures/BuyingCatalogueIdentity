@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Constants;
 using NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.ViewModels;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
@@ -20,16 +20,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<HomeController> _logger;
-
+        
         public HomeController(
             IConfiguration configuration, 
-            IHttpClientFactory httpClientFactory,
-            ILogger<HomeController> logger)
+            IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
         }
 
         public IActionResult Index()
@@ -65,7 +62,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
         [Authorize]
         public async Task<IActionResult> UserInfo()
         {
-            var client = _httpClientFactory.CreateClient("IdentityClient");
+            var client = _httpClientFactory.CreateClient(HttpClientNames.Identity);
 
             DiscoveryDocumentRequest discoveryDocumentRequest = new DiscoveryDocumentRequest
             {

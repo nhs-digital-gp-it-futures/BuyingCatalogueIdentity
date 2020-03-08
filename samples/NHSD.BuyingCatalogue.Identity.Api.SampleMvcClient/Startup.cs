@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
+using NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
 {
@@ -33,9 +34,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
             var authority = Configuration.GetValue<string>("authority");
             var signedOutRedirectUri = Configuration.GetValue<string>("SignedOutRedirectUri");
 
-            services.AddHttpClient("IdentityClient", client =>
+            services.AddHttpClient(HttpClientNames.Identity, client =>
             {
-                client.BaseAddress = new Uri("http://host.docker.internal:8070");
+                client.BaseAddress = new Uri(authority);
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             });
