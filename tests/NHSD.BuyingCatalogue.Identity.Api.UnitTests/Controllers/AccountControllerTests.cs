@@ -82,7 +82,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             Assert.NotNull(viewModel);
             viewModel.ReturnUrl.Should().BeNull();
             viewModel.Password.Should().BeNull();
-            viewModel.Username.Should().BeNull();
+            viewModel.EmailAddress.Should().BeNull();
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             {
                 Password = "Password",
                 ReturnUrl = uri,
-                Username = "NotLoginHint",
+                EmailAddress = "NotLoginHint",
             };
 
             using var controller = new AccountControllerBuilder()
@@ -112,7 +112,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             Assert.NotNull(viewModel);
             viewModel.ReturnUrl.Should().BeEquivalentTo(uri);
             viewModel.Password.Should().BeNull();
-            viewModel.Username.Should().BeEquivalentTo(loginHint);
+            viewModel.EmailAddress.Should().BeEquivalentTo(loginHint);
         }
 
         [Test]

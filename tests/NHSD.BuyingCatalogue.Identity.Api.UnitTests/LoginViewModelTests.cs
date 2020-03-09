@@ -12,19 +12,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
     internal sealed class LoginViewModelTests
     {
         private const string Password = "Password";
-        private const string Username = "User";
+        private const string EmailAddress = "test@email.com";
+        private const string NotAnEmailAddress = "NotAnEmailAddress";
 
         [Test]
-        [TestCase(null, null, LoginViewModel.ErrorMessages.PasswordRequired, LoginViewModel.ErrorMessages.UsernameRequired)]
-        [TestCase(Password, null, LoginViewModel.ErrorMessages.UsernameRequired)]
-        [TestCase(null, Username, LoginViewModel.ErrorMessages.PasswordRequired)]
-        [TestCase(Password, Username)]
-        public void InvalidModel_HasExpectedValidationErrorsFoo(string password, string username, params string[] expectedErrors)
+        [TestCase(null, null, LoginViewModel.ErrorMessages.EmailAddressRequired, LoginViewModel.ErrorMessages.PasswordRequired)]
+        [TestCase(Password, null, LoginViewModel.ErrorMessages.EmailAddressRequired)]
+        [TestCase(null, EmailAddress, LoginViewModel.ErrorMessages.PasswordRequired)]
+        [TestCase(Password, NotAnEmailAddress, LoginViewModel.ErrorMessages.EmailAddressInvalid)]
+        [TestCase(Password, EmailAddress)]
+        public void InvalidModel_HasExpectedValidationErrors(string password, string emailAddress, params string[] expectedErrors)
         {
             var errors = new List<ValidationResult>();
-            var model = new LoginViewModel { Password = password, Username = username };
+            var model = new LoginViewModel { Password = password, EmailAddress = emailAddress };
 
-            var isValid = Validator.TryValidateObject(model, new ValidationContext(model), errors);
+            var isValid = Validator.TryValidateObject(model, new ValidationContext(model), errors, true);
 
             isValid.Should().Be(expectedErrors.Length == 0);
             errors.Count.Should().Be(expectedErrors.Length);
