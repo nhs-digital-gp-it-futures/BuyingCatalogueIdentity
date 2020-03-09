@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                 .WithSignInResult(IdentitySignInResult.Failed)
                 .Build();
 
-            var result = await loginService.SignInAsync(null, null, null);
+            var result = await loginService.SignInAsync("user", "pass", null);
 
             Assert.NotNull(result);
             result.IsSuccessful.Should().BeFalse();
