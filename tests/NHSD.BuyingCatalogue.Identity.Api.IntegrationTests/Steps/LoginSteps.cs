@@ -23,18 +23,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebDriver.Navigate().GoToUrl("http://host.docker.internal:8072/home/privacy");
         }
 
-        [When(@"a login request is made with username (.*) and password (.*)")]
-        public void WhenALoginRequestIsMade(string username, string password)
+        [When(@"a login request is made with email address (.*) and password (.*)")]
+        public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
-            _seleniumContext.WebDriver.FindElement(By.Name("Username")).SendKeys(username);
+            _seleniumContext.WebDriver.FindElement(By.Name("EmailAddress")).SendKeys(emailAddress);
             _seleniumContext.WebDriver.FindElement(By.Name("Password")).SendKeys(password);
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
-        [When(@"a login request is made with username (.*) and no password")]
-        public void WhenALoginRequestIsMadeWithNoPassword(string username)
+        [When(@"a login request is made with email address (.*) and no password")]
+        public void WhenALoginRequestIsMadeWithNoPassword(string emailAddress)
         {
-            _seleniumContext.WebDriver.FindElement(By.Name("Username")).SendKeys(username);
+            _seleniumContext.WebDriver.FindElement(By.Name("EmailAddress")).SendKeys(emailAddress);
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 

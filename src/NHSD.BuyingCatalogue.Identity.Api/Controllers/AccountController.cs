@@ -45,10 +45,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             viewModel.ThrowIfNull(nameof(viewModel));
 
-            var signInResult = await _loginService.SignInAsync(viewModel.Username, viewModel.Password, viewModel.ReturnUrl);
+            var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, viewModel.ReturnUrl);
 
             LoginViewModel NewLoginViewModel() =>
-                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, Username = signInResult.LoginHint };
+                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.LoginHint };
 
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());

@@ -53,7 +53,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         public async Task SignInAsync_FailedSignInWithContext_RaisesLoginFailureEvent()
         {
             const string clientId = "ClientId";
-            const string username = "UncleBob";
+            const string username = "UncleBob@email.com";
 
             int eventCount = 0;
             UserLoginFailureEvent raisedEvent = null;
@@ -82,7 +82,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [Test]
         public async Task SignInAsync_FailedSignInWithNullContext_RaisesLoginFailureEvent()
         {
-            const string username = "UncleBob";
+            const string username = "UncleBob@email.com";
 
             int eventCount = 0;
             UserLoginFailureEvent raisedEvent = null;
@@ -169,7 +169,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
 
             const string clientId = "ClientId";
             const string userId = "UserId";
-            const string username = "UncleBob";
+            const string username = "UncleBob@email.com";
 
             using var loginService = new LoginServiceBuilder()
                 .WithEventServiceCallback<UserLoginSuccessEvent>(EventCallback)
@@ -202,7 +202,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
             }
 
             const string userId = "UserId";
-            const string username = "UncleBob";
+            const string username = "UncleBob@email.com";
 
             using var loginService = new LoginServiceBuilder()
                 .WithEventServiceCallback<UserLoginSuccessEvent>(EventCallback)
