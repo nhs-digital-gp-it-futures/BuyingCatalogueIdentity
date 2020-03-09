@@ -1,5 +1,4 @@
-﻿using IdentityServer4.Services;
-using IdentityServer4.Stores;
+﻿using System;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
@@ -8,27 +7,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     internal sealed class AccountControllerBuilder
     {
-        private IEventService _eventService;
-        private IIdentityServerInteractionService _identityServerInteractionService;
+        private ILoginService _loginService;
         private ILogoutService _logoutService;
 
         internal AccountControllerBuilder()
         {
-            _eventService = Mock.Of<IEventService>();
-            _identityServerInteractionService = Mock.Of<IIdentityServerInteractionService>();
+            _loginService = Mock.Of<ILoginService>();
             _logoutService = Mock.Of<ILogoutService>();
-        }
-
-        internal AccountControllerBuilder WithEventService(IEventService eventService)
-        {
-            _eventService = eventService;
-            return this;
-        }
-
-        internal AccountControllerBuilder WithIdentityServerInteractionService(IIdentityServerInteractionService identityServerInteractionService)
-        {
-            _identityServerInteractionService = identityServerInteractionService;
-            return this;
         }
 
         internal AccountControllerBuilder WithLogoutService(ILogoutService logoutService)
@@ -37,9 +22,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
+        internal AccountControllerBuilder WithSignInResult(SignInResult result)
+        {
+            var mockLoginService = new Mock<ILoginService>();
+            mockLoginService.Setup(l => l.SignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>()))
+                .ReturnsAsync(result);
+
+            _loginService = mockLoginService.Object;
+
+            return this;
+        }
+
         internal AccountController Build()
         {
-            return new AccountController(_eventService, _identityServerInteractionService, null, null, _logoutService);
+            return new AccountController(_loginService, _logoutService);
         }
     }
 }
