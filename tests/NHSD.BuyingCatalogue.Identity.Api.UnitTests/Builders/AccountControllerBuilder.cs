@@ -2,7 +2,6 @@
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
-using SignInResult = NHSD.BuyingCatalogue.Identity.Api.Services.SignInResult;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
