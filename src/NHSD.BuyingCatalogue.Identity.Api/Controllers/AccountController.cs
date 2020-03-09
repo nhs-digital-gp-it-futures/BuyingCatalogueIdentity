@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
-using NHSD.BuyingCatalogue.Identity.Api.ViewModels;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
@@ -75,9 +74,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (context == null)
                 return LocalRedirect(returnUrl);
 
-                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                return Redirect(returnUrl);
-            }
+            // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+            return Redirect(returnUrl);
+        }
             
 		[HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
