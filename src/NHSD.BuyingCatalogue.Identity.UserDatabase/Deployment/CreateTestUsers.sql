@@ -11,8 +11,8 @@ BEGIN
 	DECLARE @aliceId AS nchar(36) = CAST(NEWID() AS nchar(36));
 	DECLARE @bobId AS nchar(36) = CAST(NEWID() AS nchar(36));
 
-	DECLARE @aliceNormalizedEmail AS nvarchar(50) = N'ALICESMITH@EMAIL.COM';
-    DECLARE @bobNormalizedEmail AS nvarchar(50) = N'BOBSMITH@EMAIL.COM';
+	DECLARE @aliceNormalizedEmail AS nvarchar(50) = UPPER(@aliceEmail);
+    DECLARE @bobNormalizedEmail AS nvarchar(50) = UPPER(@bobEmail);
 
     -- 'Pass123$'
 	DECLARE @alicePassword AS nvarchar(200) = N'AQAAAAEAACcQAAAAEFSsEthAqGVBLj1P1gF9puxtXm18lKHlmuh9J/Ib0KKBO3GjQvxymJbzpSqy0zuOHg==';
@@ -20,11 +20,11 @@ BEGIN
 	-- 'Pass123$'
 	DECLARE @bobPassword AS nvarchar(200) = N'AQAAAAEAACcQAAAAEOzr1Zwpoo1pKsTa+S65mBZVG4GIy6IYH/IAED6TvBA+FIMg8u/xb0b/cfexV7SHNw==';
 
-	INSERT INTO dbo.AspNetUsers(Id, Email, NormalizedEmail, AccessFailedCount, ConcurrencyStamp, EmailConfirmed, LockoutEnabled,
-		NormalizedUserName, PasswordHash, PhoneNumberConfirmed, SecurityStamp, TwoFactorEnabled, UserName)
+	INSERT INTO dbo.AspNetUsers(Id, UserName, NormalizedUserName, Email, NormalizedEmail, AccessFailedCount, ConcurrencyStamp,
+        EmailConfirmed, LockoutEnabled, PasswordHash, PhoneNumberConfirmed, SecurityStamp, TwoFactorEnabled)
 	VALUES
-	(@aliceId, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), 0, 1, @aliceNormalizedEmail, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, @aliceEmail),
-	(@bobId, @bobEmail, @bobNormalizedEmail, 0, NEWID(), 0, 1, @bobNormalizedEmail, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, @bobEmail);
+	(@aliceId, @aliceEmail, @aliceNormalizedEmail, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), 0, 1, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0),
+	(@bobId, @bobEmail, @bobNormalizedEmail, @bobEmail, @bobNormalizedEmail, 0, NEWID(), 0, 1, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0);
 
 	INSERT INTO dbo.AspNetUserClaims (ClaimType, ClaimValue, UserId)
 	VALUES
