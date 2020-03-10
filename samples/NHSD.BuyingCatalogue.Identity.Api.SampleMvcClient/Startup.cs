@@ -59,7 +59,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 options.GetClaimsFromUserInfoEndpoint = false;
                 options.RequireHttpsMetadata = false;
                 options.Scope.Add("SampleResource");
-                options.Scope.Add("organisation");
             });
         }
 

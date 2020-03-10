@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using IdentityServer4.Models;
+﻿using IdentityServer4.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
@@ -13,25 +12,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
             return ResourceType switch
             {
                 "OpenId" => new IdentityResources.OpenId(),
-                "Profile" => new IdentityResources.Profile(),
+                "Profile" => new CustomProfileIdentityResource(),
                 "Email" => new IdentityResources.Email(),
-                "Organisation" => new OrganisationIdentityResource(),
                 _ => (null as IdentityResource)
             };
         }
 
-        private sealed class OrganisationIdentityResource : IdentityResource
+        private class CustomProfileIdentityResource : IdentityResources.Profile
         {
-            public OrganisationIdentityResource()
+            public CustomProfileIdentityResource()
             {
-                Name = "organisation";
-                DisplayName = "Organisation profile";
-                Description = "Your organisation profile information (primary organisation, organisation function)";
-                UserClaims = new List<string>
-                {
-                    CustomClaimTypes.PrimaryOrganisationId,
-                    CustomClaimTypes.OrganisationFunction
-                };
+                UserClaims.Add(ApplicationClaimTypes.PrimaryOrganisationId);
+                UserClaims.Add(ApplicationClaimTypes.OrganisationFunction);
             }
         }
     }
