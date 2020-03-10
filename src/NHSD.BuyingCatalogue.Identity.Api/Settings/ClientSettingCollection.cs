@@ -16,6 +16,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
         public string AllowedGrantTypes { get; set; }
         public bool AllowOfflineAccess { get; set; }
         public bool RequireClientSecret { get; set; }
+        public bool RequirePkce { get; set; }
         public string Secret { get; set; }
         public bool RequireConsent { get; set; }
         public IEnumerable<string> RedirectUrls { get; set; }
@@ -24,23 +25,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 
         public Client ToClient()
         {
-            var client = new Client();
-            client.ClientId = ClientId;
-            client.ClientName = ClientName;
-            client.AllowedGrantTypes = AllowedGrantTypes switch
+            var allowedGrantTypes = AllowedGrantTypes switch
             {
                 "ClientCredentials" => GrantTypes.ClientCredentials,
                 "Code" => GrantTypes.Code,
-                _ => client.AllowedGrantTypes
+                _ => new Client().AllowedGrantTypes
             };
-            client.AllowOfflineAccess = AllowOfflineAccess;
-            client.RequireClientSecret = RequireClientSecret;
-            client.ClientSecrets = new[] { new Secret(Secret?.ToSha256()) };
-            client.RequireConsent = RequireConsent;
-            client.RedirectUris = RedirectUrls?.ToList();
-            client.PostLogoutRedirectUris = PostLogoutRedirectUrls?.ToList();
-            client.AllowedScopes = AllowedScopes?.ToList();
-            return client;
+
+            return new Client
+            {
+                ClientId = ClientId,
+                ClientName = ClientName,
+                AllowOfflineAccess = AllowOfflineAccess,
+                RequireClientSecret = RequireClientSecret,
+                RequirePkce = RequirePkce,
+                ClientSecrets = new[] {new Secret(Secret?.ToSha256())},
+                RequireConsent = RequireConsent,
+                RedirectUris = RedirectUrls?.ToList(),
+                PostLogoutRedirectUris = PostLogoutRedirectUrls?.ToList(),
+                AllowedScopes = AllowedScopes?.ToList(),
+                AllowedGrantTypes = allowedGrantTypes,
+            };
         }
     }
 }

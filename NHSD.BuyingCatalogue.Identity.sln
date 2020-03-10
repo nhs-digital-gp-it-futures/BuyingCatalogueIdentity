@@ -8,6 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{33728341-9F25-493F-942A-8766990C2F9A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2A3F346A-9455-45F7-8348-7BEDFB7024EF}"
+	ProjectSection(SolutionItems) = preProject
+		tests\.editorconfig = tests\.editorconfig
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{6C536770-4D47-43B6-8E56-39116686665C}"
 EndProject
@@ -26,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.csproj", "{AA3F369F-A4FC-4AFE-878A-952F13688352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.csproj", "{AA3F369F-A4FC-4AFE-878A-952F13688352}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{6E8AC1BC-9163-4D3A-A887-880C114C74E7}"
 	ProjectSection(SolutionItems) = preProject

@@ -345,3 +345,6 @@ docker/out
 
 # Minified CSS files
 *.min.css
+
+# IdentityServer developer signing credentials
+*.rsa
