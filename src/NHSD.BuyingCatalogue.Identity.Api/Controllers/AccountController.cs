@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
+using Serilog;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
