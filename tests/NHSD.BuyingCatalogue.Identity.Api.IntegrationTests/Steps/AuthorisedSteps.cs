@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using IdentityModel.Client;
+using Microsoft.Extensions.Configuration;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
@@ -12,21 +12,26 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly ScenarioContext _context;
 
-        public AuthorisedSteps(ScenarioContext context)
+        public AuthorisedSteps(IConfigurationRoot configuration, ScenarioContext context)
         {
+            _configuration = configuration;
             _context = context;
         }
+
+        private IConfigurationRoot _configuration { get; }
 
         [Given(@"an authority user is logged in")]
         public async Task GivenAnAuthorityUserIsLoggedIn()
         {
+            var discoveryAddress = _configuration.GetValue<string>("DiscoveryAddress");
+
             var client = new HttpClient();
-            
+
             var discoveryDocument =
                 await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
                 {
                     Policy = new DiscoveryPolicy {RequireHttps = false},
-                    Address = "http://host.docker.internal:8070/",
+                    Address = discoveryAddress,
                 });
 
             if (discoveryDocument.IsError)
@@ -41,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 Address = discoveryDocument.TokenEndpoint,
                 ClientId = "TokenClient",
                 ClientSecret = "TokenSecret",
-                Scope = "SampleResource"
+                Scope = "Organisation"
             });
 
             if (tokenResponse.IsError)

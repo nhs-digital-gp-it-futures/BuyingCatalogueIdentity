@@ -65,14 +65,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddControllers();
             services.AddControllersWithViews();
-
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
-                {
-                    options.Authority = issuerUrl;
-                    options.RequireHttpsMetadata = false;
-                    options.Audience = "SampleResource";
-                });
         }
 
         public void Configure(IApplicationBuilder app)
