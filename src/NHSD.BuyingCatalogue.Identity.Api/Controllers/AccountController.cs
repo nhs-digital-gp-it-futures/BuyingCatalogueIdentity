@@ -13,14 +13,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         internal const string SignInErrorMessage = "Enter a valid email address and password";
 
         private readonly ILoginService _loginService;
-        private readonly ILogoutService _logoutService;
+		private readonly ILogoutService _logoutService;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService)
         {
             _loginService = loginService;
-            _logoutService = logoutService;
+			_logoutService = logoutService;
         }
 
         [HttpGet]
@@ -62,12 +62,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             var returnUrl = viewModel.ReturnUrl.ToString();
 
             if (signInResult.IsTrustedReturnUrl)
+
+                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
                 return Redirect(returnUrl);
 
             return LocalRedirect(returnUrl);
-        }
-
-        [HttpGet]
+            }
+            
+		[HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
             if (string.IsNullOrWhiteSpace(logoutId))

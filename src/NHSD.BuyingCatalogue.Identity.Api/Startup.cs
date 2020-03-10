@@ -58,9 +58,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
+            .AddProfileService<ProfileService>()
             .AddDeveloperSigningCredential();
 
-            services.AddTransient<IOrganisationRepository, OrganisationRepository>();
+            services
+                .AddTransient<IOrganisationRepository, OrganisationRepository>()
+                .AddTransient<IUserRepository, UserRepository>();
 
             services.AddControllers();
             services.AddControllersWithViews();

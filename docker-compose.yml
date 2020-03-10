@@ -26,6 +26,8 @@ services:
       dockerfile: src/NHSD.BuyingCatalogue.Identity.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ISSUERURL=http://host.docker.internal:8070
+      - CLIENTS__0__AllowedGrantTypes=Code
       - CLIENTS__0__REDIRECTURLS__0=http://localhost:8072/signin-oidc
       - CLIENTS__0__REDIRECTURLS__1=http://host.docker.internal:8072/signin-oidc
       - CLIENTS__0__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc

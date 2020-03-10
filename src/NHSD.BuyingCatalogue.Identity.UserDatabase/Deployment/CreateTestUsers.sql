@@ -14,7 +14,7 @@ BEGIN
 	DECLARE @aliceNormalizedEmail AS nvarchar(50) = UPPER(@aliceEmail);
     DECLARE @bobNormalizedEmail AS nvarchar(50) = UPPER(@bobEmail);
 
-    -- 'Pass123$'
+	-- 'Pass123$'
 	DECLARE @alicePassword AS nvarchar(200) = N'AQAAAAEAACcQAAAAEFSsEthAqGVBLj1P1gF9puxtXm18lKHlmuh9J/Ib0KKBO3GjQvxymJbzpSqy0zuOHg==';
 
 	-- 'Pass123$'

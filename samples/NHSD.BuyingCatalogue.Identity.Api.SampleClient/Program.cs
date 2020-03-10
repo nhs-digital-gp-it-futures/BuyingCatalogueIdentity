@@ -13,6 +13,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             // discover endpoints from metadata
             var client = new HttpClient();
 
+            DiscoveryDocumentRequest d = new DiscoveryDocumentRequest
+            {
+                Policy = new DiscoveryPolicy
+                {
+                    RequireHttps = false
+                }
+            };
+
             var discoveryDocument = await client.GetDiscoveryDocumentAsync("http://localhost:8070");
             if (discoveryDocument.IsError)
             {
@@ -26,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
                 Address = discoveryDocument.TokenEndpoint,
                 ClientId = "SampleClient",
                 ClientSecret = "SampleClientSecret",
-                Scope = "SampleResource"
+                Scope = "email organisation"
             });
 
             if (tokenResponse.IsError)
@@ -42,7 +50,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             var apiClient = new HttpClient();
             apiClient.SetBearerToken(tokenResponse.AccessToken);
 
-            var response = await apiClient.GetAsync("http://localhost:8071/Identity");
+            var response = await apiClient.GetAsync(discoveryDocument.UserInfoEndpoint);
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine(response.StatusCode);
