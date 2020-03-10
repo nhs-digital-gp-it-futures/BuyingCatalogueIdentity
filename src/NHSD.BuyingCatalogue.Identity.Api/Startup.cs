@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
@@ -34,6 +35,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
             var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
+            var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
 
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", resources);
@@ -58,7 +60,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
-            .AddDeveloperSigningCredential();
+            .AddCustomSigningCredential(certificateSettings, Log.Logger);
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
 
