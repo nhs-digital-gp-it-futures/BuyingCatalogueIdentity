@@ -42,6 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
 
+            services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));

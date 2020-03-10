@@ -15,20 +15,18 @@
                     <h2 data-test-id="login-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">Enter your details to access the full functionality of this website.</h2>
                 </div>
             </div>
-
             <div class="nhsuk-grid-row">
                 <div class="nhsuk-grid-column-one-half">
                     <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
 
-                        <input type="hidden" asp-for="ReturnUrl"/>
+                        <input type="hidden" asp-for="ReturnUrl" />
 
                         <div data-test-id="email-field">
                             <div data-test-id="text-field-input" class="">
                                 <div class="nhsuk-form-group">
-                                    <label asp-for="Username" class="nhsuk-label">
-                                        Email address
-                                    </label>
-                                    <input asp-for="Username" class="nhsuk-input"/>
+                                    <label asp-for="EmailAddress" class="nhsuk-label"></label>
+                                    <input asp-for="EmailAddress" class="nhsuk-input" />
+                                    <span asp-validation-for="EmailAddress"></span>
                                 </div>
                             </div>
                         </div>
@@ -36,10 +34,9 @@
                         <div data-test-id="password-field">
                             <div data-test-id="text-field-input" class="bc-c-login-form-password-field">
                                 <div class="nhsuk-form-group">
-                                    <label asp-for="Password" class="nhsuk-label">
-                                        Password
-                                    </label>
-                                    <input asp-for="Password" class="nhsuk-input" type="password"/>
+                                    <label asp-for="Password" class="nhsuk-label"></label>
+                                    <input asp-for="Password" class="nhsuk-input" />
+                                    <span asp-validation-for="Password"></span>
                                 </div>
                             </div>
                         </div>
@@ -53,6 +50,8 @@
                         <button class="nhsuk-button nhsuk-button--reverse nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="submit">
                             Log in
                         </button>
+
+                        <div asp-validation-summary="ModelOnly"></div>
 
                         <div data-test-id="request-account-link" class="bc-c-data-link bc-c-login-page-link ">
                             <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" target="_blank">
