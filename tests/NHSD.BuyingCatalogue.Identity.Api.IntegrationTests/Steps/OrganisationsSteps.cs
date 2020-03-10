@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
@@ -35,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 await InsertOrganisationsAsync(organisation);
             }
         }
-     
+
         private async Task InsertOrganisationsAsync(OrganisationTable organisationTable)
         {
             var organisation = OrganisationEntityBuilder
@@ -52,15 +51,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             await Database.DropUser(_config.GetConnectionString("CatalogueUsersAdmin"));
         }
-        
+
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {
             string bearerToken = _context["AccessToken"].ToString();
-            
+
             using var client = new HttpClient();
-           client.SetBearerToken(bearerToken);
-            //var sampleResource = "http://localhost:8071/Identity";
+            client.SetBearerToken(bearerToken);
 
             var response = await client.GetAsync(new Uri(_organisationUrl));
 
@@ -75,9 +73,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var response = _context["Response"] as HttpResponseMessage;
             response.Should().NotBeNull();
 
-            var contentA = await response.Content.ReadAsStringAsync();
-
-            var content = JToken.Parse(contentA);
+            var content = JToken.Parse(await response.Content.ReadAsStringAsync());
             var organisationsContent = content.SelectToken("organisations").ToList();
             organisationsContent.Count().Should().Be(organisations.Count());
 

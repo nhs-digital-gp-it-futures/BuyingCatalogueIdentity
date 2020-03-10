@@ -31,7 +31,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             foreach (IConfigurationSection configurationSection in Configuration.GetChildren())
             {
-                Log.Logger.Information("RUTH {Key} = {Value}", configurationSection.Key, configurationSection.Value);
+                Log.Logger.Information("{Key} = {Value}", configurationSection.Key, configurationSection.Value);
             }
 
             services.AddAuthentication("Bearer")
