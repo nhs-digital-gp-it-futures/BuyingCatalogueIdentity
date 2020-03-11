@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
-using Serilog;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
@@ -14,14 +13,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         internal const string SignInErrorMessage = "Enter a valid email address and password";
 
         private readonly ILoginService _loginService;
-		private readonly ILogoutService _logoutService;
+        private readonly ILogoutService _logoutService;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService)
         {
             _loginService = loginService;
-			_logoutService = logoutService;
+            _logoutService = logoutService;
         }
 
         [HttpGet]
@@ -68,9 +67,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return Redirect(returnUrl);
 
             return LocalRedirect(returnUrl);
-            }
-            
-		[HttpGet]
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
             if (string.IsNullOrWhiteSpace(logoutId))
