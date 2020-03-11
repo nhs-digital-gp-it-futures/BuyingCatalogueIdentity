@@ -56,6 +56,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseSuccessEvents = true;
                     options.IssuerUri = issuerUrl;
+                    options.UserInteraction.ErrorUrl = "/Error";
+                    options.UserInteraction.ErrorIdParameter = "errorId";
                 })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))

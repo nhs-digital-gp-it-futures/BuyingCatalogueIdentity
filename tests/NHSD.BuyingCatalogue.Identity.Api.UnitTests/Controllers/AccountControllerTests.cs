@@ -20,17 +20,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
     public sealed class AccountControllerTests
     {
         [Test]
-        public void Error_ReturnsExpectedView()
-        {
-            using var controller = new AccountControllerBuilder().Build();
-
-            var result = controller.Error() as ViewResult;
-
-            Assert.NotNull(result);
-            result.ViewName.Should().Be("Error");
-        }
-
-        [Test]
         public async Task Login_LoginViewModel_FailedSignIn_AddsValidationError()
         {
             using var controller = new AccountControllerBuilder()
