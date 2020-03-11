@@ -20,23 +20,21 @@ BEGIN
 	-- 'Pass123$'
 	DECLARE @bobPassword AS nvarchar(200) = N'AQAAAAEAACcQAAAAEOzr1Zwpoo1pKsTa+S65mBZVG4GIy6IYH/IAED6TvBA+FIMg8u/xb0b/cfexV7SHNw==';
 
-	INSERT INTO dbo.AspNetUsers(Id, UserName, NormalizedUserName, Email, NormalizedEmail, AccessFailedCount, ConcurrencyStamp,
-        EmailConfirmed, LockoutEnabled, PasswordHash, PhoneNumberConfirmed, SecurityStamp, TwoFactorEnabled)
+	INSERT INTO dbo.AspNetUsers
+    (
+        Id, UserName, NormalizedUserName, Email, NormalizedEmail, AccessFailedCount, ConcurrencyStamp,
+        EmailConfirmed, LockoutEnabled, PasswordHash, PhoneNumberConfirmed, SecurityStamp, TwoFactorEnabled, 
+        FirstName, LastName, PrimaryOrganisationId, OrganisationFunction
+    )
 	VALUES
-	(@aliceId, @aliceEmail, @aliceNormalizedEmail, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), 0, 1, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0),
-	(@bobId, @bobEmail, @bobNormalizedEmail, @bobEmail, @bobNormalizedEmail, 0, NEWID(), 0, 1, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0);
+	(@aliceId, @aliceEmail, @aliceNormalizedEmail, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), 0, 1, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, 'Alice', 'Smith', NEWID(), 'Buyer'),
+	(@bobId, @bobEmail, @bobNormalizedEmail, @bobEmail, @bobNormalizedEmail, 0, NEWID(), 0, 1, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, 'Bob', 'Smith', NEWID(), 'Authority');
 
 	INSERT INTO dbo.AspNetUserClaims (ClaimType, ClaimValue, UserId)
 	VALUES
-	(N'name', N'Alice Smith', @aliceId),
-	(N'given_name', N'Alice', @aliceId),
-	(N'family_name', N'Smith', @aliceId),
 	(N'email_verified', N'true', @aliceId),
 	(N'website', N'http://alice.com/', @aliceId),
 	(N'address', @address, @aliceId),
-	(N'name', N'Bob Smith', @bobId),
-	(N'given_name', N'Bob', @bobId),
-	(N'family_name', N'Smith', @bobId),
 	(N'email_verified', N'true', @bobId),
 	(N'location', N'somewhere', @bobId),
 	(N'website', N'http://bob.com/', @bobId),

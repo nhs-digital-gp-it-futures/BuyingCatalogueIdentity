@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,8 +23,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string expectedUserId = "TestUserId";
             const string expectedUserName = "TestUserName";
-            var expectedPrimaryOrganisationId = Guid.NewGuid();
-            const string expectedOrganisationFunction = "Buyer";
+            const string expectedEmail = "TestUser@Email.com";
+            const string expectedFirstName = "Bob";
+            const string expectedLastName = "Smith";
+            const bool expectedEmailConfirmed = false;
+            Guid expectedPrimaryOrganisationId = Guid.NewGuid();
+            const string expectedOrganisationFunction = "Authority";
+            const string expectedOrganisation = "Manage";
 
             Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
             applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -30,6 +37,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 {
                     Id = expectedUserId,
                     UserName = expectedUserName,
+                    FirstName = expectedFirstName,
+                    LastName = expectedLastName,
+                    Email = expectedEmail,
+                    EmailConfirmed = expectedEmailConfirmed,
                     PrimaryOrganisationId = expectedPrimaryOrganisationId,
                     OrganisationFunction = expectedOrganisationFunction
                 });
@@ -42,11 +53,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var profileDataRequestContext = ProfileDataRequestContextBuilder
                 .Create()
                 .WithSubjectId(expectedUserId)
-                .WithRequestedClaimTypes(
-                    JwtClaimTypes.Subject,
-                    JwtClaimTypes.PreferredUserName,
-                    ApplicationClaimTypes.PrimaryOrganisationId,
-                    ApplicationClaimTypes.OrganisationFunction)
                 .Build();
 
             await sut.GetProfileDataAsync(profileDataRequestContext);
@@ -55,8 +61,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             {
                 new KeyValuePair<string,string>(JwtClaimTypes.Subject, expectedUserId),
                 new KeyValuePair<string,string>(JwtClaimTypes.PreferredUserName, expectedUserName),
+                new KeyValuePair<string,string>(JwtRegisteredClaimNames.UniqueName, expectedUserName),
+                new KeyValuePair<string,string>(JwtClaimTypes.GivenName, expectedFirstName),
+                new KeyValuePair<string,string>(JwtClaimTypes.FamilyName, expectedLastName),
+                new KeyValuePair<string,string>(JwtClaimTypes.Name, $"{expectedFirstName} {expectedLastName}"),
+                new KeyValuePair<string,string>(JwtClaimTypes.Email, expectedEmail),
+                new KeyValuePair<string,string>(JwtClaimTypes.EmailVerified, expectedEmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
                 new KeyValuePair<string,string>(ApplicationClaimTypes.PrimaryOrganisationId, expectedPrimaryOrganisationId.ToString()),
-                new KeyValuePair<string,string>(ApplicationClaimTypes.OrganisationFunction, expectedOrganisationFunction)
+                new KeyValuePair<string,string>(ApplicationClaimTypes.OrganisationFunction, expectedOrganisationFunction),
+                new KeyValuePair<string,string>(ApplicationClaimTypes.Organisation, expectedOrganisation),
             };
 
             var actual = profileDataRequestContext.IssuedClaims.Select(item => new KeyValuePair<string, string>(item.Type, item.Value));

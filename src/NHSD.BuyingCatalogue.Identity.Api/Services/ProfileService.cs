@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
@@ -18,7 +17,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     public sealed class ProfileService : IProfileService
     {
         private readonly IUserRepository _applicationUserRepository;
-        
+
+        private static readonly IDictionary<string, IEnumerable<Claim>> _organisationFunctionClaims =
+            new Dictionary<string, IEnumerable<Claim>>
+            {
+                { "Authority", new List<Claim> { new Claim(ApplicationClaimTypes.Organisation, "Manage") } }
+            };
+
         public ProfileService(IUserRepository applicationUserRepository)
         {
             _applicationUserRepository = applicationUserRepository ?? throw new ArgumentNullException(nameof(applicationUserRepository));
@@ -31,8 +36,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             ApplicationUser user = await GetApplicationUserAsync(context.Subject);
             if (user is object)
             {
-                var userClaims = GetClaimsFromUser(user);
-                context.IssuedClaims = userClaims.ToList();
+                context.IssuedClaims = GetClaimsFromUser(user);
             }
         }
 
@@ -54,40 +58,73 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             return await _applicationUserRepository.FindByIdAsync(subjectId);
         }
 
-        private IEnumerable<Claim> GetClaimsFromUser(ApplicationUser user)
+        private List<Claim> GetClaimsFromUser(ApplicationUser user)
         {
-            var claims = new List<Claim>
+            var claims = new List<Claim>();
+
+            claims.AddRange(GetIdClaims(user));
+            claims.AddRange(GetNameClaims(user));
+            claims.AddRange(GetEmailClaims(user));
+            claims.AddRange(GetOrganisationClaims(user));
+
+            return claims;
+        }
+
+        private static IEnumerable<Claim> GetEmailClaims(ApplicationUser user)
+        {
+            string email = user.Email;
+            if (!string.IsNullOrWhiteSpace(email))
             {
-                new Claim(JwtClaimTypes.Subject, user.Id),
-                new Claim(ApplicationClaimTypes.PrimaryOrganisationId, user.PrimaryOrganisationId.ToString())
-            };
+                yield return new Claim(JwtClaimTypes.Email, email);
+                yield return new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean);
+            }
+        }
+
+        private static IEnumerable<Claim> GetIdClaims(ApplicationUser user)
+        {
+            string userId = user.Id;
+            if (!string.IsNullOrWhiteSpace(userId))
+                yield return new Claim(JwtClaimTypes.Subject, userId);
 
             string username = user.UserName;
             if (!string.IsNullOrWhiteSpace(username))
             {
-                claims.Add(new Claim(JwtClaimTypes.PreferredUserName, username));
-                claims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, username));
+                yield return new Claim(JwtClaimTypes.PreferredUserName, username);
+                yield return new Claim(JwtRegisteredClaimNames.UniqueName, username);
             }
+        }
+
+        private static IEnumerable<Claim> GetNameClaims(ApplicationUser user)
+        {
+            string firstName = user.FirstName?.Trim();
+            if (!string.IsNullOrWhiteSpace(firstName))
+                yield return new Claim(JwtClaimTypes.GivenName, firstName);
+
+            string lastName = user.LastName?.Trim();
+            if (!string.IsNullOrWhiteSpace(lastName))
+                yield return new Claim(JwtClaimTypes.FamilyName, lastName);
+
+            if (!string.IsNullOrWhiteSpace(firstName) || !string.IsNullOrWhiteSpace(lastName))
+                yield return new Claim(JwtClaimTypes.Name, $"{firstName} {lastName}".Trim());
+        }
+
+        private static IEnumerable<Claim> GetOrganisationClaims(ApplicationUser user)
+        {
+            yield return new Claim(ApplicationClaimTypes.PrimaryOrganisationId, user.PrimaryOrganisationId.ToString());
 
             string organisationFunction = user.OrganisationFunction;
             if (!string.IsNullOrWhiteSpace(organisationFunction))
             {
-                claims.Add(new Claim(ApplicationClaimTypes.OrganisationFunction, organisationFunction));
+                yield return new Claim(ApplicationClaimTypes.OrganisationFunction, organisationFunction);
 
-                if (organisationFunction.Equals("Authority", StringComparison.OrdinalIgnoreCase))
+                if (_organisationFunctionClaims.TryGetValue(organisationFunction, out IEnumerable<Claim> organisationClaims))
                 {
-                    claims.Add(new Claim(ApplicationClaimTypes.Organisation, "view"));
+                    foreach (Claim claim in organisationClaims)
+                    {
+                        yield return claim;
+                    }
                 }
             }
-
-            string email = user.Email;
-            if (!string.IsNullOrWhiteSpace(email))
-            {
-                claims.Add(new Claim(JwtClaimTypes.Email, email));
-                claims.Add(new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean));
-            }
-
-            return claims;
         }
     }
 }
