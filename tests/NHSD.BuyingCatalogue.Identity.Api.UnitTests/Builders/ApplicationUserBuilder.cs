@@ -93,10 +93,5 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 OrganisationFunction = _organisationFunction
             };
         }
-
-        private ApplicationUser BuildEmpty()
-        {
-            return new ApplicationUser();
-        }
     }
 }
