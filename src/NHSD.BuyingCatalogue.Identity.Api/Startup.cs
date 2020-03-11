@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
@@ -61,10 +62,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
+            .AddProfileService<ProfileService>()
             .AddDeveloperSigningCredential();
+
+            services
+                .AddTransient<IOrganisationRepository, OrganisationRepository>()
+                .AddTransient<IUserRepository, UserRepository>();
 
             services.AddControllers();
             services.AddControllersWithViews();
+            services.AddAuthentication();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -89,7 +96,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseRouting();
-
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
