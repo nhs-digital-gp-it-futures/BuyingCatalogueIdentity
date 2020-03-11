@@ -44,7 +44,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Use DotNet Core 3.1'
     inputs:
-      version: 3.1.x
+      version: $(dotnetVersion)
       includePreviewVersions: false
 
   - script: docker-compose up --build -d
@@ -71,7 +71,7 @@ jobs:
 
   - task: DockerInstaller@0
     inputs:
-      dockerVersion: '18.09.9'
+      dockerVersion: $(dockerVersion)
 
   - task: DockerCompose@0
     displayName: 'Build: Dev'
