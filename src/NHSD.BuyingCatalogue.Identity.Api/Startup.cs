@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -65,9 +64,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddProfileService<ProfileService>()
             .AddDeveloperSigningCredential();
 
-            services
-                .AddTransient<IOrganisationRepository, OrganisationRepository>()
-                .AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddControllers();
             services.AddControllersWithViews();
