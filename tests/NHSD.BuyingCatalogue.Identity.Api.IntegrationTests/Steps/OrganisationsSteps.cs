@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -17,12 +19,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class OrganisationsSteps
     {
         private readonly ScenarioContext _context;
+        private readonly Response _response;
         private readonly IConfigurationRoot _config;
         private readonly string _organisationUrl = "http://localhost:8075/api/v1/Organisations";
 
-        public OrganisationsSteps(ScenarioContext context, IConfigurationRoot config)
+        private readonly string _configAccessUserAdmin = "CatalogueUsersAdmin";
+        private readonly string _configAccessUser = "CatalogueUsers";
+
+        private readonly string _accessToken = "AccessToken";
+        private readonly string _listOrganisations = "ListOrganisations";
+
+        public OrganisationsSteps(ScenarioContext context, Response response, IConfigurationRoot config)
         {
             _context = context;
+            _response = response;
             _config = config;
         }
 
@@ -33,6 +43,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             {
                 await InsertOrganisationsAsync(organisation);
             }
+
+            _context[_listOrganisations] =
+                await OrganisationEntity.FetchAllOrganisationsAsync(_config.GetConnectionString(_configAccessUser));
         }
 
         private async Task InsertOrganisationsAsync(OrganisationTable organisationTable)
@@ -43,48 +56,77 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 .WithOdsCode(organisationTable.OdsCode)
                 .Build();
 
-            await organisation.InsertAsync(_config.GetConnectionString("CatalogueUsers"));
+            await organisation.InsertAsync(_config.GetConnectionString(_configAccessUser));
         }
 
         [Given(@"the call to the database to set the field will fail")]
         public async Task GivenTheCallToTheDatabaseToSetTheFieldWillFail()
         {
-            await Database.DropUser(_config.GetConnectionString("CatalogueUsersAdmin"));
+            await Database.DropUser(_config.GetConnectionString(_configAccessUserAdmin));
         }
 
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {
-            string bearerToken = _context["AccessToken"].ToString();
+            CheckAccessToken();
+
+            string bearerToken = _context[_accessToken].ToString();
 
             using var client = new HttpClient();
             client.SetBearerToken(bearerToken);
 
-            var response = await client.GetAsync(new Uri(_organisationUrl));
-
-            _context["Response"] = response;
+            _response.Result = await client.GetAsync(new Uri(_organisationUrl));
         }
 
         [Then(@"the Organisations list is returned with the following values")]
         public async Task ThenTheOrganisationsListIsReturnedWithTheFollowingValues(Table table)
         {
-            var organisations = table.CreateSet<OrganisationTable>().ToList();
+            var expectedOrganisations = table.CreateSet<OrganisationTable>().ToList();
 
-            var response = _context["Response"] as HttpResponseMessage;
-            response.Should().NotBeNull();
+            var organisations = (await _response.ReadBody()).SelectToken("organisations").Select(t => new
+            {
+                Name = t.SelectToken("name").ToString(), OdsCode = t.SelectToken("odsCode").ToString()
+            });
 
-            var content = JToken.Parse(await response.Content.ReadAsStringAsync());
-            var organisationsContent = content.SelectToken("organisations").ToList();
-            organisationsContent.Count().Should().Be(organisations.Count());
+            organisations.Should().BeEquivalentTo(expectedOrganisations, options => options.WithStrictOrdering());
+        }
 
-            organisationsContent[0].SelectToken("name").Value<string>().Should().Be(organisations[0].Name);
-            organisationsContent[0].SelectToken("odsCode").Value<string>().Should().Be(organisations[0].OdsCode);
+        [When(@"a GET request is made for an organisation with name (.*)")]
+        public async Task WhenAGETRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName)
+        {
+            CheckAccessToken();
 
-            organisationsContent[1].SelectToken("name").Value<string>().Should().Be(organisations[1].Name);
-            organisationsContent[1].SelectToken("odsCode").Value<string>().Should().Be(organisations[1].OdsCode);
+            string bearerToken = _context[_accessToken].ToString();
 
-            organisationsContent[2].SelectToken("name").Value<string>().Should().Be(organisations[2].Name);
-            organisationsContent[2].SelectToken("odsCode").Value<string>().Should().Be(organisations[2].OdsCode);
+            using var client = new HttpClient();
+            client.SetBearerToken(bearerToken);
+
+            _context.ContainsKey(_listOrganisations).Should().BeTrue();
+            var allOrganisations = _context[_listOrganisations] as IEnumerable<OrganisationEntity>;
+
+            var organisation = allOrganisations.FirstOrDefault(x => x.Name == organisationName);
+            var orgId = Guid.Empty;
+            if (organisation != null)
+            {
+                orgId = organisation.Id;
+            }
+
+            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{orgId}"));
+        }
+
+        [Given(@"an Organisation with name (.*) does not exist")]
+        public async Task GivenAnOrganisationWithNameOrganisationDoesNotExist(string organisationName)
+        {
+            var organisations = await OrganisationEntity.FetchAllOrganisationsAsync(_config.GetConnectionString(_configAccessUser));
+            organisations.Select(x => x.Name).Should().NotContain(organisationName);
+        }
+
+        private void CheckAccessToken()
+        {
+            if (!_context.ContainsKey(_accessToken))
+            {
+                _context[_accessToken] = string.Empty;
+            }
         }
 
         private class OrganisationTable

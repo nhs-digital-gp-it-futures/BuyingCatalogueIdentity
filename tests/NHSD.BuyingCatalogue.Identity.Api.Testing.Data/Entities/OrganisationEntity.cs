@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 {
@@ -23,5 +25,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                                     ,@Name
                                     ,@OdsCode
                                     ,@LastUpdated)";
+
+        public static async Task<IEnumerable<OrganisationEntity>> FetchAllOrganisationsAsync(string connectionString) =>
+            await SqlRunner.FetchAllAsync<OrganisationEntity>(connectionString, $@"SELECT 
+                                   [Id]
+                                   ,[Name]
+                                   FROM Organisations");
     }
 }

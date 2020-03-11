@@ -108,5 +108,41 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
             organisationList[2].Name.Should().Be(org3.Name);
             organisationList[2].OdsCode.Should().Be(org3.OdsCode);
         }
+
+        [Test]
+        public async Task ShouldReturnNotFoundWhenNoOrgExists()
+        {
+            var orgMock = new Mock<IOrganisationRepository>();
+
+            OrganisationsController sut = new OrganisationsController(orgMock.Object);
+
+            var response = await sut.GetByIdAsync(Guid.NewGuid());
+
+            response.Should().BeEquivalentTo(new NotFoundResult());
+        }
+
+
+        [Test]
+        public async Task ShouldReturnOrganisationById()
+        {
+            var orgMock = new Mock<IOrganisationRepository>();
+            var expectedOrganisation = new Organisation(Guid.NewGuid(), "org name", "ods-code");
+            orgMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
+            OrganisationsController sut = new OrganisationsController(orgMock.Object);
+
+            var result = await sut.GetByIdAsync(Guid.NewGuid());
+
+            result.Should().BeOfType<OkObjectResult>();
+            var objectResult = result as OkObjectResult;
+
+            objectResult.Value.Should().BeEquivalentTo(new OrganisationViewModel
+            {
+                OrganisationId = expectedOrganisation.Id,
+                Name = expectedOrganisation.Name,
+                OdsCode = expectedOrganisation.OdsCode
+            });
+        }
     }
 }

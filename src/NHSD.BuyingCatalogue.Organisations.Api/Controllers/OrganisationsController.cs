@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -35,6 +36,25 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                     Name = x.Name,
                     OdsCode = x.OdsCode
                 })
+            });
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult> GetByIdAsync(Guid id)
+        {
+            var organisation = await _organisationRepository.GetByIdAsync(id);
+
+            if (organisation is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new OrganisationViewModel
+            {
+                OrganisationId = organisation.Id,
+                Name = organisation.Name, 
+                OdsCode = organisation.OdsCode
             });
         }
     }
