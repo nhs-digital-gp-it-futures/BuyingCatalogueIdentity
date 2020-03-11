@@ -44,8 +44,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         {
             context.ThrowIfNull(nameof(context));
 
-            ClaimsPrincipal subject = context.Subject;
-            ApplicationUser user = await GetApplicationUserAsync(subject);
+            ApplicationUser user = await GetApplicationUserAsync(context.Subject);
 
             context.IsActive = user is object;
         }
