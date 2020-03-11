@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
+namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
     public interface IOrganisationRepository
     {

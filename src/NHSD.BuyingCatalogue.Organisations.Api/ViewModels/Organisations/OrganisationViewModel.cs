@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Organisations
+namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 {
     public sealed class OrganisationViewModel
     {

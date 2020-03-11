@@ -1,5 +1,4 @@
 ﻿using BoDi;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using Microsoft.Extensions.Configuration;
 using TechTalk.SpecFlow;
 

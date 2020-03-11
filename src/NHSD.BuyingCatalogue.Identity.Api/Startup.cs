@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
-using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
@@ -35,9 +35,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
             var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
 
+            var issuerUrl = _configuration.GetValue<string>("issuerUrl");
+
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
+            Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();
@@ -52,7 +55,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseSuccessEvents = true;
-                    options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
+                    options.IssuerUri = issuerUrl;
                 })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
@@ -60,11 +63,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddAspNetIdentity<ApplicationUser>()
             .AddDeveloperSigningCredential();
 
-            services.AddTransient<IOrganisationRepository, OrganisationRepository>();
-
             services.AddControllers();
             services.AddControllersWithViews();
-            services.AddAuthentication();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -89,6 +89,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseRouting();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
