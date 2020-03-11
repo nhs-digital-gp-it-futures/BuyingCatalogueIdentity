@@ -5,13 +5,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityModel;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Constants;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NUnit.Framework;
+using static IdentityModel.JwtClaimTypes;
+using static NHSD.BuyingCatalogue.Identity.Api.Constants.ApplicationClaimTypes;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
@@ -21,29 +22,199 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [Test]
         public async Task GetProfileDataAsync_GivenAnApplicationUserExists_ReturnsExpectedClaimList()
         {
-            const string expectedUserId = "TestUserId";
-            const string expectedUserName = "TestUserName";
-            const string expectedEmail = "TestUser@Email.com";
-            const string expectedFirstName = "Bob";
-            const string expectedLastName = "Smith";
-            const bool expectedEmailConfirmed = false;
-            Guid expectedPrimaryOrganisationId = Guid.NewGuid();
-            const string expectedOrganisationFunction = "Authority";
-            const string expectedOrganisation = "Manage";
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithEmail("TestUser@Email.com")
+                .WithFirstName("Bob")
+                .WithLastName("Smith")
+                .WithOrganisationFunction("Authority")
+                .Build();
 
             Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
             applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new ApplicationUser
-                {
-                    Id = expectedUserId,
-                    UserName = expectedUserName,
-                    FirstName = expectedFirstName,
-                    LastName = expectedLastName,
-                    Email = expectedEmail,
-                    EmailConfirmed = expectedEmailConfirmed,
-                    PrimaryOrganisationId = expectedPrimaryOrganisationId,
-                    OrganisationFunction = expectedOrganisationFunction
-                });
+                .ReturnsAsync(expectedApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var expected = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string,string>(Subject, expectedApplicationUser.Id),
+                new KeyValuePair<string,string>(PreferredUserName, expectedApplicationUser.UserName),
+                new KeyValuePair<string,string>(JwtRegisteredClaimNames.UniqueName, expectedApplicationUser.UserName),
+                new KeyValuePair<string,string>(GivenName, expectedApplicationUser.FirstName),
+                new KeyValuePair<string,string>(FamilyName, expectedApplicationUser.LastName),
+                new KeyValuePair<string,string>(Name, $"{expectedApplicationUser.FirstName} {expectedApplicationUser.LastName}"),
+                new KeyValuePair<string,string>(Email, expectedApplicationUser.Email),
+                new KeyValuePair<string,string>(EmailVerified, expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
+                new KeyValuePair<string,string>(PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
+                new KeyValuePair<string,string>(OrganisationFunction, expectedApplicationUser.OrganisationFunction),
+                new KeyValuePair<string,string>(ApplicationClaimTypes.Organisation, "Manage")
+            };
+
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => new KeyValuePair<string, string>(item.Type, item.Value));
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestCase("SomeId", "SomeUserName", Subject, PreferredUserName, JwtRegisteredClaimNames.UniqueName, PrimaryOrganisationId)]
+        [TestCase("SomeId", null, Subject, PrimaryOrganisationId)]
+        public async Task GetProfileDataAsync_GivenApplicationUserWithId_ReturnExpectedClaimList(
+            string expectedUserId,
+            string expectedUserName,
+            params string[] expectedClaimTypes)
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithId(expectedUserId)
+                .WithUserName(expectedUserName)
+                .Build();
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => item.Type);
+            actual.Should().BeEquivalentTo(expectedClaimTypes);
+        }
+
+        [TestCase("someone@email.com", Subject, Email, EmailVerified, PrimaryOrganisationId)]
+        [TestCase(null, Subject, PrimaryOrganisationId)]
+        public async Task GetProfileDataAsync_GivenApplicationUserWithEmail_ReturnExpectedClaimList(
+            string expectedEmail,
+            params string[] expectedClaimTypes)
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithUserName(null)
+                .WithEmail(expectedEmail)
+                .Build();
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => item.Type);
+            actual.Should().BeEquivalentTo(expectedClaimTypes);
+        }
+
+        [TestCase("Bob", "Smith", "Bob Smith")]
+        [TestCase("   Bob  ", "Smith", "Bob Smith")]
+        [TestCase("Bob", "  Smith   ", "Bob Smith")]
+        [TestCase("Bob", null, "Bob")]
+        [TestCase(null, "Smith", "Smith")]
+        public async Task GetProfileDataAsync_GivenAnApplicationUserWithTheName_ReturnsExpectedClaimList(
+            string firstname, 
+            string lastname, 
+            string expectedName)
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithUserName(null)
+                .WithFirstName(firstname)
+                .WithLastName(lastname)
+                .Build();
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var expected = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string,string>(Name, expectedName),
+            };
+
+            var actual = profileDataRequestContext.IssuedClaims
+                .Where(item => Name.Equals(item.Type, StringComparison.Ordinal))
+                .Select(item => new KeyValuePair<string, string>(item.Type, item.Value));
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestCase("Authority", Subject, PrimaryOrganisationId, OrganisationFunction, ApplicationClaimTypes.Organisation)]
+        [TestCase("Buyer", Subject, PrimaryOrganisationId, OrganisationFunction)]
+        public async Task GetProfileDataAsync_GivenApplicationUserWithOrganisationFunction_ReturnExpectedClaimList(
+            string organisationFunction, 
+            params string[] expectedClaimTypes)
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithUserName(null)
+                .WithOrganisationFunction(organisationFunction)
+                .Build();
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => item.Type);
+            actual.Should().BeEquivalentTo(expectedClaimTypes);
+        }
+
+        [Test]
+        public async Task GetProfileDataAsync_GivenNoApplicationUserExists_ReturnsEmptyClaimList()
+        {
+            const string expectedUserId = "TestUserId";
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(null as ApplicationUser);
 
             var sut = ProfileServiceBuilder
                 .Create()
@@ -57,23 +228,150 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             await sut.GetProfileDataAsync(profileDataRequestContext);
 
-            var expected = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string,string>(JwtClaimTypes.Subject, expectedUserId),
-                new KeyValuePair<string,string>(JwtClaimTypes.PreferredUserName, expectedUserName),
-                new KeyValuePair<string,string>(JwtRegisteredClaimNames.UniqueName, expectedUserName),
-                new KeyValuePair<string,string>(JwtClaimTypes.GivenName, expectedFirstName),
-                new KeyValuePair<string,string>(JwtClaimTypes.FamilyName, expectedLastName),
-                new KeyValuePair<string,string>(JwtClaimTypes.Name, $"{expectedFirstName} {expectedLastName}"),
-                new KeyValuePair<string,string>(JwtClaimTypes.Email, expectedEmail),
-                new KeyValuePair<string,string>(JwtClaimTypes.EmailVerified, expectedEmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
-                new KeyValuePair<string,string>(ApplicationClaimTypes.PrimaryOrganisationId, expectedPrimaryOrganisationId.ToString()),
-                new KeyValuePair<string,string>(ApplicationClaimTypes.OrganisationFunction, expectedOrganisationFunction),
-                new KeyValuePair<string,string>(ApplicationClaimTypes.Organisation, expectedOrganisation),
-            };
-
             var actual = profileDataRequestContext.IssuedClaims.Select(item => new KeyValuePair<string, string>(item.Type, item.Value));
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task GetProfileDataAsync_GivenUserRepositoryDependency_FindByIdAsyncCalledOnce()
+        {
+            const string expectedUserId = "TestUserId";
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(null as ApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedUserId)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            applicationUserRepositoryMock.Verify(x => x.FindByIdAsync(
+                It.Is<string>(param => expectedUserId.Equals(param, StringComparison.Ordinal))), 
+                Times.Once);
+        }
+
+        [Test]
+        public void GetProfileDataAsync_GivenNullSubjectId_ThrowsException()
+        {
+            static async Task Run()
+            {
+                var sut = ProfileServiceBuilder
+                    .Create()
+                    .Build();
+
+                var profileDataRequestContext = ProfileDataRequestContextBuilder
+                    .Create()
+                    .WithSubjectId(null)
+                    .Build();
+
+                await sut.GetProfileDataAsync(profileDataRequestContext);
+            }
+
+            Assert.ThrowsAsync<InvalidOperationException>(Run);
+        }
+
+        [Test]
+        public async Task IsActiveAsync_GivenAnApplicationUser_ShouldReturnTrue()
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .Build();
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var isActiveContext = IsActiveContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.IsActiveAsync(isActiveContext);
+
+            isActiveContext.IsActive.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task IsActiveAsync_GivenNullApplicationUser_ShouldReturnFalse()
+        {
+            const string expectedUserId = "TestUserId";
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(null as ApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var isActiveContext = IsActiveContextBuilder
+                .Create()
+                .WithSubjectId(expectedUserId)
+                .Build();
+
+            await sut.IsActiveAsync(isActiveContext);
+
+            isActiveContext.IsActive.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task IsActiveAsync_GivenUserRepositoryDependency_FindByIdAsyncCalledOnce()
+        {
+            const string expectedUserId = "TestUserId";
+
+            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
+            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(null as ApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var isActiveContext = IsActiveContextBuilder
+                .Create()
+                .WithSubjectId(expectedUserId)
+                .Build();
+
+            await sut.IsActiveAsync(isActiveContext);
+
+            applicationUserRepositoryMock.Verify(x => x.FindByIdAsync(
+                    It.Is<string>(param => expectedUserId.Equals(param, StringComparison.Ordinal))), 
+                Times.Once);
+        }
+
+        [Test]
+        public void IsActiveAsync_GivenNullSubjectId_ThrowsException()
+        {
+            static async Task Run()
+            {
+                var sut = ProfileServiceBuilder
+                    .Create()
+                    .Build();
+
+                var isActiveContext = IsActiveContextBuilder
+                    .Create()
+                    .WithSubjectId(null)
+                    .Build();
+
+                await sut.IsActiveAsync(isActiveContext);
+            }
+
+            Assert.ThrowsAsync<InvalidOperationException>(Run);
         }
     }
 }

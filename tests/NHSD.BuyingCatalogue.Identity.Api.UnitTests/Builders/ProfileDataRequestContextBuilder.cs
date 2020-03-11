@@ -39,8 +39,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         internal ProfileDataRequestContext Build()
         {
+            List<Claim> claims = new List<Claim>();
+
+            if (_subjectId is object)
+                claims.Add(new Claim(JwtClaimTypes.Subject, _subjectId));
+
             return new ProfileDataRequestContext(
-                new ClaimsPrincipal(new ClaimsIdentity(new List<Claim> { new Claim(JwtClaimTypes.Subject, _subjectId) })), 
+                new ClaimsPrincipal(new ClaimsIdentity(claims)), 
                 _client, 
                 _caller,
                 _requestedClaimTypes);

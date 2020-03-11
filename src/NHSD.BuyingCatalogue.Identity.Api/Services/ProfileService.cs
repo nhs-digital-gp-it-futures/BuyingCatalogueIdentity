@@ -96,16 +96,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
         private static IEnumerable<Claim> GetNameClaims(ApplicationUser user)
         {
-            string firstName = user.FirstName?.Trim();
+            string firstName = user.FirstName;
             if (!string.IsNullOrWhiteSpace(firstName))
                 yield return new Claim(JwtClaimTypes.GivenName, firstName);
 
-            string lastName = user.LastName?.Trim();
+            string lastName = user.LastName;
             if (!string.IsNullOrWhiteSpace(lastName))
                 yield return new Claim(JwtClaimTypes.FamilyName, lastName);
 
-            if (!string.IsNullOrWhiteSpace(firstName) || !string.IsNullOrWhiteSpace(lastName))
-                yield return new Claim(JwtClaimTypes.Name, $"{firstName} {lastName}".Trim());
+            string name = $"{firstName?.Trim()} {lastName?.Trim()}".Trim();
+            if (!string.IsNullOrWhiteSpace(name))
+                yield return new Claim(JwtClaimTypes.Name, name);
         }
 
         private static IEnumerable<Claim> GetOrganisationClaims(ApplicationUser user)
