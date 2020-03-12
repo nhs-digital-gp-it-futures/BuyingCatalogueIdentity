@@ -55,12 +55,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context[OrganisationMapDictionary] = organisationDictionary;
         }
 
-        [Given(@"the call to the database to set the field will fail")]
-        public async Task GivenTheCallToTheDatabaseToSetTheFieldWillFail()
-        {
-            await Database.DropUser(_settings.AdminConnectionString);
-        }
-
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {

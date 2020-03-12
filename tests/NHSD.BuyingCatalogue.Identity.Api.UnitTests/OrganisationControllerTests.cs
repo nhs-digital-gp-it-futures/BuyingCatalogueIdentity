@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
 {
-    public sealed class OrganisationControllerTests : Controller
+    public sealed class OrganisationControllerTests 
     {
         [Test]
         public async Task GetAllAsync_NoOrganisationsExist_EmptyResultIsReturned()
@@ -105,8 +105,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [Test]
         public async Task GetAllAsync_VerifyMethodIsCalledOnce_VerifiesMethod()
         {
-            Guid expectedId = Guid.NewGuid();
-
             var getAllOrganisations = new Mock<IOrganisationRepository>();
             getAllOrganisations.Setup(x => x.ListOrganisationsAsync())
                 .ReturnsAsync(null as IEnumerable<Organisation>);
@@ -115,9 +113,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                 .WithOrganisationRepository(getAllOrganisations.Object)
                 .Build();
 
-            await controller.GetByIdAsync(expectedId);
+            await controller.GetAllAsync();
 
-            getAllOrganisations.Verify(x => x.GetByIdAsync(It.IsAny<Guid>()), Times.Once);
+            getAllOrganisations.Verify(x => x.ListOrganisationsAsync(), Times.Once);
         }
 
         [Test]
@@ -171,7 +169,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
 
             await controller.GetByIdAsync(expectedId);
 
-            mockGetOrganisation.Verify(x => x.GetByIdAsync(It.IsAny<Guid>()), Times.Once);
+            mockGetOrganisation.Verify(x => x.GetByIdAsync(expectedId), Times.Once);
         }
     }
 }
