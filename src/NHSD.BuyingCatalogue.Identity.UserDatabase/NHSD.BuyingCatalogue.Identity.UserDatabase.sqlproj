@@ -93,5 +93,6 @@
   <ItemGroup>
     <None Include="Deployment\CreateTestUsers.sql" />
     <None Include="Deployment\CreateTables.sql" />
+    <None Include="Deployment\CreateTestOrganisation.sql" />
   </ItemGroup>
 </Project>

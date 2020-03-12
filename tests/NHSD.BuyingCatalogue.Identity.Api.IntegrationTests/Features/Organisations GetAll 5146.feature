@@ -21,8 +21,13 @@ Scenario: 1. Get all of the organisations
         | Organisation 2 | Ods 2   |
         | Organisation 3 | Ods 3   |
 
+@5147
+Scenario: 2. If a user is not authorised then they cannot access the organisations
+    When a GET request is made for the Organisations section
+	Then a response with status code 401 is returned
+
 @5146
-Scenario: 2. Service Failure
+Scenario: 3. Service Failure
     Given an authority user is logged in
 	Given the call to the database to set the field will fail
 	When a GET request is made for the Organisations section
