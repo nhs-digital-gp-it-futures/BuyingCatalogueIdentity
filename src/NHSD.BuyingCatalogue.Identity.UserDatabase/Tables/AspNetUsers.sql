@@ -15,6 +15,10 @@
      LockoutEnd datetimeoffset(7) NULL,
      LockoutEnabled bit NOT NULL,
      AccessFailedCount int NOT NULL,
-     CONSTRAINT PK_AspNetUsers PRIMARY KEY CLUSTERED (Id),
+     PrimaryOrganisationId UNIQUEIDENTIFIER NOT NULL, 
+     OrganisationFunction NVARCHAR(50) NOT NULL, 
+     FirstName NVARCHAR(50) NOT NULL, 
+     LastName NVARCHAR(50) NOT NULL, 
+    CONSTRAINT PK_AspNetUsers PRIMARY KEY CLUSTERED (Id),
      INDEX EmailIndex NONCLUSTERED (NormalizedEmail)
 );
