@@ -19,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
                 Console.WriteLine(discoveryDocument.Error);
                 return;
             }
-
+            
             // request token
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
