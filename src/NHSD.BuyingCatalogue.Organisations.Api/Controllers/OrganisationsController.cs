@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces("application/json")]
-    public sealed class OrganisationsController : ControllerBase
+    public sealed class OrganisationsController : Controller
     {
         private readonly IOrganisationRepository _organisationRepository;
 
@@ -24,7 +24,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll()
+        public async Task<ActionResult> GetAllAsync()
         {
             IEnumerable<Organisation> organisationsList = await _organisationRepository.ListOrganisationsAsync();
 

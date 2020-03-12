@@ -19,7 +19,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data
             object param = null)
         {
             using IDbConnection databaseConnection = new SqlConnection(connectionString);
-            return (await databaseConnection.QueryAsync<T>(selectSql, param).ConfigureAwait(false)).ToList();
+            return (await databaseConnection.QueryAsync<T>(selectSql, param)).ToList();
         }
-}
+
+        internal static async Task<T> FetchSingleResultAsync<T>(string connectionString, string selectSql,
+            object param = null)
+        {
+            using IDbConnection databaseConnection = new SqlConnection(connectionString);
+            return await databaseConnection.QueryFirstOrDefaultAsync<T>(selectSql, param);
+        }
+    }
 }

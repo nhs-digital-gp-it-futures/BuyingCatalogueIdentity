@@ -31,5 +31,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                                    [Id]
                                    ,[Name]
                                    FROM Organisations");
+
+        public static async Task<Guid> GetIdFromName(string connectionString, string organisationName) =>
+            await SqlRunner.FetchSingleResultAsync<Guid>(connectionString, $@"SELECT
+                                    [Id]
+                                    FROM Organisations
+                                    WHERE [Name] = '{organisationName}'");
     }
 }
