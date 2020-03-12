@@ -18,10 +18,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             using var controller = new ErrorControllerBuilder().Build();
 
-            var res = await controller.Index("testId") as ViewResult;
+            var result = await controller.Index("testId") as ViewResult;
 
-            res.Should().NotBeNull();
-            res.ViewName.Should().Be("Error");
+            result.Should().NotBeNull();
+            result.ViewName.Should().Be("Error");
         }
 
         [Test]

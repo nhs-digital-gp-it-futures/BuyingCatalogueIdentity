@@ -21,7 +21,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         public async Task<IActionResult> Index(string errorId)
         {
             var message = await _interactionService.GetErrorContextAsync(errorId);
-            _logger.Log(LogLevel.Error, "Request for client {ClientId} failed with error code {Error}: {ErrorDescription}",
+            _logger.LogError("Request for client {ClientId} failed with error code {Error}: {ErrorDescription}",
                 message.ClientId,
                 message.Error,
                 message.ErrorDescription);
