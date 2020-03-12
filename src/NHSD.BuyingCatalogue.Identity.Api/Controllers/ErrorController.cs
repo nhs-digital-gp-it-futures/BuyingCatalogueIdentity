@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
-    public class ErrorController : Controller
+    public sealed class ErrorController : Controller
     {
         private readonly IIdentityServerInteractionService _interactionService;
         private readonly ILogger<ErrorController> _logger;
@@ -21,7 +21,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         public async Task<IActionResult> Index(string errorId)
         {
             var message = await _interactionService.GetErrorContextAsync(errorId);
-            _logger.Log(LogLevel.Error, "Request for client {0} failed with error code {1}: {2}",
+            _logger.Log(LogLevel.Error, "Request for client {ClientId} failed with error code {Error}: {ErrorDescription}",
                 message.ClientId,
                 message.Error,
                 message.ErrorDescription);
