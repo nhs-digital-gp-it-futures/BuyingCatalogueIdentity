@@ -10,3 +10,4 @@ Post-Deployment Script Template
 --------------------------------------------------------------------------------------
 */
 :r ./CreateTestUsers.sql
+:r ./CreateTestOrganisation.sql
