@@ -19,18 +19,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly ScenarioContext _context;
         private readonly Response _response;
-        private readonly Settings _config;
+        private readonly Settings _settings;
 
-        private const string OrganisationUrl = "http://localhost:8075/api/v1/Organisations";
-                
+        private readonly string _organisationUrl;
+
         private const string AccessTokenKey = "AccessToken";
         private const string OrganisationMapDictionary = "OrganisationMapDictionary";
 
-        public OrganisationsSteps(ScenarioContext context, Response response, Settings config)
+        public OrganisationsSteps(ScenarioContext context, Response response, Settings settings)
         {
             _context = context;
             _response = response;
-            _config = config;
+            _settings = settings;
+
+            _organisationUrl = _settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
         }
 
         [Given(@"Organisations exist")]
@@ -46,7 +48,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     .WithOdsCode(organisationTableItem.OdsCode)
                     .Build();
 
-                await organisation.InsertAsync(_config.ConnectionString);
+                await organisation.InsertAsync(_settings.ConnectionString);
                 organisationDictionary.Add(organisation.Name, organisation.Id);
             }
 
@@ -56,7 +58,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"the call to the database to set the field will fail")]
         public async Task GivenTheCallToTheDatabaseToSetTheFieldWillFail()
         {
-            await Database.DropUser(_config.AdminConnectionString);
+            await Database.DropUser(_settings.AdminConnectionString);
         }
 
         [When(@"a GET request is made for the Organisations section")]
@@ -67,7 +69,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             using var client = new HttpClient();
             client.SetBearerToken(bearerToken);
 
-            _response.Result = await client.GetAsync(new Uri(OrganisationUrl));
+            _response.Result = await client.GetAsync(new Uri(_organisationUrl));
         }
 
         [Then(@"the Organisations list is returned with the following values")]
@@ -96,14 +98,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             using var client = new HttpClient();
             client.SetBearerToken(_context.Get(AccessTokenKey, ""));
-            _response.Result = await client.GetAsync(new Uri($"{OrganisationUrl}/{organisationId}"));
+            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}"));
         }
 
         [Given(@"an Organisation with name (.*) does not exist")]
         public async Task GivenAnOrganisationWithNameOrganisationDoesNotExist(string organisationName)
         {
-            var organisations = await OrganisationEntity.GetIdFromName(_config.ConnectionString, organisationName);
-            organisations.Should().BeEmpty();
+            var organisations = await OrganisationEntity.GetByNameAsync(_settings.ConnectionString, organisationName);
+            organisations.Should().BeNull();
         }
 
         private class OrganisationTable

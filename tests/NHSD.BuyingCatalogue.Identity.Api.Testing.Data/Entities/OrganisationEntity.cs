@@ -15,27 +15,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
         public DateTime LastUpdated { get; set; }
 
         protected override string InsertSql => $@"
-                                INSERT INTO [dbo].[Organisations]
-                                ([Id]
-                                ,[Name]
-                                ,[OdsCode]
-                                ,[LastUpdated])
+                                INSERT INTO dbo.Organisations
+                                (Id,
+                                Name,
+                                OdsCode,
+                                LastUpdated)
                                 VALUES
-                                    (@Id
-                                    ,@Name
-                                    ,@OdsCode
-                                    ,@LastUpdated)";
+                                    (@Id,
+                                     @Name,
+                                     @OdsCode,
+                                     @LastUpdated)";
 
-        public static async Task<IEnumerable<OrganisationEntity>> FetchAllOrganisationsAsync(string connectionString) =>
-            await SqlRunner.FetchAllAsync<OrganisationEntity>(connectionString, $@"SELECT 
-                                   [Id]
-                                   ,[Name]
-                                   FROM Organisations");
-
-        public static async Task<Guid> GetIdFromName(string connectionString, string organisationName) =>
-            await SqlRunner.FetchSingleResultAsync<Guid>(connectionString, $@"SELECT
-                                    [Id]
+        public static async Task<OrganisationEntity> GetByNameAsync(string connectionString, string organisationName) =>
+            await SqlRunner.FetchSingleResultAsync<OrganisationEntity>(connectionString, $@"SELECT TOP (1)
+                                    Id,
+                                    Name
                                     FROM Organisations
-                                    WHERE [Name] = '{organisationName}'");
+                                    WHERE Name = @organisationName
+                                    ORDER BY Name ASC", new{organisationName});
     }
 }
