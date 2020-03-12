@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NHSD.BuyingCatalogue.Identity.Api.Constants;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
@@ -46,22 +45,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             await sut.GetProfileDataAsync(profileDataRequestContext);
 
-            var expected = new List<KeyValuePair<string, string>>
+            var expected = new List<(string, string)>
             {
-                new KeyValuePair<string,string>(Subject, expectedApplicationUser.Id),
-                new KeyValuePair<string,string>(PreferredUserName, expectedApplicationUser.UserName),
-                new KeyValuePair<string,string>(JwtRegisteredClaimNames.UniqueName, expectedApplicationUser.UserName),
-                new KeyValuePair<string,string>(GivenName, expectedApplicationUser.FirstName),
-                new KeyValuePair<string,string>(FamilyName, expectedApplicationUser.LastName),
-                new KeyValuePair<string,string>(Name, $"{expectedApplicationUser.FirstName} {expectedApplicationUser.LastName}"),
-                new KeyValuePair<string,string>(Email, expectedApplicationUser.Email),
-                new KeyValuePair<string,string>(EmailVerified, expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
-                new KeyValuePair<string,string>(PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
-                new KeyValuePair<string,string>(OrganisationFunction, expectedApplicationUser.OrganisationFunction),
-                new KeyValuePair<string,string>(ApplicationClaimTypes.Organisation, "Manage")
+                (Subject, expectedApplicationUser.Id),
+                (PreferredUserName, expectedApplicationUser.UserName),
+                (JwtRegisteredClaimNames.UniqueName, expectedApplicationUser.UserName),
+                (GivenName, expectedApplicationUser.FirstName),
+                (FamilyName, expectedApplicationUser.LastName),
+                (Name, $"{expectedApplicationUser.FirstName} {expectedApplicationUser.LastName}"),
+                (Email, expectedApplicationUser.Email),
+                (EmailVerified, expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
+                (PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
+                (OrganisationFunction, expectedApplicationUser.OrganisationFunction),
+                (Organisation, "Manage")
             };
 
-            var actual = profileDataRequestContext.IssuedClaims.Select(item => new KeyValuePair<string, string>(item.Type, item.Value));
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => (item.Type, item.Value));
             actual.Should().BeEquivalentTo(expected);
         }
 
@@ -175,7 +174,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestCase("Authority", Subject, PrimaryOrganisationId, OrganisationFunction, ApplicationClaimTypes.Organisation)]
+        [TestCase("Authority", Subject, PrimaryOrganisationId, OrganisationFunction, Organisation)]
         [TestCase("Buyer", Subject, PrimaryOrganisationId, OrganisationFunction)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithOrganisationFunction_ReturnExpectedClaimList(
             string organisationFunction, 
