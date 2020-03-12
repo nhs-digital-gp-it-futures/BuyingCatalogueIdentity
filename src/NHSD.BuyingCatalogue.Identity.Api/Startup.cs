@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
@@ -31,6 +32,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
             var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
@@ -61,10 +63,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
+            .AddProfileService<ProfileService>()
             .AddDeveloperSigningCredential();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = cookieExpiration.ExpireTimeSpan;
+                options.SlidingExpiration = cookieExpiration.SlidingExpiration;
+            });
 
             services.AddControllers();
             services.AddControllersWithViews();
+            services.AddAuthentication();
         }
 
         public void Configure(IApplicationBuilder app)

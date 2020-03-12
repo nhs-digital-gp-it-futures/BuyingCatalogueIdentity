@@ -1,4 +1,4 @@
-﻿namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Models
+﻿namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.ViewModels
 {
     public sealed class ErrorViewModel
     {
