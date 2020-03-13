@@ -46,6 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));
 
