@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NUnit.Framework;
 
@@ -16,10 +18,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task Index_WithId_DisplaysErrorView()
         {
-            using var controller = new ErrorControllerBuilder().Build();
+            var errorMessage = new ErrorMessage { ErrorDescription = "An error description" };
+            var interactionService = new Mock<IIdentityServerInteractionService>();
+            interactionService.Setup(x => x.GetErrorContextAsync(It.IsAny<string>())).ReturnsAsync(errorMessage);
+            var logger = new Mock<ILogger<ErrorController>>();
+
+            using var controller = new ErrorController(interactionService.Object, logger.Object);
 
             var result = await controller.Index("testId") as ViewResult;
-
             result.Should().NotBeNull();
             result.ViewName.Should().Be("Error");
         }
@@ -28,12 +34,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         public async Task Index_WithId_LogsErrorMessage()
         {
             var errorMessage = new ErrorMessage {ErrorDescription = "An error description"};
-            var builder = new ErrorControllerBuilder().WithErrorMessage(errorMessage);
-            using var controller = builder.Build();
+            var interactionService = new Mock<IIdentityServerInteractionService>();
+            interactionService.Setup(x => x.GetErrorContextAsync(It.IsAny<string>())).ReturnsAsync(errorMessage);
+            var logger = new Mock<ILogger<ErrorController>>();
+            using var controller = new ErrorController(interactionService.Object, logger.Object);
 
             await controller.Index("testId");
-            
-            builder.Logger.Verify(
+
+            logger.Verify(
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
