@@ -62,6 +62,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             var returnUrl = viewModel.ReturnUrl.ToString();
 
             if (signInResult.IsTrustedReturnUrl)
+
+                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
                 return Redirect(returnUrl);
 
             return LocalRedirect(returnUrl);

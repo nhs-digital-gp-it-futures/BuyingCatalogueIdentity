@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
-using NHSD.BuyingCatalogue.Identity.Api.Repositories;
-using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Organisations;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
+namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
+    [Authorize]
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces("application/json")]
-    [AllowAnonymous]
-    public sealed class OrganisationsController : ControllerBase
+    public sealed class OrganisationsController : Controller
     {
         private readonly IOrganisationRepository _organisationRepository;
 
@@ -23,7 +24,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll()
+        public async Task<ActionResult> GetAllAsync()
         {
             IEnumerable<Organisation> organisationsList = await _organisationRepository.ListOrganisationsAsync();
 
@@ -35,6 +36,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                     Name = x.Name,
                     OdsCode = x.OdsCode
                 })
+            });
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult> GetByIdAsync(Guid id)
+        {
+            var organisation = await _organisationRepository.GetByIdAsync(id);
+
+            if (organisation is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new OrganisationViewModel
+            {
+                OrganisationId = organisation.Id,
+                Name = organisation.Name, 
+                OdsCode = organisation.OdsCode
             });
         }
     }

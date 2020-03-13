@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.Models
+namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
     public sealed class Organisation
     {

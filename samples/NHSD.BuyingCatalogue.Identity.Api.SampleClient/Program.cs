@@ -24,8 +24,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
-                ClientId = "SampleClient",
-                ClientSecret = "SampleClientSecret",
+                ClientId = "TokenClient",
+                ClientSecret = "TokenSecret",
                 Scope = "SampleResource"
             });
 

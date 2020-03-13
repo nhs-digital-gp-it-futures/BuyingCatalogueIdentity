@@ -1,0 +1,28 @@
+version: '3.5'
+
+services:
+
+  nhsd.buyingcatalogue.identity.api:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
+    container_name: identity_api
+    build: 
+      context: .
+      dockerfile: src/NHSD.BuyingCatalogue.Identity.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - CLIENTS__0__REDIRECTURLS__0=http://localhost:8072/signin-oidc
+      - CLIENTS__0__REDIRECTURLS__1=http://host.docker.internal:8072/signin-oidc
+      - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
+
+
+  nhsd.buyingcatalogue.identity.api.user.db:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-api-user-db:${TAG:-latest}
+    build: 
+      context: src/NHSD.BuyingCatalogue.Identity.UserDatabase
+    container_name: identity_api_user_db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=MyTestPassword123!
+      - MSSQL_PID=Express
+      - DB_NAME=${NHSD_LOCAL_DB_NAME:-CatalogueUsers}
+      - NHSD_PASSWORD=DisruptTheMarket1!

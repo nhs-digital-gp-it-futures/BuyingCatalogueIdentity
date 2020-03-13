@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\NHSD.BuyingCatalogue.Identity.Api\NHSD.BuyingCatalogue.Identity.Api.csproj" />
+    <ProjectReference Include="..\..\src\NHSD.BuyingCatalogue.Organisations.Api\NHSD.BuyingCatalogue.Organisations.Api.csproj" />
   </ItemGroup>
 
 </Project>

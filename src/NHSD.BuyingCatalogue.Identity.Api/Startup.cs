@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,14 +33,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
             var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
 
+            var issuerUrl = _configuration.GetValue<string>("issuerUrl");
+
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
+            Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();
@@ -54,15 +59,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseSuccessEvents = true;
-                    options.IssuerUri = _configuration.GetValue<string>("issuerUrl");
+                    options.IssuerUri = issuerUrl;
                 })
             .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
+            .AddProfileService<ProfileService>()
+            .AddDeveloperSigningCredential()
             .AddCustomSigningCredential(certificateSettings, Log.Logger);
 
-            services.AddTransient<IOrganisationRepository, OrganisationRepository>();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = cookieExpiration.ExpireTimeSpan;
+                options.SlidingExpiration = cookieExpiration.SlidingExpiration;
+            });
 
             services.AddControllers();
             services.AddControllersWithViews();
@@ -91,6 +102,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseRouting();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
