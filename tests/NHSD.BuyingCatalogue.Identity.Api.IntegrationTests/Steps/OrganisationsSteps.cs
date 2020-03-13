@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -17,74 +18,88 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class OrganisationsSteps
     {
         private readonly ScenarioContext _context;
-        private readonly IConfigurationRoot _config;
-        private readonly string _organisationUrl = "http://localhost:8075/api/v1/Organisations";
+        private readonly Response _response;
+        private readonly Settings _settings;
 
-        public OrganisationsSteps(ScenarioContext context, IConfigurationRoot config)
+        private readonly string _organisationUrl;
+
+        private const string AccessTokenKey = "AccessToken";
+        private const string OrganisationMapDictionary = "OrganisationMapDictionary";
+
+        public OrganisationsSteps(ScenarioContext context, Response response, Settings settings)
         {
             _context = context;
-            _config = config;
+            _response = response;
+            _settings = settings;
+
+            _organisationUrl = _settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
         }
 
         [Given(@"Organisations exist")]
         public async Task GivenOrganisationsExist(Table table)
         {
-            foreach (var organisation in table.CreateSet<OrganisationTable>())
+            IDictionary<string, Guid> organisationDictionary = new Dictionary<string, Guid>();
+
+            foreach (var organisationTableItem in table.CreateSet<OrganisationTable>())
             {
-                await InsertOrganisationsAsync(organisation);
+                var organisation = OrganisationEntityBuilder
+                    .Create()
+                    .WithName(organisationTableItem.Name)
+                    .WithOdsCode(organisationTableItem.OdsCode)
+                    .Build();
+
+                await organisation.InsertAsync(_settings.ConnectionString);
+                organisationDictionary.Add(organisation.Name, organisation.Id);
             }
-        }
 
-        private async Task InsertOrganisationsAsync(OrganisationTable organisationTable)
-        {
-            var organisation = OrganisationEntityBuilder
-                .Create()
-                .WithName(organisationTable.Name)
-                .WithOdsCode(organisationTable.OdsCode)
-                .Build();
-
-            await organisation.InsertAsync(_config.GetConnectionString("CatalogueUsers"));
-        }
-
-        [Given(@"the call to the database to set the field will fail")]
-        public async Task GivenTheCallToTheDatabaseToSetTheFieldWillFail()
-        {
-            await Database.DropUser(_config.GetConnectionString("CatalogueUsersAdmin"));
+            _context[OrganisationMapDictionary] = organisationDictionary;
         }
 
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {
-            string bearerToken = _context["AccessToken"].ToString();
+            string bearerToken = _context.Get(AccessTokenKey, "");
 
             using var client = new HttpClient();
             client.SetBearerToken(bearerToken);
 
-            var response = await client.GetAsync(new Uri(_organisationUrl));
-
-            _context["Response"] = response;
+            _response.Result = await client.GetAsync(new Uri(_organisationUrl));
         }
 
         [Then(@"the Organisations list is returned with the following values")]
         public async Task ThenTheOrganisationsListIsReturnedWithTheFollowingValues(Table table)
         {
-            var organisations = table.CreateSet<OrganisationTable>().ToList();
+            var expectedOrganisations = table.CreateSet<OrganisationTable>().ToList();
 
-            var response = _context["Response"] as HttpResponseMessage;
-            response.Should().NotBeNull();
+            var organisations = (await _response.ReadBody()).SelectToken("organisations").Select(t => new
+            {
+                Name = t.SelectToken("name").ToString(), OdsCode = t.SelectToken("odsCode").ToString()
+            });
 
-            var content = JToken.Parse(await response.Content.ReadAsStringAsync());
-            var organisationsContent = content.SelectToken("organisations").ToList();
-            organisationsContent.Count().Should().Be(organisations.Count());
+            organisations.Should().BeEquivalentTo(expectedOrganisations, options => options.WithStrictOrdering());
+        }
 
-            organisationsContent[0].SelectToken("name").Value<string>().Should().Be(organisations[0].Name);
-            organisationsContent[0].SelectToken("odsCode").Value<string>().Should().Be(organisations[0].OdsCode);
+        [When(@"a GET request is made for an organisation with name (.*)")]
+        public async Task WhenAGETRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName)
+        {
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
 
-            organisationsContent[1].SelectToken("name").Value<string>().Should().Be(organisations[1].Name);
-            organisationsContent[1].SelectToken("odsCode").Value<string>().Should().Be(organisations[1].OdsCode);
+            var organisationId = Guid.Empty.ToString();
+            if (allOrganisations.ContainsKey(organisationName))
+            {
+                organisationId = allOrganisations?[organisationName].ToString();
+            }
 
-            organisationsContent[2].SelectToken("name").Value<string>().Should().Be(organisations[2].Name);
-            organisationsContent[2].SelectToken("odsCode").Value<string>().Should().Be(organisations[2].OdsCode);
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(AccessTokenKey, ""));
+            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}"));
+        }
+
+        [Given(@"an Organisation with name (.*) does not exist")]
+        public async Task GivenAnOrganisationWithNameOrganisationDoesNotExist(string organisationName)
+        {
+            var organisations = await OrganisationEntity.GetByNameAsync(_settings.ConnectionString, organisationName);
+            organisations.Should().BeNull();
         }
 
         private class OrganisationTable

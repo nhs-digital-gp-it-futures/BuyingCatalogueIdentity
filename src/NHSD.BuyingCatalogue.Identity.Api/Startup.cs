@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
@@ -62,6 +63,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
+            .AddProfileService<ProfileService>()
             .AddDeveloperSigningCredential();
 
             services.ConfigureApplicationCookie(options =>
@@ -72,6 +74,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddControllers();
             services.AddControllersWithViews();
+            services.AddAuthentication();
         }
 
         public void Configure(IApplicationBuilder app)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Net.Http.Headers;
+using NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
 {
@@ -16,6 +19,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
         public IConfiguration Configuration { get; }
@@ -29,6 +33,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
             var clientSecret = Configuration.GetValue<string>("clientSecret");
             var authority = Configuration.GetValue<string>("authority");
             var signedOutRedirectUri = Configuration.GetValue<string>("SignedOutRedirectUri");
+
+            services.AddHttpClient(HttpClientNames.Identity, client =>
+            {
+                client.BaseAddress = new Uri(authority);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            });
 
             services.AddAuthentication(options =>
             {
@@ -49,9 +60,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient
                 options.ClientSecret = clientSecret;
                 options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SaveTokens = true;
-                options.GetClaimsFromUserInfoEndpoint = true;
+                options.GetClaimsFromUserInfoEndpoint = false;
                 options.RequireHttpsMetadata = false;
                 options.Scope.Add("SampleResource");
+                options.Scope.Add("Organisation");
             });
         }
 
