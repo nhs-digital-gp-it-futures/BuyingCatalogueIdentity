@@ -30,7 +30,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return Ok(new GetAllOrganisationsViewModel
             {
-                Organisations = organisationsList.Select(x => new OrganisationViewModel
+                Organisations = organisationsList?.Select(x => new OrganisationViewModel
                 {
                     OrganisationId = x.Id,
                     Name = x.Name,
