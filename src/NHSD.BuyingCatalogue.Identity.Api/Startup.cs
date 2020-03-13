@@ -45,9 +45,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
+            Log.Logger.Information(
+                "Certificate Settings on IdentityAPI is: UseDeveloperCredentials: {devCreds}, Path: {path}, Pass: {pass}",
+                certificateSettings.UseDeveloperCredentials, certificateSettings.CertificatePath,
+                certificateSettings.CertificatePassword.Substring(0,
+                    Math.Min(2, certificateSettings.CertificatePassword.Length)) + new string('*', Math.Max(0, certificateSettings.CertificatePassword.Length - 2)));
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));
 
@@ -66,7 +72,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             .AddInMemoryClients(clients.Select(x => x.ToClient()))
             .AddAspNetIdentity<ApplicationUser>()
             .AddProfileService<ProfileService>()
-            .AddDeveloperSigningCredential()
             .AddCustomSigningCredential(certificateSettings, Log.Logger);
 
             services.ConfigureApplicationCookie(options =>
