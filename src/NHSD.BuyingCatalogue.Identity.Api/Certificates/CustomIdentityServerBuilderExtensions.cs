@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.DependencyInjection;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
@@ -9,10 +8,10 @@ using Serilog.Events;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
 {
-    public static class CustomIdentityServerBuilderExtensions
+    internal static class CustomIdentityServerBuilderExtensions
     {
         private const string LogTemplate =
-        @"Certificate Details: 
+            @"Certificate Details: 
         Content Type: {contentType}
         Friendly Name: {friendlyName}
         SUbject: {subject}
@@ -22,43 +21,40 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
         Archived: {archived}
         Verified: {verified}";
 
-        public static IIdentityServerBuilder AddCustomSigningCredential(
+        internal static IIdentityServerBuilder AddCustomSigningCredential(
             this IIdentityServerBuilder builder, CertificateSettings settings, ILogger logger)
         {
-            logger = logger.ThrowIfNull();
-            settings = settings.ThrowIfNull();
+            logger = logger.ThrowIfNull(nameof(logger));
+            settings = settings.ThrowIfNull(nameof(settings));
+
             if (settings.UseDeveloperCredentials)
             {
                 logger.Information("Using Developer Signing Credential");
-                builder.AddDeveloperSigningCredential();
+                return builder.AddDeveloperSigningCredential();
             }
-            else
+        
+            logger.Information("Using Certificate {certificatePath}", settings.CertificatePath);
+            try
             {
-                logger.Information("Using Certificate {certificatePath}", settings.CertificatePath);
-                try
-                {
-                    var certificate = new X509Certificate2(settings.CertificatePath, settings.CertificatePassword);
-                    var verified = certificate.Verify();
-                    logger.Write(verified ? LogEventLevel.Information : LogEventLevel.Warning,
-                        LogTemplate,
-                        X509Certificate2.GetCertContentType(certificate.RawData),
-                        certificate.FriendlyName,
-                        certificate.Subject,
-                        certificate.SignatureAlgorithm.FriendlyName,
-                        certificate.PrivateKey.ToXmlString(false),
-                        certificate.PublicKey.Key.ToXmlString(false),
-                        certificate.Archived,
-                        verified);
-                    
-                    builder.AddSigningCredential(certificate);
-                }
-                catch (Exception e)
-                {
-                    throw new CertificateSettingsException("Error in Certificate or Settings", e);
-                }
-            }
+                var certificate = new X509Certificate2(settings.CertificatePath, settings.CertificatePassword);
+                var verified = certificate.Verify();
+                logger.Write(verified ? LogEventLevel.Information : LogEventLevel.Warning,
+                    LogTemplate,
+                    X509Certificate2.GetCertContentType(certificate.RawData),
+                    certificate.FriendlyName,
+                    certificate.Subject,
+                    certificate.SignatureAlgorithm.FriendlyName,
+                    certificate.PrivateKey.ToXmlString(false),
+                    certificate.PublicKey.Key.ToXmlString(false),
+                    certificate.Archived,
+                    verified);
 
-            return builder;
+                return builder.AddSigningCredential(certificate);
+            }
+            catch (Exception e)
+            {
+                throw new CertificateSettingsException("Error in Certificate or Settings", e);
+            }
         }
     }
 }

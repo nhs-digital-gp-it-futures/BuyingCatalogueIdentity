@@ -2,8 +2,9 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
 {
-    public class CertificateSettingsException : Exception
+    public sealed class CertificateSettingsException : Exception
     {
+        internal const string DefaultMessage = "An error occurred with the Certificate Settings.";
         public CertificateSettingsException(string message) : base(message)
         {
         }
@@ -12,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
         {
         }
 
-        public CertificateSettingsException() : this("Certificate Settings Incorrect")
+        public CertificateSettingsException() : this(DefaultMessage)
         {
         }
     }

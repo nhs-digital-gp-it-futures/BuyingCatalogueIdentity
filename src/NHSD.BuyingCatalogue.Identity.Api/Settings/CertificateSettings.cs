@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
-    public class CertificateSettings
+    internal sealed class CertificateSettings
     {
         public bool UseDeveloperCredentials { get; set; }
         public string CertificatePath { get; set; }

@@ -13,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public class CustomIdentityServerBuilderExtensionTests
+    internal sealed class CustomIdentityServerBuilderExtensionTests
     {
         [Test]
         public void UseDeveloperCredentials_Sets_DeveloperCredentials()
@@ -27,9 +27,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
 
             var loggerMock = Mock.Of<ILogger>();
             var serviceCollectionMock = new Mock<IServiceCollection>();
-            var sutMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
+            var builderMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
 
-            sutMock.AddCustomSigningCredential(settings, loggerMock);
+            builderMock.AddCustomSigningCredential(settings, loggerMock);
 
             serviceCollectionMock.Verify(
                 c => c.Add(It.Is<ServiceDescriptor>(s => s.ServiceType == typeof(ISigningCredentialStore))),
@@ -52,8 +52,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
 
             var loggerMock = Mock.Of<ILogger>();
             var serviceCollectionMock = new Mock<IServiceCollection>();
-            var sutMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
-            Assert.Throws<CertificateSettingsException>(() => sutMock.AddCustomSigningCredential(settings, loggerMock));
+            var builderMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
+            Assert.Throws<CertificateSettingsException>(() => builderMock.AddCustomSigningCredential(settings, loggerMock));
         }
 
         [Test]
@@ -61,12 +61,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         {
             //write certificate file from embedded resource to disk
             using var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream(this.GetType().Namespace + ".certificate.pfx").ThrowIfNull();
+                .GetManifestResourceStream(GetType().Namespace + ".certificate.pfx").ThrowIfNull();
             using (var outputStream = File.Create("certificate.pfx"))
             {
                 stream.CopyTo(outputStream);
-                stream.Flush();
-                stream.Close();
             }
 
             var settings = new CertificateSettings
@@ -76,9 +74,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
 
             var loggerMock = Mock.Of<ILogger>();
             var serviceCollectionMock = new Mock<IServiceCollection>();
-            var sutMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
+            var builderMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
 
-            sutMock.AddCustomSigningCredential(settings, loggerMock);
+            builderMock.AddCustomSigningCredential(settings, loggerMock);
 
             serviceCollectionMock.Verify(
                 c => c.Add(It.Is<ServiceDescriptor>(s => s.ServiceType == typeof(ISigningCredentialStore))),
