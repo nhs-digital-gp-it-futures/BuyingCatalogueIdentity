@@ -57,6 +57,9 @@ jobs:
   - script: docker-compose up --build -d
     displayName: 'Docker up'
 
+  - script: curl http://host.docker.internal:8072/home -v
+    displayName: 'Assert host is able to resolve host.docker.internal'
+
   - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
     inputs:
