@@ -46,10 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
             Log.Logger.Information(
-                "Certificate Settings on IdentityAPI is: UseDeveloperCredentials: {devCreds}, Path: {path}, Pass: {pass}",
-                certificateSettings.UseDeveloperCredentials, certificateSettings.CertificatePath,
-                certificateSettings.CertificatePassword.Substring(0,
-                    Math.Min(2, certificateSettings.CertificatePassword.Length)) + new string('*', Math.Max(0, certificateSettings.CertificatePassword.Length - 2)));
+                "Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();

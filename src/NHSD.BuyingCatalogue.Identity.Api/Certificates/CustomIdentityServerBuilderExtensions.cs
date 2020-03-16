@@ -10,17 +10,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
 {
     internal static class CustomIdentityServerBuilderExtensions
     {
-        private const string LogTemplate =
-            @"Certificate Details: 
-        Content Type: {contentType}
-        Friendly Name: {friendlyName}
-        SUbject: {subject}
-        Signature Algorithm { signatureAlgorithm }
-        Private Key: {privateKey}
-        Public Key: {publicKey}
-        Archived: {archived}
-        Verified: {verified}";
-
         internal static IIdentityServerBuilder AddCustomSigningCredential(
             this IIdentityServerBuilder builder, CertificateSettings settings, ILogger logger)
         {
@@ -38,17 +27,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
             {
                 var certificate = new X509Certificate2(settings.CertificatePath, settings.CertificatePassword);
                 var verified = certificate.Verify();
-                logger.Write(verified ? LogEventLevel.Information : LogEventLevel.Warning,
-                    LogTemplate,
-                    X509Certificate2.GetCertContentType(certificate.RawData),
-                    certificate.FriendlyName,
-                    certificate.Subject,
-                    certificate.SignatureAlgorithm.FriendlyName,
-                    certificate.PrivateKey.ToXmlString(false),
-                    certificate.PublicKey.Key.ToXmlString(false),
-                    certificate.Archived,
-                    verified);
-
+                if(verified)
+                    logger.Information("Certificate Verified: {certificate}", certificate.ToString(true));
+                else
+                    logger.Warning("Certificate Not Verified: {certificate}", certificate.ToString(true));
+                
                 return builder.AddSigningCredential(certificate);
             }
             catch (Exception e)
