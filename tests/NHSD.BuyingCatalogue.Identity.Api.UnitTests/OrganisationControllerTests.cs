@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
@@ -16,7 +15,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
 {
     public sealed class OrganisationControllerTests
     {
-        private Address address1 = new Address
+        private readonly Address _address1 = new Address
         {
             Line1 = "8",
             Line2 = "Sands Lane",
@@ -28,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
             Country = "West Yorkshire"
         };
 
-        private Address address2 = new Address
+        private readonly Address _address2 = new Address
         {
             Line1 = "2",
             Line2 = "Brick Lane",
@@ -82,7 +81,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                         OdsCode = ods,
                         PrimaryRoleId = primaryRoleId,
                         CatalogueAgreementSigned = catalogueAgreementSigned,
-                        Address = hasAddress == false ? null : JsonConvert.SerializeObject(address1)
+                        Address = hasAddress == false ? null : _address1
                     }
                 })
                 .Build();
@@ -107,11 +106,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
 
             if (hasAddress)
             {
-                organisationList[0].Location.Should().BeEquivalentTo(address1);
+                organisationList[0].Address.Should().BeEquivalentTo(_address1);
             }
             else
             {
-                organisationList[0].Location.Should().BeNull();
+                organisationList[0].Address.Should().BeNull();
             }
         }
 
@@ -125,7 +124,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                 OdsCode = "ODS 1",
                 PrimaryRoleId = "ID 1",
                 CatalogueAgreementSigned = false,
-                Address = JsonConvert.SerializeObject(address1)
+                Address = _address1
             };
             var org2 = new Organisation
             {
@@ -134,7 +133,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                 OdsCode = "ODS 2",
                 PrimaryRoleId = "ID 2",
                 CatalogueAgreementSigned = true,
-                Address = JsonConvert.SerializeObject(address2)
+                Address = _address2
             };
 
             var org3 = new Organisation
@@ -170,19 +169,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
             organisationList[0].OdsCode.Should().Be(org1.OdsCode);
             organisationList[0].PrimaryRoleId.Should().Be(org1.PrimaryRoleId);
             organisationList[0].CatalogueAgreementSigned.Should().Be(org1.CatalogueAgreementSigned);
-            organisationList[0].Location.Should().BeEquivalentTo(address1);
+            organisationList[0].Address.Should().BeEquivalentTo(_address1);
 
             organisationList[1].Name.Should().Be(org2.Name);
             organisationList[1].OdsCode.Should().Be(org2.OdsCode);
             organisationList[1].PrimaryRoleId.Should().Be(org2.PrimaryRoleId);
             organisationList[1].CatalogueAgreementSigned.Should().Be(org2.CatalogueAgreementSigned);
-            organisationList[1].Location.Should().BeEquivalentTo(address2);
+            organisationList[1].Address.Should().BeEquivalentTo(_address2);
 
             organisationList[2].Name.Should().Be(org3.Name);
             organisationList[2].OdsCode.Should().Be(org3.OdsCode);
             organisationList[2].PrimaryRoleId.Should().Be(org3.PrimaryRoleId);
             organisationList[2].CatalogueAgreementSigned.Should().Be(org3.CatalogueAgreementSigned);
-            organisationList[2].Location.Should().BeNull();
+            organisationList[2].Address.Should().BeNull();
         }
 
         [Test]
@@ -224,7 +223,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                 OdsCode = "ods-code",
                 PrimaryRoleId = "ID 1",
                 CatalogueAgreementSigned = true,
-                Address = JsonConvert.SerializeObject(address1)
+                Address = _address1
             };
 
             using var controller = OrganisationControllerBuilder

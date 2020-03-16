@@ -38,16 +38,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                         OdsCode = x.OdsCode,
                         PrimaryRoleId = x.PrimaryRoleId,
                         CatalogueAgreementSigned = x.CatalogueAgreementSigned,
-                        Location = x.Location == null ? null : new LocationViewModel
+                        Address = x.Address == null ? null : new AddressViewModel
                         {
-                            Line1 = x.Location.Line1,
-                            Line2 = x.Location.Line2,
-                            Line3 = x.Location.Line3,
-                            Line4 = x.Location.Line4,
-                            Town = x.Location.Town,
-                            County = x.Location.County,
-                            Postcode = x.Location.Postcode,
-                            Country = x.Location.Country,
+                            Line1 = x.Address.Line1,
+                            Line2 = x.Address.Line2,
+                            Line3 = x.Address.Line3,
+                            Line4 = x.Address.Line4,
+                            Town = x.Address.Town,
+                            County = x.Address.County,
+                            Postcode = x.Address.Postcode,
+                            Country = x.Address.Country,
                         }
                     })
             });
@@ -71,16 +71,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 OdsCode = organisation.OdsCode,
                 PrimaryRoleId = organisation.PrimaryRoleId,
                 CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
-                Location = organisation.Location == null ? null : new LocationViewModel
+                Address = organisation.Address == null ? null : new AddressViewModel
                 {
-                    Line1 = organisation.Location.Line1,
-                    Line2 = organisation.Location.Line2,
-                    Line3 = organisation.Location.Line3,
-                    Line4 = organisation.Location.Line4,
-                    Town = organisation.Location.Town,
-                    County = organisation.Location.County,
-                    Postcode = organisation.Location.Postcode,
-                    Country = organisation.Location.Country,
+                    Line1 = organisation.Address.Line1,
+                    Line2 = organisation.Address.Line2,
+                    Line3 = organisation.Address.Line3,
+                    Line4 = organisation.Address.Line4,
+                    Town = organisation.Address.Town,
+                    County = organisation.Address.County,
+                    Postcode = organisation.Address.Postcode,
+                    Country = organisation.Address.Country,
                 }
             });
         }

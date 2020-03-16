@@ -12,7 +12,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 
         public string PrimaryRoleId { get; set; }
 
-        public LocationViewModel Location { get; set; }
+        public AddressViewModel Address { get; set; }
 
         public bool CatalogueAgreementSigned { get; set; }
     }

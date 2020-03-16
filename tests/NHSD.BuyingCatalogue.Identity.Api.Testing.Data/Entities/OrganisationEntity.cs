@@ -15,13 +15,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public string PrimaryRoleId { get; set; }
 
-        public string Address { get { return JsonConvert.SerializeObject(LocationObject); } }
+        public string Address { get { return JsonConvert.SerializeObject(AddressObject); } }
 
         public bool CatalogueAgreementSigned { get; set; }
 
         public DateTime LastUpdated { get; set; }
 
-        public Location LocationObject { get; set; }
+        public Address AddressObject { get; set; }
 
         protected override string InsertSql => $@"
                                 INSERT INTO dbo.Organisations

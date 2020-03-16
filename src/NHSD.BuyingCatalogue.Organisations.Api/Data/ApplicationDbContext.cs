@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Data
@@ -10,6 +11,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Organisation>()
+                .Property(b => b.Address)
+                .HasConversion(
+                    x => JsonConvert.SerializeObject(x),
+                    x => JsonConvert.DeserializeObject<Address>(x));
         }
     }
 }

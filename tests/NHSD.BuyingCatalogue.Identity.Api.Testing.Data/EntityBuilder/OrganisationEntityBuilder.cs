@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder
                 OdsCode = "Ods Code",
                 PrimaryRoleId = "ID 0",
                 CatalogueAgreementSigned = false,
-                LocationObject = new Location(),
+                AddressObject = new Address(),
                 LastUpdated = DateTime.Now
             };
         }
@@ -57,51 +57,51 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationLine1(string line1)
+        public OrganisationEntityBuilder WithAddressLine1(string line1)
         {
-            _organisationEntity.LocationObject.Line1 = line1;
+            _organisationEntity.AddressObject.Line1 = line1;
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationLine2(string line2)
+        public OrganisationEntityBuilder WithAddressLine2(string line2)
         {
-            _organisationEntity.LocationObject.Line2 = line2;
+            _organisationEntity.AddressObject.Line2 = line2;
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationLine3(string line3)
+        public OrganisationEntityBuilder WithAddressLine3(string line3)
         {
-            _organisationEntity.LocationObject.Line3 = line3;
+            _organisationEntity.AddressObject.Line3 = line3;
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationLine4(string line4)
+        public OrganisationEntityBuilder WithAddressLine4(string line4)
         {
-            _organisationEntity.LocationObject.Line4 = line4;
+            _organisationEntity.AddressObject.Line4 = line4;
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationTown(string town)
+        public OrganisationEntityBuilder WithAddressTown(string town)
         {
-            _organisationEntity.LocationObject.Town = town;
+            _organisationEntity.AddressObject.Town = town;
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationCounty(string county)
+        public OrganisationEntityBuilder WithAddressCounty(string county)
         {
-            _organisationEntity.LocationObject.County = county;
+            _organisationEntity.AddressObject.County = county;
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationPostcode(string postcode)
+        public OrganisationEntityBuilder WithAddressPostcode(string postcode)
         {
-            _organisationEntity.LocationObject.Postcode = postcode;
+            _organisationEntity.AddressObject.Postcode = postcode;
             return this;
         }
 
-        public OrganisationEntityBuilder WithLocationCountry(string country)
+        public OrganisationEntityBuilder WithAddressCountry(string country)
         {
-            _organisationEntity.LocationObject.Country = country;
+            _organisationEntity.AddressObject.Country = country;
             return this;
         }
 

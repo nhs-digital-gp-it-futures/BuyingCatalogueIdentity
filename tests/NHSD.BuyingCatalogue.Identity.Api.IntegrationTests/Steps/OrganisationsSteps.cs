@@ -49,14 +49,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     .WithPrimaryRoleId(organisationTableItem.PrimaryRoleId)
                     .WithCatalogueAgreementSigned(organisationTableItem.CatalogueAgreementSigned)
 
-                    .WithLocationLine1(organisationTableItem.Line1)
-                    .WithLocationLine2(organisationTableItem.Line2)
-                    .WithLocationLine3(organisationTableItem.Line3)
-                    .WithLocationLine4(organisationTableItem.Line4)
-                    .WithLocationTown(organisationTableItem.Town)
-                    .WithLocationCounty(organisationTableItem.County)
-                    .WithLocationPostcode(organisationTableItem.Postcode)
-                    .WithLocationCountry(organisationTableItem.Country)
+                    .WithAddressLine1(organisationTableItem.Line1)
+                    .WithAddressLine2(organisationTableItem.Line2)
+                    .WithAddressLine3(organisationTableItem.Line3)
+                    .WithAddressLine4(organisationTableItem.Line4)
+                    .WithAddressTown(organisationTableItem.Town)
+                    .WithAddressCounty(organisationTableItem.County)
+                    .WithAddressPostcode(organisationTableItem.Postcode)
+                    .WithAddressCountry(organisationTableItem.Country)
 
                     .Build();
 
@@ -89,17 +89,42 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 OdsCode = t.SelectToken("odsCode").ToString(),
                 PrimaryRoleId = t.SelectToken("primaryRoleId").ToString(),
                 CatalogueAgreementSigned = t.SelectToken("catalogueAgreementSigned").ToObject<bool>(),
-                Line1 = t.SelectToken("location.line1").ToString(),
-                Line2 = t.SelectToken("location.line2").ToString(),
-                Line3 = t.SelectToken("location.line3").ToString(),
-                Line4 = t.SelectToken("location.line4").ToString(),
-                Town = t.SelectToken("location.town").ToString(),
-                County = t.SelectToken("location.county").ToString(),
-                Postcode = t.SelectToken("location.postcode").ToString(),
-                Country = t.SelectToken("location.country").ToString()
+                Line1 = t.SelectToken("address.line1").ToString(),
+                Line2 = t.SelectToken("address.line2").ToString(),
+                Line3 = t.SelectToken("address.line3").ToString(),
+                Line4 = t.SelectToken("address.line4").ToString(),
+                Town = t.SelectToken("address.town").ToString(),
+                County = t.SelectToken("address.county").ToString(),
+                Postcode = t.SelectToken("address.postcode").ToString(),
+                Country = t.SelectToken("address.country").ToString()
             });
 
             organisations.Should().BeEquivalentTo(expectedOrganisations, options => options.WithStrictOrdering());
+        }
+
+        [Then(@"the Organisation is returned with the following values")]
+        public async Task ThenTheOrganisationIsReturnedWithTheFollowingValues(Table table)
+        {
+            var expectedOrganisation = table.CreateSet<OrganisationTable>().FirstOrDefault();
+
+            var org = await _response.ReadBody();
+            var organisation = new
+            {
+                Name = org.SelectToken("name").ToString(),
+                OdsCode = org.SelectToken("odsCode").ToString(),
+                PrimaryRoleId = org.SelectToken("primaryRoleId").ToString(),
+                CatalogueAgreementSigned = org.SelectToken("catalogueAgreementSigned").ToObject<bool>(),
+                Line1 = org.SelectToken("address.line1").ToString(),
+                Line2 = org.SelectToken("address.line2").ToString(),
+                Line3 = org.SelectToken("address.line3").ToString(),
+                Line4 = org.SelectToken("address.line4").ToString(),
+                Town = org.SelectToken("address.town").ToString(),
+                County = org.SelectToken("address.county").ToString(),
+                Postcode = org.SelectToken("address.postcode").ToString(),
+                Country = org.SelectToken("address.country").ToString()
+            };
+
+            organisation.Should().BeEquivalentTo(expectedOrganisation);
         }
 
         [When(@"a GET request is made for an organisation with name (.*)")]
@@ -134,15 +159,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string PrimaryRoleId { get; set; }
 
             public bool CatalogueAgreementSigned { get; set; }
-            
-            public string Line1 { get; set; } 
-            public string Line2 { get; set; } 
-            public string Line3 { get; set; } 
+
+            public string Line1 { get; set; }
+            public string Line2 { get; set; }
+            public string Line3 { get; set; }
             public string Line4 { get; set; }
-            public string Town { get; set; } 
+            public string Town { get; set; }
             public string County { get; set; }
             public string Postcode { get; set; }
-            public string Country { get; set; } 
+            public string Country { get; set; }
         }
     }
 }
