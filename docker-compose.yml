@@ -76,7 +76,7 @@ services:
     entrypoint: 
       - /bin/sh
       - -c 
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.SampleResource.Api.dll
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.SampleResource.dll
     networks:
         - nhsd_bcnetwork
     ports:
@@ -95,7 +95,7 @@ services:
     entrypoint: 
       - /bin/sh
       - -c 
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.SampleMvcClient.Api.dll
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.dll
     networks:
         - nhsd_bcnetwork
     ports:
