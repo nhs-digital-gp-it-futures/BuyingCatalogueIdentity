@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.Internal;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
@@ -25,6 +26,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebDriver.Navigate().GoToUrl($"{MvcBaseUrl}/home/privacy");
         }
 
+        [When(@"the redirect URL is modified to be invalid")]
+        public void WhenTheRedirectURLIsModifiedToBeInvalid()
+        {
+            var currentUrl = _seleniumContext.WebDriver.Url;
+            _seleniumContext.WebDriver.Url =
+                currentUrl.Replace("signin-oidc", "invalid", StringComparison.OrdinalIgnoreCase);
+        }
+
         [When(@"a login request is made with email address (.*) and password (.*)")]
         public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
@@ -46,7 +55,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebWaiter.Until(x => new Uri(x.Url).AbsolutePath.EndsWith(url, StringComparison.OrdinalIgnoreCase));
         }
 
-        [Then(@"the page contains element with ID (.*) with text (.*)")]
+        [Then(@"the page contains element with ID ([^\s]+) with text (.*)")]
         public void ThenThePageVerifiesItCouldTalkToTheSampleResource(string id, string text)
         {
             _seleniumContext.WebDriver.FindElement(By.Id(id)).Text.Should().Be(text);

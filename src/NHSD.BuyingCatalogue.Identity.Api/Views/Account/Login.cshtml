@@ -25,7 +25,7 @@
                             <div data-test-id="text-field-input" class="">
                                 <div class="nhsuk-form-group">
                                     <label asp-for="EmailAddress" class="nhsuk-label"></label>
-                                    <input asp-for="EmailAddress" class="nhsuk-input" />
+                                    <input asp-for="EmailAddress" class="nhsuk-input" data-test-id="login-email-address" />
                                     <span asp-validation-for="EmailAddress"></span>
                                 </div>
                             </div>
@@ -35,7 +35,7 @@
                             <div data-test-id="text-field-input" class="bc-c-login-form-password-field">
                                 <div class="nhsuk-form-group">
                                     <label asp-for="Password" class="nhsuk-label"></label>
-                                    <input asp-for="Password" class="nhsuk-input" />
+                                    <input asp-for="Password" class="nhsuk-input" data-test-id="login-password" />
                                     <span asp-validation-for="Password"></span>
                                 </div>
                             </div>
@@ -47,7 +47,7 @@
                             </a>
                         </div>
 
-                        <button class="nhsuk-button nhsuk-button--reverse nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="submit">
+                        <button class="nhsuk-button nhsuk-button--reverse nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="submit" data-test-id="login-submit-button">
                             Log in
                         </button>
 
