@@ -34,8 +34,10 @@ services:
       - ISSUERURL=http://host.docker.internal:8070
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
-    extra_hosts:
-    - "host.docker.internal:172.17.0.1"
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.dll
     networks:
       - nhsd_bcnetwork
     ports:
@@ -53,8 +55,10 @@ services:
         - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
-    extra_hosts:
-    - "host.docker.internal:172.17.0.1"
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Organisations.Api.dll
     networks:
         - nhsd_bcnetwork
     ports:
@@ -69,8 +73,10 @@ services:
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
         - AUTHORITY=http://host.docker.internal:8070
-    extra_hosts:
-    - "host.docker.internal:172.17.0.1"
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.SampleResource.Api.dll
     networks:
         - nhsd_bcnetwork
     ports:
@@ -86,8 +92,10 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         - AUTHORITY=http://host.docker.internal:8070
         - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
-    extra_hosts:
-        - "host.docker.internal:172.17.0.1"
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.SampleMvcClient.Api.dll
     networks:
         - nhsd_bcnetwork
     ports:
