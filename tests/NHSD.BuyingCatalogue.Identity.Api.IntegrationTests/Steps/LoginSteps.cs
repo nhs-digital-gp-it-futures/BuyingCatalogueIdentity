@@ -12,6 +12,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly SeleniumContext _seleniumContext;
 
+        private const string MvcBaseUrl = "http://host.docker.internal:8072";
+
         public LoginSteps(SeleniumContext seleniumContext)
         {
             _seleniumContext = seleniumContext;
@@ -20,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"the user navigates to a restricted web page")]
         public void WhenTheUserNavigatesToARestrictedPage()
         {
-            _seleniumContext.WebDriver.Navigate().GoToUrl("http://host.docker.internal:8072/home/privacy");
+            _seleniumContext.WebDriver.Navigate().GoToUrl($"{MvcBaseUrl}/home/privacy");
         }
 
         [When(@"a login request is made with email address (.*) and password (.*)")]
@@ -72,6 +74,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var passwordGroup = _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=password-field]"));
             var errorElement = passwordGroup.FindElement(By.ClassName("field-validation-error"));
             errorElement.Text.Should().Be(value);
+        }
+
+        [Given(@"a user has successfully logged in with email address (.*) and password (.*)")]
+        public void GivenAUserHasLoggedIn(string email, string password)
+        {
+            WhenTheUserNavigatesToARestrictedPage();
+            ThenTheUserIsRedirectedTo("account/login");
+            WhenALoginRequestIsMade(email, password);
+            ThenTheUserIsRedirectedTo("home/privacy");
+            ThenThePageVerifiesItCouldTalkToTheSampleResource("sampleResourceResult", "Authorized With Sample Resource");
+        }
+
+        [When(@"the user clicks on logout button")]
+        public void WhenUserClicksOnLogout()
+        {
+            _seleniumContext.WebDriver.FindElement(By.Id("logout")).Click();
+        }
+
+        [Then(@"the user is logged out")]
+        public void ThenUserIsLoggedOut()
+        {
+            _seleniumContext.WebDriver.Url.Should().BeEquivalentTo($"{MvcBaseUrl}/");
         }
     }
 }
