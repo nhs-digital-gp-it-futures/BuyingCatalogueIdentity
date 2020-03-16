@@ -1,22 +1,37 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
     public sealed class Organisation
     {
+        private Address _location;
+
         public Guid Id { get; set; }
 
         public string Name { get; set; }
 
         public string OdsCode { get; set; }
 
+        public string PrimaryRoleId { get; set; }
+
+        public string Address { get; set; }
+
+        public bool CatalogueAgreementSigned { get; set; }
+
         public DateTime LastUpdated { get; set; }
 
-        public Organisation(Guid id, string name, string odsCode)
+        public Address Location
         {
-            Id = id;
-            Name = name;
-            OdsCode = odsCode;
+            get
+            {
+                if (Address != null)
+                {
+                    _location = JsonConvert.DeserializeObject<Address>(Address);
+                }
+                    
+                return _location;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
@@ -21,10 +22,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
         }
 
         [Then(@"the string value of (.*) is (.*)")]
-        public async Task ThenTheStringValueOfNameIs(string section, string value)
+        public async Task ThenTheStringValueIs(string section, string value)
         {
             var content = await _response.ReadBody();
-            content.Value<string>(section).Should().Be(value);
+
+            var token = content.SelectToken(section) as JValue;
+            token.Value.Should().Be(value);
+        }
+
+        [Then(@"the boolean value of (.*) is (.*)")]
+        public async Task ThenTheBooleanValueIs(string section, bool value)
+        {
+            var content = await _response.ReadBody();
+            content.Value<bool>(section).Should().Be(value);
         }
     }
 }

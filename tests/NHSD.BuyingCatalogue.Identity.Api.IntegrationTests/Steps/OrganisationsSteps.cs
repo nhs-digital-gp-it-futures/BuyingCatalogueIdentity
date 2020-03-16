@@ -46,6 +46,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     .Create()
                     .WithName(organisationTableItem.Name)
                     .WithOdsCode(organisationTableItem.OdsCode)
+                    .WithPrimaryRoleId(organisationTableItem.PrimaryRoleId)
+                    .WithCatalogueAgreementSigned(organisationTableItem.CatalogueAgreementSigned)
+
+                    .WithLocationLine1(organisationTableItem.Line1)
+                    .WithLocationLine2(organisationTableItem.Line2)
+                    .WithLocationLine3(organisationTableItem.Line3)
+                    .WithLocationLine4(organisationTableItem.Line4)
+                    .WithLocationTown(organisationTableItem.Town)
+                    .WithLocationCounty(organisationTableItem.County)
+                    .WithLocationPostcode(organisationTableItem.Postcode)
+                    .WithLocationCountry(organisationTableItem.Country)
+
                     .Build();
 
                 await organisation.InsertAsync(_settings.ConnectionString);
@@ -73,7 +85,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             var organisations = (await _response.ReadBody()).SelectToken("organisations").Select(t => new
             {
-                Name = t.SelectToken("name").ToString(), OdsCode = t.SelectToken("odsCode").ToString()
+                Name = t.SelectToken("name").ToString(),
+                OdsCode = t.SelectToken("odsCode").ToString(),
+                PrimaryRoleId = t.SelectToken("primaryRoleId").ToString(),
+                CatalogueAgreementSigned = t.SelectToken("catalogueAgreementSigned").ToObject<bool>(),
+                Line1 = t.SelectToken("location.line1").ToString(),
+                Line2 = t.SelectToken("location.line2").ToString(),
+                Line3 = t.SelectToken("location.line3").ToString(),
+                Line4 = t.SelectToken("location.line4").ToString(),
+                Town = t.SelectToken("location.town").ToString(),
+                County = t.SelectToken("location.county").ToString(),
+                Postcode = t.SelectToken("location.postcode").ToString(),
+                Country = t.SelectToken("location.country").ToString()
             });
 
             organisations.Should().BeEquivalentTo(expectedOrganisations, options => options.WithStrictOrdering());
@@ -107,6 +130,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string Name { get; set; }
 
             public string OdsCode { get; set; }
+
+            public string PrimaryRoleId { get; set; }
+
+            public bool CatalogueAgreementSigned { get; set; }
+            
+            public string Line1 { get; set; } 
+            public string Line2 { get; set; } 
+            public string Line3 { get; set; } 
+            public string Line4 { get; set; }
+            public string Town { get; set; } 
+            public string County { get; set; }
+            public string Postcode { get; set; }
+            public string Country { get; set; } 
         }
     }
 }

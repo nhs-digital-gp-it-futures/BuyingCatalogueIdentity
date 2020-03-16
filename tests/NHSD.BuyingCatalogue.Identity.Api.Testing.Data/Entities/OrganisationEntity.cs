@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 {
@@ -12,18 +13,32 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public string OdsCode { get; set; }
 
+        public string PrimaryRoleId { get; set; }
+
+        public string Address { get { return JsonConvert.SerializeObject(LocationObject); } }
+
+        public bool CatalogueAgreementSigned { get; set; }
+
         public DateTime LastUpdated { get; set; }
+
+        public Location LocationObject { get; set; }
 
         protected override string InsertSql => $@"
                                 INSERT INTO dbo.Organisations
                                 (Id,
                                 Name,
                                 OdsCode,
+                                PrimaryRoleId,
+                                Address,
+                                CatalogueAgreementSigned,
                                 LastUpdated)
                                 VALUES
                                     (@Id,
                                      @Name,
                                      @OdsCode,
+                                     @PrimaryRoleId,
+                                     @Address,
+                                     @CatalogueAgreementSigned,
                                      @LastUpdated)";
 
         public static async Task<OrganisationEntity> GetByNameAsync(string connectionString, string organisationName) =>
@@ -32,6 +47,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                                     Name
                                     FROM Organisations
                                     WHERE Name = @organisationName
-                                    ORDER BY Name ASC", new{organisationName});
+                                    ORDER BY Name ASC", new { organisationName });
     }
 }

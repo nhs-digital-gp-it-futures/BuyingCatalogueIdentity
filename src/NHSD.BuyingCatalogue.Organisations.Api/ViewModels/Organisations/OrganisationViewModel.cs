@@ -9,5 +9,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
         public string Name { get; set; }
 
         public string OdsCode { get; set; }
+
+        public string PrimaryRoleId { get; set; }
+
+        public LocationViewModel Location { get; set; }
+
+        public bool CatalogueAgreementSigned { get; set; }
     }
 }
