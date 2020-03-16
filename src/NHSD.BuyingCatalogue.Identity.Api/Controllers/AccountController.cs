@@ -83,10 +83,5 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
             return Redirect(logoutRequest?.PostLogoutRedirectUri);
         }
-
-        public IActionResult Error()
-        {
-            return View("Error");
-        }
     }
 }
