@@ -14,6 +14,8 @@ BEGIN
 	DECLARE @aliceNormalizedEmail AS nvarchar(50) = UPPER(@aliceEmail);
     DECLARE @bobNormalizedEmail AS nvarchar(50) = UPPER(@bobEmail);
 
+    DECLARE @phoneNumber AS nvarchar(max) = '01234567890';
+
 	-- 'Pass123$'
 	DECLARE @alicePassword AS nvarchar(200) = N'AQAAAAEAACcQAAAAEFSsEthAqGVBLj1P1gF9puxtXm18lKHlmuh9J/Ib0KKBO3GjQvxymJbzpSqy0zuOHg==';
 
@@ -22,13 +24,13 @@ BEGIN
 
 	INSERT INTO dbo.AspNetUsers
     (
-        Id, UserName, NormalizedUserName, Email, NormalizedEmail, AccessFailedCount, ConcurrencyStamp,
+        Id, UserName, NormalizedUserName, Email, NormalizedEmail, AccessFailedCount, ConcurrencyStamp, PhoneNumber,
         EmailConfirmed, LockoutEnabled, PasswordHash, PhoneNumberConfirmed, SecurityStamp, TwoFactorEnabled, 
-        FirstName, LastName, PrimaryOrganisationId, OrganisationFunction
+        FirstName, LastName, PrimaryOrganisationId, OrganisationFunction, Disabled, CatalogueAgreementSigned
     )
 	VALUES
-	(@aliceId, @aliceEmail, @aliceNormalizedEmail, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), 0, 1, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, 'Alice', 'Smith', NEWID(), 'Buyer'),
-	(@bobId, @bobEmail, @bobNormalizedEmail, @bobEmail, @bobNormalizedEmail, 0, NEWID(), 0, 1, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, 'Bob', 'Smith', NEWID(), 'Authority');
+	(@aliceId, @aliceEmail, @aliceNormalizedEmail, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), @phoneNumber, 1, 1, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, 'Alice', 'Smith', NEWID(), 'Buyer', 0, 1),
+	(@bobId, @bobEmail, @bobNormalizedEmail, @bobEmail, @bobNormalizedEmail, 0, NEWID(), @phoneNumber, 1, 1, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, 'Bob', 'Smith', NEWID(), 'Authority', 0, 0);
 
 	INSERT INTO dbo.AspNetUserClaims (ClaimType, ClaimValue, UserId)
 	VALUES
