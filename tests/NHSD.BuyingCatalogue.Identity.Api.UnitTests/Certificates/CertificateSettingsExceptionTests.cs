@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NUnit.Framework;
@@ -16,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         {
             var certificateSettingsException = new CertificateSettingsException();
 
-            
+
             certificateSettingsException.InnerException.Should().BeNull();
             certificateSettingsException.Message.Should().Be(CertificateSettingsException.DefaultMessage);
         }
