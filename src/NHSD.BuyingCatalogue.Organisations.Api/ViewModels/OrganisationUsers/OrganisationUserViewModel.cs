@@ -1,4 +1,7 @@
-﻿namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers
+﻿using System;
+using Newtonsoft.Json;
+
+namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers
 {
     public sealed class OrganisationUserViewModel
     {
@@ -11,5 +14,8 @@
         public string EmailAddress { get; set; }
 
         public bool IsDisabled { get; set; }
+
+        [JsonIgnore]
+        public Guid OrganisationId { get; set; }
     }
 }
