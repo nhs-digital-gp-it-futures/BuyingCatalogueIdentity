@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
@@ -55,6 +56,34 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 OrganisationId = organisation.Id,
                 Name = organisation.Name, 
                 OdsCode = organisation.OdsCode
+            });
+        }
+
+        [HttpGet]
+        [Route("{id}/users")]
+        public ActionResult GetUsersById(Guid id)
+        {
+            return Ok(new GetAllOrganisationUsersViewModel
+            {
+                Users = new[]
+                {
+                    new OrganisationUserViewModel
+                    {
+                        UserId = $"{id}-1234-56789",
+                        Name = "John Smith",
+                        PhoneNumber = "01234567890",
+                        EmailAddress = "a.b@c.com",
+                        IsDisabled = false
+                    },
+                    new OrganisationUserViewModel
+                    {
+                        UserId = $"{id}-9876-54321",
+                        Name = "Benny Hill",
+                        PhoneNumber = "09876543210",
+                        EmailAddress = "g.b@z.com",
+                        IsDisabled = true
+                    }
+                }
             });
         }
     }
