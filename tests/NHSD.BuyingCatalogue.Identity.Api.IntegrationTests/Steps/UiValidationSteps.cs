@@ -23,10 +23,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         }
 
         [Then(@"element with Data ID ([^\s]+) contains element with Data ID ([^\s]+)")]
-        public void ThenTheElementContainsElementWithDataId(string dataId, string id)
+        public void ThenTheElementContainsElementWithDataId(string parentElementDataId, string subElementDataId)
         {
-            var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={id}]"));
-            element.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
+            var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={parentElementDataId}]"));
+            element.FindElement(By.CssSelector($"[data-test-id={subElementDataId}]"));
         }
 
         [Then(@"element with Data ID ([^\s]+) has text (.*)")]
