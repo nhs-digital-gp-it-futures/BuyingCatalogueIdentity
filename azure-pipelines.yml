@@ -1,6 +1,6 @@
 variables:
   dockerVersion: '19.03.5'
-  dotnetVersion: '3.1.x'
+  dotnetVersion: '3.1.101'
 
 trigger:
 - master
