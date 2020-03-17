@@ -120,7 +120,10 @@ services:
     ports:
       - "4444:4444"
   chrome:
-    image: selenium/node-chrome
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity/chrome-node:${TAG:-latest}
+    build: 
+        context: .
+        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Selenium/Dockerfile
     volumes:
       - /dev/shm:/dev/shm
     depends_on:
@@ -128,6 +131,10 @@ services:
     environment:
       - HUB_HOST=selenium-hub
       - HUB_PORT=4444
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' | sudo tee -a /etc/hosts && /opt/bin/entry_point.sh
 networks: 
   nhsd_bcnetwork:
     name: nhsd_bcnetwork

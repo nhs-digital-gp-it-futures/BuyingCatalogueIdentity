@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebWaiter.Until(x =>
             {
                 Console.WriteLine($"Currently at this URL: {x.Url}");
-                return new Uri(x.Url).AbsolutePath.EndsWith(url, StringComparison.OrdinalIgnoreCase);
+                return new Uri(x.Url).AbsolutePath.Contains(url, StringComparison.OrdinalIgnoreCase);
             });
         }
 
