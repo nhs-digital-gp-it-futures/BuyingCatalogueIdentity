@@ -4,7 +4,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
     public sealed class Organisation
     {
-        public Guid Id { get; set; }
+        public Guid OrganisationId { get; set; }
 
         public string Name { get; set; }
 

@@ -20,7 +20,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
             modelBuilder.Entity<Organisation>()
                 .Property(b => b.Address)
                 .HasConversion(
-                    x => JsonConvert.SerializeObject(x),
+                    x => JsonConvert.SerializeObject(x, new JsonSerializerSettings(){NullValueHandling = NullValueHandling.Ignore}),
                     x => JsonConvert.DeserializeObject<Address>(x));
         }
     }

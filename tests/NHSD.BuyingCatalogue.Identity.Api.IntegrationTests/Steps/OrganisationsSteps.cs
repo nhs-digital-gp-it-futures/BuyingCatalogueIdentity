@@ -5,10 +5,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
+using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
+using NUnit.Framework.Internal;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -61,7 +63,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     .Build();
 
                 await organisation.InsertAsync(_settings.ConnectionString);
-                organisationDictionary.Add(organisation.Name, organisation.Id);
+                organisationDictionary.Add(organisation.Name, organisation.OrganisationId);
             }
 
             _context[OrganisationMapDictionary] = organisationDictionary;
@@ -83,21 +85,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var expectedOrganisations = table.CreateSet<OrganisationTable>().ToList();
 
-            var organisations = (await _response.ReadBody()).SelectToken("organisations").Select(t => new
-            {
-                Name = t.SelectToken("name").ToString(),
-                OdsCode = t.SelectToken("odsCode").ToString(),
-                PrimaryRoleId = t.SelectToken("primaryRoleId").ToString(),
-                CatalogueAgreementSigned = t.SelectToken("catalogueAgreementSigned").ToObject<bool>(),
-                Line1 = t.SelectToken("address.line1").ToString(),
-                Line2 = t.SelectToken("address.line2").ToString(),
-                Line3 = t.SelectToken("address.line3").ToString(),
-                Line4 = t.SelectToken("address.line4").ToString(),
-                Town = t.SelectToken("address.town").ToString(),
-                County = t.SelectToken("address.county").ToString(),
-                Postcode = t.SelectToken("address.postcode").ToString(),
-                Country = t.SelectToken("address.country").ToString()
-            });
+            var organisations = (await _response.ReadBody()).SelectToken("organisations").Select(CreateOrganisation);
 
             organisations.Should().BeEquivalentTo(expectedOrganisations, options => options.WithStrictOrdering());
         }
@@ -107,22 +95,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var expectedOrganisation = table.CreateSet<OrganisationTable>().FirstOrDefault();
 
-            var org = await _response.ReadBody();
-            var organisation = new
-            {
-                Name = org.SelectToken("name").ToString(),
-                OdsCode = org.SelectToken("odsCode").ToString(),
-                PrimaryRoleId = org.SelectToken("primaryRoleId").ToString(),
-                CatalogueAgreementSigned = org.SelectToken("catalogueAgreementSigned").ToObject<bool>(),
-                Line1 = org.SelectToken("address.line1").ToString(),
-                Line2 = org.SelectToken("address.line2").ToString(),
-                Line3 = org.SelectToken("address.line3").ToString(),
-                Line4 = org.SelectToken("address.line4").ToString(),
-                Town = org.SelectToken("address.town").ToString(),
-                County = org.SelectToken("address.county").ToString(),
-                Postcode = org.SelectToken("address.postcode").ToString(),
-                Country = org.SelectToken("address.country").ToString()
-            };
+            JToken responseBody = await _response.ReadBody();
+
+            var organisation = CreateOrganisation(responseBody);
 
             organisation.Should().BeEquivalentTo(expectedOrganisation);
         }
@@ -148,6 +123,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var organisations = await OrganisationEntity.GetByNameAsync(_settings.ConnectionString, organisationName);
             organisations.Should().BeNull();
+        }
+
+        private object CreateOrganisation(JToken token)
+        {
+            return new
+            {
+                Name = token.SelectToken("name").ToString(),
+                OdsCode = token.SelectToken("odsCode").ToString(),
+                PrimaryRoleId = token.SelectToken("primaryRoleId").ToString(),
+                CatalogueAgreementSigned = token.SelectToken("catalogueAgreementSigned").ToObject<bool>(),
+                Line1 = token.SelectToken("address.line1").ToString(),
+                Line2 = token.SelectToken("address.line2").ToString(),
+                Line3 = token.SelectToken("address.line3").ToString(),
+                Line4 = token.SelectToken("address.line4").ToString(),
+                Town = token.SelectToken("address.town").ToString(),
+                County = token.SelectToken("address.county").ToString(),
+                Postcode = token.SelectToken("address.postcode").ToString(),
+                Country = token.SelectToken("address.country").ToString()
+            };
         }
 
         private class OrganisationTable

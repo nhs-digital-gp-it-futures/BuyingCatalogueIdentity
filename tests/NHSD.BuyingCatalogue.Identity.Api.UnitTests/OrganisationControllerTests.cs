@@ -76,7 +76,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                 {
                     new Organisation()
                     {
-                        Id = organisationId,
+                        OrganisationId = organisationId,
                         Name = name,
                         OdsCode = ods,
                         PrimaryRoleId = primaryRoleId,
@@ -117,34 +117,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [Test]
         public async Task GetAllAsync_ListOfOrganisationsExist_ReturnsTheOrganisations()
         {
-            var org1 = new Organisation
-            {
-                Id = Guid.NewGuid(),
-                Name = "Organisation 1",
-                OdsCode = "ODS 1",
-                PrimaryRoleId = "ID 1",
-                CatalogueAgreementSigned = false,
-                Address = _address1
-            };
-            var org2 = new Organisation
-            {
-                Id = Guid.NewGuid(),
-                Name = "Organisation 2",
-                OdsCode = "ODS 2",
-                PrimaryRoleId = "ID 2",
-                CatalogueAgreementSigned = true,
-                Address = _address2
-            };
+            var org1 = OrganisationBuilder.Create(1).WithAddress(_address1).Build();
 
-            var org3 = new Organisation
-            {
-                Id = Guid.NewGuid(),
-                Name = "Organisation 3",
-                OdsCode = "ODS 3",
-                PrimaryRoleId = "ID 3",
-                CatalogueAgreementSigned = true,
-                Address = null
-            };
+            var org2 = OrganisationBuilder.Create(2).WithCatalogueAgreementSigned(true).WithAddress(_address2).Build();
+
+            var org3 = OrganisationBuilder.Create(3).WithCatalogueAgreementSigned(true).Build();
 
             using var controller = OrganisationControllerBuilder
                 .Create()
@@ -165,23 +142,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
 
             var organisationList = organisationResult.Organisations.ToList();
 
-            organisationList[0].Name.Should().Be(org1.Name);
-            organisationList[0].OdsCode.Should().Be(org1.OdsCode);
-            organisationList[0].PrimaryRoleId.Should().Be(org1.PrimaryRoleId);
-            organisationList[0].CatalogueAgreementSigned.Should().Be(org1.CatalogueAgreementSigned);
-            organisationList[0].Address.Should().BeEquivalentTo(_address1);
-
-            organisationList[1].Name.Should().Be(org2.Name);
-            organisationList[1].OdsCode.Should().Be(org2.OdsCode);
-            organisationList[1].PrimaryRoleId.Should().Be(org2.PrimaryRoleId);
-            organisationList[1].CatalogueAgreementSigned.Should().Be(org2.CatalogueAgreementSigned);
-            organisationList[1].Address.Should().BeEquivalentTo(_address2);
-
-            organisationList[2].Name.Should().Be(org3.Name);
-            organisationList[2].OdsCode.Should().Be(org3.OdsCode);
-            organisationList[2].PrimaryRoleId.Should().Be(org3.PrimaryRoleId);
-            organisationList[2].CatalogueAgreementSigned.Should().Be(org3.CatalogueAgreementSigned);
-            organisationList[2].Address.Should().BeNull();
+            organisationList[0].Should().BeEquivalentTo(org1, config => config.Excluding(x => x.LastUpdated));
+            organisationList[1].Should().BeEquivalentTo(org2, config => config.Excluding(x => x.LastUpdated));
+            organisationList[2].Should().BeEquivalentTo(org3, config => config.Excluding(x => x.LastUpdated));
         }
 
         [Test]
@@ -216,55 +179,39 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [Test]
         public async Task GetIdByAsync_OrganisationExists_ReturnsTheOrganisation()
         {
-            var organisation = new Organisation
-            {
-                Id = Guid.NewGuid(),
-                Name = "org name",
-                OdsCode = "ods-code",
-                PrimaryRoleId = "ID 1",
-                CatalogueAgreementSigned = true,
-                Address = _address1
-            };
+            var organisation = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(true).WithAddress(_address1).Build();
 
             using var controller = OrganisationControllerBuilder
                 .Create()
                 .WithGetOrganisation(organisation)
                 .Build();
 
-            var result = await controller.GetByIdAsync(organisation.Id);
+            var result = await controller.GetByIdAsync(organisation.OrganisationId);
 
             result.Should().BeOfType<OkObjectResult>();
             var objectResult = result as OkObjectResult;
 
             objectResult.Value.Should().BeEquivalentTo(organisation,
-                conf => conf.Excluding(c => c.Id).Excluding(c => c.Address).Excluding(c => c.LastUpdated));
+                conf => conf.Excluding(c => c.LastUpdated));
         }
 
         [Test]
         public async Task GetByIdAsync_OrganisationAddressIsNull_ReturnsOrganisationWithNullAddress()
         {
-            var organisation = new Organisation
-            {
-                Id = Guid.NewGuid(),
-                Name = "org name",
-                OdsCode = "ods-code",
-                PrimaryRoleId = "ID 1",
-                CatalogueAgreementSigned = true,
-                Address = null
-            };
+            var organisation = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(true).Build();
 
             using var controller = OrganisationControllerBuilder
                 .Create()
                 .WithGetOrganisation(organisation)
                 .Build();
 
-            var result = await controller.GetByIdAsync(organisation.Id);
+            var result = await controller.GetByIdAsync(organisation.OrganisationId);
 
             result.Should().BeOfType<OkObjectResult>();
             var objectResult = result as OkObjectResult;
 
             objectResult.Value.Should().BeEquivalentTo(organisation,
-                conf => conf.Excluding(c => c.Id).Excluding(c => c.Address).Excluding(c => c.LastUpdated));
+                conf => conf.Excluding(c => c.LastUpdated));
         }
 
         [Test]

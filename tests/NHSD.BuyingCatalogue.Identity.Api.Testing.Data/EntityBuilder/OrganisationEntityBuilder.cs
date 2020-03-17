@@ -17,7 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder
         {
             _organisationEntity = new OrganisationEntity()
             {
-                Id = Guid.NewGuid(),
+                OrganisationId = Guid.NewGuid(),
                 Name = "Organisation Name",
                 OdsCode = "Ods Code",
                 PrimaryRoleId = "ID 0",
@@ -29,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder
 
         public OrganisationEntityBuilder WithId(Guid id)
         {
-            _organisationEntity.Id = id;
+            _organisationEntity.OrganisationId = id;
             return this;
         }
 

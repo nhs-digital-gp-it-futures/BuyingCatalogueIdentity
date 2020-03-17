@@ -31,24 +31,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return Ok(new GetAllOrganisationsViewModel
             {
-                Organisations = organisationsList?.Select(x =>
+                Organisations = organisationsList?.Select(organisation =>
                     new OrganisationViewModel
                     {
-                        OrganisationId = x.Id,
-                        Name = x.Name,
-                        OdsCode = x.OdsCode,
-                        PrimaryRoleId = x.PrimaryRoleId,
-                        CatalogueAgreementSigned = x.CatalogueAgreementSigned,
-                        Address = x.Address == null ? null : new AddressViewModel
+                        OrganisationId = organisation.OrganisationId,
+                        Name = organisation.Name,
+                        OdsCode = organisation.OdsCode,
+                        PrimaryRoleId = organisation.PrimaryRoleId,
+                        CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
+                        Address = organisation.Address is null ? null : new AddressViewModel
                         {
-                            Line1 = x.Address.Line1,
-                            Line2 = x.Address.Line2,
-                            Line3 = x.Address.Line3,
-                            Line4 = x.Address.Line4,
-                            Town = x.Address.Town,
-                            County = x.Address.County,
-                            Postcode = x.Address.Postcode,
-                            Country = x.Address.Country,
+                            Line1 = organisation.Address.Line1,
+                            Line2 = organisation.Address.Line2,
+                            Line3 = organisation.Address.Line3,
+                            Line4 = organisation.Address.Line4,
+                            Town = organisation.Address.Town,
+                            County = organisation.Address.County,
+                            Postcode = organisation.Address.Postcode,
+                            Country = organisation.Address.Country,
                         }
                     })
             });
@@ -67,12 +67,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return Ok(new OrganisationViewModel
             {
-                OrganisationId = organisation.Id,
+                OrganisationId = organisation.OrganisationId,
                 Name = organisation.Name,
                 OdsCode = organisation.OdsCode,
                 PrimaryRoleId = organisation.PrimaryRoleId,
                 CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
-                Address = organisation.Address == null ? null : new AddressViewModel
+                Address = organisation.Address is null ? null : new AddressViewModel
                 {
                     Line1 = organisation.Address.Line1,
                     Line2 = organisation.Address.Line2,

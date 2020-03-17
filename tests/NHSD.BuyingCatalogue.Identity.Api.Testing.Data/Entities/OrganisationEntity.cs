@@ -7,7 +7,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 {
     public sealed class OrganisationEntity : EntityBase
     {
-        public Guid Id { get; set; }
+        public Guid OrganisationId { get; set; }
 
         public string Name { get; set; }
 
@@ -25,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         protected override string InsertSql => $@"
                                 INSERT INTO dbo.Organisations
-                                (Id,
+                                (OrganisationId,
                                 Name,
                                 OdsCode,
                                 PrimaryRoleId,
@@ -33,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                                 CatalogueAgreementSigned,
                                 LastUpdated)
                                 VALUES
-                                    (@Id,
+                                    (@OrganisationId,
                                      @Name,
                                      @OdsCode,
                                      @PrimaryRoleId,
@@ -43,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public static async Task<OrganisationEntity> GetByNameAsync(string connectionString, string organisationName) =>
             await SqlRunner.FetchSingleResultAsync<OrganisationEntity>(connectionString, $@"SELECT TOP (1)
-                                    Id,
+                                    OrganisationId,
                                     Name
                                     FROM Organisations
                                     WHERE Name = @organisationName
