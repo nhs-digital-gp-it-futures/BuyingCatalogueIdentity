@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Api.Certificates;
+﻿using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NUnit.Framework;
 
@@ -10,7 +6,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Settings
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class CertificateSettingsTests
+    internal sealed class CertificateSettingsTests
     {
         [Test]
         public void ToStringIncludesCorrectFields()
@@ -21,7 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Settings
             };
             var stringResult = certificateSettings.ToString();
 
-            stringResult.Should().ContainAll(new[] {"/Path", "True", "Pa******"});
+            stringResult.Should().ContainAll("/Path", "True", "Pa******");
         }
     }
 }
