@@ -13,8 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         public void Constructor_Parameterless_InitializesCorrectly()
         {
             var certificateSettingsException = new CertificateSettingsException();
-
-
+            
             certificateSettingsException.InnerException.Should().BeNull();
             certificateSettingsException.Message.Should().Be(CertificateSettingsException.DefaultMessage);
         }
@@ -23,10 +22,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         public void Constructor_String_Exception_InitializesCorrectly()
         {
             const string message = "This is a message.";
-
             var innerException = new InvalidOperationException();
-            var repoException = new CertificateSettingsException(message, innerException);
 
+            var repoException = new CertificateSettingsException(message, innerException);
+            
             repoException.InnerException.Should().Be(innerException);
             repoException.Message.Should().Be(message);
         }
