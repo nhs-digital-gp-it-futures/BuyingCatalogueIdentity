@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers
 {
     public sealed class GetAllOrganisationUsersViewModel
     {
-        [JsonProperty("users")]
-        public OrganisationUserViewModel[] Users { get; set; }
+        public IEnumerable<OrganisationUserViewModel> Users { get; set; }
     }
 }
