@@ -107,7 +107,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         {
             var getAllOrganisations = new Mock<IOrganisationRepository>();
             getAllOrganisations.Setup(x => x.ListOrganisationsAsync())
-                .ReturnsAsync(null as IEnumerable<Organisation>);
+                .ReturnsAsync(new List<Organisation>());
 
             using var controller = OrganisationControllerBuilder.Create()
                 .WithOrganisationRepository(getAllOrganisations.Object)
