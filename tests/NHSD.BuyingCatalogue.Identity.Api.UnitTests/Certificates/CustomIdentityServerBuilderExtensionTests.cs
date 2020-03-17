@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,9 +16,22 @@ using Serilog;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.All)]
+    [Parallelizable(ParallelScope.None)]
     internal sealed class CustomIdentityServerBuilderExtensionTests
     {
+        private static void SetupEmbeddedCertificateFile()
+        {
+            using var stream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream(typeof(CustomIdentityServerBuilderExtensionTests).Namespace + ".certificate.pfx").ThrowIfNull();
+            using var outputStream = File.Create("certificate.pfx");
+            stream.CopyTo(outputStream);
+        }
+
+        private static void RemoveCertificateFile()
+        {
+            File.Delete("certificate.pfx");
+        }
+
         [Test]
         public void UseDeveloperCredentials_Sets_DeveloperCredentials()
         {
@@ -83,27 +95,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
                 c => c.Add(It.Is<ServiceDescriptor>(s => s.ServiceType == typeof(IValidationKeysStore))),
                 Times.Exactly(1));
 
-            if (serviceDescriptorList.First(x => x.ServiceType == typeof(ISigningCredentialStore)).ImplementationInstance is ISigningCredentialStore signingCredentialStore)
+            if (serviceDescriptorList.First(x => x.ServiceType == typeof(ISigningCredentialStore))
+                .ImplementationInstance is ISigningCredentialStore signingCredentialStore)
             {
                 var signingCredential = await signingCredentialStore.GetSigningCredentialsAsync();
                 signingCredential.Key.KeyId.Should().Be("FD1F4371008CF3CACB6DE23D4AB2EC9623557DD4");
             }
 
             RemoveCertificateFile();
-        }
-
-        private void SetupEmbeddedCertificateFile()
-        {
-            //write certificate file from embedded resource to disk, so it can be picked up by the file io operations
-            using var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream(GetType().Namespace + ".certificate.pfx").ThrowIfNull();
-            using var outputStream = File.Create("certificate.pfx");
-            stream.CopyTo(outputStream);
-        }
-
-        private void RemoveCertificateFile()
-        {
-            File.Delete("certificate.pfx");
         }
     }
 }

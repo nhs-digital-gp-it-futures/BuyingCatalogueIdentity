@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,10 +15,12 @@ using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
+using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "ASP.net needs this to not be static")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static",
+        Justification = "ASP.net needs this to not be static")]
     public sealed class Startup
     {
         private readonly IConfiguration _configuration;
@@ -36,7 +37,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
-            var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
+            var identityResources =
+                _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
 
             var issuerUrl = _configuration.GetValue<string>("issuerUrl");
@@ -45,8 +47,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Api Resources: {@resources}", resources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
-            Log.Logger.Information(
-                "Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
+            Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();
@@ -64,12 +65,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     options.Events.RaiseSuccessEvents = true;
                     options.IssuerUri = issuerUrl;
                 })
-            .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
-            .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
-            .AddInMemoryClients(clients.Select(x => x.ToClient()))
-            .AddAspNetIdentity<ApplicationUser>()
-            .AddProfileService<ProfileService>()
-            .AddCustomSigningCredential(certificateSettings, Log.Logger);
+                .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
+                .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
+                .AddInMemoryClients(clients.Select(x => x.ToClient()))
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddProfileService<ProfileService>()
+                .AddCustomSigningCredential(certificateSettings, Log.Logger);
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -86,8 +87,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
         {
             app.UseSerilogRequestLogging(opts =>
             {
-                opts.EnrichDiagnosticContext = Infrastructure.LogHelper.EnrichFromRequest;
-                opts.GetLevel = Infrastructure.LogHelper.ExcludeHealthChecks;
+                opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
+                opts.GetLevel = LogHelper.ExcludeHealthChecks;
             });
 
             if (_environment.IsDevelopment())

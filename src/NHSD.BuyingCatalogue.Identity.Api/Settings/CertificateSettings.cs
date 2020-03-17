@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
@@ -11,7 +10,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 
         public override string ToString()
         {
-            var passMask = CertificatePassword.Substring(0, Math.Min(2, CertificatePassword.Length)) + new string('*', Math.Max(0, CertificatePassword.Length - 2));
+            var passMask = CertificatePassword.Substring(0, Math.Min(2, CertificatePassword.Length)) +
+                           new string('*', Math.Max(0, CertificatePassword.Length - 2));
             return $"UseDeveloperCredentials: {UseDeveloperCredentials}, Path: {CertificatePath}, Pass: {passMask}";
         }
     }
