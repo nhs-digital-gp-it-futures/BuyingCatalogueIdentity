@@ -16,7 +16,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             new OrganisationUserViewModel
             {
                 UserId = "1234-56789",
-                Name = "John Smith",
+                FirstName = "John",
+                LastName = "Smith",
                 PhoneNumber = "01234567890",
                 EmailAddress = "a.b@c.com",
                 IsDisabled = false,
@@ -25,7 +26,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             new OrganisationUserViewModel
             {
                 UserId = "9876-54321",
-                Name = "Benny Hill",
+                FirstName = "Benny",
+                LastName = "Hill",
                 PhoneNumber = "09876543210",
                 EmailAddress = "g.b@z.com",
                 IsDisabled = true,
@@ -45,6 +47,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         [HttpPost]
         public ActionResult CreateUser(Guid organisationId, OrganisationUserViewModel userViewModel)
         {
+            userViewModel.UserId = Guid.NewGuid().ToString();
             userViewModel.OrganisationId = organisationId;
 
             _users.Add(userViewModel);
