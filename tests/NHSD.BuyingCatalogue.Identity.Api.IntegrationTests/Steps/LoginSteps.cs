@@ -43,7 +43,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the user is redirected to page (.*)")]
         public void ThenTheUserIsRedirectedTo(string url)
         {
-            _seleniumContext.WebWaiter.Until(x => new Uri(x.Url).AbsolutePath.EndsWith(url, StringComparison.OrdinalIgnoreCase));
+            _seleniumContext.WebWaiter.Until(x =>
+            {
+                Console.WriteLine($"Currently at this URL: {x.Url}");
+                return new Uri(x.Url).AbsolutePath.EndsWith(url, StringComparison.OrdinalIgnoreCase);
+            });
         }
 
         [Then(@"the page contains element with ID (.*) with text (.*)")]
