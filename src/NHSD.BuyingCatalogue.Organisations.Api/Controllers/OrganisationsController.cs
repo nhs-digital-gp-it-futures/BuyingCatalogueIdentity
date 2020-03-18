@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
@@ -30,12 +31,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return Ok(new GetAllOrganisationsViewModel
             {
-                Organisations = organisationsList?.Select(x => new OrganisationViewModel
-                {
-                    OrganisationId = x.Id,
-                    Name = x.Name,
-                    OdsCode = x.OdsCode
-                })
+                Organisations = organisationsList?.Select(organisation =>
+                    new OrganisationViewModel
+                    {
+                        OrganisationId = organisation.OrganisationId,
+                        Name = organisation.Name,
+                        OdsCode = organisation.OdsCode,
+                        PrimaryRoleId = organisation.PrimaryRoleId,
+                        CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
+                        Address = organisation.Address is null ? null : new AddressViewModel
+                        {
+                            Line1 = organisation.Address.Line1,
+                            Line2 = organisation.Address.Line2,
+                            Line3 = organisation.Address.Line3,
+                            Line4 = organisation.Address.Line4,
+                            Town = organisation.Address.Town,
+                            County = organisation.Address.County,
+                            Postcode = organisation.Address.Postcode,
+                            Country = organisation.Address.Country,
+                        }
+                    })
             });
         }
 
@@ -52,9 +67,22 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return Ok(new OrganisationViewModel
             {
-                OrganisationId = organisation.Id,
-                Name = organisation.Name, 
-                OdsCode = organisation.OdsCode
+                OrganisationId = organisation.OrganisationId,
+                Name = organisation.Name,
+                OdsCode = organisation.OdsCode,
+                PrimaryRoleId = organisation.PrimaryRoleId,
+                CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
+                Address = organisation.Address is null ? null : new AddressViewModel
+                {
+                    Line1 = organisation.Address.Line1,
+                    Line2 = organisation.Address.Line2,
+                    Line3 = organisation.Address.Line3,
+                    Line4 = organisation.Address.Line4,
+                    Town = organisation.Address.Town,
+                    County = organisation.Address.County,
+                    Postcode = organisation.Address.Postcode,
+                    Country = organisation.Address.Country,
+                }
             });
         }
     }
