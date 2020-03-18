@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
@@ -17,14 +16,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
         [Then(@"a response with status code ([\d]+) is returned")]
         public void AResponseIsReturned(int code)
         {
+            _response.Should().NotBeNull();
             _response.Result.StatusCode.Should().Be(code);
-        }
-
-        [Then(@"the string value of (.*) is (.*)")]
-        public async Task ThenTheStringValueOfNameIs(string section, string value)
-        {
-            var content = await _response.ReadBody();
-            content.Value<string>(section).Should().Be(value);
         }
     }
 }
