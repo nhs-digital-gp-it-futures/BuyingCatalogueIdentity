@@ -15,6 +15,7 @@ services:
       - MSSQL_PID=Express
       - DB_NAME=${NHSD_LOCAL_DB_NAME:-CatalogueUsers}
       - NHSD_PASSWORD=DisruptTheMarket1!
+      - INSERT_TEST_DATA=True
     ports:
       - "${NHSD_LOCAL_DB_PORT:-1533}:1433"
       
