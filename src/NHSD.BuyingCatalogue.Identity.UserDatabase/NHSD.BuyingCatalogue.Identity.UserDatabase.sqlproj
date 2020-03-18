@@ -82,11 +82,11 @@
     <Build Include="Tables\Organisations.sql" />
   </ItemGroup>
   <ItemGroup>
-    <SqlCmdVariable Include="ASPNETCORE_ENVIRONMENT">
-      <DefaultValue>Development</DefaultValue>
+    <SqlCmdVariable Include="INSERT_TEST_DATA">
+      <DefaultValue>True</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="NHSDPassword">
+    <SqlCmdVariable Include="NHSD_PASSWORD">
       <DefaultValue>DisruptTheMarket1!</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>

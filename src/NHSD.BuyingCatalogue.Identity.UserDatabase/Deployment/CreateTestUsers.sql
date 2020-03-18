@@ -1,8 +1,8 @@
 ﻿DECLARE @aliceEmail AS nvarchar(50) = N'AliceSmith@email.com';
 DECLARE @bobEmail AS nvarchar(50) = N'BobSmith@email.com';
 
-IF '$(ASPNETCORE_ENVIRONMENT)' <> 'Production' 
-AND NOT EXISTS(
+IF '$(INSERT_TEST_DATA)' = 'True'
+AND NOT EXISTS (
   SELECT *
   FROM dbo.AspNetUsers
   WHERE UserName IN (@aliceEmail, @bobEmail))
