@@ -2,6 +2,6 @@
 {
     internal static class Policy
     {
-        public const string OrganisationPolicy = "CanAccessOrganisation";
+        public const string CanAccessOrganisation = "CanAccessOrganisation";
     }
 }

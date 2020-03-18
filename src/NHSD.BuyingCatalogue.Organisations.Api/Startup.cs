@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(Policy.OrganisationPolicy, policy => policy.RequireClaim("Organisation"));
+                options.AddPolicy(Policy.CanAccessOrganisation, policy => policy.RequireClaim("Organisation"));
             });
         }
 

@@ -10,7 +10,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
-    [Authorize(Policy = Policy.OrganisationPolicy)]
+    [Authorize(Policy = Policy.CanAccessOrganisation)]
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces("application/json")]
