@@ -11,33 +11,17 @@ using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 using NUnit.Framework;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
+namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 {
     public sealed class OrganisationControllerTests
     {
-        private readonly Address _address1 = new Address
-        {
-            Line1 = "8",
-            Line2 = "Sands Lane",
-            Line3 = "Shopping Mall",
-            Line4 = "Horsforth",
-            Town = "Leeds",
-            County = "West Yorshire",
-            Postcode = "LS3 4FD",
-            Country = "West Yorkshire"
-        };
+        private readonly Address _address1 = AddressBuilder.Create().WithLine1("8").WithLine2("Sands Lane")
+            .WithLine3("Shopping Mall").WithLine4("Horsforth").WithTown("Leeds").WithCounty("West Yorshire")
+            .WithPostcode("LS3 4FD").WithCountry("England").Build();
 
-        private readonly Address _address2 = new Address
-        {
-            Line1 = "2",
-            Line2 = "Brick Lane",
-            Line3 = "City Centre Flats",
-            Line4 = "City Centre",
-            Town = "Leeds",
-            County = "West Yorshire",
-            Postcode = "LS1 1AE",
-            Country = "West Yorkshire"
-        };
+        private readonly Address _address2 = AddressBuilder.Create().WithLine1("2").WithLine2("Brick Lane")
+            .WithLine3("City Centre Flats").WithLine4("City Centre").WithTown("Leeds").WithCounty("West Yorkshire")
+            .WithPostcode("LS1 1AE").WithCountry("West Yorkshire").Build();
 
         [Test]
         public async Task GetAllAsync_NoOrganisationsExist_EmptyResultIsReturned()
@@ -68,8 +52,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [TestCase("Organisation One", "ODS 1", null, true, true)]
         public async Task GetAllAsync_SingleOrganisationExists_ReturnsTheOrganisation(string name, string ods, string primaryRoleId, bool catalogueAgreementSigned, bool hasAddress)
         {
-            var organisationId = Guid.NewGuid();
-
             using var controller = OrganisationControllerBuilder
                 .Create()
                 .WithListOrganisation(new List<Organisation>()
