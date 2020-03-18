@@ -21,6 +21,7 @@ services:
       context: src/NHSD.BuyingCatalogue.Identity.UserDatabase
     container_name: identity_api_user_db
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ACCEPT_EULA=Y
       - SA_PASSWORD=MyTestPassword123!
       - MSSQL_PID=Express

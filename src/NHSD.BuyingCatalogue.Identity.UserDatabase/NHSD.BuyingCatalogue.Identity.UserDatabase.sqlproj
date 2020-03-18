@@ -82,6 +82,10 @@
     <Build Include="Tables\Organisations.sql" />
   </ItemGroup>
   <ItemGroup>
+    <SqlCmdVariable Include="ASPNETCORE_ENVIRONMENT">
+      <DefaultValue>Development</DefaultValue>
+      <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="NHSDPassword">
       <DefaultValue>DisruptTheMarket1!</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
@@ -93,6 +97,8 @@
   <ItemGroup>
     <None Include="Deployment\CreateTestUsers.sql" />
     <None Include="Deployment\CreateTables.sql" />
-    <None Include="Deployment\CreateTestOrganisation.sql" />
+    <None Include="Deployment\CreateCommissioningSupportUnits.sql" />
+    <None Include="Deployment\CreateClinicalCommissioningGroups.sql" />
+    <None Include="Deployment\CreateExecutiveAgency.sql" />
   </ItemGroup>
 </Project>

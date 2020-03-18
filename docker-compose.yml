@@ -10,6 +10,7 @@ services:
     networks:
       - nhsd_bcnetwork
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ACCEPT_EULA=Y
       - SA_PASSWORD=MyTestPassword123!
       - MSSQL_PID=Express
