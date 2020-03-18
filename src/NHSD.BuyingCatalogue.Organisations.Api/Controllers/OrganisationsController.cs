@@ -85,33 +85,5 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 }
             });
         }
-
-        [HttpGet]
-        [Route("{id}/users")]
-        public ActionResult GetUsersById(Guid id)
-        {
-            return Ok(new GetAllOrganisationUsersViewModel
-            {
-                Users = new[]
-                {
-                    new OrganisationUserViewModel
-                    {
-                        UserId = $"{id}-1234-56789",
-                        Name = "John Smith",
-                        PhoneNumber = "01234567890",
-                        EmailAddress = "a.b@c.com",
-                        IsDisabled = false
-                    },
-                    new OrganisationUserViewModel
-                    {
-                        UserId = $"{id}-9876-54321",
-                        Name = "Benny Hill",
-                        PhoneNumber = "09876543210",
-                        EmailAddress = "g.b@z.com",
-                        IsDisabled = true
-                    }
-                }
-            });
-        }
     }
 }
