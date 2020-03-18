@@ -91,11 +91,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task GetAllAsync_ListOfOrganisationsExist_ReturnsTheOrganisations()
         {
-            Address address2 = AddressBuilder.Create().WithLine1("2 City Close").Build();
+            Address address = AddressBuilder.Create().WithLine1("2 City Close").Build();
 
             var org1 = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(false).WithAddress(_address1).Build();
 
-            var org2 = OrganisationBuilder.Create(2).WithAddress(address2).Build();
+            var org2 = OrganisationBuilder.Create(2).WithAddress(address).Build();
 
             var org3 = OrganisationBuilder.Create(3).Build();
 
