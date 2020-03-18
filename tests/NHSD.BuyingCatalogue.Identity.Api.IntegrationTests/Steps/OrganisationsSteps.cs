@@ -125,7 +125,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             organisations.Should().BeNull();
         }
 
-        private object CreateOrganisation(JToken token)
+        private static object CreateOrganisation(JToken token)
         {
             return new
             {
