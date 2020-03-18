@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using Serilog;
 
@@ -45,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CanAccessOrganisation", policy => policy.RequireClaim("Organisation"));
+                options.AddPolicy(Policy.OrganisationPolicy, policy => policy.RequireClaim("Organisation"));
             });
         }
 

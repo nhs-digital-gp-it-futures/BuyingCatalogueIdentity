@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using IdentityServer4.Models;
-using NHSD.BuyingCatalogue.Identity.Api.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
@@ -14,9 +13,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 
         public string DisplayName { get; set; }
 
+        public IEnumerable<string> ClaimTypes { get; set; }
+
         public ApiResource ToResource()
         {
-            return new ApiResource(ResourceName, DisplayName, new List<string>(){ ApplicationClaimTypes.Organisation });
+            return new ApiResource(ResourceName, DisplayName, ClaimTypes);
         }
     }
 }
