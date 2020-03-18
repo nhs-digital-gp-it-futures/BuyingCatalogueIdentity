@@ -9,5 +9,7 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
+:r ./CreateClinicalCommissioningGroups.sql
+:r ./CreateCommissioningSupportUnits.sql
+:r ./CreateExecutiveAgency.sql
 :r ./CreateTestUsers.sql
-:r ./CreateTestOrganisation.sql
