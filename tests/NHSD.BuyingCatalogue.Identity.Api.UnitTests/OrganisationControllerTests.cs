@@ -117,11 +117,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [Test]
         public async Task GetAllAsync_ListOfOrganisationsExist_ReturnsTheOrganisations()
         {
-            var org1 = OrganisationBuilder.Create(1).WithAddress(_address1).Build();
+            var org1 = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(false).WithAddress(_address1).Build();
 
-            var org2 = OrganisationBuilder.Create(2).WithCatalogueAgreementSigned(true).WithAddress(_address2).Build();
+            var org2 = OrganisationBuilder.Create(2).WithAddress(_address2).Build();
 
-            var org3 = OrganisationBuilder.Create(3).WithCatalogueAgreementSigned(true).Build();
+            var org3 = OrganisationBuilder.Create(3).Build();
 
             using var controller = OrganisationControllerBuilder
                 .Create()
@@ -179,7 +179,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [Test]
         public async Task GetIdByAsync_OrganisationExists_ReturnsTheOrganisation()
         {
-            var organisation = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(true).WithAddress(_address1).Build();
+            var organisation = OrganisationBuilder.Create(1).WithAddress(_address1).Build();
 
             using var controller = OrganisationControllerBuilder
                 .Create()
@@ -198,7 +198,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [Test]
         public async Task GetByIdAsync_OrganisationAddressIsNull_ReturnsOrganisationWithNullAddress()
         {
-            var organisation = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(true).Build();
+            var organisation = OrganisationBuilder.Create(1).Build();
 
             using var controller = OrganisationControllerBuilder
                 .Create()

@@ -25,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _name = $"Organisation {index}";
             _odsCode = $"ODS {index}";
             _primaryRoleId = $"ID {index}";
-            _catalogueAgreementSigned = false;
+            _catalogueAgreementSigned = true;
             _address = null;
             _lastUpdated = DateTime.UtcNow;
         }
