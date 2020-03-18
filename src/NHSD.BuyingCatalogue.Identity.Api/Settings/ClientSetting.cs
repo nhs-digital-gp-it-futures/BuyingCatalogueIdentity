@@ -43,6 +43,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
             {
                 "ClientCredentials" => GrantTypes.ClientCredentials,
                 "Code" => GrantTypes.Code,
+                "Password" => GrantTypes.ResourceOwnerPassword,
                 _ => new Client().AllowedGrantTypes
             };
 

@@ -11,7 +11,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "CanAccessOrganisation")]
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces("application/json")]

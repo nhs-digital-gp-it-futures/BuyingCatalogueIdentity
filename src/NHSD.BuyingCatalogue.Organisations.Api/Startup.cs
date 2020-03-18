@@ -42,6 +42,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                 });
 
             services.AddControllers();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CanAccessOrganisation", policy => policy.RequireClaim("Organisation"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -68,8 +68,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
         [TestCase("Organisation One", "ODS 1", null, true, true)]
         public async Task GetAllAsync_SingleOrganisationExists_ReturnsTheOrganisation(string name, string ods, string primaryRoleId, bool catalogueAgreementSigned, bool hasAddress)
         {
-            var organisationId = Guid.NewGuid();
-
             using var controller = OrganisationControllerBuilder
                 .Create()
                 .WithListOrganisation(new List<Organisation>()
