@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using Serilog;
 
@@ -42,6 +43,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                 });
 
             services.AddControllers();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(Policy.CanAccessOrganisation, policy => policy.RequireClaim("Organisation"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

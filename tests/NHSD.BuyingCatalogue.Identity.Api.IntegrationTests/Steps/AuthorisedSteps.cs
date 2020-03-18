@@ -25,6 +25,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var discoveryAddress = _configuration.GetValue<string>("DiscoveryAddress");
 
+            var userName = _configuration.GetValue<string>("UserEmail");
+            var userPassword = _configuration.GetValue<string>("UserPassword");
+            
             var client = new HttpClient();
 
             var discoveryDocument =
@@ -41,11 +44,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             }
 
             // request token
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            TokenResponse tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
-                ClientId = "TokenClient",
-                ClientSecret = "TokenSecret",
+                ClientId = "PasswordClient",
+                ClientSecret = "PasswordSecret",
+                UserName = userName,
+                Password = userPassword,
                 Scope = "Organisation"
             });
 
