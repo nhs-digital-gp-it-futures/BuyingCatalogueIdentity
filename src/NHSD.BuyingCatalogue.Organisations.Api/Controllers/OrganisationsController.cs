@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
-using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {

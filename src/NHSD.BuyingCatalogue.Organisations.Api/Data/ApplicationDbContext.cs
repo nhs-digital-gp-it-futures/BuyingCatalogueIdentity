@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Data
 {
-    public sealed class ApplicationDbContext : DbContext
+    public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Organisation> Organisations { get; set; }
 
