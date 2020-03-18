@@ -74,15 +74,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
                 .Create()
                 .WithListOrganisation(new List<Organisation>()
                 {
-                    new Organisation()
-                    {
-                        OrganisationId = organisationId,
-                        Name = name,
-                        OdsCode = ods,
-                        PrimaryRoleId = primaryRoleId,
-                        CatalogueAgreementSigned = catalogueAgreementSigned,
-                        Address = hasAddress == false ? null : _address1
-                    }
+                    OrganisationBuilder.Create(1)
+                        .WithName(name)
+                        .WithOdsCode(ods)
+                        .WithPrimaryRoleId(primaryRoleId)
+                        .WithCatalogueAgreementSigned(catalogueAgreementSigned)
+                        .WithAddress(hasAddress == false ? null : _address1)
+                        .Build()
                 })
                 .Build();
 

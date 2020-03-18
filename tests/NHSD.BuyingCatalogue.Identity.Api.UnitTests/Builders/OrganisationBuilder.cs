@@ -7,11 +7,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
     {
         private readonly Guid _organisationId;
 
-        private readonly string _name;
+        private string _name;
 
-        private readonly string _odsCode;
+        private string _odsCode;
 
-        private readonly string _primaryRoleId;
+        private string _primaryRoleId;
 
         private bool _catalogueAgreementSigned;
 
@@ -28,6 +28,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _catalogueAgreementSigned = true;
             _address = null;
             _lastUpdated = DateTime.UtcNow;
+        }
+
+        internal OrganisationBuilder WithName(string name)
+        {
+            _name = name;
+            return this;
+        }
+
+        internal OrganisationBuilder WithOdsCode(string odsCode)
+        {
+            _odsCode = odsCode;
+            return this;
+        }
+
+        internal OrganisationBuilder WithPrimaryRoleId(string primaryRoleId)
+        {
+            _primaryRoleId = primaryRoleId;
+            return this;
         }
 
         internal OrganisationBuilder WithCatalogueAgreementSigned(bool isSigned)
