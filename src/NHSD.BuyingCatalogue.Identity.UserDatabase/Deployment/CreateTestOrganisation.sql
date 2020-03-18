@@ -8,5 +8,5 @@ IF NOT EXISTS(
 BEGIN
     INSERT INTO dbo.Organisations (Id, [Name], OdsCode, LastUpdated)
 	VALUES
-	(NEWID(), @name, 'ODS 1', GETDATE());
+	('FFE7CB2F-9494-4CC7-A348-420D502956D9', @name, 'ODS 1', GETDATE());
 END;
