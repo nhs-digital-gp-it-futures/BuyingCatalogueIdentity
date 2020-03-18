@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 
@@ -38,9 +37,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         [HttpGet]
         public ActionResult GetUsersById(Guid organisationId)
         {
+            Console.WriteLine($"Use the '{organisationId}' so the build doesn't complain.");
+
             return Ok(new GetAllOrganisationUsersViewModel
             {
-                Users = _users.Where(user => organisationId.Equals(user.OrganisationId))
+                Users = _users
             });
         }
 

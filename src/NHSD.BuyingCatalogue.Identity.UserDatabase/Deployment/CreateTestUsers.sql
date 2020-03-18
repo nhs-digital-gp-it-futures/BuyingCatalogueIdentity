@@ -1,11 +1,18 @@
 ﻿DECLARE @aliceEmail AS nvarchar(50) = N'AliceSmith@email.com';
 DECLARE @bobEmail AS nvarchar(50) = N'BobSmith@email.com';
 
-IF NOT EXISTS(
+IF '$(INSERT_TEST_DATA)' = 'True'
+AND NOT EXISTS (
   SELECT *
   FROM dbo.AspNetUsers
   WHERE UserName IN (@aliceEmail, @bobEmail))
 BEGIN
+    DECLARE @ccgRoleId AS nchar(4) = 'RO98';
+    DECLARE @executiveAgencyRoleId AS nchar(5) = 'RO116';
+
+    DECLARE @aliceOrganisationId AS uniqueidentifier = (SELECT TOP (1) OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId ORDER BY OdsCode);
+    DECLARE @bobOrganisationId AS uniqueidentifier = (SELECT OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @executiveAgencyRoleId);
+
 	DECLARE @address AS nchar(108) = N'{ "street_address": "One Hacker Way", "locality": "Heidelberg", "postal_code": 69118, "country": "Germany" }';
 
 	DECLARE @aliceId AS nchar(36) = CAST(NEWID() AS nchar(36));
@@ -29,8 +36,8 @@ BEGIN
         FirstName, LastName, PrimaryOrganisationId, OrganisationFunction, Disabled, CatalogueAgreementSigned
     )
 	VALUES
-	(@aliceId, @aliceEmail, @aliceNormalizedEmail, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), @phoneNumber, 1, 1, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, 'Alice', 'Smith', NEWID(), 'Buyer', 0, 1),
-	(@bobId, @bobEmail, @bobNormalizedEmail, @bobEmail, @bobNormalizedEmail, 0, NEWID(), @phoneNumber, 1, 1, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, 'Bob', 'Smith', NEWID(), 'Authority', 0, 0);
+	(@aliceId, @aliceEmail, @aliceNormalizedEmail, @aliceEmail, @aliceNormalizedEmail, 0, NEWID(), @phoneNumber, 1, 1, @alicePassword, 0, 'NNJ4SLBPCVUDKXAQXJHCBKQTFEYUAPBC', 0, 'Alice', 'Smith', @aliceOrganisationId, 'Buyer', 0, 1),
+	(@bobId, @bobEmail, @bobNormalizedEmail, @bobEmail, @bobNormalizedEmail, 0, NEWID(), @phoneNumber, 1, 1, @bobPassword, 0, 'OBDOPOU5YQ5WQXCR3DITKL6L5IDPYHHJ', 0, 'Bob', 'Smith', @bobOrganisationId, 'Authority', 0, 0);
 
 	INSERT INTO dbo.AspNetUserClaims (ClaimType, ClaimValue, UserId)
 	VALUES
