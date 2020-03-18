@@ -7,13 +7,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
     public sealed class ClientSetting
     {
+        private const int OneHour = 3600;
+
         public string ClientId { get; set; }
 
         public string ClientName { get; set; }
 
         public string AllowedGrantTypes { get; set; }
 
-        public int AccessTokenLifetime { get; set; }
+        /// <summary>
+        /// Gets or sets the access token lifetime (in seconds).
+        /// The default is one hour (3600 seconds).
+        /// </summary>
+        public int AccessTokenLifetime { get; set; } = OneHour;
 
         public bool AllowOfflineAccess { get; set; }
 
