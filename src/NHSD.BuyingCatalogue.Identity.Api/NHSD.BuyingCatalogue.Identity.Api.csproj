@@ -38,7 +38,7 @@
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
-  <Target Name="NpmInstall" BeforeTargets="Build" Condition="!Exists('node_modules') ">
+  <Target Name="NpmInstall" BeforeTargets="Build" Condition="!Exists('wwwroot\css\main.min.css') ">
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
     </Exec>
@@ -47,7 +47,7 @@
     <Exec Command="npm install" />
   </Target>
 
-  <Target Name="NpmRunBuild" BeforeTargets="Build" DependsOnTargets="NpmInstall">
+  <Target Name="NpmRunBuild" BeforeTargets="Build" Condition="!Exists('wwwroot\css\main.min.css')" DependsOnTargets="NpmInstall">
     <Exec Command="npm run build" />
   </Target>
 
