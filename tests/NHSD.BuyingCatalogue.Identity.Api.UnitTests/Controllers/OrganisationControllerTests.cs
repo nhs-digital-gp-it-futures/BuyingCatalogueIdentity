@@ -15,13 +15,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 {
     public sealed class OrganisationControllerTests
     {
-        private readonly Address _address1 = AddressBuilder.Create().WithLine1("8").WithLine2("Sands Lane")
-            .WithLine3("Shopping Mall").WithLine4("Horsforth").WithTown("Leeds").WithCounty("West Yorshire")
-            .WithPostcode("LS3 4FD").WithCountry("England").Build();
-
-        private readonly Address _address2 = AddressBuilder.Create().WithLine1("2").WithLine2("Brick Lane")
-            .WithLine3("City Centre Flats").WithLine4("City Centre").WithTown("Leeds").WithCounty("West Yorkshire")
-            .WithPostcode("LS1 1AE").WithCountry("West Yorkshire").Build();
+        private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();
 
         [Test]
         public async Task GetAllAsync_NoOrganisationsExist_EmptyResultIsReturned()
@@ -97,9 +91,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task GetAllAsync_ListOfOrganisationsExist_ReturnsTheOrganisations()
         {
+            Address address2 = AddressBuilder.Create().WithLine1("2 City Close").Build();
+
             var org1 = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(false).WithAddress(_address1).Build();
 
-            var org2 = OrganisationBuilder.Create(2).WithAddress(_address2).Build();
+            var org2 = OrganisationBuilder.Create(2).WithAddress(address2).Build();
 
             var org3 = OrganisationBuilder.Create(3).Build();
 
