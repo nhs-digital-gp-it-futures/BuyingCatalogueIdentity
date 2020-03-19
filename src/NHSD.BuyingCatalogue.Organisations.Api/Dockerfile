@@ -10,7 +10,6 @@ WORKDIR /
 COPY . .
 
 WORKDIR "/src/NHSD.BuyingCatalogue.Organisations.Api"
-RUN echo "DOTNET VERSION: $(dotnet --version)"
 RUN dotnet build "NHSD.BuyingCatalogue.Organisations.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
