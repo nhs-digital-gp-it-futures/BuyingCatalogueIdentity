@@ -12,4 +12,5 @@ Post-Deployment Script Template
 :r ./CreateClinicalCommissioningGroups.sql
 :r ./CreateCommissioningSupportUnits.sql
 :r ./CreateExecutiveAgency.sql
+:r ./CreateExecutiveAgencyUser.sql
 :r ./CreateTestUsers.sql

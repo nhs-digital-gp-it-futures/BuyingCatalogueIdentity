@@ -82,6 +82,30 @@
     <Build Include="Tables\Organisations.sql" />
   </ItemGroup>
   <ItemGroup>
+    <SqlCmdVariable Include="CREATE_EA_USER">
+      <DefaultValue>True</DefaultValue>
+      <Value>$(SqlCmdVar__5)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EA_USER_FIRST_NAME">
+      <DefaultValue>Agency</DefaultValue>
+      <Value>$(SqlCmdVar__6)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EA_USER_LAST_NAME">
+      <DefaultValue>User</DefaultValue>
+      <Value>$(SqlCmdVar__7)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EA_USER_NAME">
+      <DefaultValue>user@agency.com</DefaultValue>
+      <Value>$(SqlCmdVar__3)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EA_USER_PASSWORD_HASH">
+      <DefaultValue>AQAAAAEAACcQAAAAEEOFkNNrFpKmDC2TBv2CP/dzxfnjdXk97RoqRlunE/CGs2tmFcewKZj4M/fITiP2tg==</DefaultValue>
+      <Value>$(SqlCmdVar__4)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="EA_USER_PHONE">
+      <DefaultValue>0123456790</DefaultValue>
+      <Value>$(SqlCmdVar__8)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="INSERT_TEST_DATA">
       <DefaultValue>True</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
@@ -100,5 +124,6 @@
     <None Include="Deployment\CreateCommissioningSupportUnits.sql" />
     <None Include="Deployment\CreateClinicalCommissioningGroups.sql" />
     <None Include="Deployment\CreateExecutiveAgency.sql" />
+    <None Include="Deployment\CreateExecutiveAgencyUser.sql" />
   </ItemGroup>
 </Project>
