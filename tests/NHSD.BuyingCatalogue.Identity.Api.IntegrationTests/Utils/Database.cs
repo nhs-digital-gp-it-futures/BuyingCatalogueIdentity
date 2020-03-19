@@ -16,6 +16,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             using IDbConnection databaseConnection = new SqlConnection(config.GetConnectionString("CatalogueUsersAdmin"));
             await databaseConnection.ExecuteAsync("ALTER ROLE db_owner ADD MEMBER [NHSD];");
             await databaseConnection.ExecuteAsync("DELETE FROM Organisations");
+            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE OrganisationFunction = 'TestUser'");
         }
 
         public static async Task DropUser(string connectionString)

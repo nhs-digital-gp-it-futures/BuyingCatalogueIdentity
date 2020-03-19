@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
@@ -9,6 +10,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/v1/Organisations/{organisationId}/Users")]
     [Produces("application/json")]
     public sealed class UsersController : Controller
