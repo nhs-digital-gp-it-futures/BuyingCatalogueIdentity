@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
@@ -17,7 +18,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task GetUsersByOrganisationId_NoUsers_ReturnsEmptyList()
         {
-            using var controller = new UsersControllerBuilder().Build();
+            var built = new UsersControllerBuilder().Build();
+            using var controller = built.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
 
@@ -25,6 +27,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             var users = result.Value as GetAllOrganisationUsersViewModel;
             users.Should().NotBeNull();
             users.Users.Should().BeEmpty();
+
+            built.UserRepository.Verify(x => x.GetUsersByOrganisationIdAsync(Guid.Empty), Times.Once);
         }
 
         [Test]
@@ -34,10 +38,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             {
                 CreateUser(false), CreateUser(true), CreateUser(false)
             };
-
-            using var controller = new UsersControllerBuilder()
+            var built = new UsersControllerBuilder()
                 .SetUsers(users.Select(x => x.RepoUser))
                 .Build();
+            using var controller = built.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
             
@@ -46,6 +50,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             viewModel.Should().NotBeNull();
             
             viewModel.Users.Should().BeEquivalentTo(users.Select(x => x.Expected));
+
+            built.UserRepository.Verify(x => x.GetUsersByOrganisationIdAsync(Guid.Empty), Times.Once);
         }
 
         internal static (ApplicationUser RepoUser, OrganisationUserViewModel ExpectedUser) CreateUser(bool disabled)

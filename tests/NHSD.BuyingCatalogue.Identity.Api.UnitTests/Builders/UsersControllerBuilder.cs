@@ -27,9 +27,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal UsersController Build()
+        internal (UsersController Controller, Mock<IUsersRepository> UserRepository) Build()
         {
-            return new UsersController(_usersRepositoryMock.Object);
+            return (new UsersController(_usersRepositoryMock.Object), _usersRepositoryMock);
         }
     }
 }
