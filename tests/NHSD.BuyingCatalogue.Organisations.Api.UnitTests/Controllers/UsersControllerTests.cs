@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 using NUnit.Framework;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
+namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 {
     [TestFixture]
     public sealed class UsersControllerTests

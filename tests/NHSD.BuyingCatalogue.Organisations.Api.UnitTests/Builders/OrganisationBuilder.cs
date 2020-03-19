@@ -1,25 +1,19 @@
 ﻿using System;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
+namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class OrganisationBuilder
     {
         private readonly Guid _organisationId;
-
         private string _name;
-
         private string _odsCode;
-
         private string _primaryRoleId;
-
         private bool _catalogueAgreementSigned;
-
         private Address _address;
-
         private readonly DateTime _lastUpdated;
 
-        public OrganisationBuilder(int index)
+        private OrganisationBuilder(int index)
         {
             _organisationId = Guid.NewGuid();
             _name = $"Organisation {index}";
@@ -28,6 +22,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _catalogueAgreementSigned = true;
             _address = null;
             _lastUpdated = DateTime.UtcNow;
+        }
+
+        internal static OrganisationBuilder Create(int index)
+        {
+            return new OrganisationBuilder(index);
         }
 
         internal OrganisationBuilder WithName(string name)
@@ -60,14 +59,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal static OrganisationBuilder Create(int index)
-        {
-            return new OrganisationBuilder(index);
-        }
-
         internal Organisation Build()
         {
-            return new Organisation()
+            return new Organisation
             {
                 OrganisationId = _organisationId,
                 Name = _name,

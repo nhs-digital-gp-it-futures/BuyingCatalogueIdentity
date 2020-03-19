@@ -5,7 +5,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.Controllers;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
+namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class UsersControllerBuilder
     {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -17,32 +16,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         public UsersController(IUsersRepository usersRepository)
         {
-            _usersRepository = usersRepository;
+            _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
-
-        private static readonly IList<OrganisationUserViewModel> _users = new List<OrganisationUserViewModel>
-        {
-            new OrganisationUserViewModel
-            {
-                UserId = "1234-56789",
-                FirstName = "John",
-                LastName = "Smith",
-                PhoneNumber = "01234567890",
-                EmailAddress = "a.b@c.com",
-                IsDisabled = false,
-                OrganisationId = new Guid("FFE7CB2F-9494-4CC7-A348-420D502956D9")
-            },
-            new OrganisationUserViewModel
-            {
-                UserId = "9876-54321",
-                FirstName = "Benny",
-                LastName = "Hill",
-                PhoneNumber = "09876543210",
-                EmailAddress = "g.b@z.com",
-                IsDisabled = true,
-                OrganisationId = new Guid("FFE7CB2F-9494-4CC7-A348-420D502956D9")
-            }
-        };
 
         [HttpGet]
         public async Task<ActionResult> GetUsersByOrganisationId(Guid organisationId)
@@ -70,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             userViewModel.UserId = Guid.NewGuid().ToString();
             userViewModel.OrganisationId = organisationId;
 
-            _users.Add(userViewModel);
+            //_users.Add(userViewModel);
 
             return Ok();
         }
