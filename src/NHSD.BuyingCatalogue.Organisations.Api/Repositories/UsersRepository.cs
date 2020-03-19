@@ -17,9 +17,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetUsersByOrganisationIdAsync(Guid id)
+        public async Task<IEnumerable<ApplicationUser>> GetUsersByOrganisationIdAsync(Guid organisationId)
         {
-            return await _context.Users.Where(x => x.PrimaryOrganisationId == id).ToListAsync();
+            return await _context.Users.Where(x => x.PrimaryOrganisationId == organisationId).ToListAsync();
         }
     }
 }

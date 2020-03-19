@@ -14,12 +14,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     public sealed class UsersController : Controller
     {
         private readonly IUsersRepository _usersRepository;
-        private readonly IOrganisationRepository _organisationRepository;
 
-        public UsersController(IUsersRepository usersRepository, IOrganisationRepository organisationRepository)
+        public UsersController(IUsersRepository usersRepository)
         {
             _usersRepository = usersRepository;
-            _organisationRepository = organisationRepository;
         }
 
         private static readonly IList<OrganisationUserViewModel> _users = new List<OrganisationUserViewModel>
@@ -47,15 +45,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         };
 
         [HttpGet]
-        public async Task<ActionResult> GetUsersByOrganisationId(Guid id)
+        public async Task<ActionResult> GetUsersByOrganisationId(Guid organisationId)
         {
-            var organisation = await _organisationRepository.GetByIdAsync(id);
-            if (organisation == null)
-            {
-                return NotFound();
-            }
-
-            var organisationUsers = await _usersRepository.GetUsersByOrganisationIdAsync(id);
+            var organisationUsers = await _usersRepository.GetUsersByOrganisationIdAsync(organisationId);
             var userViewModels = organisationUsers.Select(x => new OrganisationUserViewModel
             {
                 UserId = x.Id,

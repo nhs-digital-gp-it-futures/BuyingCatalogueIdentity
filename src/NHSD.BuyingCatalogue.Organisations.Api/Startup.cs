@@ -26,6 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("CatalogueUsers")));
