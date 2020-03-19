@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
@@ -10,6 +13,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Produces("application/json")]
     public sealed class UsersController : Controller
     {
+        private readonly IUsersRepository _usersRepository;
+
+        public UsersController(IUsersRepository usersRepository)
+        {
+            _usersRepository = usersRepository;
+        }
+
         private static readonly IList<OrganisationUserViewModel> _users = new List<OrganisationUserViewModel>
         {
             new OrganisationUserViewModel
@@ -35,13 +45,22 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         };
 
         [HttpGet]
-        public ActionResult GetUsersById(Guid organisationId)
+        public async Task<ActionResult> GetUsersByOrganisationId(Guid organisationId)
         {
-            Console.WriteLine($"Use the '{organisationId}' so the build doesn't complain.");
+            var organisationUsers = await _usersRepository.GetUsersByOrganisationIdAsync(organisationId);
+            var userViewModels = organisationUsers.Select(x => new OrganisationUserViewModel
+            {
+                UserId = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                PhoneNumber = x.PhoneNumber,
+                EmailAddress = x.Email,
+                IsDisabled = x.Disabled
+            });
 
             return Ok(new GetAllOrganisationUsersViewModel
             {
-                Users = _users
+                Users = userViewModels
             });
         }
 
