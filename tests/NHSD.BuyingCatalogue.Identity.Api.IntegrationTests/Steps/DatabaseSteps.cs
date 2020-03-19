@@ -17,7 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"the call to the database to set the field will fail")]
         public async Task GivenTheCallToTheDatabaseToSetTheFieldWillFail()
         {
-            await Database.DropUser(_settings.AdminConnectionString);
+            await Database.RemoveReadRole(_settings.AdminConnectionString);
         }
     }
 }
