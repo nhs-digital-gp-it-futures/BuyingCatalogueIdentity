@@ -6,6 +6,10 @@ trigger:
 - master
 - development
 
+pr:
+- master
+- development
+
 pool:
   vmImage: windows-2019
 
