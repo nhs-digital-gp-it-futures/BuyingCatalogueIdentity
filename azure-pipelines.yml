@@ -1,6 +1,6 @@
 variables:
   dockerVersion: '19.03.5'
-  dotnetVersion: '3.1.x'
+  dotnetVersion: '3.1.101'
 
 trigger:
 - master
@@ -47,8 +47,18 @@ jobs:
       version: $(dotnetVersion)
       includePreviewVersions: false
 
+  - task: DockerInstaller@0
+    inputs:
+      dockerVersion: $(dockerVersion)
+
+  - script: echo "127.0.0.1       host.docker.internal" | sudo tee -a /etc/hosts
+    displayName: 'Resolve host.docker.internal'
+
   - script: docker-compose up --build -d
     displayName: 'Docker up'
+
+  - script: curl http://host.docker.internal:8072/home -v
+    displayName: 'Assert host is able to resolve host.docker.internal'
 
   - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
@@ -63,15 +73,9 @@ jobs:
       command: test
       projects: '**/*IntegrationTests.csproj'
       arguments: '-v n'
-    enabled: false
 
-  - script: |
-      docker-compose down -v
+  - script: docker-compose down -v
     displayName: 'Docker down'
-
-  - task: DockerInstaller@0
-    inputs:
-      dockerVersion: $(dockerVersion)
 
   - task: DockerCompose@0
     displayName: 'Build: Dev'

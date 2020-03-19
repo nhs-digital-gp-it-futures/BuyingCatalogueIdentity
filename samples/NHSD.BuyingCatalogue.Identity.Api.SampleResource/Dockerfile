@@ -16,4 +16,5 @@ RUN dotnet publish "NHSD.BuyingCatalogue.Identity.Api.SampleResource.csproj" -c 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN apt update && apt install iproute2 -y 
 ENTRYPOINT ["dotnet", "NHSD.BuyingCatalogue.Identity.Api.SampleResource.dll"]
