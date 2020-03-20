@@ -83,5 +83,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
             return Redirect(logoutRequest?.PostLogoutRedirectUri);
         }
+
+        [HttpGet]
+        public IActionResult Registration()
+        {
+            return View();
+        }
     }
 }
