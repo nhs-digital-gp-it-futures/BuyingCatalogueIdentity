@@ -1,10 +1,17 @@
-﻿IF '$(CREATE_EA_USER)' = 'True'
+﻿DECLARE @createUser AS nvarchar(4) = '$(CREATE_EA_USER)';
+DECLARE @email AS nvarchar(256) = '$(EA_USER_EMAIL)';
+
+IF @createUser = 'True'
 AND NOT EXISTS (
     SELECT *
       FROM dbo.AspNetUsers
-      WHERE UserName = '$(EA_USER_EMAIL)')
+      WHERE UserName = @email)
 BEGIN
-    DECLARE @normalizedUserName AS nvarchar(256) = UPPER('$(EA_USER_EMAIL)');
+    DECLARE @firstName AS nvarchar(50) = '$(EA_USER_FIRST_NAME)';
+    DECLARE @lastName AS nvarchar(50) = '$(EA_USER_LAST_NAME)';
+    DECLARE @normalizedUserName AS nvarchar(256) = UPPER(@email);
+    DECLARE @passwordHash AS nvarchar(max) = '$(EA_USER_PASSWORD_HASH)';
+    DECLARE @phoneNumber AS nvarchar(max) = '$(EA_USER_PHONE)';
 
     DECLARE @executiveAgencyRoleId AS nchar(5) = 'RO116';
     DECLARE @organisationId AS uniqueidentifier = (SELECT OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @executiveAgencyRoleId);
@@ -17,8 +24,8 @@ BEGIN
         AccessFailedCount, ConcurrencyStamp, LockoutEnabled, SecurityStamp, TwoFactorEnabled
     )
 	VALUES
-	(CAST(NEWID() AS nchar(36)), '$(EA_USER_EMAIL)', @normalizedUserName, '$(EA_USER_PASSWORD_HASH)',
-        '$(EA_USER_FIRST_NAME)', '$(EA_USER_LAST_NAME)', '$(EA_USER_EMAIL)', @normalizedUserName, 1, '$(EA_USER_PHONE)', 1,
+	(CAST(NEWID() AS nchar(36)), @email, @normalizedUserName, @passwordHash,
+        @firstName, @lastName, @email, @normalizedUserName, 1, @phoneNumber, 1,
         @organisationId, 'Authority', 1, 0,
         0, NEWID(), 1, NEWID(), 0);
 END;
