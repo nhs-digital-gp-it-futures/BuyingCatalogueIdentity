@@ -33,12 +33,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{6E8AC1BC-9163-4D3A-A887-880C114C74E7}"
 	ProjectSection(SolutionItems) = preProject
+		docker-compose-build.yml = docker-compose-build.yml
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.Testing.Data", "tests\NHSD.BuyingCatalogue.Identity.Api.Testing.Data\NHSD.BuyingCatalogue.Identity.Api.Testing.Data.csproj", "{46650B82-DFE0-481C-8F95-E748320BA5FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Organisations.Api", "src\NHSD.BuyingCatalogue.Organisations.Api\NHSD.BuyingCatalogue.Organisations.Api.csproj", "{22FF755F-4D13-469F-AC26-07A9FC738899}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organisations.Api", "src\NHSD.BuyingCatalogue.Organisations.Api\NHSD.BuyingCatalogue.Organisations.Api.csproj", "{22FF755F-4D13-469F-AC26-07A9FC738899}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
