@@ -23,8 +23,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private readonly string _organisationUrl;
 
         private readonly ScenarioContext _context;
-        private Response _response;
-        private Settings _settings;
+        private readonly Response _response;
+        private readonly Settings _settings;
 
         public UserSteps(ScenarioContext context, Response response, Settings settings)
         {
@@ -101,39 +101,60 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
         private static string GenerateHash(string password)
         {
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                var salt = new byte[128 / 8];
-                rng.GetBytes(salt); //The GetMethod fills the salt array with random data
-                var pbkdf2Hash = KeyDerivation.Pbkdf2(password: password,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 10000,
-                    numBytesRequested: 32);
+            const int IdentityVersion = 1; // 1 = Identity V3
+            const int IterationCount = 10000;
+            const int PasswordHashLength = 32;
+            const KeyDerivationPrf HashAlgorithm = KeyDerivationPrf.HMACSHA256;
+            const int SaltLength = 16;
 
-                var identityV3Hash = new byte[1 + 4/*KeyDerivationPrf value*/ + 4/*Iteration count*/ + 4/*salt size*/ + 16 /*salt*/ + 32 /*password hash size*/];
-                identityV3Hash[0] = 1;
-                uint prf = (uint)KeyDerivationPrf.HMACSHA256;
-                byte[] prfAsByteArray = BitConverter.GetBytes(prf).Reverse().ToArray();
-                Buffer.BlockCopy(prfAsByteArray, 0, identityV3Hash, 1, 4);
-                byte[] iterationCountAsByteArray = BitConverter.GetBytes((uint)10000).Reverse().ToArray();
-                Buffer.BlockCopy(iterationCountAsByteArray, 0, identityV3Hash, 1 + 4, 4);
-                byte[] saltSizeInByteArray = BitConverter.GetBytes((uint)16).Reverse().ToArray();
-                Buffer.BlockCopy(saltSizeInByteArray, 0, identityV3Hash, 1 + 4 + 4, 4);
-                Buffer.BlockCopy(salt, 0, identityV3Hash, 1 + 4 + 4 + 4, salt.Length);
-                Buffer.BlockCopy(pbkdf2Hash, 0, identityV3Hash, 1 + 4 + 4 + 4 + salt.Length, pbkdf2Hash.Length);
-                var identityV3Base64Hash = Convert.ToBase64String(identityV3Hash);
-                return identityV3Base64Hash;
+            using var rng = RandomNumberGenerator.Create();
+            var salt = new byte[SaltLength];
+            rng.GetBytes(salt); //The GetBytes method fills the salt array with random data
+
+            var pbkdf2Hash = KeyDerivation.Pbkdf2(
+                password,
+                salt,
+                HashAlgorithm,
+                IterationCount,
+                PasswordHashLength);
+
+            var identityVersionData = new byte[] {IdentityVersion};
+            var prfData = BitConverter.GetBytes((uint)HashAlgorithm).Reverse().ToArray();
+            var iterationCountData = BitConverter.GetBytes((uint)IterationCount).Reverse().ToArray();
+            var saltSizeData = BitConverter.GetBytes((uint)SaltLength).Reverse().ToArray();
+
+            var hashElements = new[]
+            {
+                identityVersionData,
+                prfData,
+                iterationCountData,
+                saltSizeData,
+                salt,
+                pbkdf2Hash
+            };
+
+            var identityV3Hash = new List<byte>();
+            foreach (var data in hashElements)
+            {
+                identityV3Hash.AddRange(data);
             }
+
+            identityV3Hash.Count.Should().Be(61);
+            return Convert.ToBase64String(identityV3Hash.ToArray());
         }
 
         private class ExpectedUserTable
         {
             public string UserId { get; set; }
+
             public string FirstName { get; set; }
+
             public string LastName { get; set; }
+
             public string EmailAddress { get; set; }
+
             public string PhoneNumber { get; set; }
+
             public string IsDisabled { get; set; }
         }
 
@@ -141,11 +162,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             public string Password { get; set; } = "Pass123$";
             public string FirstName { get; set; } = "Test";
+
             public string LastName { get; set; } = "User";
+
             public string Email { get; set; }
+
             public string PhoneNumber { get; set; } = "01234567890";
+
             public bool Disabled { get; set; } = false;
+
             public string Id { get; set; }
+
             public string OrganisationName { get; set; }
         }
     }

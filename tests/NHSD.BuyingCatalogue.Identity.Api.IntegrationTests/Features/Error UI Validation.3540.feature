@@ -1,5 +1,5 @@
 ﻿Feature: Error UI Validation
-	As an Authority User
+    As an Authority User
     I want to see the error page
     So that I know when something has gone wrong
 
@@ -9,7 +9,7 @@
         | Organisation 1 | Ods 1   |
     And Users exist
         | Id  | OrganisationName | FirstName | LastName | Email         | PhoneNumber | Disabled | Password          |
-        | 123 | Organisation 1   | El        | Userino  | test@user.com | 01234567890 | false    | testingtesting123 |
+        | 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 |
     When the user navigates to a restricted web page
     Then the user is redirected to page account/login
     When the redirect URL is modified to be invalid

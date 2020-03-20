@@ -1,5 +1,5 @@
 ﻿Feature: Login UI
-	As an Authority User
+    As an Authority User
     I want to see the login page
     So that I can log into my application
 
