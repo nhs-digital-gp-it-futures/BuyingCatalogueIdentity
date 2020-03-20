@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<!--EXTERNAL_PROPERTIES: DOTNET_RUNNING_IN_CONTAINER-->
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -38,7 +39,7 @@
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
-  <Target Name="NpmInstall" BeforeTargets="Build" Condition="!Exists('node_modules') ">
+  <Target Name="NpmInstall" BeforeTargets="Build" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true') And !Exists('node_modules')">
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
     </Exec>
@@ -47,7 +48,8 @@
     <Exec Command="npm install" />
   </Target>
 
-  <Target Name="NpmRunBuild" BeforeTargets="Build" DependsOnTargets="NpmInstall">
+  <Target Name="NpmRunBuild" BeforeTargets="Build" AfterTargets="NpmInstall" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true')" >
+    <Message Importance="high" Text=" Recompiling scss files..." />
     <Exec Command="npm run build" />
   </Target>
 

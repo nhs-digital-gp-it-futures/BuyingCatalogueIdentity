@@ -19,14 +19,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
                 Console.WriteLine(discoveryDocument.Error);
                 return;
             }
-            
+
             // request token
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            TokenResponse tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
-                ClientId = "TokenClient",
-                ClientSecret = "TokenSecret",
-                Scope = "SampleResource"
+                ClientId = "PasswordClient",
+                ClientSecret = "PasswordSecret",
+                UserName = "Bobsmith@email.com",
+                Password = "Pass123$",
+                Scope = "Organisation"
             });
 
             if (tokenResponse.IsError)

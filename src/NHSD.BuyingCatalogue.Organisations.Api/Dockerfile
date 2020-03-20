@@ -6,11 +6,10 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
-WORKDIR /src
-COPY ["src/NHSD.BuyingCatalogue.Organisations.Api/NHSD.BuyingCatalogue.Organisations.Api.csproj", "src/NHSD.BuyingCatalogue.Organisations.Api/"]
-RUN dotnet restore "src/NHSD.BuyingCatalogue.Organisations.Api/NHSD.BuyingCatalogue.Organisations.Api.csproj"
+WORKDIR /
 COPY . .
-WORKDIR "/src/src/NHSD.BuyingCatalogue.Organisations.Api"
+
+WORKDIR "/src/NHSD.BuyingCatalogue.Organisations.Api"
 RUN dotnet build "NHSD.BuyingCatalogue.Organisations.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
@@ -19,4 +18,5 @@ RUN dotnet publish "NHSD.BuyingCatalogue.Organisations.Api.csproj" -c Release -o
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN apt update && apt install iproute2 -y 
 ENTRYPOINT ["dotnet", "NHSD.BuyingCatalogue.Organisations.Api.dll"]
