@@ -14,5 +14,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
         public string OrganisationFunction { get; set; }
 
         public bool Disabled { get; set; }
+
+        public bool CatalogueAgreementSigned { get; set; }
     }
 }
