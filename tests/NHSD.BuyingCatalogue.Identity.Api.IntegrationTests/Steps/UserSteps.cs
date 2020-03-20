@@ -69,12 +69,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
         {
             var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
-
-            var organisationId = Guid.Empty.ToString();
-            if (allOrganisations.ContainsKey(organisationName))
-            {
-                organisationId = allOrganisations?[organisationName].ToString();
-            }
+            allOrganisations.TryGetValue(organisationName, out Guid organisationId);
 
             using var client = new HttpClient();
             client.SetBearerToken(_context.Get(AccessTokenKey, ""));
@@ -101,27 +96,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
         private static string GenerateHash(string password)
         {
-            const int IdentityVersion = 1; // 1 = Identity V3
-            const int IterationCount = 10000;
-            const int PasswordHashLength = 32;
-            const KeyDerivationPrf HashAlgorithm = KeyDerivationPrf.HMACSHA256;
-            const int SaltLength = 16;
+            const int identityVersion = 1; // 1 = Identity V3
+            const int iterationCount = 10000;
+            const int passwordHashLength = 32;
+            const KeyDerivationPrf hashAlgorithm = KeyDerivationPrf.HMACSHA256;
+            const int saltLength = 16;
 
             using var rng = RandomNumberGenerator.Create();
-            var salt = new byte[SaltLength];
-            rng.GetBytes(salt); //The GetBytes method fills the salt array with random data
+            var salt = new byte[saltLength];
+            rng.GetBytes(salt);
 
             var pbkdf2Hash = KeyDerivation.Pbkdf2(
                 password,
                 salt,
-                HashAlgorithm,
-                IterationCount,
-                PasswordHashLength);
+                hashAlgorithm,
+                iterationCount,
+                passwordHashLength);
 
-            var identityVersionData = new byte[] {IdentityVersion};
-            var prfData = BitConverter.GetBytes((uint)HashAlgorithm).Reverse().ToArray();
-            var iterationCountData = BitConverter.GetBytes((uint)IterationCount).Reverse().ToArray();
-            var saltSizeData = BitConverter.GetBytes((uint)SaltLength).Reverse().ToArray();
+            var identityVersionData = new byte[] {identityVersion};
+            var prfData = BitConverter.GetBytes((uint)hashAlgorithm).Reverse().ToArray();
+            var iterationCountData = BitConverter.GetBytes((uint)iterationCount).Reverse().ToArray();
+            var saltSizeData = BitConverter.GetBytes((uint)saltLength).Reverse().ToArray();
 
             var hashElements = new[]
             {
@@ -161,6 +156,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private class NewUserTable
         {
             public string Password { get; set; } = "Pass123$";
+
             public string FirstName { get; set; } = "Test";
 
             public string LastName { get; set; } = "User";
