@@ -8,5 +8,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
     public interface IUsersRepository
     {
         Task<IEnumerable<ApplicationUser>> GetUsersByOrganisationIdAsync(Guid organisationId);
+
+        Task CreateUserAsync(ApplicationUser user);
     }
 }

@@ -21,5 +21,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
         {
             return await _context.Users.Where(x => x.PrimaryOrganisationId == organisationId).ToListAsync();
         }
+
+        public async Task CreateUserAsync(ApplicationUser user)
+        {
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

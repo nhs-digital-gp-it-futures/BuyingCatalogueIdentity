@@ -5,14 +5,16 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 using NUnit.Framework;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
+namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 {
+    [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public sealed class OrganisationControllerTests
     {
         private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();
