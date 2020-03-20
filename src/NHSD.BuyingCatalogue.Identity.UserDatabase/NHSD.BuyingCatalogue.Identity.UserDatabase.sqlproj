@@ -94,7 +94,7 @@
       <DefaultValue>User</DefaultValue>
       <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="EA_USER_NAME">
+    <SqlCmdVariable Include="EA_USER_EMAIL">
       <DefaultValue>user@agency.com</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
