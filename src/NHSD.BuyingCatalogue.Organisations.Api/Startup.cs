@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Net.Http;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,12 +28,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("CatalogueUsers")));
 
             var authority = Configuration.GetValue<string>("authority");
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
+            var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
@@ -40,6 +43,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     options.Authority = authority;
                     options.RequireHttpsMetadata = requireHttps;
                     options.Audience = "Organisation";
+                    if (allowInvalidCertificate)
+                    {
+                        options.BackchannelHttpHandler = new HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback =
+                                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        };
+                    }
                 });
 
             services.AddControllers();
