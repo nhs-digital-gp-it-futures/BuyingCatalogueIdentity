@@ -16,6 +16,7 @@ using static NHSD.BuyingCatalogue.Identity.Api.Constants.ApplicationClaimTypes;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public sealed class ProfileServiceTests
     {
         [Test]

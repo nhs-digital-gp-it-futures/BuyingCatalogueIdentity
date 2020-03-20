@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
-using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
@@ -17,32 +17,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         public UsersController(IUsersRepository usersRepository)
         {
-            _usersRepository = usersRepository;
+            _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
-
-        private static readonly IList<OrganisationUserViewModel> _users = new List<OrganisationUserViewModel>
-        {
-            new OrganisationUserViewModel
-            {
-                UserId = "1234-56789",
-                FirstName = "John",
-                LastName = "Smith",
-                PhoneNumber = "01234567890",
-                EmailAddress = "a.b@c.com",
-                IsDisabled = false,
-                OrganisationId = new Guid("FFE7CB2F-9494-4CC7-A348-420D502956D9")
-            },
-            new OrganisationUserViewModel
-            {
-                UserId = "9876-54321",
-                FirstName = "Benny",
-                LastName = "Hill",
-                PhoneNumber = "09876543210",
-                EmailAddress = "g.b@z.com",
-                IsDisabled = true,
-                OrganisationId = new Guid("FFE7CB2F-9494-4CC7-A348-420D502956D9")
-            }
-        };
 
         [HttpGet]
         public async Task<ActionResult> GetUsersByOrganisationId(Guid organisationId)
@@ -65,12 +41,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateUser(Guid organisationId, OrganisationUserViewModel userViewModel)
+        public async Task<ActionResult> CreateUserAsync(Guid organisationId, CreateUserRequestViewModel viewModel)
         {
-            userViewModel.UserId = Guid.NewGuid().ToString();
-            userViewModel.OrganisationId = organisationId;
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
-            _users.Add(userViewModel);
+            ApplicationUser newApplicationUser = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = viewModel.FirstName,
+                LastName = viewModel.LastName,
+                PhoneNumber = viewModel.PhoneNumber,
+                Email = viewModel.EmailAddress,
+                NormalizedEmail = viewModel.EmailAddress?.ToUpperInvariant(),
+                PrimaryOrganisationId = organisationId,
+                OrganisationFunction = "Buyer",
+                CatalogueAgreementSigned = false
+            };
+            
+            await _usersRepository.CreateUserAsync(newApplicationUser);
 
             return Ok();
         }
