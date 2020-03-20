@@ -7,9 +7,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /
-COPY ["src/NHSD.BuyingCatalogue.Organisations.Api/NHSD.BuyingCatalogue.Organisations.Api.csproj", "src/NHSD.BuyingCatalogue.Organisations.Api/"]
-RUN dotnet restore "src/NHSD.BuyingCatalogue.Organisations.Api/NHSD.BuyingCatalogue.Organisations.Api.csproj"
 COPY . .
+
 WORKDIR "/src/NHSD.BuyingCatalogue.Organisations.Api"
 RUN dotnet build "NHSD.BuyingCatalogue.Organisations.Api.csproj" -c Release -o /app/build
 
