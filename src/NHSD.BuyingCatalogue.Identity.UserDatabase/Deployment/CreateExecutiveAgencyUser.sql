@@ -1,7 +1,7 @@
 ﻿DECLARE @createUser AS nvarchar(4) = '$(CREATE_EA_USER)';
 DECLARE @email AS nvarchar(256) = '$(EA_USER_EMAIL)';
 
-IF @createUser = 'True'
+IF UPPER(@createUser) = 'TRUE'
 AND NOT EXISTS (
     SELECT *
       FROM dbo.AspNetUsers
