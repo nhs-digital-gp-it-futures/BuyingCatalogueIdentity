@@ -6,5 +6,10 @@ GO
 GRANT CONNECT TO NHSD;
 GO
 
-ALTER ROLE db_owner
+ALTER ROLE db_datareader
 ADD MEMBER NHSD;
+GO
+
+ALTER ROLE db_datawriter
+ADD MEMBER NHSD;
+GO
