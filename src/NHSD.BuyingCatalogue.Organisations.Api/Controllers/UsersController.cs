@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
-using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
@@ -40,12 +41,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateUser(Guid organisationId, OrganisationUserViewModel userViewModel)
+        public async Task<ActionResult> CreateUserAsync(Guid organisationId, CreateUserRequestViewModel viewModel)
         {
-            userViewModel.UserId = Guid.NewGuid().ToString();
-            userViewModel.OrganisationId = organisationId;
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
-            //_users.Add(userViewModel);
+            ApplicationUser newApplicationUser = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = viewModel.FirstName,
+                LastName = viewModel.LastName,
+                PhoneNumber = viewModel.PhoneNumber,
+                Email = viewModel.EmailAddress,
+                NormalizedEmail = viewModel.EmailAddress?.ToUpperInvariant(),
+                PrimaryOrganisationId = organisationId,
+                OrganisationFunction = "Buyer",
+                CatalogueAgreementSigned = false
+            };
+            
+            await _usersRepository.CreateUserAsync(newApplicationUser);
 
             return Ok();
         }

@@ -12,13 +12,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         private readonly Mock<IUsersRepository> _usersRepositoryMock;
         private IEnumerable<ApplicationUser> _users;
 
-        internal UsersControllerBuilder()
+        private UsersControllerBuilder()
         {
             _usersRepositoryMock = new Mock<IUsersRepository>();
             
             _users = new List<ApplicationUser>();
             _usersRepositoryMock.Setup(x => x.GetUsersByOrganisationIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(() => _users);
+
+            _usersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
+        }
+
+        internal static UsersControllerBuilder Create()
+        {
+            return new UsersControllerBuilder();
         }
 
         internal UsersControllerBuilder SetUsers(IEnumerable<ApplicationUser> users)

@@ -13,6 +13,8 @@ using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 {
+    [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public sealed class OrganisationControllerTests
     {
         private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();

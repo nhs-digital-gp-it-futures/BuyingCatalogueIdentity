@@ -7,18 +7,23 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
-using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers;
+using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Comparers;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public sealed class UsersControllerTests
     {
         [Test]
         public async Task GetUsersByOrganisationId_NoUsers_ReturnsEmptyList()
         {
-            var built = new UsersControllerBuilder().Build();
+            var built = UsersControllerBuilder
+                .Create()
+                .Build();
+
             using var controller = built.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
@@ -36,47 +41,113 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             var users = new List<(ApplicationUser RepoUser, OrganisationUserViewModel Expected)>
             {
-                CreateUser(false), CreateUser(true), CreateUser(false)
+                CreateApplicationUserTestData(false), 
+                CreateApplicationUserTestData(true), 
+                CreateApplicationUserTestData(false)
             };
-            var built = new UsersControllerBuilder()
+
+            var built = UsersControllerBuilder
+                .Create()
                 .SetUsers(users.Select(x => x.RepoUser))
                 .Build();
+
             using var controller = built.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
-            
+
             result.Should().NotBeNull();
             var viewModel = result.Value as GetAllOrganisationUsersViewModel;
             viewModel.Should().NotBeNull();
-            
+
             viewModel.Users.Should().BeEquivalentTo(users.Select(x => x.Expected));
+        }
+
+        [Test]
+        public async Task GetUsersByOrganisationId_UserRepository_GetUsersByOrganisationIdAsync_CalledOnce()
+        {
+            var built = UsersControllerBuilder
+                .Create()
+                .Build();
+
+            using var controller = built.Controller;
+
+            await controller.GetUsersByOrganisationId(Guid.Empty);
 
             built.UserRepository.Verify(x => x.GetUsersByOrganisationIdAsync(Guid.Empty), Times.Once);
         }
 
-        internal static (ApplicationUser RepoUser, OrganisationUserViewModel ExpectedUser) CreateUser(bool disabled)
+        [Test]
+        public async Task CreateUserAsync_NewApplicationUser_ReturnsStatusOk()
         {
-            var repoUser = new ApplicationUser
+            var built = UsersControllerBuilder
+                .Create()
+                .Build();
+
+            using var controller = built.Controller;
+
+            var response = await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel()) as OkResult;
+
+            response.Should().BeEquivalentTo(new OkResult());
+        }
+
+        [Test]
+        public async Task CreateUserAsync_UserRepository_CreateUserAsync_CalledOnce()
+        {
+            var built = UsersControllerBuilder
+                .Create()
+                .Build();
+
+            using var controller = built.Controller;
+
+            var organisationId = Guid.NewGuid();
+            var createUserRequestViewModel = new CreateUserRequestViewModel
             {
-                Id = Guid.NewGuid().ToString(),
-                Email = Guid.NewGuid().ToString(),
-                PhoneNumber = Guid.NewGuid().ToString(),
-                FirstName = Guid.NewGuid().ToString(),
-                LastName = Guid.NewGuid().ToString(),
-                Disabled = disabled
+                FirstName = "Bob",
+                LastName = "Smith",
+                PhoneNumber = "0123456789",
+                EmailAddress = "a.b@c.com"
             };
+
+            await controller.CreateUserAsync(organisationId, createUserRequestViewModel);
+
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithFirstName(createUserRequestViewModel.FirstName)
+                .WithLastName(createUserRequestViewModel.LastName)
+                .WithPhoneNumber(createUserRequestViewModel.PhoneNumber)
+                .WithEmailAddress(createUserRequestViewModel.EmailAddress)
+                .WithPrimaryOrganisationId(organisationId)
+                .Build();
+
+            built.UserRepository.Verify(x => x.CreateUserAsync(
+                It.Is<ApplicationUser>(
+                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expectedApplicationUser, actual)))
+                , Times.Once);
+        }
+
+        private static (ApplicationUser RepoUser, OrganisationUserViewModel ExpectedUser) CreateApplicationUserTestData(bool disabled)
+        {
+            var repositoryApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithFirstName(Guid.NewGuid().ToString())
+                .WithLastName(Guid.NewGuid().ToString())
+                .WithPhoneNumber(Guid.NewGuid().ToString())
+                .WithEmailAddress(Guid.NewGuid().ToString())
+                .WithDisabled(disabled)
+                .Build();
+
             return (
-                RepoUser: repoUser,
+                RepoUser: repositoryApplicationUser,
                 ExpectedUser: new OrganisationUserViewModel
                 {
-                    UserId = repoUser.Id,
-                    EmailAddress = repoUser.Email,
-                    PhoneNumber = repoUser.PhoneNumber,
-                    FirstName = repoUser.FirstName,
-                    LastName = repoUser.LastName,
-                    IsDisabled = repoUser.Disabled
+                    UserId = repositoryApplicationUser.Id,
+                    EmailAddress = repositoryApplicationUser.Email,
+                    PhoneNumber = repositoryApplicationUser.PhoneNumber,
+                    FirstName = repositoryApplicationUser.FirstName,
+                    LastName = repositoryApplicationUser.LastName,
+                    IsDisabled = repositoryApplicationUser.Disabled
                 }
-                );
+            );
         }
     }
 }
