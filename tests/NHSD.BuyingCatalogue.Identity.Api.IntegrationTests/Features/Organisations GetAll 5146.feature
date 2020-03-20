@@ -13,6 +13,8 @@ Background:
 @5146
 Scenario: 1. Get all of the organisations
 	Given an authority user is logged in
+		| Username           | Password | Scope        |
+		| BobSmith@email.com | Pass123$ | Organisation |
 	When a GET request is made for the Organisations section
 	Then a response with status code 200 is returned
 	And the Organisations list is returned with the following values
@@ -29,6 +31,8 @@ Scenario: 2. If a user is not authorised then they cannot access the organisatio
 @5146
 Scenario: 3. Service Failure
 	Given an authority user is logged in
+		| Username           | Password | Scope        |
+		| BobSmith@email.com | Pass123$ | Organisation |
 	Given the call to the database to set the field will fail
 	When a GET request is made for the Organisations section
 	Then a response with status code 500 is returned
