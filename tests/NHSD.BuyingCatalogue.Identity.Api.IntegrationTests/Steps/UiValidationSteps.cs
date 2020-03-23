@@ -62,12 +62,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         }
 
         [Then(@"element with Data ID ([^\s]+) contains a link to (.*)")]
-        public void ThenTheElementIsALinkTo(string dataId, string link)
+        public void ThenTheElementContainsALinkTo(string dataId, string link)
         {
             var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var linkElements = element.FindElements(By.TagName("a"));
             var linkElement = linkElements.FirstOrDefault(x => x.GetAttribute("href").EndsWith(link, StringComparison.OrdinalIgnoreCase));
             linkElement.Should().NotBeNull($"an element with link {link} should be found");
+        }
+
+        [Then(@"element with Data ID ([^\s]+) is a link to (.*)")]
+        public void ThenTheElementIsALinkTo(string dataId, string link)
+        {
+            var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
+            var attribute = element.GetAttribute("href");
+            attribute.Should().EndWithEquivalent(link);
         }
     }
 }
