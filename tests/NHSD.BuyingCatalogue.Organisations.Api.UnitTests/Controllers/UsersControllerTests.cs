@@ -8,6 +8,7 @@ using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Comparers;
+using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 using NUnit.Framework;
 
@@ -18,22 +19,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
     public sealed class UsersControllerTests
     {
         [Test]
+        public async Task GetUsersByOrganisationId_ReturnsOkObjectResult()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            var result = await controller.GetUsersByOrganisationId(Guid.Empty);
+            result.Should().BeOfType<OkObjectResult>();
+            (result as OkObjectResult).Value.Should().BeOfType<GetAllOrganisationUsersViewModel>();
+        }
+
+        [Test]
         public async Task GetUsersByOrganisationId_NoUsers_ReturnsEmptyList()
         {
-            var built = UsersControllerBuilder
-                .Create()
-                .Build();
+            var context = UsersControllerTestContext.Setup();
 
-            using var controller = built.Controller;
+            using var controller = context.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
-
-            result.Should().NotBeNull();
             var users = result.Value as GetAllOrganisationUsersViewModel;
-            users.Should().NotBeNull();
             users.Users.Should().BeEmpty();
-
-            built.UserRepository.Verify(x => x.GetUsersByOrganisationIdAsync(Guid.Empty), Times.Once);
         }
 
         [Test]
@@ -46,18 +52,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 CreateApplicationUserTestData(false)
             };
 
-            var built = UsersControllerBuilder
-                .Create()
-                .SetUsers(users.Select(x => x.RepoUser))
-                .Build();
+            var context = UsersControllerTestContext.Setup();
+            context.Users = users.Select(x => x.RepoUser);
 
-            using var controller = built.Controller;
+            using var controller = context.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
-
-            result.Should().NotBeNull();
             var viewModel = result.Value as GetAllOrganisationUsersViewModel;
-            viewModel.Should().NotBeNull();
 
             viewModel.Users.Should().BeEquivalentTo(users.Select(x => x.Expected));
         }
@@ -65,39 +66,33 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public async Task GetUsersByOrganisationId_UserRepository_GetUsersByOrganisationIdAsync_CalledOnce()
         {
-            var built = UsersControllerBuilder
-                .Create()
-                .Build();
+            var context = UsersControllerTestContext.Setup();
 
-            using var controller = built.Controller;
+            using var controller = context.Controller;
 
             await controller.GetUsersByOrganisationId(Guid.Empty);
 
-            built.UserRepository.Verify(x => x.GetUsersByOrganisationIdAsync(Guid.Empty), Times.Once);
+            context.UsersRepositoryMock.Verify(x => x.GetUsersByOrganisationIdAsync(Guid.Empty), Times.Once);
         }
 
         [Test]
         public async Task CreateUserAsync_NewApplicationUser_ReturnsStatusOk()
         {
-            var built = UsersControllerBuilder
-                .Create()
-                .Build();
+            var context = UsersControllerTestContext.Setup();
 
-            using var controller = built.Controller;
+            using var controller = context.Controller;
 
-            var response = await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel()) as OkResult;
+            var response = await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel());
 
-            response.Should().BeEquivalentTo(new OkResult());
+            response.Should().BeOfType<OkResult>();
         }
 
         [Test]
         public async Task CreateUserAsync_UserRepository_CreateUserAsync_CalledOnce()
         {
-            var built = UsersControllerBuilder
-                .Create()
-                .Build();
+            var context = UsersControllerTestContext.Setup();
 
-            using var controller = built.Controller;
+            using var controller = context.Controller;
 
             var organisationId = Guid.NewGuid();
             var createUserRequestViewModel = new CreateUserRequestViewModel
@@ -119,10 +114,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithPrimaryOrganisationId(organisationId)
                 .Build();
 
-            built.UserRepository.Verify(x => x.CreateUserAsync(
+            context.UsersRepositoryMock.Verify(x => x.CreateUserAsync(
                 It.Is<ApplicationUser>(
-                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expectedApplicationUser, actual)))
-                , Times.Once);
+                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expectedApplicationUser, actual))),
+                Times.Once);
         }
 
         private static (ApplicationUser RepoUser, OrganisationUserViewModel ExpectedUser) CreateApplicationUserTestData(bool disabled)
