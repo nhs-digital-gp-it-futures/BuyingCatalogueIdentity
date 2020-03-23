@@ -69,7 +69,6 @@ jobs:
         n=$[$n+1]
         sleep 1
       done
-
     displayName: 'Assert host is able to resolve host.docker.internal'
 
   - task: DotNetCoreCLI@2
