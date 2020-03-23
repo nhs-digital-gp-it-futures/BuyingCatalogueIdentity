@@ -61,7 +61,15 @@ jobs:
   - script: docker-compose up --build -d
     displayName: 'Docker up'
 
-  - script: curl http://host.docker.internal:8072/home -v
+  - script: | 
+      n=0
+      until [ $n -ge 15 ]
+      do
+        curl http://host.docker.internal:8072/home -v && break
+        n=$[$n+1]
+        sleep 1
+      done
+
     displayName: 'Assert host is able to resolve host.docker.internal'
 
   - task: DotNetCoreCLI@2
