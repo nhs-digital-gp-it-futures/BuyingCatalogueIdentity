@@ -54,6 +54,7 @@ When making changes to the database make sure to remove the Docker volume as des
 
 
 #### STMP Server
+
 A local SMTP server has been added to the docker network for development purposes.
 
 ##### How to connect
@@ -62,7 +63,6 @@ A local SMTP server has been added to the docker network for development purpose
 |            :-:             |            :-:             |  :-:  |
 | within the docker network  | nhsd.buyingcatalogue.email | 25    |
 | outside the docker network | localhost                  | 1025  |
-
 
 Navigate yourself to [localhost:1080](http:localhost:1080/) to view the mailbox UI
 
