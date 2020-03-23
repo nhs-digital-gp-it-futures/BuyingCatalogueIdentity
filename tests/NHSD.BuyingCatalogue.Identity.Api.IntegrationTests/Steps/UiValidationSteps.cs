@@ -70,12 +70,26 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             linkElement.Should().NotBeNull($"an element with link {link} should be found");
         }
 
+        [Given(@"the user clicks element with Data ID ([^\s]+)")]
+        public void GivenTheUserClicksElementWithDataId(string dataId)
+        {
+            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]")).Click();
+        }
+
         [Then(@"element with Data ID ([^\s]+) is a link to (.*)")]
         public void ThenTheElementIsALinkTo(string dataId, string link)
         {
             var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var attribute = element.GetAttribute("href");
             attribute.Should().EndWithEquivalent(link);
+        }
+
+        [Then(@"element with Data ID ([^\s]+) is email link to address (.*)")]
+        public void ThenElementWithDataIdIsEmailLinkToAddress(string dataId, string emailAddress)
+        {
+            var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
+            var attribute = element.GetAttribute("href");
+            attribute.Should().StartWithEquivalent($"mailto:{emailAddress}");
         }
     }
 }
