@@ -1,12 +1,9 @@
 ﻿Feature: Login UI
-	As an Authority User
+    As an Authority User
     I want to see the login page
     So that I can log into my application
 
     Background: 
-    Given There are Users in the database
-        | EmailAddress         | Password |
-        | AliceSmith@email.com | Pass123$ |
     When the user navigates to a restricted web page
     Then the user is redirected to page account/login
 

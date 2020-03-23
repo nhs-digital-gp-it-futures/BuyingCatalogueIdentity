@@ -20,10 +20,18 @@ This application uses **.NET core** to provide an identity service currently imp
 
 This repository uses **.NET Core**, **Nodejs** and **Docker**.
 
-It contains one endpoint
+It contains the following endpoints:
 
 - account/login
   - Returns a HTML view.
+- account/logout
+  - Ends the current session
+- api/v1/organisations
+  - Returns all organisations
+- api/v1/organisations/{id}
+  - Returns the organisation with the given ID
+- api/v1/organisations/{organisationId}/users
+  - Returns the users for the organisation with the given ID
 
 The application is broken down into the following project libraries:
 
@@ -35,12 +43,27 @@ The application is broken down into the following project libraries:
   - Contains all of the integration tests for the API project.
 - Identity.UserDatabase
   - Defines the artefacts for the Identity database, which is used to manage users and organizations
+- Organisations.API
+  - Defines and exposes the endpoints for viewing and managing organisations and their users
 
 #### Database project
 
 The database project is a SQL Server project, which is only fully supported by Visual Studio on Windows. However, some limited functionality should still be available in other editors.
 
 When making changes to the database make sure to remove the Docker volume as described [below](#to-stop-the-application) before [running the application](#running-the-application).
+
+#### STMP Server
+
+A local SMTP server has been added to the docker network for development purposes.
+
+##### How to connect
+
+| From                       | Host                       | Port  |
+|            :-:             |            :-:             |  :-:  |
+| within the docker network  | nhsd.buyingcatalogue.email | 25    |
+| outside the docker network | localhost                  | 1025  |
+
+Navigate yourself to [localhost:1080](http://localhost:1080/) to view the mailbox UI
 
 ## Running the Application
 
@@ -66,4 +89,4 @@ docker-compose down -v
 
 ### Running the Integration Tests
 
-TO BE COMPLETED
+Start the application as decribed in [running the application](#running-the-application) and run the integration tests using your preferred test runner.

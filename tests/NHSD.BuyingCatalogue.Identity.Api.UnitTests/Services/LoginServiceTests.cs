@@ -9,7 +9,7 @@ using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NUnit.Framework;
 using IdentitySignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
+namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]

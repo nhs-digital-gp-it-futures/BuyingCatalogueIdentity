@@ -16,6 +16,12 @@ services:
       - DB_NAME=${NHSD_LOCAL_DB_NAME:-CatalogueUsers}
       - NHSD_PASSWORD=DisruptTheMarket1!
       - INSERT_TEST_DATA=True
+      - CREATE_EA_USER=True
+      - EA_USER_FIRST_NAME=Agency
+      - EA_USER_LAST_NAME=User
+      - EA_USER_EMAIL=user@agency.com
+      - EA_USER_PASSWORD_HASH=AQAAAAEAACcQAAAAEEOFkNNrFpKmDC2TBv2CP/dzxfnjdXk97RoqRlunE/CGs2tmFcewKZj4M/fITiP2tg==
+      - EA_USER_PHONE=01234567890
     ports:
       - "${NHSD_LOCAL_DB_PORT:-1533}:1433"
       
@@ -136,6 +142,15 @@ services:
       - /bin/sh
       - -c 
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' | sudo tee -a /etc/hosts && /opt/bin/entry_point.sh
+
+  nhsd.buyingcatalogue.email:
+    image: maildev/maildev
+    ports:
+      - "1080:80" # UI
+      - "1025:25"
+    networks:
+        - nhsd_bcnetwork
+
 networks: 
   nhsd_bcnetwork:
     name: nhsd_bcnetwork
