@@ -14,25 +14,48 @@ Background:
 
 @5447
 Scenario: 1. Get the claims of a user who provides no scope
-	Given an authority user is logged in
+	Given an user is logged in
 		| Username            | Password     | Scope |
 		| PennyLane@email.com | S0mePa$$w0rd | NULL  |
-    Then the access token should be empty
+	Then the access token should be empty
 
 @5447
-Scenario: 2. Get the claims of a user who's scope allows them to not access anything
-	Given an authority user is logged in
+Scenario: 2. Get the claims of a buyer user
+	Given an user is logged in
 		| Username            | Password     | Scope   |
 		| PennyLane@email.com | S0mePa$$w0rd | profile |
 	And the claims contains the following information
-		| client_id      | sub    | idp   | preferred_username  | unique_name         | given_name | family_name | name       | email               | email_verified | organisationFunction | scope   |
-		| PasswordClient | 012345 | local | PennyLane@email.com | PennyLane@email.com | Penny      | Lane        | Penny Lane | PennyLane@email.com | true           | TestUser             | profile |
+		| ClaimType            | ClaimValue          |
+		| client_id            | PasswordClient      |
+		| sub                  | 012345              |
+		| idp                  | local               |
+		| preferred_username   | PennyLane@email.com |
+		| unique_name          | PennyLane@email.com |
+		| given_name           | Penny               |
+		| family_name          | Lane                |
+		| name                 | Penny Lane          |
+		| email                | PennyLane@email.com |
+		| email_verified       | true                |
+		| organisationFunction | TestUser            |
+		| scope                | profile             |
 
 @5447
-Scenario: 3. Get the claims of a user who can access the organisations
-	Given an authority user is logged in
+Scenario: 3. Get the claims of an authority user
+	Given an user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	And the claims contains the following information
-		| aud          | client_id      | sub    | idp   | preferred_username   | unique_name          | given_name | family_name | name     | email                | email_verified | organisationFunction | scope        |
-		| Organisation | PasswordClient | 123456 | local | PostmanPat@email.com | PostmanPat@email.com | Post       | Pat         | Post Pat | PostmanPat@email.com | true           | TestUser             | Organisation |
+		| ClaimType            | ClaimValue           |
+		| aud                  | Organisation         |
+		| client_id            | PasswordClient       |
+		| sub                  | 123456               |
+		| idp                  | local                |
+		| preferred_username   | PostmanPat@email.com |
+		| unique_name          | PostmanPat@email.com |
+		| given_name           | Post                 |
+		| family_name          | Pat                  |
+		| name                 | Post Pat             |
+		| email                | PostmanPat@email.com |
+		| email_verified       | true                 |
+		| organisationFunction | TestUser             |
+		| scope                | Organisation         |

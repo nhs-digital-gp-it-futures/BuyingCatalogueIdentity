@@ -11,9 +11,9 @@ Background:
 
 @5147
 Scenario: 1. Get the details of a single organisation
-	Given an authority user is logged in
-		| Username           | Password | Scope        |
-		| BobSmith@email.com | Pass123$ | Organisation |
+	Given an user is logged in
+		| Username           | Password | Scope                |
+		| BobSmith@email.com | Pass123$ | profile Organisation |
 	When a GET request is made for an organisation with name Organisation 1
 	Then a response with status code 200 is returned
 	And the Organisation is returned with the following values
@@ -22,7 +22,7 @@ Scenario: 1. Get the details of a single organisation
 
 @5147
 Scenario: 2. Organisation is not found
-	Given an authority user is logged in
+	Given an user is logged in
 		| Username           | Password | Scope        |
 		| BobSmith@email.com | Pass123$ | Organisation |
 	And an Organisation with name Organisation 3 does not exist
@@ -36,7 +36,7 @@ Scenario: 3. If a user is not authorised then they cannot access the organisatio
 
 @5147
 Scenario: 4. Service Failure
-	Given an authority user is logged in
+	Given an user is logged in
 		| Username           | Password | Scope        |
 		| BobSmith@email.com | Pass123$ | Organisation |
 	And the call to the database to set the field will fail

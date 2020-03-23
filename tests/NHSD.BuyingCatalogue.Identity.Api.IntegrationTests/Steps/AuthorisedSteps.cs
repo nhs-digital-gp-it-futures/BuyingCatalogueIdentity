@@ -16,19 +16,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class AuthorisedSteps
     {
         private readonly ScenarioContext _context;
-        private readonly ContextConstants _contextConstants;
         private IConfigurationRoot _configuration { get; }
 
         public AuthorisedSteps(IConfigurationRoot configuration, ScenarioContext context)
         {
             _configuration = configuration;
             _context = context;
-            _contextConstants = new ContextConstants();
         }
         
 
-        [Given(@"an authority user is logged in")]
-        public async Task GivenAnAuthorityUserIsLoggedInWithUsernameAndPassword(Table table)
+        [Given(@"an user is logged in")]
+        public async Task GivenAnUserIsLoggedInWithUsernameAndPassword(Table table)
         {
             var user = table.CreateSet<UserTable>().First();
 
@@ -66,28 +64,29 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 return;
             }
 
-            _context[_contextConstants.AccessTokenKey] = tokenResponse.AccessToken;
+            _context[ScenarioContextKeys.AccessTokenKey] = tokenResponse.AccessToken;
         }
 
         [Given(@"the claims contains the following information")]
         public void GivenTheClaimsContainsOrganisation(Table table)
         {
-            var expectedClaims = table.Rows.First().Select(x => (x.Key, x.Value));
+            var expectedClaims = table.CreateSet<(string, string)>();
             
             var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(_context.Get(_contextConstants.AccessTokenKey, ""));
+            var token = handler.ReadJwtToken(_context.Get(ScenarioContextKeys.AccessTokenKey, ""));
+
             var claims = token.Claims.Select(x => (x.Type, x.Value));
 
-            claims.Should().Contain(expectedClaims);
+            expectedClaims.Should().BeSubsetOf(claims);
         }
 
         [Then(@"the access token should be empty")]
         public void ThenTheAccessTokenShouldBeEmpty()
         {
-            _context.Get(_contextConstants.AccessTokenKey, "").Should().BeEmpty();
+            _context.Get(ScenarioContextKeys.AccessTokenKey, "").Should().BeEmpty();
         }
 
-        private class UserTable
+        private sealed class UserTable
         {
             public string Username { get; set; }
             public string Password { get; set; }

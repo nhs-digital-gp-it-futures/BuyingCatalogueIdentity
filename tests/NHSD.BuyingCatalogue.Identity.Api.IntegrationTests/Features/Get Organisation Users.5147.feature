@@ -13,7 +13,7 @@ Background:
 
 @5147
 Scenario: 1. Get all of the users for an organisation
-    Given an authority user is logged in
+    Given an user is logged in
     	| Username           | Password | Scope        |
 		| BobSmith@email.com | Pass123$ | Organisation |
     When a GET request is made for an organisation's users with name Organisation 1
@@ -24,7 +24,7 @@ Scenario: 1. Get all of the users for an organisation
         
 @5147
 Scenario: 2. If an organisation does not exist, an empty list is returned
-    Given an authority user is logged in
+    Given an user is logged in
     	| Username           | Password | Scope        |
 		| BobSmith@email.com | Pass123$ | Organisation |
     When a GET request is made for an organisation's users with name Organisation 2
@@ -39,7 +39,7 @@ Scenario: 3. If a user is not authorised then they cannot access the organisatio
 
 @5147
 Scenario: 4. Service Failure
-    Given an authority user is logged in
+    Given an user is logged in
     	| Username           | Password | Scope        |
 		| BobSmith@email.com | Pass123$ | Organisation |
     Given the call to the database to set the field will fail

@@ -23,7 +23,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private readonly ScenarioContext _context;
         private readonly Response _response;
         private readonly Settings _settings;
-        private readonly ContextConstants _contextConstants;
 
         public UserSteps(ScenarioContext context, Response response, Settings settings)
         {
@@ -31,7 +30,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response = response;
             _settings = settings;
             _organisationUrl = settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
-            _contextConstants = new ContextConstants();
         }
 
         [Given(@"Users exist")]
@@ -40,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var users = table.CreateSet<NewUserTable>();
             foreach (var user in users)
             {
-                var allOrganisations = _context.Get<IDictionary<string, Guid>>(_contextConstants.OrganisationMapDictionary);
+                var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
 
                 var organisationId = Guid.Empty;
                 if (allOrganisations.ContainsKey(user.OrganisationName))
@@ -130,15 +128,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for an organisation's users with name (.*)")]
         public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(_contextConstants.OrganisationMapDictionary);
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
             allOrganisations.TryGetValue(organisationName, out Guid organisationId);
 
             using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(_contextConstants.AccessTokenKey, ""));
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessTokenKey, ""));
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 
-        private class ExpectedUserTable
+        private sealed class ExpectedUserTable
         {
             public string UserId { get; set; }
 
@@ -153,7 +151,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string IsDisabled { get; set; }
         }
 
-        private class NewUserTable
+        private sealed class NewUserTable
         {
             public string Password { get; set; } = "Pass123$";
 

@@ -21,7 +21,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private readonly ScenarioContext _context;
         private readonly Response _response;
         private readonly Settings _settings;
-        private readonly ContextConstants _contextConstants;
 
         private readonly string _organisationUrl;
 
@@ -32,8 +31,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _settings = settings;
 
             _organisationUrl = _settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
-
-            _contextConstants = new ContextConstants();
         }
 
         [Given(@"Organisations exist")]
@@ -65,13 +62,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 organisationDictionary.Add(organisation.Name, organisation.OrganisationId);
             }
 
-            _context[_contextConstants.OrganisationMapDictionary] = organisationDictionary;
+            _context[ScenarioContextKeys.OrganisationMapDictionary] = organisationDictionary;
         }
 
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {
-            string bearerToken = _context.Get(_contextConstants.AccessTokenKey, "");
+            string bearerToken = _context.Get(ScenarioContextKeys.AccessTokenKey, "");
 
             using var client = new HttpClient();
             client.SetBearerToken(bearerToken);
@@ -104,7 +101,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for an organisation with name (.*)")]
         public async Task WhenAGETRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(_contextConstants.OrganisationMapDictionary);
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
 
             var organisationId = Guid.Empty.ToString();
             if (allOrganisations.ContainsKey(organisationName))
@@ -113,7 +110,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             }
 
             using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(_contextConstants.AccessTokenKey, ""));
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessTokenKey, ""));
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}"));
         }
 

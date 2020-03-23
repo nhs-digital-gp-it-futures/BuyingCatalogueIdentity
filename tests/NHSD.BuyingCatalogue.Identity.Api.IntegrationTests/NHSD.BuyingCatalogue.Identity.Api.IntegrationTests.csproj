@@ -43,10 +43,4 @@
     <ProjectReference Include="..\NHSD.BuyingCatalogue.Identity.Api.Testing.Data\NHSD.BuyingCatalogue.Identity.Api.Testing.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation">
-      <HintPath>..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
