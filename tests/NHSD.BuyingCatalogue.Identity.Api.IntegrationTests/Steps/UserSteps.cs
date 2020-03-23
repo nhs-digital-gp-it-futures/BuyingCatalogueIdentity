@@ -132,16 +132,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for an organisation's users with name (.*)")]
         public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(_contextConstants.OrganisationMapDictionary);
-
-            var organisationId = Guid.Empty.ToString();
-            if (allOrganisations.ContainsKey(organisationName))
-            {
-                organisationId = allOrganisations?[organisationName].ToString();
-            }
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
+            allOrganisations.TryGetValue(organisationName, out Guid organisationId);
 
             using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(_contextConstants.AccessTokenKey, ""));
+            client.SetBearerToken(_context.Get(AccessTokenKey, ""));
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 
