@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using FluentAssertions;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
@@ -17,12 +18,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class UserSteps
     {
+        private const string OrganisationMapDictionary = "OrganisationMapDictionary";
+        private const string AccessTokenKey = "AccessToken";
         private readonly string _organisationUrl;
 
         private readonly ScenarioContext _context;
         private readonly Response _response;
         private readonly Settings _settings;
-        private readonly ContextConstants _contextConstants;
 
         public UserSteps(ScenarioContext context, Response response, Settings settings)
         {
@@ -30,7 +32,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response = response;
             _settings = settings;
             _organisationUrl = settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
-            _contextConstants = new ContextConstants();
         }
 
         [Given(@"Users exist")]
@@ -39,7 +40,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var users = table.CreateSet<NewUserTable>();
             foreach (var user in users)
             {
-                var allOrganisations = _context.Get<IDictionary<string, Guid>>(_contextConstants.OrganisationMapDictionary);
+                var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
 
                 var organisationId = Guid.Empty;
                 if (allOrganisations.ContainsKey(user.OrganisationName))
@@ -47,8 +48,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     organisationId = allOrganisations[user.OrganisationName];
                 }
 
-                var userEntity =
-                    new UserEntity
+                var userEntity = new UserEntity
                     {
                         PasswordHash = GenerateHash(user.Password),
                         FirstName = user.FirstName,
@@ -62,49 +62,83 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     };
 
                 await userEntity.InsertAsync(_settings.ConnectionString);
-                ((List<string>)_context["UserIds"]).Add(user.Id);
             }
         }
 
-        private string GenerateHash(string password)
+        [When(@"a GET request is made for an organisation's users with name (.*)")]
+        public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
         {
-            using (var rng = RandomNumberGenerator.Create())
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
+            allOrganisations.TryGetValue(organisationName, out Guid organisationId);
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(AccessTokenKey, ""));
+            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
+        }
+
+        [Then(@"the Users list is returned with the following values")]
+        public async Task ThenTheUsersListIsReturnedWithValues(Table table)
+        {
+            var expectedUsers = table.CreateSet<ExpectedUserTable>().ToList();
+
+            var users = (await _response.ReadBody()).SelectToken("users").Select(x => new
             {
-                var salt = new byte[128 / 8];
-                rng.GetBytes(salt); //The GetMethod fills the salt array with random data
-                var pbkdf2Hash = KeyDerivation.Pbkdf2(password: password,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 10000,
-                    numBytesRequested: 32);
+                UserId = x.SelectToken("userId").ToString(),
+                FirstName = x.SelectToken("firstName").ToString(),
+                LastName = x.SelectToken("lastName").ToString(),
+                EmailAddress = x.SelectToken("emailAddress").ToString(),
+                PhoneNumber = x.SelectToken("phoneNumber").ToString(),
+                IsDisabled = x.SelectToken("isDisabled").ToString()
+            });
 
-                var identityV3Hash = new byte[1 + 4/*KeyDerivationPrf value*/ + 4/*Iteration count*/ + 4/*salt size*/ + 16 /*salt*/ + 32 /*password hash size*/];
-                identityV3Hash[0] = 1;
-                uint prf = (uint)KeyDerivationPrf.HMACSHA256; // or just 1
-                byte[] prfAsByteArray = BitConverter.GetBytes(prf).Reverse().ToArray(); //you need System.Linq for this to work
-                Buffer.BlockCopy(prfAsByteArray, 0, identityV3Hash, 1, 4);
-                byte[] iterationCountAsByteArray = BitConverter.GetBytes((uint)10000).Reverse().ToArray();
-                Buffer.BlockCopy(iterationCountAsByteArray, 0, identityV3Hash, 1 + 4, 4);
-                byte[] saltSizeInByteArray = BitConverter.GetBytes((uint)16).Reverse().ToArray();
-                Buffer.BlockCopy(saltSizeInByteArray, 0, identityV3Hash, 1 + 4 + 4, 4);
-                Buffer.BlockCopy(salt, 0, identityV3Hash, 1 + 4 + 4 + 4, salt.Length);
-
-                Buffer.BlockCopy(pbkdf2Hash, 0, identityV3Hash, 1 + 4 + 4 + 4 + salt.Length, pbkdf2Hash.Length);
-                var identityV3Base64Hash = Convert.ToBase64String(identityV3Hash);
-                return identityV3Base64Hash;
-            }
+            users.Should().BeEquivalentTo(expectedUsers);
         }
 
-        [Given(@"There are Users in the database")]
-        public void GivenThereAreUsersInTheDatabase(Table table)
+        private static string GenerateHash(string password)
         {
-            var users = table.CreateSet<UserTable>();
+            const int identityVersion = 1; // 1 = Identity V3
+            const int iterationCount = 10000;
+            const int passwordHashLength = 32;
+            const KeyDerivationPrf hashAlgorithm = KeyDerivationPrf.HMACSHA256;
+            const int saltLength = 16;
 
-            // TODO: Do something with these, either verify them in the DB or create them
-            _context["EmailAddresses"] = users.Select(x => x.EmailAddress);
-            _context["Passwords"] = users.Select(x => x.Password);
+            using var rng = RandomNumberGenerator.Create();
+            var salt = new byte[saltLength];
+            rng.GetBytes(salt);
+
+            var pbkdf2Hash = KeyDerivation.Pbkdf2(
+                password,
+                salt,
+                hashAlgorithm,
+                iterationCount,
+                passwordHashLength);
+
+            var identityVersionData = new byte[] {identityVersion};
+            var prfData = BitConverter.GetBytes((uint)hashAlgorithm).Reverse().ToArray();
+            var iterationCountData = BitConverter.GetBytes((uint)iterationCount).Reverse().ToArray();
+            var saltSizeData = BitConverter.GetBytes((uint)saltLength).Reverse().ToArray();
+
+            var hashElements = new[]
+            {
+                identityVersionData,
+                prfData,
+                iterationCountData,
+                saltSizeData,
+                salt,
+                pbkdf2Hash
+            };
+
+            var identityV3Hash = new List<byte>();
+            foreach (var data in hashElements)
+            {
+                identityV3Hash.AddRange(data);
+            }
+
+            identityV3Hash.Count.Should().Be(61);
+            return Convert.ToBase64String(identityV3Hash.ToArray());
         }
 
+        private class ExpectedUserTable
 
         [When(@"a GET request is made for an organisation's users with name (.*)")]
         public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
@@ -136,9 +170,36 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
         private class UserTable
         {
+            public string UserId { get; set; }
+
+            public string FirstName { get; set; }
+
+            public string LastName { get; set; }
+
             public string EmailAddress { get; set; }
 
-            public string Password { get; set; }
+            public string PhoneNumber { get; set; }
+
+            public string IsDisabled { get; set; }
+        }
+
+        private class NewUserTable
+        {
+            public string Password { get; set; } = "Pass123$";
+
+            public string FirstName { get; set; } = "Test";
+
+            public string LastName { get; set; } = "User";
+
+            public string Email { get; set; }
+
+            public string PhoneNumber { get; set; } = "01234567890";
+
+            public bool Disabled { get; set; } = false;
+
+            public string Id { get; set; }
+
+            public string OrganisationName { get; set; }
         }
     }
 }

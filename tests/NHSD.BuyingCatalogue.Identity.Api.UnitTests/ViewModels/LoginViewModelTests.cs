@@ -5,7 +5,7 @@ using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 using NUnit.Framework;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests
+namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.ViewModels
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]

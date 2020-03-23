@@ -1,6 +1,6 @@
 ﻿using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
+namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class AddressBuilder
     {
@@ -25,20 +25,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _country = "Country";
         }
 
+        internal static AddressBuilder Create()
+        {
+            return new AddressBuilder();
+        }
+
         internal AddressBuilder WithLine1(string line1)
         {
             _line1 = line1;
             return this;
         }
 
-        internal static AddressBuilder Create()
-        {
-            return new AddressBuilder();
-        }
-
         internal Address Build()
         {
-            return new Address()
+            return new Address
             {
                 Line1 = _line1,
                 Line2 = _line2,

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.OrganisationUsers
+namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users
 {
     public sealed class GetAllOrganisationUsersViewModel
     {

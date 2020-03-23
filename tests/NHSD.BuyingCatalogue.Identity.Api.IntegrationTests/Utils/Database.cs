@@ -15,16 +15,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
         public async Task Reset(IConfigurationRoot config, ScenarioContext context)
         {
             using IDbConnection databaseConnection = new SqlConnection(config.GetConnectionString("CatalogueUsersAdmin"));
-            await databaseConnection.ExecuteAsync("ALTER ROLE db_owner ADD MEMBER [NHSD];");
+            await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("DELETE FROM Organisations");
             await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE OrganisationFunction = 'TestUser'");
-            context["UserIds"] = new List<string>();
         }
 
-        public static async Task DropUser(string connectionString)
+        public static async Task RemoveReadRole(string connectionString)
         {
             using IDbConnection databaseConnection = new SqlConnection(connectionString);
-            await databaseConnection.ExecuteAsync("ALTER ROLE db_owner DROP MEMBER [NHSD];");
+            await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader DROP MEMBER NHSD;");
         }
 
         [AfterScenario]
