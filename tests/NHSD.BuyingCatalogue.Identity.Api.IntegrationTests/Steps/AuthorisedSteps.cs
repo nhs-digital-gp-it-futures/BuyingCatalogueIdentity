@@ -64,7 +64,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 return;
             }
 
-            _context[ScenarioContextKeys.AccessTokenKey] = tokenResponse.AccessToken;
+            _context[ScenarioContextKeys.AccessToken] = tokenResponse.AccessToken;
         }
 
         [Given(@"the claims contains the following information")]
@@ -73,7 +73,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var expectedClaims = table.CreateSet<(string, string)>();
             
             var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(_context.Get(ScenarioContextKeys.AccessTokenKey, ""));
+            var token = handler.ReadJwtToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
 
             var claims = token.Claims.Select(x => (x.Type, x.Value));
 
@@ -83,7 +83,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the access token should be empty")]
         public void ThenTheAccessTokenShouldBeEmpty()
         {
-            _context.Get(ScenarioContextKeys.AccessTokenKey, "").Should().BeEmpty();
+            _context.Get(ScenarioContextKeys.AccessToken, "").Should().BeEmpty();
         }
 
         private sealed class UserTable

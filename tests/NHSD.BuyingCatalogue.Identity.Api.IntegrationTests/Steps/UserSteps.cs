@@ -132,7 +132,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             allOrganisations.TryGetValue(organisationName, out Guid organisationId);
 
             using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessTokenKey, ""));
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 

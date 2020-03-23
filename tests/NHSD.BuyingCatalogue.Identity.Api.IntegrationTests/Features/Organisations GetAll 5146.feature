@@ -36,4 +36,3 @@ Scenario: 3. Service Failure
 	Given the call to the database to set the field will fail
 	When a GET request is made for the Organisations section
 	Then a response with status code 500 is returned
-	Then a response with status code 500 is returned

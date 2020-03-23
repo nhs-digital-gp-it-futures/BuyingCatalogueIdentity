@@ -68,7 +68,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {
-            string bearerToken = _context.Get(ScenarioContextKeys.AccessTokenKey, "");
+            string bearerToken = _context.Get(ScenarioContextKeys.AccessToken, "");
 
             using var client = new HttpClient();
             client.SetBearerToken(bearerToken);
@@ -110,7 +110,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             }
 
             using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessTokenKey, ""));
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}"));
         }
 

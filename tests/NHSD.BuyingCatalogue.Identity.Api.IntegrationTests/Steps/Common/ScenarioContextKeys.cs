@@ -2,7 +2,7 @@
 {
     internal static class ScenarioContextKeys
     {
-        public const string AccessTokenKey = "AccessToken";
+        public const string AccessToken = "AccessToken";
         public const string OrganisationMapDictionary = "OrganisationMapDictionary";
     }
 }
