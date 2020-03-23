@@ -25,6 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private readonly ScenarioContext _context;
         private readonly Response _response;
         private readonly Settings _settings;
+        private readonly ContextConstants _contextConstants;
 
         public UserSteps(ScenarioContext context, Response response, Settings settings)
         {
@@ -32,6 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response = response;
             _settings = settings;
             _organisationUrl = settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
+            _contextConstants = new ContextConstants();
         }
 
         [Given(@"Users exist")]
@@ -63,17 +65,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
                 await userEntity.InsertAsync(_settings.ConnectionString);
             }
-        }
-
-        [When(@"a GET request is made for an organisation's users with name (.*)")]
-        public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
-        {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
-            allOrganisations.TryGetValue(organisationName, out Guid organisationId);
-
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(AccessTokenKey, ""));
-            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 
         [Then(@"the Users list is returned with the following values")]
@@ -138,8 +129,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             return Convert.ToBase64String(identityV3Hash.ToArray());
         }
 
-        private class ExpectedUserTable
-
         [When(@"a GET request is made for an organisation's users with name (.*)")]
         public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
         {
@@ -156,19 +145,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 
-        private class NewUserTable
-        {
-            public string Password { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public string PhoneNumber { get; set; }
-            public bool Disabled { get; set; }
-            public string Id { get; set; }
-            public string OrganisationName { get; set; }
-        }
-
-        private class UserTable
+        private class ExpectedUserTable
         {
             public string UserId { get; set; }
 
