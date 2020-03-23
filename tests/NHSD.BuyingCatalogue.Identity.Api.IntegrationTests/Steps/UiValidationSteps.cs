@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using OpenQA.Selenium;
@@ -65,7 +66,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var linkElements = element.FindElements(By.TagName("a"));
-            var linkElement = linkElements.FirstOrDefault(x => x.GetAttribute("href") == link);
+            var linkElement = linkElements.FirstOrDefault(x => x.GetAttribute("href").EndsWith(link, StringComparison.OrdinalIgnoreCase));
             linkElement.Should().NotBeNull($"an element with link {link} should be found");
         }
     }
