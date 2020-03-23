@@ -18,8 +18,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class UserSteps
     {
-        private const string OrganisationMapDictionary = "OrganisationMapDictionary";
-        private const string AccessTokenKey = "AccessToken";
         private readonly string _organisationUrl;
 
         private readonly ScenarioContext _context;
@@ -42,7 +40,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var users = table.CreateSet<NewUserTable>();
             foreach (var user in users)
             {
-                var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
+                var allOrganisations = _context.Get<IDictionary<string, Guid>>(_contextConstants.OrganisationMapDictionary);
 
                 var organisationId = Guid.Empty;
                 if (allOrganisations.ContainsKey(user.OrganisationName))
@@ -132,11 +130,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for an organisation's users with name (.*)")]
         public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(_contextConstants.OrganisationMapDictionary);
             allOrganisations.TryGetValue(organisationName, out Guid organisationId);
 
             using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(AccessTokenKey, ""));
+            client.SetBearerToken(_context.Get(_contextConstants.AccessTokenKey, ""));
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 
