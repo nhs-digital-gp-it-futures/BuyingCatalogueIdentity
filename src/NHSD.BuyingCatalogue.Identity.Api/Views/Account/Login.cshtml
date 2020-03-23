@@ -54,13 +54,12 @@
 
                             <div asp-validation-summary="ModelOnly"></div>
 
-                            <div data-test-id="request-account-link" class="bc-c-data-link bc-c-login-page-link ">
-                                <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" target="_blank">
-                                    Don&#39;t have an account? Request one now
-                                </a>
-                            </div>
-                        </form>
-                    </div>
+                        <div data-test-id="request-account-link" class="bc-c-data-link bc-c-login-page-link ">
+                            <a asp-action="Registration" target="_blank">
+                                Don&#39;t have an account? Request one now
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </main>
