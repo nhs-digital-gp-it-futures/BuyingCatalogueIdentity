@@ -6,7 +6,7 @@
     Background: 
     When the user navigates to a restricted web page
     Then the user is redirected to page account/login
-    And the user clicks the element with Data ID request-account-link
+    Given the user clicks element with Data ID request-account-link
     Then the user is redirected to page account/registration
 
 @4828
@@ -33,7 +33,7 @@ Scenario: 4. The Request an Account button is displayed correctly
     And element with Data ID request-account-button has tag a
     And element with Data ID request-account-button is of type button
     And element with Data ID request-account-button has text Request an account
-    And element with Data ID request-account-button is an email link to address is buying.catalogue@nhs.net
+    And element with Data ID request-account-button is email link to address buying.catalogue@nhs.net
         
 @4828
 Scenario: 5. The NHS Footer is displayed
