@@ -52,7 +52,6 @@ The database project is a SQL Server project, which is only fully supported by V
 
 When making changes to the database make sure to remove the Docker volume as described [below](#to-stop-the-application) before [running the application](#running-the-application).
 
-
 #### STMP Server
 
 A local SMTP server has been added to the docker network for development purposes.
