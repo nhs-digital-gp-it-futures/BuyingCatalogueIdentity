@@ -55,6 +55,7 @@ Scenario: 7. The Forgot Password link is displayed correctly
 Scenario: 8. The Request Account link is displayed correctly
     Then the page contains element with Data ID request-account-link
     And element with Data ID request-account-link has text Don't have an account? Request one now
+    And element with Data ID request-account-link is a link to Account/Registration
         
 @3540
 Scenario: 9. The NHS Footer is displayed
