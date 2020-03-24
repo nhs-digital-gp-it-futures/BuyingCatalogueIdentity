@@ -18,8 +18,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class UserSteps
     {
-        private const string OrganisationMapDictionary = "OrganisationMapDictionary";
-        private const string AccessTokenKey = "AccessToken";
         private readonly string _organisationUrl;
 
         private readonly ScenarioContext _context;
@@ -40,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var users = table.CreateSet<NewUserTable>();
             foreach (var user in users)
             {
-                var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
+                var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
 
                 var organisationId = Guid.Empty;
                 if (allOrganisations.ContainsKey(user.OrganisationName))
@@ -64,17 +62,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
                 await userEntity.InsertAsync(_settings.ConnectionString);
             }
-        }
-
-        [When(@"a GET request is made for an organisation's users with name (.*)")]
-        public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
-        {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(OrganisationMapDictionary);
-            allOrganisations.TryGetValue(organisationName, out Guid organisationId);
-
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(AccessTokenKey, ""));
-            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 
         [Then(@"the Users list is returned with the following values")]
@@ -139,7 +126,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             return Convert.ToBase64String(identityV3Hash.ToArray());
         }
 
-        private class ExpectedUserTable
+        [When(@"a GET request is made for an organisation's users with name (.*)")]
+        public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
+        {
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
+            allOrganisations.TryGetValue(organisationName, out Guid organisationId);
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
+            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
+        }
+
+        private sealed class ExpectedUserTable
         {
             public string UserId { get; set; }
 
@@ -154,7 +152,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string IsDisabled { get; set; }
         }
 
-        private class NewUserTable
+        private sealed class NewUserTable
         {
             public string Password { get; set; } = "Pass123$";
 
