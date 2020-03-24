@@ -56,7 +56,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                         PhoneNumber = user.PhoneNumber,
                         Id = user.Id,
                         OrganisationId = organisationId,
-                        OrganisationFunction = "TestUser"
+                        OrganisationFunction = user.OrganisationFunction,
+                        SecurityStamp = "TestUser"
                     };
 
                 await userEntity.InsertAsync(_settings.ConnectionString);
@@ -168,6 +169,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string Id { get; set; }
 
             public string OrganisationName { get; set; }
+
+            public string OrganisationFunction { get; set; } = "Authority";
         }
     }
 }

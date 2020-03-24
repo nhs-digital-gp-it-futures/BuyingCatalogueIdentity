@@ -20,6 +20,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public string OrganisationFunction { get; set; }
 
+        public string SecurityStamp { get; set; }
+
         public string Id { get; set; }
 
         protected override string InsertSql => @"
@@ -31,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 	            FirstName, LastName)
             VALUES
                 (@id, @email, UPPER(@email), @email, UPPER(@email), 1,
-	            @passwordHash, @passwordHash, NEWID(), @phoneNumber, 1,
+	            @passwordHash, @securityStamp, NEWID(), @phoneNumber, 1,
 	            0, 0, 0,
 	            @organisationId, @organisationFunction, @disabled, 0,
 	            @firstName, @lastName);";
