@@ -70,14 +70,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"the claims contains the following information")]
         public void GivenTheClaimsContainsOrganisation(Table table)
         {
-            var expectedClaims = table.CreateSet<(string, string)>();
-            
+            var expectedClaims = table.Rows.Select(x => (ClaimType: x["ClaimType"], ClaimValue: x["ClaimValue"]));
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-
-            var claims = token.Claims.Select(x => (x.Type, x.Value));
-
-            expectedClaims.Should().BeSubsetOf(claims);
+            var claims = token.Claims.Select(x => (ClaimType: x.Type, ClaimValue: x.Value));
+            claims.Should().Contain(expectedClaims);
         }
 
         [Then(@"the access token should be empty")]

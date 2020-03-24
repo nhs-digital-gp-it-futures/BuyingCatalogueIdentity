@@ -8,9 +8,9 @@ Background:
 		| Name           | OdsCode |
 		| Organisation 1 | Ods 1   |
 	And Users exist
-		| Id     | OrganisationName | FirstName | LastName | Email                | PhoneNumber | Disabled | Password        |
-		| 012345 |                  | Penny     | Lane     | PennyLane@email.com  | 01234567890 | false    | S0mePa$$w0rd    |
-		| 123456 | Organisation 1   | Post      | Pat      | PostmanPat@email.com | 12345678901 | false    | An0therPa$$w0rd |
+		| Id     | OrganisationName | FirstName | LastName | Email                | PhoneNumber | Disabled | Password        | OrganisationFunction |
+		| 012345 |                  | Penny     | Lane     | PennyLane@email.com  | 01234567890 | false    | S0mePa$$w0rd    | Buyer                |
+		| 123456 | Organisation 1   | Post      | Pat      | PostmanPat@email.com | 12345678901 | false    | An0therPa$$w0rd | Authority            |
 
 @5447
 Scenario: 1. Get the claims of a user who provides no scope
@@ -36,7 +36,7 @@ Scenario: 2. Get the claims of a buyer user
 		| name                 | Penny Lane          |
 		| email                | PennyLane@email.com |
 		| email_verified       | true                |
-		| organisationFunction | TestUser            |
+		| organisationFunction | Buyer               |
 		| scope                | profile             |
 
 @5447
@@ -57,5 +57,5 @@ Scenario: 3. Get the claims of an authority user
 		| name                 | Post Pat             |
 		| email                | PostmanPat@email.com |
 		| email_verified       | true                 |
-		| organisationFunction | TestUser             |
+		| organisationFunction | Authority            |
 		| scope                | Organisation         |
