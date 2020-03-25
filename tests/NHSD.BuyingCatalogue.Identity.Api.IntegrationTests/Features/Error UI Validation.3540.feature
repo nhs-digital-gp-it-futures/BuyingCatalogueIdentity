@@ -11,11 +11,11 @@
         | Id  | OrganisationName | FirstName | LastName | Email         | PhoneNumber | Disabled | Password          |
         | 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 |
     When the user navigates to a restricted web page
-    Then the user is redirected to page account/login
+    Then the user is redirected to page identity/account/login
     When the redirect URL is modified to be invalid
-    Then the user is redirected to page account/login
+    Then the user is redirected to page identity/account/login
     When a login request is made with email address test@user.com and password testingtesting123
-    Then the user is redirected to page error
+    Then the user is redirected to page identity/error
     
 @3540
 Scenario: 1. The NHS Header is displayed

@@ -58,13 +58,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            var urlPrefix = _configuration.GetValue<string>("urlPrefix");
+
             services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseSuccessEvents = true;
                     options.IssuerUri = issuerUrl;
-                    options.UserInteraction.ErrorUrl = "/Error";
+                    options.UserInteraction.LoginUrl = $"/{urlPrefix}/account/login";
+                    options.UserInteraction.LogoutUrl = $"/{urlPrefix}/account/logout";
+                    options.UserInteraction.ErrorUrl = $"/{urlPrefix}/Error";
                     options.UserInteraction.ErrorIdParameter = "errorId";
                 })
                 .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
@@ -93,6 +97,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 opts.GetLevel = LogHelper.ExcludeHealthChecks;
             });
 
+            var urlPrefix = _configuration.GetValue<string>("urlPrefix");
+
             if (_environment.IsDevelopment())
             {
                 IdentityModelEventSource.ShowPII = true;
@@ -101,7 +107,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             }
             else
             {
-                app.UseExceptionHandler("/Account/Error");
+                app.UseExceptionHandler($"/{urlPrefix}/Error");
             }
 
             app.UseStaticFiles();
@@ -113,7 +119,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: $"{urlPrefix}/{{controller=Home}}/{{action=Index}}/{{id?}}");
                 endpoints.MapControllers();
             });
         }
