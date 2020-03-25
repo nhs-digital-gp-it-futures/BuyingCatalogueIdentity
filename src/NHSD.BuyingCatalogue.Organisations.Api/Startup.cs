@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using BuyingCatalogue.Identity.Common.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;

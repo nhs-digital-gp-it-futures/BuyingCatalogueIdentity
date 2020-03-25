@@ -1,4 +1,4 @@
-﻿namespace BuyingCatalogue.Identity.Common.Constants
+﻿namespace NHSD.BuyingCatalogue.Identity.Common.Constants
 {
     public static class ApplicationPermissions
     {

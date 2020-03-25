@@ -12,7 +12,7 @@ using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NUnit.Framework;
 using static IdentityModel.JwtClaimTypes;
 using static NHSD.BuyingCatalogue.Identity.Common.Constants.ApplicationClaimTypes;
-using static BuyingCatalogue.Identity.Common.Constants.ApplicationPermissions;
+using static NHSD.BuyingCatalogue.Identity.Common.Constants.ApplicationPermissions;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
