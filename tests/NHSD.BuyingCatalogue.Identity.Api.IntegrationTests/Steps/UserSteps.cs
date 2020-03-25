@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
@@ -38,13 +41,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var users = table.CreateSet<NewUserTable>();
             foreach (var user in users)
             {
-                var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
-
-                var organisationId = Guid.Empty;
-                if (allOrganisations.ContainsKey(user.OrganisationName))
-                {
-                    organisationId = allOrganisations[user.OrganisationName];
-                }
+                var organisationId = GetOrganisationIdFromName(user.OrganisationName);
 
                 var userEntity = new UserEntity
                     {
@@ -55,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                         Disabled = user.Disabled,
                         PhoneNumber = user.PhoneNumber,
                         Id = user.Id,
-                        OrganisationId = organisationId,
+                        OrganisationId = Guid.Parse(organisationId),
                         OrganisationFunction = user.OrganisationFunction,
                         SecurityStamp = "TestUser"
                     };
@@ -67,19 +64,37 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the Users list is returned with the following values")]
         public async Task ThenTheUsersListIsReturnedWithValues(Table table)
         {
-            var expectedUsers = table.CreateSet<ExpectedUserTable>().ToList();
+            await AssertUsersAreEqualToExpectedUsers(table);
+        }
 
-            var users = (await _response.ReadBody()).SelectToken("users").Select(x => new
-            {
-                UserId = x.SelectToken("userId").ToString(),
-                FirstName = x.SelectToken("firstName").ToString(),
-                LastName = x.SelectToken("lastName").ToString(),
-                EmailAddress = x.SelectToken("emailAddress").ToString(),
-                PhoneNumber = x.SelectToken("phoneNumber").ToString(),
-                IsDisabled = x.SelectToken("isDisabled").ToString()
-            });
+        [Then(@"the Users list is returned with the following values excluding ID")]
+        public async Task ThenTheUsersListIsReturnedWithRealValues(Table table)
+        {
+            await AssertUsersAreEqualToExpectedUsers(table, options => options.Excluding(u => u.UserId));
+        }
 
-            users.Should().BeEquivalentTo(expectedUsers);
+        [When(@"a GET request is made for an organisation's users with name (.*)")]
+        public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
+        {
+            var organisationId = GetOrganisationIdFromName(organisationName);
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
+            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
+        }
+
+        [When(@"a user is created for organisation (.*)")]
+        public async Task WhenAUserIsCreated(string organisationName, Table table)
+        {
+            var data = table.CreateInstance<CreateUserPostPayload>();
+            var organisationId = GetOrganisationIdFromName(organisationName);
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
+
+            var payload = JsonConvert.SerializeObject(data);
+            using var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            _response.Result = await client.PostAsync(new Uri($"{_organisationUrl}/{organisationId}/users"), content);
         }
 
         private static string GenerateHash(string password)
@@ -101,7 +116,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 iterationCount,
                 passwordHashLength);
 
-            var identityVersionData = new byte[] {identityVersion};
+            var identityVersionData = new byte[] { identityVersion };
             var prfData = BitConverter.GetBytes((uint)hashAlgorithm).Reverse().ToArray();
             var iterationCountData = BitConverter.GetBytes((uint)iterationCount).Reverse().ToArray();
             var saltSizeData = BitConverter.GetBytes((uint)saltLength).Reverse().ToArray();
@@ -126,15 +141,42 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             return Convert.ToBase64String(identityV3Hash.ToArray());
         }
 
-        [When(@"a GET request is made for an organisation's users with name (.*)")]
-        public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
+        private string GetOrganisationIdFromName(string organisationName)
         {
             var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
-            allOrganisations.TryGetValue(organisationName, out Guid organisationId);
+            return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId.ToString() : Guid.Empty.ToString();
+        }
 
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
+        private async Task AssertUsersAreEqualToExpectedUsers(Table table, Func<EquivalencyAssertionOptions<ExpectedUserTable>, EquivalencyAssertionOptions<ExpectedUserTable>> equivalencyOptions = null)
+        {
+            var expectedUsers = table.CreateSet<ExpectedUserTable>().ToList();
+
+            var users = (await _response.ReadBody()).SelectToken("users").Select(x => new
+            {
+                UserId = x.SelectToken("userId").ToString(),
+                FirstName = x.SelectToken("firstName").ToString(),
+                LastName = x.SelectToken("lastName").ToString(),
+                EmailAddress = x.SelectToken("emailAddress").ToString(),
+                PhoneNumber = x.SelectToken("phoneNumber").ToString(),
+                IsDisabled = x.SelectToken("isDisabled").ToString()
+            });
+
+            if (equivalencyOptions == null)
+            {
+                equivalencyOptions = (options) => options;
+            }
+            users.Should().BeEquivalentTo(expectedUsers, equivalencyOptions);
+        }
+
+        private sealed class CreateUserPostPayload
+        {
+            public string FirstName { get; set; }
+
+            public string LastName { get; set; }
+
+            public string PhoneNumber { get; set; }
+
+            public string EmailAddress { get; set; }
         }
 
         private sealed class ExpectedUserTable

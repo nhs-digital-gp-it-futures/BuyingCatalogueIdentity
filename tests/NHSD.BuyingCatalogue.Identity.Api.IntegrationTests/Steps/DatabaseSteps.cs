@@ -14,10 +14,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _settings = settings;
         }
 
-        [Given(@"the call to the database to set the field will fail")]
-        public async Task GivenTheCallToTheDatabaseToSetTheFieldWillFail()
+        [Given(@"the call to the database will fail")]
+        public async Task GivenTheCallToTheDatabaseWillFail()
         {
             await Database.RemoveReadRole(_settings.AdminConnectionString);
+            await Database.RemoveWriteRole(_settings.AdminConnectionString);
         }
     }
 }
