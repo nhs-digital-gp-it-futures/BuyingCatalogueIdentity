@@ -13,7 +13,7 @@ Background:
         | 234 | Organisation 1   | Jane      | Doe      | buyer@doe.com     | 01234567890 | false    | oloy     | Buyer                |
 
 @5147
-Scenario: 1. Get all of the users for an organisation
+Scenario: 1. As an Authority user, get all of the users for an organisation
     Given an user is logged in
     	| Username          | Password | Scope        |
     	| authority@doe.com | yolo     | Organisation |

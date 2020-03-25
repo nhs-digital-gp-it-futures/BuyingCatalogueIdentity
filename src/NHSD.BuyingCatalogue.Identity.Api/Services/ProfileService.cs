@@ -11,6 +11,7 @@ using IdentityServer4.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {

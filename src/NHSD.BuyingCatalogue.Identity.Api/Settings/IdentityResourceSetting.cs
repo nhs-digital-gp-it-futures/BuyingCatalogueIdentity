@@ -1,5 +1,5 @@
-﻿using BuyingCatalogue.Identity.Common.Constants;
-using IdentityServer4.Models;
+﻿using IdentityServer4.Models;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
