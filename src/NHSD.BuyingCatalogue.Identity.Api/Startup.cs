@@ -110,7 +110,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 app.UseExceptionHandler($"/{urlPrefix}/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                RequestPath = "/identity"
+            });
             app.UseIdentityServer();
             app.UseRouting();
 
