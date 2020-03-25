@@ -13,29 +13,33 @@ pr:
 pool:
   vmImage: windows-2019
 
-jobs:
-- job: build
-  displayName: Build app and run tests
+steps:
+- task: VSBuild@1
+  displayName: 'Build solution src/NHSD.BuyingCatalogue.Identity.UserDatabase/NHSD.BuyingCatalogue.Identity.UserDatabase.sqlproj'
+  inputs:
+    solution: src/NHSD.BuyingCatalogue.Identity.UserDatabase/NHSD.BuyingCatalogue.Identity.UserDatabase.sqlproj
 
-  steps:
-  - task: MSBuild@1
-    displayName: 'Build GPITFutures ISAPI Database'
-    inputs:
-      solution: '**/*.sqlproj'
-      clean: true
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)/database'
+  inputs:
+    SourceFolder: src
+    Contents: '**\*.dacpac'
+    TargetFolder: '$(build.artifactstagingdirectory)/database'
+    CleanTargetFolder: true
 
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: '$(agent.builddirectory)'
-      Contents: '**'
-      TargetFolder: '$(build.artifactstagingdirectory)\sql'
-      CleanTargetFolder: true
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: database'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)/database'
+    ArtifactName: database
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\sql'
-      ArtifactName: 'sql'
-      publishLocation: 'Container'
+- task: colinsalmcorner.colinsalmcorner-buildtasks.dacpac-report-task.DacPacReport@1
+  displayName: 'DacPac Schema Compare NHSD.BuyingCatalogue.Identity.UserDatabase.dacpac'
+  inputs:
+    dropName: database
+    dacpacName: NHSD.BuyingCatalogue.Identity.UserDatabase
+    targetDacPacPath: '$(build.artifactstagingdirectory)/database'
+  enabled: false
 
 - job: dockerBuildAndPush
   displayName: Build and push docker containers to the acr
@@ -70,7 +74,7 @@ jobs:
 
   - script: curl http://host.docker.internal:8072/home -v
     displayName: 'Assert host is able to resolve host.docker.internal'
-    
+
   - task: DotNetCoreCLI@2
     displayName: 'Run Integration tests'
     inputs:
