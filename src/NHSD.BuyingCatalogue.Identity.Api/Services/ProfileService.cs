@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BuyingCatalogue.Identity.Common.Constants;
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using NHSD.BuyingCatalogue.Identity.Api.Constants;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
@@ -21,7 +21,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         private static readonly IDictionary<string, IEnumerable<Claim>> _organisationFunctionClaims =
             new Dictionary<string, IEnumerable<Claim>>
             {
-                { "Authority", new List<Claim> { new Claim(ApplicationClaimTypes.Organisation, "Manage") } }
+                { 
+                    "Authority", new List<Claim>
+                    {
+                        new Claim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage),
+                        new Claim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage)
+                    }
+                }
             };
 
         public ProfileService(IUserRepository applicationUserRepository)

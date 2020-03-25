@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\NHSD.BuyingCatalogue.Identity.Api\NHSD.BuyingCatalogue.Identity.Api.csproj" />
+    <ProjectReference Include="..\..\src\NHSD.BuyingCatalogue.Identity.Common\NHSD.BuyingCatalogue.Identity.Common.csproj" />
   </ItemGroup>
 
 </Project>

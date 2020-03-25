@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using BuyingCatalogue.Identity.Common.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -57,7 +58,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(Policy.CanAccessOrganisation, policy => policy.RequireClaim("Organisation"));
+                options.AddPolicy(Policy.CanAccessOrganisation, policy => policy.RequireClaim(ApplicationClaimTypes.Organisation));
+                options.AddPolicy(Policy.CanAccessOrganisationUsers, policyBuilder =>
+                {
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Account);
+                });
+                options.AddPolicy(Policy.CanManageOrganisationUsers, policyBuilder =>
+                {
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage);
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage);
+                });
             });
         }
 
