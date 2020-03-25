@@ -18,7 +18,7 @@ Scenario: 1. A authority user can create a user
 	Given an user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
-	When a user is created for organisation Organisation 2
+	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 2   |
 	Then a response with status code 200 is returned
@@ -33,14 +33,14 @@ Scenario: 2. A non authority user cannot create a user
 	Given an user is logged in
 		| Username            | Password     | Scope |
 		| PennyLane@email.com | S0mePa$$w0rd | NULL  |
-	When a user is created for organisation Organisation 2
+	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
 	Then a response with status code 401 is returned
 
 @5582
 Scenario: 3. Create user with valid details when unauthorised
-	When a user is created for organisation Organisation 2
+	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
 	Then a response with status code 401 is returned
@@ -51,7 +51,7 @@ Scenario: 4. Service Failure
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	Given the call to the database will fail
-	When a user is created for organisation Organisation 2
+	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
 	Then a response with status code 500 is returned

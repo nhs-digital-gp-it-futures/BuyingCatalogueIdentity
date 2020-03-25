@@ -52,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                         Disabled = user.Disabled,
                         PhoneNumber = user.PhoneNumber,
                         Id = user.Id,
-                        OrganisationId = Guid.Parse(organisationId),
+                        OrganisationId = organisationId,
                         OrganisationFunction = user.OrganisationFunction,
                         SecurityStamp = "TestUser"
                     };
@@ -64,13 +64,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the Users list is returned with the following values")]
         public async Task ThenTheUsersListIsReturnedWithValues(Table table)
         {
-            await AssertUsersAreEqualToExpectedUsers(table);
+            var expected = table.CreateSet<ExpectedUserTable>();
+            var actual = await CreateUserTableFromResponse();
+
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Then(@"the Users list is returned with the following values excluding ID")]
         public async Task ThenTheUsersListIsReturnedWithRealValues(Table table)
         {
-            await AssertUsersAreEqualToExpectedUsers(table, options => options.Excluding(u => u.UserId));
+            var expected = table.CreateSet<ExpectedUserTable>();
+            var actual = await CreateUserTableFromResponse();
+
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(user => user.UserId));
         }
 
         [When(@"a GET request is made for an organisation's users with name (.*)")]
@@ -83,7 +89,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
         }
 
-        [When(@"a user is created for organisation (.*)")]
+        [When(@"a POST request is made to create a user for organisation (.*)")]
         public async Task WhenAUserIsCreated(string organisationName, Table table)
         {
             var data = table.CreateInstance<CreateUserPostPayload>();
@@ -141,17 +147,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             return Convert.ToBase64String(identityV3Hash.ToArray());
         }
 
-        private string GetOrganisationIdFromName(string organisationName)
+        private Guid GetOrganisationIdFromName(string organisationName)
         {
             var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
-            return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId.ToString() : Guid.Empty.ToString();
+            return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
         }
 
-        private async Task AssertUsersAreEqualToExpectedUsers(Table table, Func<EquivalencyAssertionOptions<ExpectedUserTable>, EquivalencyAssertionOptions<ExpectedUserTable>> equivalencyOptions = null)
+        private async Task<IEnumerable<ExpectedUserTable>> CreateUserTableFromResponse()
         {
-            var expectedUsers = table.CreateSet<ExpectedUserTable>().ToList();
-
-            var users = (await _response.ReadBody()).SelectToken("users").Select(x => new
+            return (await _response.ReadBody()).SelectToken("users").Select(x => new ExpectedUserTable
             {
                 UserId = x.SelectToken("userId").ToString(),
                 FirstName = x.SelectToken("firstName").ToString(),
@@ -160,12 +164,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 PhoneNumber = x.SelectToken("phoneNumber").ToString(),
                 IsDisabled = x.SelectToken("isDisabled").ToString()
             });
-
-            if (equivalencyOptions == null)
-            {
-                equivalencyOptions = (options) => options;
-            }
-            users.Should().BeEquivalentTo(expectedUsers, equivalencyOptions);
         }
 
         private sealed class CreateUserPostPayload
