@@ -11,10 +11,7 @@ pr:
 - development
 
 pool:
-  name: Azure Pipelines
-  demands:
-  - msbuild
-  - visualstudio
+  vmImage: windows-2019
 
 jobs:
 - job: build
