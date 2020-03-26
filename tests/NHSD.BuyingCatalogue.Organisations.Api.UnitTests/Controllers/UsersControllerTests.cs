@@ -111,6 +111,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithLastName(createUserRequestViewModel.LastName)
                 .WithPhoneNumber(createUserRequestViewModel.PhoneNumber)
                 .WithEmailAddress(createUserRequestViewModel.EmailAddress)
+                .WithUsername(createUserRequestViewModel.EmailAddress)
                 .WithPrimaryOrganisationId(organisationId)
                 .Build();
 
