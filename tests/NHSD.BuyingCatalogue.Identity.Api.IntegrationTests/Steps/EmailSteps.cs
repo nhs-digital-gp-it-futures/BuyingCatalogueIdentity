@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using MimeKit;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -75,7 +76,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private void Send(MimeMessage message)
         {
             using SmtpClient client = new SmtpClient();
-            client.Connect(_settings.Smtp.Host, _settings.Smtp.Port);
+            client.Connect(_settings.Smtp.Host, _settings.Smtp.Port, SecureSocketOptions.None);
             client.Send(message);
         }
 
@@ -105,7 +106,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public static async Task CleanUp()
         {
             using var client = new HttpClient();
-            await client.DeleteAsync(new Uri($"http://localhost:1080/email/all"));
+            await client.DeleteAsync(new Uri("http://localhost:1080/email/all"));
         }
 
         private class EmailTable
