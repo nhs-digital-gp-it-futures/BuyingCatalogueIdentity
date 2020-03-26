@@ -69,6 +69,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
             return this;
         }
+
         internal ApplicationUserBuilder WithUsername(string userName)
         {
             _username = userName;
