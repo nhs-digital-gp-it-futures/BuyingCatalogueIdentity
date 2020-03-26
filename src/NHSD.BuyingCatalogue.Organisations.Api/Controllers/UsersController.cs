@@ -10,7 +10,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
     [ApiController]
-    [Authorize(Policy = Policy.CanAccessOrganisation)]
+    [Authorize(Policy = Policy.CanAccessOrganisationUsers)]
     [Route("api/v1/Organisations/{organisationId}/Users")]
     [Produces("application/json")]
     public sealed class UsersController : Controller
@@ -43,6 +43,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Policy.CanManageOrganisationUsers)]
         public async Task<ActionResult> CreateUserAsync(Guid organisationId, CreateUserRequestViewModel viewModel)
         {
             if (viewModel is null)

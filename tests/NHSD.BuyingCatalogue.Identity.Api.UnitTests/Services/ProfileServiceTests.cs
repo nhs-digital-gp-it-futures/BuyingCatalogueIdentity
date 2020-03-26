@@ -11,8 +11,8 @@ using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NUnit.Framework;
 using static IdentityModel.JwtClaimTypes;
-using static NHSD.BuyingCatalogue.Identity.Api.Constants.ApplicationClaimTypes;
-
+using static NHSD.BuyingCatalogue.Identity.Common.Constants.ApplicationClaimTypes;
+using static NHSD.BuyingCatalogue.Identity.Common.Constants.ApplicationPermissions;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
@@ -58,7 +58,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 (EmailVerified, expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
                 (PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
                 (OrganisationFunction, expectedApplicationUser.OrganisationFunction),
-                (Organisation, "Manage")
+                (Organisation, Manage),
+                (Account, Manage)
             };
 
             var actual = profileDataRequestContext.IssuedClaims.Select(item => (item.Type, item.Value));
@@ -175,7 +176,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestCase("Authority", Subject, PrimaryOrganisationId, OrganisationFunction, Organisation)]
+        [TestCase("Authority", Subject, PrimaryOrganisationId, OrganisationFunction, Organisation, Account)]
         [TestCase("Buyer", Subject, PrimaryOrganisationId, OrganisationFunction)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithOrganisationFunction_ReturnExpectedClaimList(
             string organisationFunction, 
