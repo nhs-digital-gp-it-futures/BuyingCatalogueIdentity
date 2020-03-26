@@ -1,0 +1,111 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7327869F-B7B9-4C60-B41C-6CB644548B43}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{65BA870B-C97C-4766-BC9B-0C99C0989BB4}"
+	ProjectSection(SolutionItems) = preProject
+		tests\.editorconfig = tests\.editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{4AF08528-1EAC-49BE-AE35-5B9838B4489D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{18B726EA-602A-45E1-A5AC-3DDA5FC278EC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{13E101E9-8F5D-4E0E-B1A1-7DAB8ABC4C54}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-build.yml = docker-compose-build.yml
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api", "src\NHSD.BuyingCatalogue.Identity.Api\NHSD.BuyingCatalogue.Identity.Api.csproj", "{A823E231-BF48-47F1-99C2-C0F2F7ADAF94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Common", "src\NHSD.BuyingCatalogue.Identity.Common\NHSD.BuyingCatalogue.Identity.Common.csproj", "{B00E3807-F20F-420B-A4B3-27551912B4A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organisations.Api", "src\NHSD.BuyingCatalogue.Organisations.Api\NHSD.BuyingCatalogue.Organisations.Api.csproj", "{82113862-D1B9-4B6E-BD24-411C7A9A48EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.csproj", "{87DB0213-335F-4590-8A26-A9DB8093D897}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.Testing.Data", "tests\NHSD.BuyingCatalogue.Identity.Api.Testing.Data\NHSD.BuyingCatalogue.Identity.Api.Testing.Data.csproj", "{84E4F756-8A69-4928-B575-63D741B9105C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.UnitTests", "tests\NHSD.BuyingCatalogue.Identity.Api.UnitTests\NHSD.BuyingCatalogue.Identity.Api.UnitTests.csproj", "{A51C8BA3-0D02-4926-A8F7-4D225154CBAB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organisations.Api.UnitTests", "tests\NHSD.BuyingCatalogue.Organisations.Api.UnitTests\NHSD.BuyingCatalogue.Organisations.Api.UnitTests.csproj", "{18881155-D1FE-47A1-ABA8-A9BC803C431B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.SampleClient", "samples\NHSD.BuyingCatalogue.Identity.Api.SampleClient\NHSD.BuyingCatalogue.Identity.Api.SampleClient.csproj", "{93726D20-6BBC-4112-9ABE-1A5753D4123B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient", "samples\NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient\NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.csproj", "{9F7C7A50-B933-4C72-90BB-A817780FF306}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.SampleResource", "samples\NHSD.BuyingCatalogue.Identity.Api.SampleResource\NHSD.BuyingCatalogue.Identity.Api.SampleResource.csproj", "{2851380A-6EF1-4B42-A2C8-B33534F00967}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A823E231-BF48-47F1-99C2-C0F2F7ADAF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A823E231-BF48-47F1-99C2-C0F2F7ADAF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A823E231-BF48-47F1-99C2-C0F2F7ADAF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A823E231-BF48-47F1-99C2-C0F2F7ADAF94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B00E3807-F20F-420B-A4B3-27551912B4A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B00E3807-F20F-420B-A4B3-27551912B4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B00E3807-F20F-420B-A4B3-27551912B4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B00E3807-F20F-420B-A4B3-27551912B4A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82113862-D1B9-4B6E-BD24-411C7A9A48EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82113862-D1B9-4B6E-BD24-411C7A9A48EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82113862-D1B9-4B6E-BD24-411C7A9A48EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82113862-D1B9-4B6E-BD24-411C7A9A48EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87DB0213-335F-4590-8A26-A9DB8093D897}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87DB0213-335F-4590-8A26-A9DB8093D897}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87DB0213-335F-4590-8A26-A9DB8093D897}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87DB0213-335F-4590-8A26-A9DB8093D897}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84E4F756-8A69-4928-B575-63D741B9105C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84E4F756-8A69-4928-B575-63D741B9105C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84E4F756-8A69-4928-B575-63D741B9105C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84E4F756-8A69-4928-B575-63D741B9105C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A51C8BA3-0D02-4926-A8F7-4D225154CBAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A51C8BA3-0D02-4926-A8F7-4D225154CBAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A51C8BA3-0D02-4926-A8F7-4D225154CBAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A51C8BA3-0D02-4926-A8F7-4D225154CBAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18881155-D1FE-47A1-ABA8-A9BC803C431B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18881155-D1FE-47A1-ABA8-A9BC803C431B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18881155-D1FE-47A1-ABA8-A9BC803C431B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18881155-D1FE-47A1-ABA8-A9BC803C431B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93726D20-6BBC-4112-9ABE-1A5753D4123B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93726D20-6BBC-4112-9ABE-1A5753D4123B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93726D20-6BBC-4112-9ABE-1A5753D4123B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93726D20-6BBC-4112-9ABE-1A5753D4123B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F7C7A50-B933-4C72-90BB-A817780FF306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F7C7A50-B933-4C72-90BB-A817780FF306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F7C7A50-B933-4C72-90BB-A817780FF306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F7C7A50-B933-4C72-90BB-A817780FF306}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2851380A-6EF1-4B42-A2C8-B33534F00967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2851380A-6EF1-4B42-A2C8-B33534F00967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2851380A-6EF1-4B42-A2C8-B33534F00967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2851380A-6EF1-4B42-A2C8-B33534F00967}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A823E231-BF48-47F1-99C2-C0F2F7ADAF94} = {7327869F-B7B9-4C60-B41C-6CB644548B43}
+		{B00E3807-F20F-420B-A4B3-27551912B4A1} = {7327869F-B7B9-4C60-B41C-6CB644548B43}
+		{82113862-D1B9-4B6E-BD24-411C7A9A48EA} = {7327869F-B7B9-4C60-B41C-6CB644548B43}
+		{87DB0213-335F-4590-8A26-A9DB8093D897} = {65BA870B-C97C-4766-BC9B-0C99C0989BB4}
+		{84E4F756-8A69-4928-B575-63D741B9105C} = {65BA870B-C97C-4766-BC9B-0C99C0989BB4}
+		{A51C8BA3-0D02-4926-A8F7-4D225154CBAB} = {65BA870B-C97C-4766-BC9B-0C99C0989BB4}
+		{18881155-D1FE-47A1-ABA8-A9BC803C431B} = {65BA870B-C97C-4766-BC9B-0C99C0989BB4}
+		{93726D20-6BBC-4112-9ABE-1A5753D4123B} = {4AF08528-1EAC-49BE-AE35-5B9838B4489D}
+		{9F7C7A50-B933-4C72-90BB-A817780FF306} = {4AF08528-1EAC-49BE-AE35-5B9838B4489D}
+		{2851380A-6EF1-4B42-A2C8-B33534F00967} = {4AF08528-1EAC-49BE-AE35-5B9838B4489D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8BFA185B-1D53-4425-9A19-B225AB3E3E91}
+	EndGlobalSection
+EndGlobal
