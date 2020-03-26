@@ -46,7 +46,7 @@ Scenario: 3. Create user with valid details when unauthorised
 	Then a response with status code 401 is returned
 
 @3540
-Scenario: 5. Service Failure
+Scenario: 4. Service Failure
 	Given an user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
