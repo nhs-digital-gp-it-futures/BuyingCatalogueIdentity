@@ -33,6 +33,6 @@ Scenario: 3. Service Failure
 	Given an user is logged in
 		| Username           | Password | Scope        |
 		| BobSmith@email.com | Pass123$ | Organisation |
-	Given the call to the database to set the field will fail
+	Given the call to the database will fail
 	When a GET request is made for the Organisations section
 	Then a response with status code 500 is returned
