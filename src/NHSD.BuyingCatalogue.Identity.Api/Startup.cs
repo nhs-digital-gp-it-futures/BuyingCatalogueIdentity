@@ -35,7 +35,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IHtmlGenerator, MyHtmlGenerator>();
             var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
