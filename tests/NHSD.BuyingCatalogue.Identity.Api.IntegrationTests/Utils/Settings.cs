@@ -10,19 +10,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 
         public string OrganisationApiBaseUrl { get; }
 
-        public SmtpServer Smtp { get; }
+        public SmtpServerSettings Smtp { get; }
 
         public Settings(IConfigurationRoot config)
         {
             AdminConnectionString = config.GetConnectionString("CatalogueUsersAdmin");
             ConnectionString = config.GetConnectionString("CatalogueUsers");
             OrganisationApiBaseUrl = config.GetValue<string>("OrganisationApiBaseUrl");
-            Smtp = new SmtpServer(config.GetSection("SmtpServer"));
+            Smtp = new SmtpServerSettings(config.GetSection("SmtpServer"));
         }
 
-        public sealed class SmtpServer
+        public sealed class SmtpServerSettings
         {
-            public SmtpServer(IConfigurationSection config)
+            public SmtpServerSettings(IConfigurationSection config)
             {
                 Host = config.GetValue<string>("Host");
                 Port = config.GetValue<ushort>("Port");
