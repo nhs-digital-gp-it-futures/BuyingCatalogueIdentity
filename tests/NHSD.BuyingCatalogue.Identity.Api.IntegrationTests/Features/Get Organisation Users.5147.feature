@@ -42,6 +42,6 @@ Scenario: 4. Service Failure
     Given an user is logged in
     	| Username           | Password | Scope        |
 		| BobSmith@email.com | Pass123$ | Organisation |
-    Given the call to the database to set the field will fail
+    Given the call to the database will fail
     When a GET request is made for an organisation's users with name Organisation 1
     Then a response with status code 500 is returned
