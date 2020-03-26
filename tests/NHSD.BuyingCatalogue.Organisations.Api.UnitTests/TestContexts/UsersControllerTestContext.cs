@@ -4,29 +4,33 @@ using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Controllers;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
 {
     internal sealed class UsersControllerTestContext
     {
-        public Mock<IUsersRepository> UsersRepositoryMock { get; set; }
-
-        public IEnumerable<ApplicationUser> Users { get; set; }
-
-        public UsersController Controller { get; set; }
-
         private UsersControllerTestContext()
         {
+            RegistrationServiceMock = new Mock<IRegistrationService>();
             UsersRepositoryMock = new Mock<IUsersRepository>();
-            
+
             Users = new List<ApplicationUser>();
             UsersRepositoryMock.Setup(x => x.GetUsersByOrganisationIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(() => Users);
 
             UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
 
-            Controller = new UsersController(UsersRepositoryMock.Object);
+            Controller = new UsersController(UsersRepositoryMock.Object, RegistrationServiceMock.Object);
         }
+
+        public Mock<IUsersRepository> UsersRepositoryMock { get; set; }
+
+        public IEnumerable<ApplicationUser> Users { get; set; }
+
+        public UsersController Controller { get; set; }
+
+        internal Mock<IRegistrationService> RegistrationServiceMock { get; set; }
 
         internal static UsersControllerTestContext Setup()
         {
