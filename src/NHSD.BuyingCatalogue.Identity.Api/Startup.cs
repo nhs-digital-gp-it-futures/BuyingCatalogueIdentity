@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IHtmlGenerator, MyHtmlGenerator>();
             var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();

@@ -1,4 +1,5 @@
 ﻿using System;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.PasswordReset;
@@ -9,32 +10,30 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
     public class PasswordResetController : Controller
     {
         [HttpGet]
-        [Route(@"ResetPassword")]
-        public IActionResult ResetPassword(Uri returnUrl)
+        [Route(@"ForgotPassword")]
+        public IActionResult ForgotPassword()
         {
-            returnUrl.ThrowIfNull();
-            var viewModel = new PasswordResetViewModel
-            {
-                ReturnUrl = returnUrl
-            };
-            return View(viewModel);
+            return View();
         }
 
         [HttpPost]
-        [Route(@"ResetPassword")]
-        public IActionResult ResetPassword(PasswordResetViewModel viewModel)
+        [Route(@"ForgotPassword")]
+        public IActionResult ForgotPassword(ForgotPasswordViewModel viewModel)
         {
             viewModel.ThrowIfNull(nameof(viewModel));
-            viewModel.ReturnUrl.ThrowIfNull();
-            return RedirectToAction("LinkSent", new { returnUrl = viewModel.ReturnUrl });
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            return RedirectToAction("LinkSent");
         }
 
         [HttpGet]
         [Route(@"LinkSent")]
-        public IActionResult LinkSent(Uri returnUrl)
+        public IActionResult LinkSent()
         {
-            returnUrl.ThrowIfNull();
-            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
     }
