@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -58,17 +59,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            var urlPrefix = _configuration.GetValue<string>("urlPrefix");
-
             services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseSuccessEvents = true;
                     options.IssuerUri = issuerUrl;
-                    options.UserInteraction.LoginUrl = $"/{urlPrefix}/account/login";
-                    options.UserInteraction.LogoutUrl = $"/{urlPrefix}/account/logout";
-                    options.UserInteraction.ErrorUrl = $"/{urlPrefix}/Error";
                     options.UserInteraction.ErrorIdParameter = "errorId";
                 })
                 .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
@@ -91,13 +87,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void Configure(IApplicationBuilder app)
         {
+            var pathBase = _configuration.GetValue<string>("pathBase");
+
+            if (string.IsNullOrWhiteSpace(pathBase))
+            {
+                ConfigureApp(app);
+            }
+            else
+            {
+                app.Map($"/{pathBase}", mappedApp =>
+                {
+                    ConfigureApp(mappedApp);
+                });
+            }
+
+        }
+        public void ConfigureApp(IApplicationBuilder app)
+        {
             app.UseSerilogRequestLogging(opts =>
             {
                 opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
                 opts.GetLevel = LogHelper.ExcludeHealthChecks;
             });
-
-            var urlPrefix = _configuration.GetValue<string>("urlPrefix");
 
             if (_environment.IsDevelopment())
             {
@@ -107,13 +118,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             }
             else
             {
-                app.UseExceptionHandler($"/{urlPrefix}/Error");
+                app.UseExceptionHandler("/Error");
             }
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                RequestPath = "/identity"
-            });
+            app.UseStaticFiles();
+
             app.UseIdentityServer();
             app.UseRouting();
 
@@ -122,9 +131,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: $"{urlPrefix}/{{controller=Home}}/{{action=Index}}/{{id?}}");
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
             });
         }
