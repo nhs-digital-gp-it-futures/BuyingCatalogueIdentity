@@ -48,7 +48,7 @@
     <Exec Command="npm install" />
   </Target>
 
-  <Target Name="NpmRunBuild" BeforeTargets="Build" AfterTargets="NpmInstall" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true')" >
+  <Target Name="NpmRunBuild" BeforeTargets="Build" AfterTargets="NpmInstall" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true')">
     <Message Importance="high" Text=" Recompiling scss files..." />
     <Exec Command="npm run build" />
   </Target>
