@@ -144,7 +144,7 @@ services:
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' | sudo tee -a /etc/hosts && /opt/bin/entry_point.sh
 
   nhsd.buyingcatalogue.email:
-    image: maildev/maildev
+    image: rnwood/smtp4dev:v3
     ports:
       - "1080:80" # UI
       - "1025:25"
