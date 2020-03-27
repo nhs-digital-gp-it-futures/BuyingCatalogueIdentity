@@ -33,6 +33,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 currentUrl.Replace("signin-oidc", "invalid", StringComparison.OrdinalIgnoreCase);
         }
 
+        [When(@"element with Data ID (.*) is populated with (.*)")]
+        public void WhenElementWithDataIdIsPopulatedWith(string dataId, string value)
+        {
+            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"))
+                .SendKeys(value);
+        }
+
+        [When(@"element with Data ID (.*) is clicked")]
+        public void WhenElementWithDataIdIsClicked(string dataId)
+        {
+            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"))
+                .Click();
+        }
+
         [When(@"a login request is made with email address (.*) and password (.*)")]
         public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
@@ -92,6 +106,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             WhenALoginRequestIsMade(email, password);
             ThenTheUserIsRedirectedTo("home/privacy");
             ThenThePageVerifiesItCouldTalkToTheSampleResource("sampleResourceResult", "Authorized With Sample Resource");
+        }
+
+        [When(@"the user clicks on the forgot password button")]
+        public void WhenUserClicksOnForgotPassword()
+        {
+            _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=forgot-password-link]")).Click();
         }
 
         [When(@"the user clicks on logout button")]

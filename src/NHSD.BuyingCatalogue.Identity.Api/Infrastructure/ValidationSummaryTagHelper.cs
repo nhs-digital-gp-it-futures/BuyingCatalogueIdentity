@@ -14,6 +14,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            output.ThrowIfNull();
             if (ViewContext.ViewData.ModelState.IsValid)
             {
                 return;
