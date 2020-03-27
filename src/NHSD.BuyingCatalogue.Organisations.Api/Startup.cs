@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
@@ -57,7 +58,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(Policy.CanAccessOrganisation, policy => policy.RequireClaim("Organisation"));
+                options.AddPolicy(Policy.CanAccessOrganisation, policy => policy.RequireClaim(ApplicationClaimTypes.Organisation));
+                options.AddPolicy(Policy.CanAccessOrganisationUsers, policyBuilder =>
+                {
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Account);
+                });
+                options.AddPolicy(Policy.CanManageOrganisationUsers, policyBuilder =>
+                {
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage);
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage);
+                });
             });
         }
 

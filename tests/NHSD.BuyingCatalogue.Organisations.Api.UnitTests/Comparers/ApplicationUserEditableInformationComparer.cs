@@ -38,6 +38,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Comparers
                 && string.Equals(original.PhoneNumber, comparison.PhoneNumber, StringComparison.Ordinal)
                 && string.Equals(original.Email, comparison.Email, StringComparison.Ordinal)
                 && string.Equals(original.NormalizedEmail, comparison.NormalizedEmail, StringComparison.Ordinal)
+                && string.Equals(original.UserName, comparison.UserName, StringComparison.Ordinal)
+                && string.Equals(original.NormalizedUserName, comparison.NormalizedUserName, StringComparison.Ordinal)
                 && Equals(original.PrimaryOrganisationId, comparison.PrimaryOrganisationId)
                 && string.Equals(original.OrganisationFunction, comparison.OrganisationFunction, StringComparison.Ordinal)
                 && Equals(original.Disabled, comparison.Disabled)
