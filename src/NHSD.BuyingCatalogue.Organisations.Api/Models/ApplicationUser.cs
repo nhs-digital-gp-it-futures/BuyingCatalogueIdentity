@@ -9,7 +9,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 
         public string LastName { get; set; }
 
-        public string DisplayName => FirstName + " " + LastName;
+        public string DisplayName => $"{FirstName} {LastName}";
 
         public Guid PrimaryOrganisationId { get; set; }
 
