@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
@@ -18,8 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("DELETE FROM Organisations;");
-            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE SecurityStamp = 'TestUser';");
-            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE LockoutEnabled != 1;");
+            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers;");
         }
 
         public static async Task RemoveReadRole(string connectionString)
