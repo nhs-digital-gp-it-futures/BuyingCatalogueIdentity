@@ -100,7 +100,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     ConfigureApp(mappedApp);
                 });
             }
-
         }
         public void ConfigureApp(IApplicationBuilder app)
         {
@@ -122,7 +121,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             }
 
             app.UseStaticFiles();
-
             app.UseIdentityServer();
             app.UseRouting();
 
