@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets or sets the authentication settings for the SMTP server.
         /// </summary>
-        public SmtpAuthenticationSettings Authentication { get; set; }
+        public SmtpAuthenticationSettings Authentication { get; set; } = new SmtpAuthenticationSettings();
 
         /// <summary>
         /// Gets or sets the host name of the SMTP server.
