@@ -17,7 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("DELETE FROM Organisations;");
-            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers;");
+            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE [Email] NOT IN ('user@agency.com', 'AliceSmith@email.com', 'BobSmith@email.com');");
         }
 
         public static async Task RemoveReadRole(string connectionString)
