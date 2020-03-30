@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MailKit;
+using MailKit.Security;
 using MimeKit;
 using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
@@ -20,12 +21,25 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         [Test]
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing")]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
-        public void Constructor_IMailTransport_SmtpSettings_SetsCertificateValidationCallback()
+        public void Constructor_IMailTransport_SmtpSettings_AllowInvalidCertificateFalse_DoesNotSetCertificateValidationCallback()
         {
             var mockTransport = new Mock<IMailTransport>();
             mockTransport.SetupProperty(t => t.ServerCertificateValidationCallback);
 
-            new MailKitEmailService(mockTransport.Object, null);
+            new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+
+            mockTransport.Object.ServerCertificateValidationCallback.Should().BeNull();
+        }
+
+        [Test]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing")]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
+        public void Constructor_IMailTransport_SmtpSettings_AllowInvalidCertificateTrue_SetsCertificateValidationCallback()
+        {
+            var mockTransport = new Mock<IMailTransport>();
+            mockTransport.SetupProperty(t => t.ServerCertificateValidationCallback);
+
+            new MailKitEmailService(mockTransport.Object, new SmtpSettings { AllowInvalidCertificate = true });
 
             var callback = mockTransport.Object.ServerCertificateValidationCallback;
 
@@ -37,14 +51,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         {
             const string host = "host";
             const int port = 125;
-            const bool useSsl = true;
 
             var settings = new SmtpSettings
             {
                 Authentication = new SmtpAuthenticationSettings(),
                 Host = host,
                 Port = port,
-                UseSsl = useSsl,
             };
 
             var mockTransport = new Mock<IMailTransport>();
@@ -63,7 +75,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
                 t => t.ConnectAsync(
                     It.Is<string>(h => h == settings.Host),
                     It.Is<int>(p => p == settings.Port),
-                    It.Is<bool>(s => s == settings.UseSsl),
+                    It.Is<SecureSocketOptions>(s => s == SecureSocketOptions.Auto),
                     It.IsAny<CancellationToken>()),
                 Times.Once());
         }

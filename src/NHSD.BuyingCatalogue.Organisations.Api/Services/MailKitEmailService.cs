@@ -22,11 +22,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         {
             _client = client;
 
-            // TODO: confirm this is acceptable for us if using SSL
-            // (as we will be using a trusted server that is not
-            // user-configurable this should be fine, providing the
-            // root CA is trusted by the host system)
-            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            if (settings.AllowInvalidCertificate.GetValueOrDefault())
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
             _settings = settings;
         }
@@ -39,7 +36,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// <returns>An asynchronous task context.</returns>
         public async Task SendEmailAsync(EmailMessage emailMessage)
         {
-            await _client.ConnectAsync(_settings.Host, _settings.Port, _settings.UseSsl);
+            await _client.ConnectAsync(_settings.Host, _settings.Port);
 
             var authentication = _settings.Authentication;
             if (authentication.IsRequired)

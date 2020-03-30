@@ -21,9 +21,10 @@
         public int Port { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether SSL is required
-        /// when connecting to the SMTP server.
+        /// Gets or sets a value indicating whether to allow connections
+        /// to an SMTP server that does not present a valid/trusted certificate.
         /// </summary>
-        public bool UseSsl { get; set; }
+        /// <remarks>This should only be enabled in test environments.</remarks>
+        public bool? AllowInvalidCertificate { get; set; }
     }
 }
