@@ -108,7 +108,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public void GivenAUserHasLoggedIn(string email, string password)
         {
             WhenTheUserNavigatesToARestrictedPage();
-            ThenTheUserIsRedirectedTo("account/login");
+            ThenTheUserIsRedirectedTo("identity/account/login");
             WhenALoginRequestIsMade(email, password);
             ThenTheUserIsRedirectedTo("home/privacy");
             ThenThePageVerifiesItCouldTalkToTheSampleResource("sampleResourceResult", "Authorized With Sample Resource");

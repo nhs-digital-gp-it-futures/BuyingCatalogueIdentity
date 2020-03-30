@@ -5,9 +5,9 @@
 
     Background: 
     When the user navigates to a restricted web page
-    Then the user is redirected to page account/login
+    Then the user is redirected to page identity/account/login
     Given the user clicks element with Data ID request-account-link
-    Then the user is redirected to page account/registration
+    Then the user is redirected to page identity/account/registration
 
 @4828
 Scenario: 1. The NHS Header is displayed correctly

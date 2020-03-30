@@ -39,6 +39,10 @@
   <ItemGroup>
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\NHSD.BuyingCatalogue.Identity.Common\NHSD.BuyingCatalogue.Identity.Common.csproj" />
+  </ItemGroup>
 
   <Target Name="NpmInstall" BeforeTargets="Build" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true') And !Exists('node_modules')">
     <Exec Command="node --version" ContinueOnError="true">
@@ -49,7 +53,7 @@
     <Exec Command="npm install" />
   </Target>
 
-  <Target Name="NpmRunBuild" BeforeTargets="Build" AfterTargets="NpmInstall" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true')" >
+  <Target Name="NpmRunBuild" BeforeTargets="Build" AfterTargets="NpmInstall" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true')">
     <Message Importance="high" Text=" Recompiling scss files..." />
     <Exec Command="npm run build" />
   </Target>

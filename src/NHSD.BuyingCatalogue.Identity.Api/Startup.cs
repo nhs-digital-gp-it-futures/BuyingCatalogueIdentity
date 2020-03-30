@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
@@ -88,6 +89,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void Configure(IApplicationBuilder app)
         {
+            var pathBase = _configuration.GetValue<string>("pathBase");
+
+            if (string.IsNullOrWhiteSpace(pathBase))
+            {
+                ConfigureApp(app);
+            }
+            else
+            {
+                app.Map($"/{pathBase}", mappedApp =>
+                {
+                    ConfigureApp(mappedApp);
+                });
+            }
+        }
+        public void ConfigureApp(IApplicationBuilder app)
+        {
             app.UseSerilogRequestLogging(opts =>
             {
                 opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
@@ -102,7 +119,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             }
             else
             {
-                app.UseExceptionHandler("/Account/Error");
+                app.UseExceptionHandler("/Error");
             }
 
             app.UseStaticFiles();

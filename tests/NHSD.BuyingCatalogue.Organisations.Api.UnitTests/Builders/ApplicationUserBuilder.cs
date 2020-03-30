@@ -11,6 +11,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         private string _phoneNumber;
         private string _emailAddress;
         private string _normalizedEmailAddress;
+        private string _username;
+        private string _normalizedUsername;
         private Guid _primaryOrganisationId;
         private string _organisationFunction;
         private bool _disabled;
@@ -24,6 +26,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             _phoneNumber = "0123456789";
             _emailAddress = "a.b@c.com";
             _normalizedEmailAddress = _emailAddress.ToUpperInvariant();
+            _username = _emailAddress;
+            _normalizedUsername = _normalizedEmailAddress;
             _primaryOrganisationId = Guid.NewGuid();
             _organisationFunction = "Buyer";
             _catalogueAgreementSigned = false;
@@ -66,6 +70,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
+        internal ApplicationUserBuilder WithUsername(string userName)
+        {
+            _username = userName;
+            _normalizedUsername = _username?.ToUpperInvariant();
+
+            return this;
+        }
+
         internal ApplicationUserBuilder WithPrimaryOrganisationId(Guid primaryOrganisationId)
         {
             _primaryOrganisationId = primaryOrganisationId;
@@ -100,6 +112,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
                 PhoneNumber = _phoneNumber,
                 Email = _emailAddress, 
                 NormalizedEmail = _normalizedEmailAddress,
+                UserName = _username,
+                NormalizedUserName = _normalizedUsername,
                 PrimaryOrganisationId = _primaryOrganisationId, 
                 OrganisationFunction = _organisationFunction,
                 Disabled = _disabled,
