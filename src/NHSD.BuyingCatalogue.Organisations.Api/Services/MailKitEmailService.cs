@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MailKit;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 
@@ -18,14 +19,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         /// <param name="client">The mail transport to use to send e-mail.</param>
         /// <param name="settings">The SMTP configuration.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="client"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="settings"/> is <see langref="null"/>.</exception>
         public MailKitEmailService(IMailTransport client, SmtpSettings settings)
         {
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _settings = settings ?? throw new ArgumentNullException(nameof(client));
 
             if (settings.AllowInvalidCertificate.GetValueOrDefault())
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-
-            _settings = settings;
         }
 
         /// <summary>
@@ -34,8 +36,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         /// <param name="emailMessage">The e-mail message to send asynchronously.</param>
         /// <returns>An asynchronous task context.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="emailMessage"/> is <see langref="null"/>.</exception>
         public async Task SendEmailAsync(EmailMessage emailMessage)
         {
+            if (emailMessage is null)
+                throw new ArgumentNullException(nameof(emailMessage));
+
             await _client.ConnectAsync(_settings.Host, _settings.Port);
 
             var authentication = _settings.Authentication;

@@ -19,10 +19,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         /// <param name="emailService">The service to use to send e-mails.</param>
         /// <param name="settings">The configured registration settings.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="emailService"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="settings"/> is <see langref="null"/>.</exception>
         public RegistrationService(IEmailService emailService, RegistrationSettings settings)
         {
-            _emailService = emailService;
-            _settings = settings;
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         /// <summary>
@@ -30,8 +32,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         /// <param name="user">The user to send the e-mail to.</param>
         /// <returns>An asynchronous task context.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="user"/> is <see langref="null"/>.</exception>
         public async Task SendInitialEmailAsync(ApplicationUser user)
         {
+            if (user is null)
+                throw new ArgumentNullException(nameof(user));
+
             // TODO: replace hard-coded Uri with reset password endpoint once available
             var message = new EmailMessage(_settings.EmailMessage, new Uri("https://www.google.co.uk/"))
             {

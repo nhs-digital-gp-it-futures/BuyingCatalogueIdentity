@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -13,6 +14,32 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
     [Parallelizable(ParallelScope.All)]
     internal sealed class RegistrationServiceTests
     {
+        [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
+        public void Constructor_IEmailService_RegistrationSettings_NullEmailService_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new RegistrationService(null, new RegistrationSettings()));
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
+        public void Constructor_IEmailService_RegistrationSettings_NullSettings_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new RegistrationService(Mock.Of<IEmailService>(), null));
+        }
+
+        [Test]
+        public void SendInitialEmailAsync_NullUser_ThrowsException()
+        {
+            static async Task SendEmail()
+            {
+                var emailService = new RegistrationService(Mock.Of<IEmailService>(), new RegistrationSettings());
+                await emailService.SendInitialEmailAsync(null);
+            }
+
+            Assert.ThrowsAsync<ArgumentNullException>(SendEmail);
+        }
+
         [Test]
         public async Task SendInitialEmailAsync_SendsEmail()
         {

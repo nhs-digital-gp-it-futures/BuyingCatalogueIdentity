@@ -47,6 +47,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
+        public void Constructor_IMailTransport_SmtpSettings_NullMailTransport_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new MailKitEmailService(null, new SmtpSettings()));
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
+        public void Constructor_IMailTransport_SmtpSettings_NullSettings_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new MailKitEmailService(Mock.Of<IMailTransport>(), null));
+        }
+
+        [Test]
         public async Task SendEmailAsync_ConnectsWithExpectedSettings()
         {
             const string host = "host";
@@ -78,6 +92,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
                     It.Is<SecureSocketOptions>(s => s == SecureSocketOptions.Auto),
                     It.IsAny<CancellationToken>()),
                 Times.Once());
+        }
+
+        [Test]
+        public void SendEmailAsync_NullEmailMessage_ThrowsException()
+        {
+            static async Task SendEmail()
+            {
+                var emailService = new MailKitEmailService(Mock.Of<IMailTransport>(), new SmtpSettings());
+                await emailService.SendEmailAsync(null);
+            }
+
+            Assert.ThrowsAsync<ArgumentNullException>(SendEmail);
         }
 
         [Test]
