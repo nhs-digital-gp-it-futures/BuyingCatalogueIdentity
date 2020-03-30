@@ -19,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 
             var emailAddress = new EmailAddress(name, address);
 
-            emailAddress.Name.Should().Be(name);
+            emailAddress.DisplayName.Should().Be(name);
             emailAddress.Address.Should().Be(address);
         }
 

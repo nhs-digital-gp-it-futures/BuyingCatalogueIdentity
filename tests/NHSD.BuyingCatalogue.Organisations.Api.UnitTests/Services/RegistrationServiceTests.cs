@@ -94,7 +94,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 
             var recipient = actualMessage.Recipient;
             recipient.Should().NotBeNull();
-            recipient.Name.Should().Be(user.DisplayName);
+            recipient.DisplayName.Should().Be(user.DisplayName);
             recipient.Address.Should().Be(user.Email);
         }
     }

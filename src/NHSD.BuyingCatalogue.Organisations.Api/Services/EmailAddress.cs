@@ -20,13 +20,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailAddress"/> class
-        /// with the given name and address.
+        /// with the given display name and address.
         /// </summary>
-        /// <param name="name">An optional </param>
+        /// <param name="displayName">An optional display name.</param>
         /// <param name="address"></param>
-        internal EmailAddress(string name, string address)
+        internal EmailAddress(string displayName, string address)
         {
-            Name = name;
+            DisplayName = displayName;
             Address = address;
         }
 
@@ -35,7 +35,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         /// <remarks>An optional display name, for example
         /// Buying Catalogue Team.</remarks>
-        public string Name { get; set; }
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the actual e-mail address.
@@ -61,6 +61,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// Returns the receiver as a <see cref="MailboxAddress"/>.
         /// </summary>
         /// <returns>the corresponding <see cref="MailboxAddress"/>.</returns>
-        internal MailboxAddress AsMailboxAddress() => new MailboxAddress(Name, Address);
+        internal MailboxAddress AsMailboxAddress() => new MailboxAddress(DisplayName, Address);
     }
 }
