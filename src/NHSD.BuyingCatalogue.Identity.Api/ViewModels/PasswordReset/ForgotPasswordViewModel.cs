@@ -13,8 +13,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.PasswordReset
 
         internal static class ErrorMessages
         {
-            internal const string EmailAddressRequired = "Enter your email address";
-            internal const string EmailAddressInvalid = "Enter a valid email address";
+            internal const string EmailAddressRequired = "Enter an email address";
+            internal const string EmailAddressInvalid = "Enter an email address in the correct format, like name@example.com";
         }
     }
 }

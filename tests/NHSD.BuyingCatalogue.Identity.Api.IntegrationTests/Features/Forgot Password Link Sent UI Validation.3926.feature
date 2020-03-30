@@ -33,7 +33,7 @@ Scenario: 3. The Login page description is displayed correctly
 Scenario: 4. The back to log in link is displayed correctly
     Then the page contains element with Data ID back-to-login
     And element with Data ID back-to-login has text < Back to log in
-    And element with Data ID back-to-login contains a link to account/login
+    And element with Data ID back-to-login is a link to account/login
 
 @3926
 Scenario: 5. The NHS Footer is displayed

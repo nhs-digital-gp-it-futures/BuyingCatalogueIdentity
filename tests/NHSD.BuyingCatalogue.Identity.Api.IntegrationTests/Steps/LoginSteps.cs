@@ -47,6 +47,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 .Click();
         }
 
+        [When(@"the form with Data ID (.*) is submitted")]
+        public void WhenTheFormWithDataIdIsSubmitted(string dataId)
+        {
+            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]")).Submit();
+        }
+
         [When(@"a login request is made with email address (.*) and password (.*)")]
         public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
