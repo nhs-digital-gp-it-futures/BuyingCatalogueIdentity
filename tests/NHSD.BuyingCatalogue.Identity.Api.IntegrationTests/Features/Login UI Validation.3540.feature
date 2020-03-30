@@ -5,7 +5,7 @@
 
     Background: 
     When the user navigates to a restricted web page
-    Then the user is redirected to page account/login
+    Then the user is redirected to page identity/account/login
 
 @3540
 Scenario: 1. The NHS Header is displayed correctly
