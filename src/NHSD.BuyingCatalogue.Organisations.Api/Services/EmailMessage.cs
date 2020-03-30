@@ -74,7 +74,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// <summary>
         /// Gets or sets the recipient (to address) of the message.
         /// </summary>
-        /// /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langref="null"/>.</exception>
         internal EmailAddress Recipient
         {
             get => recipient;
