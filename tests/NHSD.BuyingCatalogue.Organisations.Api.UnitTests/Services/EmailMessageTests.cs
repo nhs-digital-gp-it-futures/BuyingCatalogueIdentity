@@ -40,6 +40,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
+        public void Constructor_EmailMessage_Uri_UrlPlaceholderCaseMismatch_DoesNotSetUrl()
+        {
+            const string url = "https://www.foobar.co.uk/";
+
+            var htmlBody = "HTML " + EmailMessage.ResetPasswordLinkPlaceholder.ToUpperInvariant();
+            var textBody = "Text " + EmailMessage.ResetPasswordLinkPlaceholder.ToLowerInvariant();
+
+            var inputMessage = new EmailMessage
+            {
+                Sender = new EmailAddress(),
+                HtmlBody = htmlBody,
+                TextBody = textBody,
+            };
+
+            var outputMessage = new EmailMessage(inputMessage, new Uri(url));
+
+            outputMessage.HtmlBody.Should().Be(htmlBody);
+            outputMessage.TextBody.Should().Be(textBody);
+        }
+
+        [Test]
         public void AsMimeMessage_ReturnsExpectedValues()
         {
             const string recipient = "recipient@somedomain.uk";

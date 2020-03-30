@@ -42,8 +42,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 
             var passwordResetLink = passwordResetUrl.ToString();
 
-            HtmlBody = message.HtmlBody.Replace(ResetPasswordLinkPlaceholder, passwordResetLink);
-            TextBody = message.TextBody.Replace(ResetPasswordLinkPlaceholder, passwordResetLink);
+            HtmlBody = message.HtmlBody.Replace(ResetPasswordLinkPlaceholder, passwordResetLink, StringComparison.Ordinal);
+            TextBody = message.TextBody.Replace(ResetPasswordLinkPlaceholder, passwordResetLink, StringComparison.Ordinal);
         }
 
         /// <summary>
