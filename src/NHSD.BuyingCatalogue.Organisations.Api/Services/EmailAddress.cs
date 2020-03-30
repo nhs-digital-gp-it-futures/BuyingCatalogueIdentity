@@ -51,7 +51,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
                     throw new ArgumentNullException(nameof(value));
 
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException(nameof(value));
+                    throw new ArgumentException($"{nameof(Address)} is required.", nameof(value));
 
                 address = value;
             }
