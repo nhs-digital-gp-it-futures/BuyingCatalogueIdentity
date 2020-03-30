@@ -27,10 +27,10 @@ Scenario: 3. The Login page description is displayed correctly
     
 @3540
 Scenario: 4. The Email Address input element is displayed correctly
-    Then the page contains element with Data ID login-email-address
-    And element with Data ID login-email-address has tag input
-    And element with Data ID login-email-address is of type email
-    And element with Data ID login-email-address has label with text Email address
+    Then the page contains element with Data ID EmailAddress-input
+    And element with Data ID EmailAddress-input has tag input
+    And element with Data ID EmailAddress-input is of type email
+    And element with Data ID EmailAddress-input has label with text Email address
     
 @3540
 Scenario: 5. The Password input element is displayed correctly

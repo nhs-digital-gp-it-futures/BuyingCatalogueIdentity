@@ -8,7 +8,7 @@
     Then the user is redirected to page account/login
     When the user clicks on the forgot password button
     Then the user is redirected to page account/forgotpassword
-    When element with Data ID email-address is populated with test@email.com
+    When element with Data ID EmailAddress-input is populated with test@email.com
     And element with Data ID submit is clicked
     Then the user is redirected to page account/linksent
 

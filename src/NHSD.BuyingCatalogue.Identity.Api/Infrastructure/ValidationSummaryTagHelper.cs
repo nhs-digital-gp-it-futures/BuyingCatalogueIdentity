@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 {
-    [HtmlTargetElement("div", Attributes = "asp-nhs-validation-summary")]
+    [HtmlTargetElement("div", Attributes = "nhs-validation-summary")]
     public class ValidationSummaryTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
@@ -17,6 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             output.ThrowIfNull();
             if (ViewContext.ViewData.ModelState.IsValid)
             {
+                output.Content.Clear();
                 return;
             }
             var errorSummary = new TagBuilder("div");
