@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using FluentAssertions;
-using MimeKit;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NUnit.Framework;
 
@@ -58,41 +55,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 
             outputMessage.HtmlBody.Should().Be(htmlBody);
             outputMessage.TextBody.Should().Be(textBody);
-        }
-
-        [Test]
-        public void AsMimeMessage_ReturnsExpectedValues()
-        {
-            const string recipient = "recipient@somedomain.uk";
-            const string sender = "sender@somedomain.nhs.uk";
-            const string subject = "Subject";
-            const string htmlBody = "HTML";
-            const string textBody = "Text";
-
-            var emailMessage = new EmailMessage
-            {
-                Sender = new EmailAddress { Address = sender },
-                Recipient = new EmailAddress { Address = recipient },
-                Subject = subject,
-                HtmlBody = "HTML",
-                TextBody = "Text",
-            };
-
-            var mimeMessage = emailMessage.AsMimeMessage();
-
-            mimeMessage.Should().BeOfType<MimeMessage>();
-
-            IEnumerable<InternetAddress> from = mimeMessage.From;
-            from.Should().HaveCount(1);
-            from.First().As<MailboxAddress>().Address.Should().Be(sender);
-
-            IEnumerable<InternetAddress> to = mimeMessage.To;
-            to.Should().HaveCount(1);
-            to.First().As<MailboxAddress>().Address.Should().Be(recipient);
-
-            mimeMessage.Subject.Should().Be(subject);
-            mimeMessage.HtmlBody.Should().Be(htmlBody);
-            mimeMessage.TextBody.Should().Be(textBody);
         }
 
         [Test]

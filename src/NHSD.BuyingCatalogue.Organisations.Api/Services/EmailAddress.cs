@@ -1,5 +1,4 @@
 ﻿using System;
-using MimeKit;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 {
@@ -56,11 +55,5 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
                 _address = value;
             }
         }
-
-        /// <summary>
-        /// Returns the receiver as a <see cref="MailboxAddress"/>.
-        /// </summary>
-        /// <returns>the corresponding <see cref="MailboxAddress"/>.</returns>
-        internal MailboxAddress AsMailboxAddress() => new MailboxAddress(DisplayName, Address);
     }
 }

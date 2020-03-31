@@ -1,5 +1,4 @@
 ﻿using System;
-using MimeKit;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 {
@@ -79,30 +78,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         {
             get => _recipient;
             set => _recipient = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        /// <summary>
-        /// Returns the receiver as a <see cref="MimeMessage"/>.
-        /// </summary>
-        /// <returns>the corresponding <see cref="MimeMessage"/>.</returns>
-        internal MimeMessage AsMimeMessage()
-        {
-            var bodyBuilder = new BodyBuilder
-            {
-                HtmlBody = HtmlBody,
-                TextBody = TextBody,
-            };
-
-            var message = new MimeMessage
-            {
-                Subject = Subject,
-                Body = bodyBuilder.ToMessageBody(),
-            };
-
-            message.From.Add(Sender.AsMailboxAddress());
-            message.To.Add(Recipient.AsMailboxAddress());
-
-            return message;
         }
     }
 }
