@@ -106,7 +106,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return View(viewModel);
             }
 
-            return RedirectToAction("ForgotPasswordLinkSent");
+            return RedirectToAction(nameof(ForgotPasswordLinkSent));
         }
 
         [HttpGet]

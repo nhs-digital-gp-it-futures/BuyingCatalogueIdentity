@@ -53,11 +53,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
             foreach (var model in orderedStates)
             {
-                if (!model.Value.Errors.Any())
-                {
-                    continue;
-                }
-
                 foreach (var error in model.Value.Errors)
                 {
                     var listItem = new TagBuilder(TagHelperConstants.ListItem);

@@ -1,6 +1,6 @@
 ﻿@{
-    ViewData["PageTitle"] = "NHSD Buying Catalogue Registration";
-    ViewData["PageDescription"] = "Welcome to the registration page for the NHSD Buying Catalogue.";
+    ViewData["PageTitle"] = "Request Buying Catalogue account";
+    ViewData["PageDescription"] = "This is how to register for a user account. You’ll need one to place orders on the Buying Catalogue.";
 }
 
     <div class="nhsuk-width-container">
@@ -9,8 +9,8 @@
 
                 <div class="nhsuk-grid-row">
                     <div class="nhsuk-grid-column-two-thirds">
-                        <h1 data-test-id="registration-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">Request Buying Catalogue account</h1>
-                        <h2 data-test-id="registration-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">This is how to register for a user account. You’ll need one to place orders on the Buying Catalogue.</h2>
+                        <h1 data-test-id="registration-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
+                        <h2 data-test-id="registration-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
                     </div>
                 </div>
                 <div class="nhsuk-grid-row">
