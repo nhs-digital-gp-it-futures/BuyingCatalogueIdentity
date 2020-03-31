@@ -146,12 +146,16 @@ services:
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' | sudo tee -a /etc/hosts && /opt/bin/entry_point.sh
 
   nhsd.buyingcatalogue.email:
-    image: maildev/maildev
+    image: ${REGISTRY:-nhsd}/buying-catalogue/smtp-server:${TAG:-latest}
+    container_name: smtp_server
+    build: 
+      context: src/NHSD.BuyingCatalogue.Smtp
     ports:
-      - "1080:80" # UI
       - "1025:25"
+      - "1080:80"
+      - "1587:587"
     networks:
-        - nhsd_bcnetwork
+      - nhsd_bcnetwork
 
 networks: 
   nhsd_bcnetwork:
