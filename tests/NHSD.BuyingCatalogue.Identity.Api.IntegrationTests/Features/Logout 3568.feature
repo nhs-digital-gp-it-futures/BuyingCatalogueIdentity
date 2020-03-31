@@ -17,4 +17,4 @@ Scenario: 1. User logs out and is unable to access protected resources without l
     When the user clicks on logout button
     Then the user is logged out
     When the user navigates to a restricted web page
-    Then the user is redirected to page account/login
+    Then the user is redirected to page identity/account/login

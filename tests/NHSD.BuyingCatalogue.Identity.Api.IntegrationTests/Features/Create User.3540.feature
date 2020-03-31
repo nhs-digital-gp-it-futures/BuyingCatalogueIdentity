@@ -31,12 +31,12 @@ Scenario: 1. A authority user can create a user
 @3540
 Scenario: 2. A non authority user cannot create a user
 	Given an user is logged in
-		| Username            | Password     | Scope |
-		| PennyLane@email.com | S0mePa$$w0rd | NULL  |
+		| Username            | Password     | Scope        |
+		| PennyLane@email.com | S0mePa$$w0rd | Organisation |
 	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
-	Then a response with status code 401 is returned
+	Then a response with status code 403 is returned
 
 @3540
 Scenario: 3. Create user with valid details when unauthorised

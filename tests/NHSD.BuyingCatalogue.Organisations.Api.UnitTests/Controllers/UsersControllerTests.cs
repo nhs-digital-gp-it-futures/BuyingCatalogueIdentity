@@ -47,8 +47,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             var users = new List<(ApplicationUser RepoUser, OrganisationUserViewModel Expected)>
             {
-                CreateApplicationUserTestData(false), 
-                CreateApplicationUserTestData(true), 
+                CreateApplicationUserTestData(false),
+                CreateApplicationUserTestData(true),
                 CreateApplicationUserTestData(false)
             };
 
@@ -111,6 +111,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithLastName(createUserRequestViewModel.LastName)
                 .WithPhoneNumber(createUserRequestViewModel.PhoneNumber)
                 .WithEmailAddress(createUserRequestViewModel.EmailAddress)
+                .WithUsername(createUserRequestViewModel.EmailAddress)
                 .WithPrimaryOrganisationId(organisationId)
                 .Build();
 
@@ -118,6 +119,32 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 It.Is<ApplicationUser>(
                     actual => ApplicationUserEditableInformationComparer.Instance.Equals(expectedApplicationUser, actual))),
                 Times.Once);
+        }
+
+        [Test]
+        public async Task CreateUserAsync_NewApplicationUser_SendsEmail()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel());
+
+            context.RegistrationServiceMock.Verify(r => r.SendInitialEmailAsync(It.IsNotNull<ApplicationUser>()), Times.Once());
+        }
+
+        [Test]
+        public void CreateUserAsync_NullApplicationUser_ThrowsException()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            async Task<ActionResult> CreateUser()
+            {
+                using var controller = context.Controller;
+                return await controller.CreateUserAsync(Guid.Empty, null);
+            }
+
+            Assert.ThrowsAsync<ArgumentNullException>(CreateUser);
         }
 
         private static (ApplicationUser RepoUser, OrganisationUserViewModel ExpectedUser) CreateApplicationUserTestData(bool disabled)

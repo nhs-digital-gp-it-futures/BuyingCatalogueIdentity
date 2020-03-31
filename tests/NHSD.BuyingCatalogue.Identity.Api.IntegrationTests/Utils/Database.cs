@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
@@ -17,9 +16,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             using IDbConnection databaseConnection = new SqlConnection(config.GetConnectionString("CatalogueUsersAdmin"));
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter ADD MEMBER NHSD;");
-            await databaseConnection.ExecuteAsync("DELETE FROM Organisations");
-            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE SecurityStamp = 'TestUser'");
-            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE UserName IS NULL");
+            await databaseConnection.ExecuteAsync("DELETE FROM Organisations;");
+            await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE [Email] NOT IN ('user@agency.com', 'AliceSmith@email.com', 'BobSmith@email.com');");
         }
 
         public static async Task RemoveReadRole(string connectionString)
