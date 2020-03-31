@@ -37,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
             var header = new TagBuilder(TagHelperConstants.SubHeader);
             header.AddCssClass(TagHelperConstants.NhsValidationSummaryTitle);
-            header.Attributes["id"] = TagHelperConstants.ErrorSummaryTitle;
+            header.Attributes[TagHelperConstants.Id] = TagHelperConstants.ErrorSummaryTitle;
             header.InnerHtml.Append(Title);
             errorSummary.InnerHtml.AppendHtml(header);
 
