@@ -91,6 +91,31 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         }
 
         [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPasswordViewModel viewModel)
+        {
+            viewModel.ThrowIfNull(nameof(viewModel));
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            return RedirectToAction("ForgotPasswordLinkSent");
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordLinkSent()
+        {
+            return View();
+        }
+        
+        [HttpGet]
         public IActionResult ResetPassword()
         {
             return View();

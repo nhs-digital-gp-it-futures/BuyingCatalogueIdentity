@@ -56,7 +56,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                         OrganisationFunction = user.OrganisationFunction,
                         SecurityStamp = "TestUser"
                     };
-
+                
                 await userEntity.InsertAsync(_settings.ConnectionString);
             }
         }

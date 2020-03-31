@@ -9,7 +9,6 @@
     <div class="nhsuk-width-container">
         <main class="nhsuk-main-wrapper">
             <div data-test-id="login-page" class="bc-t-font-color--white">
-
                 <div class="nhsuk-grid-row">
                     <div class="nhsuk-grid-column-two-thirds">
                         <h1 data-test-id="login-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">Buying Catalogue log in</h1>
@@ -22,12 +21,12 @@
 
                             <input type="hidden" asp-for="ReturnUrl" />
 
-                            <div data-test-id="email-field">
+                            <div data-test-id="field-email-address">
                                 <div data-test-id="text-field-input">
                                     <div class="nhsuk-form-group">
                                         <label asp-for="EmailAddress" class="nhsuk-label"></label>
-                                        <input asp-for="EmailAddress" class="nhsuk-input" data-test-id="login-email-address" />
-                                        <span asp-validation-for="EmailAddress"></span>
+                                        <input asp-for="EmailAddress" class="nhsuk-input" data-test-id="input-email-address" />
+                                        <span asp-validation-for="EmailAddress" data-test-id="error-email-address"></span>
                                     </div>
                                 </div>
                             </div>
@@ -42,8 +41,8 @@
                                 </div>
                             </div>
 
-                            <div data-test-id="forgot-password-link" class="bc-c-data-link bc-c-login-page-link">
-                                <a asp-action="ResetPassword" asp-route-returnurl="@ViewData["ReturnUrl"]" target="_blank">
+                            <div class="bc-c-data-link bc-c-login-page-link">
+                                <a data-test-id="forgot-password-link" asp-controller="Account" asp-action="ForgotPassword">
                                     Forgot password?
                                 </a>
                             </div>

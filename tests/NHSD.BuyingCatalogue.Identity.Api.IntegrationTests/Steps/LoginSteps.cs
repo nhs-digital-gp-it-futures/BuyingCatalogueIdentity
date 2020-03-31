@@ -36,7 +36,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a login request is made with email address (.*) and password (.*)")]
         public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
-            _seleniumContext.WebDriver.FindElement(By.Name("EmailAddress")).SendKeys(emailAddress);
+            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id=input-email-address]")).SendKeys(emailAddress);
             _seleniumContext.WebDriver.FindElement(By.Name("Password")).SendKeys(password);
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
@@ -71,7 +71,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the page contains an email address error with text (.*)")]
         public void ThenThePageContainsEmailAddressErrorWithText(string value)
         {
-            var emailGroup = _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=email-field]"));
+            var emailGroup = _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=field-email-address]"));
             var errorElement = emailGroup.FindElement(By.ClassName("field-validation-error"));
             errorElement.Text.Should().Be(value);
         }
@@ -92,6 +92,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             WhenALoginRequestIsMade(email, password);
             ThenTheUserIsRedirectedTo("home/privacy");
             ThenThePageVerifiesItCouldTalkToTheSampleResource("sampleResourceResult", "Authorized With Sample Resource");
+        }
+
+        [When(@"the user clicks on the forgot password button")]
+        public void WhenUserClicksOnForgotPassword()
+        {
+            _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=forgot-password-link]")).Click();
         }
 
         [When(@"the user clicks on logout button")]
