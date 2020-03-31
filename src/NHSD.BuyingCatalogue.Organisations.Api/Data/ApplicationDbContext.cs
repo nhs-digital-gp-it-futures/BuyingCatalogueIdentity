@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
@@ -15,6 +16,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (modelBuilder is null)
+                throw new ArgumentNullException(nameof(modelBuilder));
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new OrganisationEntityTypeConfiguration());

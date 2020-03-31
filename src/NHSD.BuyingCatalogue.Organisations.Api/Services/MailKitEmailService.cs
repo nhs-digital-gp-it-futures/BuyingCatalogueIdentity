@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using MailKit;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
@@ -21,6 +22,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// <param name="settings">The SMTP configuration.</param>
         /// <exception cref="ArgumentNullException"><paramref name="client"/> is <see langref="null"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="settings"/> is <see langref="null"/>.</exception>
+        [SuppressMessage(
+            "Security",
+            "CA5359:Do Not Disable Certificate Validation",
+            Justification = "Certificate validation only disabled when specified in configuration (for use in test environments only)")]
         public MailKitEmailService(IMailTransport client, SmtpSettings settings)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
