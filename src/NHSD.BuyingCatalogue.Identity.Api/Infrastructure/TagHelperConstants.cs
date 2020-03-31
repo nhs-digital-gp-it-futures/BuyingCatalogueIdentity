@@ -12,8 +12,9 @@
         public const string UnorderedList = "ul";
 
         // attributes
-        public const string For = "asp-for";
         public const string DataTestId = "data-test-id";
+        public const string For = "asp-for";
+        public const string Id = "id";
         public const string LabelledBy = "aria-labelledy";
         public const string Role = "role";
         public const string RoleAlert = "alert";

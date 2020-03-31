@@ -33,26 +33,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 currentUrl.Replace("signin-oidc", "invalid", StringComparison.OrdinalIgnoreCase);
         }
 
-        [When(@"element with Data ID (.*) is populated with (.*)")]
-        public void WhenElementWithDataIdIsPopulatedWith(string dataId, string value)
-        {
-            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"))
-                .SendKeys(value);
-        }
-
-        [When(@"element with Data ID (.*) is clicked")]
-        public void WhenElementWithDataIdIsClicked(string dataId)
-        {
-            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"))
-                .Click();
-        }
-
-        [When(@"the form with Data ID (.*) is submitted")]
-        public void WhenTheFormWithDataIdIsSubmitted(string dataId)
-        {
-            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]")).Submit();
-        }
-
         [When(@"a login request is made with email address (.*) and password (.*)")]
         public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
