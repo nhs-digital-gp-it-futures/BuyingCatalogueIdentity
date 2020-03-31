@@ -1,8 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.PasswordReset
+namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 {
     public sealed class ForgotPasswordViewModel
     {

@@ -5,12 +5,18 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 {
-    [HtmlTargetElement("div", Attributes = "nhs-validation-summary")]
+    [HtmlTargetElement(TagHelperConstants.Div, Attributes = TagHelperName)]
     public class ValidationSummaryTagHelper : TagHelper
     {
+        public const string TagHelperName = "nhs-validation-summary";
+        public const string TitleName = "title";
+
         [HtmlAttributeNotBound]
         [ViewContext]
         public ViewContext ViewContext { get; set; }
+
+        [HtmlAttributeName(TitleName)]
+        public string Title { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -20,23 +26,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 output.Content.Clear();
                 return;
             }
-            var errorSummary = new TagBuilder("div");
+
+            var errorSummary = new TagBuilder(TagHelperConstants.Div);
             var viewType = ViewContext.ViewData.Model.GetType();
 
             viewType.ThrowIfNull();
-            errorSummary.AddCssClass("nhsuk-error-summary");
-            errorSummary.Attributes["role"] = "alert";
-            errorSummary.Attributes["aria-labelledby"] = "error-summary-title";
+            errorSummary.AddCssClass(TagHelperConstants.NhsValidationSummary);
+            errorSummary.Attributes[TagHelperConstants.Role] = TagHelperConstants.RoleAlert;
+            errorSummary.Attributes[TagHelperConstants.LabelledBy] = TagHelperConstants.ErrorSummaryTitle;
 
-            var header = new TagBuilder("h2");
-            header.AddCssClass("nhsuk-error-summary__title");
-            header.Attributes["id"] = "error-summary-title";
-            header.InnerHtml.Append("There is a problem");
+            var header = new TagBuilder(TagHelperConstants.SubHeader);
+            header.AddCssClass(TagHelperConstants.NhsValidationSummaryTitle);
+            header.Attributes["id"] = TagHelperConstants.ErrorSummaryTitle;
+            header.InnerHtml.Append(Title);
             errorSummary.InnerHtml.AppendHtml(header);
 
-            var errorList = new TagBuilder("ul");
-            errorList.AddCssClass("nhsuk-list");
-            errorList.AddCssClass(" nhsuk-error-summary__list");
+            var errorList = new TagBuilder(TagHelperConstants.UnorderedList);
+            errorList.AddCssClass(TagHelperConstants.NhsList);
+            errorList.AddCssClass(TagHelperConstants.NhsValidationSummaryList);
             errorSummary.InnerHtml.AppendHtml(errorList);
 
             foreach (var model in ViewContext.ViewData.ModelState)
@@ -48,16 +55,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
                 foreach (var error in model.Value.Errors)
                 {
-                    var listItem = new TagBuilder("li");
-                    var errorElement = new TagBuilder("a");
-                    errorElement.Attributes.Add("href", $"#{model.Key}");
+                    var listItem = new TagBuilder(TagHelperConstants.ListItem);
+                    var errorElement = new TagBuilder(TagHelperConstants.Anchor);
+                    errorElement.Attributes.Add(TagHelperConstants.Link, $"#{model.Key}");
                     errorElement.InnerHtml.Append(error.ErrorMessage);
                     listItem.InnerHtml.AppendHtml(errorElement);
                     errorList.InnerHtml.AppendHtml(listItem);
                 }
             }
 
-            output.TagName = "div";
+            output.TagName = TagHelperConstants.Div;
             output.TagMode = TagMode.StartTagAndEndTag;
             output.Content.AppendHtml(errorSummary);
         }

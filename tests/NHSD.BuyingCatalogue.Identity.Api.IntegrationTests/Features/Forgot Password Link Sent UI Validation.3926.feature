@@ -5,12 +5,12 @@
 
     Background: 
     When the user navigates to a restricted web page
-    Then the user is redirected to page account/login
+    Then the user is redirected to page identity/account/login
     When the user clicks on the forgot password button
-    Then the user is redirected to page account/forgotpassword
-    When element with Data ID EmailAddress-input is populated with test@email.com
+    Then the user is redirected to page identity/account/forgotpassword
+    When element with Data ID input-email-address is populated with test@email.com
     And element with Data ID submit is clicked
-    Then the user is redirected to page account/linksent
+    Then the user is redirected to page identity/account/forgotpasswordlinksent
 
 @3926
 Scenario: 1. The NHS Header is displayed correctly
@@ -33,7 +33,7 @@ Scenario: 3. The Login page description is displayed correctly
 Scenario: 4. The back to log in link is displayed correctly
     Then the page contains element with Data ID back-to-login
     And element with Data ID back-to-login has text < Back to log in
-    And element with Data ID back-to-login is a link to account/login
+    And element with Data ID back-to-login is a link to identity/account/login
 
 @3926
 Scenario: 5. The NHS Footer is displayed

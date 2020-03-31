@@ -5,9 +5,9 @@
 
 Background: 
     When the user navigates to a restricted web page
-    Then the user is redirected to page account/login
+    Then the user is redirected to page identity/account/login
     When the user clicks on the forgot password button
-    Then the user is redirected to page account/forgotpassword
+    Then the user is redirected to page identity/account/forgotpassword
 
 @3926
 Scenario: 1. The NHS Header is displayed correctly
@@ -29,9 +29,9 @@ Scenario: 3. The Login page description is displayed correctly
     
 @3926
 Scenario: 4. The Email Address input element is displayed correctly
-    Then the page contains element with Data ID EmailAddress-input
-    And element with Data ID EmailAddress-input has tag input
-    And element with Data ID EmailAddress-input has label with text Email address
+    Then the page contains element with Data ID input-email-address
+    And element with Data ID input-email-address has tag input
+    And element with Data ID input-email-address has label with text Email address
     
 @3926
 Scenario: 6. The Log in button is displayed correctly

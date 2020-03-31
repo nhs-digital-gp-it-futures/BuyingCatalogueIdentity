@@ -21,12 +21,12 @@
 
                             <input type="hidden" asp-for="ReturnUrl" />
 
-                            <div data-test-id="EmailAddress-field">
+                            <div data-test-id="field-email-address">
                                 <div data-test-id="text-field-input">
                                     <div class="nhsuk-form-group">
                                         <label asp-for="EmailAddress" class="nhsuk-label"></label>
-                                        <input asp-for="EmailAddress" class="nhsuk-input" data-test-id="EmailAddress-input" />
-                                        <span asp-validation-for="EmailAddress"></span>
+                                        <input asp-for="EmailAddress" class="nhsuk-input" data-test-id="input-email-address" />
+                                        <span asp-validation-for="EmailAddress" data-test-id="error-email-address"></span>
                                     </div>
                                 </div>
                             </div>
@@ -42,7 +42,7 @@
                             </div>
 
                             <div class="bc-c-data-link bc-c-login-page-link">
-                                <a data-test-id="forgot-password-link" asp-controller="PasswordReset" asp-action="ForgotPassword">
+                                <a data-test-id="forgot-password-link" asp-controller="Account" asp-action="ForgotPassword">
                                     Forgot password?
                                 </a>
                             </div>

@@ -1,12 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using NHSUK.FrontEndLibrary.TagHelpers.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 {
-    [HtmlTargetElement("div", Attributes = "nhs-validation-input")]
+    [HtmlTargetElement(TagHelperConstants.Div, Attributes = TagHelperName)]
     public class ValidationInputTagHelper : TagHelper
     {
+        public const string TagHelperName = "nhs-validation-input";
+        public const string InputDataTestIdName = "input-data-test-id";
+        public const string FieldDataTestIdName = "field-data-test-id";
+        public const string ErrorDataTestIdName = "error-data-test-id";
+
         private readonly IHtmlGenerator _htmlGenerator;
 
         public ValidationInputTagHelper(IHtmlGenerator htmlGenerator)
@@ -18,61 +24,73 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        [HtmlAttributeName("asp-for")]
+        [HtmlAttributeName(TagHelperConstants.For)]
         public ModelExpression For { get; set; }
+
+        [HtmlAttributeName(FieldDataTestIdName)]
+        public string FieldDataTestId { get; set; }
+
+        [HtmlAttributeName(InputDataTestIdName)]
+        public string InputDataTestId { get; set; }
+
+        [HtmlAttributeName(ErrorDataTestIdName)]
+        public string ErrorDataTestId { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.ThrowIfNull();
 
             output.Content.Clear();
-            var emailField = new TagBuilder("div");
+
+            var outerDivBuilder = new TagBuilder(TagHelperConstants.Div);
 
             if (ViewContext.ViewData.ContainsKey(For.Name))
             {
-                emailField.AddCssClass("nhsuk-form-group");
+                outerDivBuilder.AddCssClass(TagHelperConstants.NhsFormGroupError);
             }
 
-            emailField.Attributes["data-test-id"] = $"{For.Name}-field";
-            var fieldInput = new TagBuilder("div");
-            var formGroup = new TagBuilder("div");
-            formGroup.AddCssClass("nhsuk-form-group");
+            outerDivBuilder.Attributes[TagHelperConstants.DataTestId] = FieldDataTestId ?? $"{For.Name}-field";
 
-            var tagBuilder = _htmlGenerator.GenerateLabel(
+            var formGroup = new TagBuilder(TagHelperConstants.Div);
+            formGroup.AddCssClass(TagHelperConstants.NhsFormGroup);
+
+            var labelBuilder = _htmlGenerator.GenerateLabel(
                 ViewContext,
                 For.ModelExplorer,
                 For.Name,
-                labelText: null,
-                htmlAttributes: new { @class = "nhsuk-label" });
+                null, 
+                null);
 
-            var spanBuilder = _htmlGenerator.GenerateValidationMessage(ViewContext,
+            labelBuilder.AddCssClass(TagHelperConstants.NhsLabel);
+
+            var validationBuilder = _htmlGenerator.GenerateValidationMessage(ViewContext,
                 For.ModelExplorer,
                 For.Name,
                 null,
-                "span",
-                new {@class = "nhsuk-error-message"}
-            );
+                TagHelperConstants.Span,
+                null);
 
-            spanBuilder.Attributes["data-test-id"] = $"{For.Name}-error";
+            validationBuilder.AddCssClass(TagHelperConstants.NhsErrorMessage);
+            validationBuilder.Attributes[TagHelperConstants.DataTestId] = ErrorDataTestId ?? $"{For.Name}-error";
 
             var inputBuilder = _htmlGenerator.GenerateTextBox(ViewContext,
                 For.ModelExplorer,
                 For.Name,
                 null,
                 null,
-                htmlAttributes: new {@class = "nhsuk-input"}
-            );
-            inputBuilder.Attributes["data-test-id"] = $"{For.Name}-input";
+                null);
 
-            formGroup.InnerHtml.AppendHtml(tagBuilder);
-            formGroup.InnerHtml.AppendHtml(spanBuilder);
+            inputBuilder.AddCssClass(TagHelperConstants.NhsInput);
+            inputBuilder.Attributes[TagHelperConstants.DataTestId] = InputDataTestId ?? $"{For.Name}-input";
+
+            formGroup.InnerHtml.AppendHtml(labelBuilder);
+            formGroup.InnerHtml.AppendHtml(validationBuilder);
             formGroup.InnerHtml.AppendHtml(inputBuilder);
-            fieldInput.InnerHtml.AppendHtml(formGroup);
-            emailField.InnerHtml.AppendHtml(fieldInput);
-            output.TagName = "div";
+            outerDivBuilder.InnerHtml.AppendHtml(formGroup);
+
+            output.TagName = TagHelperConstants.Div;
             output.TagMode = TagMode.StartTagAndEndTag;
-            output.Content.AppendHtml(emailField);
-            //<input asp-for="EmailAddress" class="nhsuk-input" data-test-id="email-address" />
+            output.Content.AppendHtml(outerDivBuilder);
         }
     }
 }
