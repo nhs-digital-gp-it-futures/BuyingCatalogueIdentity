@@ -3,7 +3,17 @@
     "NHSD.BuyingCatalogue.Organisations.Api": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SmtpServer__Port": "25"
+      },
+      "applicationUrl": "http://localhost:55075"
+    },
+    "NHSD.BuyingCatalogue.Organisations.Api Docker": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__CatalogueUsers": "Data Source=localhost,1533;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=true;User ID=NHSD;Password=DisruptTheMarket1!"
       },
       "applicationUrl": "http://localhost:55075"
     }
