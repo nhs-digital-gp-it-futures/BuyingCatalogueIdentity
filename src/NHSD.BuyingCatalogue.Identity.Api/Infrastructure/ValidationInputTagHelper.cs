@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -80,7 +84,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 null,
                 null);
 
-            if (this.ViewContext.ViewData.ModelMetadata.Properties.First(x => x.Name == For.Name).DataTypeName == "Password")
+            var dataTypeAttributes = For?.Metadata?
+                    .ContainerType?
+                    .GetProperty(For.Name)?
+                    .GetCustomAttributes<DataTypeAttribute>();
+            
+            if (dataTypeAttributes.Any(x => x.DataType == DataType.Password))
             {
                 inputBuilder.Attributes[TagHelperConstants.Type] = "password";
             }
