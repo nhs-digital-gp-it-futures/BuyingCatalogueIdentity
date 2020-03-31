@@ -8,7 +8,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
     /// </summary>
     internal sealed class EmailAddress
     {
-        private string address;
+        private string _address;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailAddress"/> class.
@@ -44,7 +44,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// <exception cref="ArgumentException"><paramref name="value"/> is empty or white space.</exception>
         public string Address
         {
-            get => address;
+            get => _address;
             set
             {
                 if (value == null)
@@ -53,7 +53,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentException($"{nameof(value)} cannot be empty or white space.", nameof(value));
 
-                address = value;
+                _address = value;
             }
         }
 

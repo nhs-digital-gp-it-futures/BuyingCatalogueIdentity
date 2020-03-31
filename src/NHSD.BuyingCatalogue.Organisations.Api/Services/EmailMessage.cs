@@ -14,8 +14,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         internal const string ResetPasswordLinkPlaceholder = "[ResetPasswordLink]";
 
-        private EmailAddress sender;
-        private EmailAddress recipient;
+        private EmailAddress _sender;
+        private EmailAddress _recipient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailMessage"/> class.
@@ -52,8 +52,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langref="null"/>.</exception>
         public EmailAddress Sender
         {
-            get => sender;
-            set => sender = value ?? throw new ArgumentNullException(nameof(value));
+            get => _sender;
+            set => _sender = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langref="null"/>.</exception>
         internal EmailAddress Recipient
         {
-            get => recipient;
-            set => recipient = value ?? throw new ArgumentNullException(nameof(value));
+            get => _recipient;
+            set => _recipient = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
