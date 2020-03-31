@@ -56,12 +56,16 @@ When making changes to the database make sure to remove the Docker volume as des
 
 A local SMTP server has been added to the docker network for development purposes.
 
+This server is [maildev](https://github.com/maildev/maildev) server with [stunnel](https://www.stunnel.org/) wrapper around it for TLS 1.2 support.
+
 ##### How to connect
 
-| From                       | Host                       | Port  |
-|            :-:             |            :-:             |  :-:  |
-| within the docker network  | nhsd.buyingcatalogue.email | 25    |
-| outside the docker network | localhost                  | 1025  |
+| From                       | Host                       | Port  | TLS |
+|            :-:             |            :-:             |  :-:  | :-: |
+| within the docker network  | nhsd.buyingcatalogue.email | 25    |  X  |
+| within the docker network  | nhsd.buyingcatalogue.email | 587   | 1.2 |
+| outside the docker network | localhost                  | 1025  |  X  |
+| outside the docker network | localhost                  | 1587  | 1.2 |
 
 Navigate yourself to [localhost:1080](http://localhost:1080/) to view the mailbox UI
 
