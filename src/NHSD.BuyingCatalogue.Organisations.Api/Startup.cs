@@ -42,7 +42,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
             var registrationSettings = Configuration.GetSection("Registration").Get<RegistrationSettings>();
+
             var smtpSettings = Configuration.GetSection("SmtpServer").Get<SmtpSettings>();
+            if (!smtpSettings.AllowInvalidCertificate.HasValue)
+                smtpSettings.AllowInvalidCertificate = allowInvalidCertificate;
 
             services.AddSingleton(registrationSettings);
             services.AddSingleton(smtpSettings);
