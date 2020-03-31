@@ -43,7 +43,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             errorList.AddCssClass(TagHelperConstants.NhsValidationSummaryList);
             errorSummary.InnerHtml.AppendHtml(errorList);
 
-            foreach (var model in ViewContext.ViewData.ModelState)
+            var viewType = ViewContext.ViewData.Model.GetType();
+            viewType.ThrowIfNull();
+
+            var propertyNames = viewType.GetProperties().Select(x => x.Name).ToList();
+            var orderedStates = ViewContext.ViewData.ModelState
+                .OrderBy(d => propertyNames.IndexOf(d.Key))
+                .ToList();
+
+            foreach (var model in orderedStates)
             {
                 if (!model.Value.Errors.Any())
                 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -71,13 +72,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
             validationBuilder.AddCssClass(TagHelperConstants.NhsErrorMessage);
             validationBuilder.Attributes[TagHelperConstants.DataTestId] = ErrorDataTestId ?? $"{For.Name}-error";
-
+            
             var inputBuilder = _htmlGenerator.GenerateTextBox(ViewContext,
                 For.ModelExplorer,
                 For.Name,
                 null,
                 null,
                 null);
+
+            if (this.ViewContext.ViewData.ModelMetadata.Properties.First(x => x.Name == For.Name).DataTypeName == "Password")
+            {
+                inputBuilder.Attributes[TagHelperConstants.Type] = "password";
+            }
 
             inputBuilder.AddCssClass(TagHelperConstants.NhsInput);
             inputBuilder.Attributes[TagHelperConstants.DataTestId] = InputDataTestId ?? $"{For.Name}-input";
