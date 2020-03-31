@@ -61,6 +61,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 Id = Guid.NewGuid().ToString(),
                 FirstName = viewModel.FirstName,
                 LastName = viewModel.LastName,
+                UserName = viewModel.EmailAddress,
+                NormalizedUserName = viewModel.EmailAddress?.ToUpperInvariant(),
                 PhoneNumber = viewModel.PhoneNumber,
                 Email = viewModel.EmailAddress,
                 NormalizedEmail = viewModel.EmailAddress?.ToUpperInvariant(),

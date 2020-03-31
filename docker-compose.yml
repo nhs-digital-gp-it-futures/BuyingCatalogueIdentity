@@ -38,7 +38,7 @@ services:
       - CLIENTS__1__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc
       - CLIENTS__1__POSTLOGOUTREDIRECTURLS__1=http://host.docker.internal:8072/signout-callback-oidc
       - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
-      - ISSUERURL=http://host.docker.internal:8070
+      - ISSUERURL=http://host.docker.internal:8070/identity
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
     entrypoint: 
@@ -58,7 +58,7 @@ services:
         dockerfile: src/NHSD.BuyingCatalogue.Organisations.Api/Dockerfile
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070
+        - AUTHORITY=http://host.docker.internal:8070/identity
         - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
         - SmtpServer__Host=nhsd.buyingcatalogue.email
         - SmtpServer__Port=587
@@ -82,7 +82,7 @@ services:
         dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleResource/Dockerfile
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070
+        - AUTHORITY=http://host.docker.internal:8070/identity
     entrypoint: 
       - /bin/sh
       - -c 
@@ -100,7 +100,7 @@ services:
         dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient/Dockerfile
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070
+        - AUTHORITY=http://host.docker.internal:8070/identity
         - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
     entrypoint: 
       - /bin/sh
@@ -116,7 +116,7 @@ services:
     container_name: identity_api_sample_mvc_client_invalidsecret
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070
+        - AUTHORITY=http://host.docker.internal:8070/identity
         - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
         - CLIENTSECRET=Invalid
     networks:

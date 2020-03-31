@@ -1,4 +1,5 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+RUN apt update && apt install iproute2 -y 
 WORKDIR /app
 EXPOSE 80
 
@@ -10,6 +11,7 @@ RUN npm install && npm run build
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /
+COPY ["src/NHSD.BuyingCatalogue.Identity.Common/NHSD.BuyingCatalogue.Identity.Common.csproj", "src/NHSD.BuyingCatalogue.Identity.Common/"]
 COPY ["src/NHSD.BuyingCatalogue.Identity.Api/NHSD.BuyingCatalogue.Identity.Api.csproj", "src/NHSD.BuyingCatalogue.Identity.Api/"]
 RUN dotnet restore "src/NHSD.BuyingCatalogue.Identity.Api/NHSD.BuyingCatalogue.Identity.Api.csproj"
 
@@ -25,5 +27,4 @@ RUN dotnet publish "NHSD.BuyingCatalogue.Identity.Api.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN apt update && apt install iproute2 -y 
 ENTRYPOINT ["dotnet", "NHSD.BuyingCatalogue.Identity.Api.dll"]
