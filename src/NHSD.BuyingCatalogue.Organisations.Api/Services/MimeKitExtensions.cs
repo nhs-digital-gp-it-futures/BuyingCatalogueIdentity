@@ -27,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 
             var message = new MimeMessage
             {
-                Subject = emailMessage.Subject,
+                Subject = emailMessage.Subject ?? string.Empty,
                 Body = bodyBuilder.ToMessageBody(),
             };
 

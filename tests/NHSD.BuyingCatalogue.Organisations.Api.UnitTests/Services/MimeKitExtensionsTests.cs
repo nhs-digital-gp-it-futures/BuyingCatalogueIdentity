@@ -59,5 +59,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             mimeMessage.HtmlBody.Should().Be(htmlBody);
             mimeMessage.TextBody.Should().Be(textBody);
         }
+
+        [Test]
+        public void AsMimeMessage_NullSubject_SetsSubjectToEmptyString()
+        {
+            var emailMessage = new EmailMessage
+            {
+                Sender = new EmailAddress { Address = "a@b.uk" },
+                Recipient = new EmailAddress { Address = "a@b.uk" },
+            };
+
+            var mimeMessage = emailMessage.AsMimeMessage();
+
+            mimeMessage.Should().BeOfType<MimeMessage>();
+            mimeMessage.Subject.Should().Be(string.Empty);
+        }
     }
 }
