@@ -34,14 +34,14 @@ Scenario: 4. The Email Address input element is displayed correctly
     And element with Data ID input-email-address has label with text Email address
 
 @3926
-Scenario: 6. The Submit button is displayed correctly
+Scenario: 5. The Submit button is displayed correctly
     Then the page contains element with Data ID submit
     And element with Data ID submit has tag button
     And element with Data ID submit is of type submit
     And element with Data ID submit has text Submit
 
 @3926
-Scenario: 9. The NHS Footer is displayed
+Scenario: 6. The NHS Footer is displayed
     Then the page contains element with Data ID nhsuk-footer
     And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/nhs-sites/
     And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/about-us/

@@ -28,9 +28,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             }
 
             var errorSummary = new TagBuilder(TagHelperConstants.Div);
-            var viewType = ViewContext.ViewData.Model.GetType();
-
-            viewType.ThrowIfNull();
             errorSummary.AddCssClass(TagHelperConstants.NhsValidationSummary);
             errorSummary.Attributes[TagHelperConstants.Role] = TagHelperConstants.RoleAlert;
             errorSummary.Attributes[TagHelperConstants.LabelledBy] = TagHelperConstants.ErrorSummaryTitle;
