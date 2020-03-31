@@ -95,26 +95,70 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
-        public void SendEmailAsync_Exception_Disconnects()
+        public void SendEmailAsync_ExceptionConnected_DoesDisconnect()
         {
             var mockTransport = new Mock<IMailTransport>();
+            mockTransport.Setup(t => t.IsConnected).Returns(true);
             mockTransport.Setup(
-                t => t.ConnectAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<int>(),
-                    It.IsAny<SecureSocketOptions>(),
-                    It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new SslHandshakeException());
+                    t => t.SendAsync(
+                        It.IsAny<MimeMessage>(),
+                        It.IsAny<CancellationToken>(),
+                        It.IsAny<ITransferProgress>()))
+                .ThrowsAsync(new ServiceNotAuthenticatedException());
 
-            var service = new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+            async Task SendEmailAsync()
+            {
+                var message = new EmailMessage
+                {
+                    Sender = new EmailAddress { Address = "from@sender.uk" },
+                    Recipient = new EmailAddress { Address = "to@recipient.uk" },
+                    Subject = "subject",
+                };
 
-            Assert.ThrowsAsync<SslHandshakeException>(async () => await service.SendEmailAsync(new EmailMessage()));
+                var service = new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+                await service.SendEmailAsync(message);
+            }
+
+            Assert.ThrowsAsync<ServiceNotAuthenticatedException>(SendEmailAsync);
 
             mockTransport.Verify(
                 t => t.DisconnectAsync(
                     It.Is<bool>(q => q),
                     It.IsAny<CancellationToken>()),
                 Times.Once());
+        }
+
+        [Test]
+        public void SendEmailAsync_ExceptionNotConnected_DoesNotDisconnect()
+        {
+            var mockTransport = new Mock<IMailTransport>();
+            mockTransport.Setup(
+                t => t.SendAsync(
+                    It.IsAny<MimeMessage>(),
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<ITransferProgress>()))
+                .ThrowsAsync(new ServiceNotConnectedException());
+
+            async Task SendEmailAsync()
+            {
+                var message = new EmailMessage
+                {
+                    Sender = new EmailAddress { Address = "from@sender.uk" },
+                    Recipient = new EmailAddress { Address = "to@recipient.uk" },
+                    Subject = "subject",
+                };
+
+                var service = new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+                await service.SendEmailAsync(message);
+            }
+
+            Assert.ThrowsAsync<ServiceNotConnectedException>(SendEmailAsync);
+
+            mockTransport.Verify(
+                t => t.DisconnectAsync(
+                    It.Is<bool>(q => q),
+                    It.IsAny<CancellationToken>()),
+                Times.Never());
         }
 
         [Test]
@@ -211,10 +255,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SendEmailAsync_Disconnects()
+        public async Task SendEmailAsync_Connected_Disconnects()
         {
             var settings = new SmtpSettings { Authentication = new SmtpAuthenticationSettings() };
             var mockTransport = new Mock<IMailTransport>();
+            mockTransport.Setup(t => t.IsConnected).Returns(true);
             var service = new MailKitEmailService(mockTransport.Object, settings);
 
             await service.SendEmailAsync(
