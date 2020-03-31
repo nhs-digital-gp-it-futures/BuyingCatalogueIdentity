@@ -61,13 +61,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             label.Text.Should().Be(text);
         }
 
-        [Then(@"element with Data ID ([^\s]+) contains a link to (.*)")]
+        [Then(@"element with Data ID ([^\s]+) contains a link to ([^\s]+)")]
         public void ThenTheElementContainsALinkTo(string dataId, string link)
         {
             var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var linkElements = element.FindElements(By.TagName("a"));
             var linkElement = linkElements.FirstOrDefault(x => x.GetAttribute("href").EndsWith(link, StringComparison.OrdinalIgnoreCase));
             linkElement.Should().NotBeNull($"an element with link {link} should be found");
+        }
+
+        [Then(@"element with Data ID ([^\s]+) contains a link to ([^\s]+) with text (.*)")]
+        public void ThenTheElementContainsALinkToWithText(string dataId, string link, string text)
+        {
+            var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
+            var linkElements = element.FindElements(By.TagName("a"));
+            var linkElement = linkElements.FirstOrDefault(x => x.GetAttribute("href").EndsWith(link, StringComparison.OrdinalIgnoreCase));
+            linkElement.Should().NotBeNull($"an element with link {link} should be found");
+            linkElement.Text.Should().Be(text);
         }
 
         [Given(@"the user clicks element with Data ID ([^\s]+)")]

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 {
     [HtmlTargetElement(TagHelperConstants.Div, Attributes = TagHelperName)]
-    public class ValidationSummaryTagHelper : TagHelper
+    public sealed class ValidationSummaryTagHelper : TagHelper
     {
         public const string TagHelperName = "nhs-validation-summary";
         public const string TitleName = "title";

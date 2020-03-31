@@ -35,10 +35,10 @@ Scenario: 4. The Email Address input element is displayed correctly
 
 @3926
 Scenario: 5. The Submit button is displayed correctly
-    Then the page contains element with Data ID submit
-    And element with Data ID submit has tag button
-    And element with Data ID submit is of type submit
-    And element with Data ID submit has text Submit
+    Then the page contains element with Data ID submit-button
+    And element with Data ID submit-button has tag button
+    And element with Data ID submit-button is of type submit
+    And element with Data ID submit-button has text Submit
 
 @3926
 Scenario: 6. The NHS Footer is displayed

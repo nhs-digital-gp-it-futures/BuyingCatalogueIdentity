@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 {
     [HtmlTargetElement(TagHelperConstants.Div, Attributes = TagHelperName)]
-    public class ValidationInputTagHelper : TagHelper
+    public sealed class ValidationInputTagHelper : TagHelper
     {
         public const string TagHelperName = "nhs-validation-input";
         public const string InputDataTestIdName = "input-data-test-id";
