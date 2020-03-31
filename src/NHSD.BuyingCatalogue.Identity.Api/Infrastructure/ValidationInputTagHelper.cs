@@ -89,7 +89,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                     .GetProperty(For.Name)?
                     .GetCustomAttributes<DataTypeAttribute>();
             
-            if (dataTypeAttributes.Any(x => x.DataType == DataType.Password))
+            if (dataTypeAttributes?.Any(x => x.DataType == DataType.Password) == true)
             {
                 inputBuilder.Attributes[TagHelperConstants.Type] = "password";
             }
