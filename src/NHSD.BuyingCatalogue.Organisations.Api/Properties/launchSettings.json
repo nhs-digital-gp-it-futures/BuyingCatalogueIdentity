@@ -4,7 +4,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SmtpServer__Port": "25"
+        "SmtpServer__Port": "587"
       },
       "applicationUrl": "http://localhost:55075"
     },
