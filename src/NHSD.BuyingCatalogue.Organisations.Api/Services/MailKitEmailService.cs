@@ -47,14 +47,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
             if (emailMessage is null)
                 throw new ArgumentNullException(nameof(emailMessage));
 
-            await _client.ConnectAsync(_settings.Host, _settings.Port);
+            try
+            {
+                await _client.ConnectAsync(_settings.Host, _settings.Port);
 
-            var authentication = _settings.Authentication;
-            if (authentication.IsRequired)
-                await _client.AuthenticateAsync(authentication.UserName, authentication.Password);
+                var authentication = _settings.Authentication;
+                if (authentication.IsRequired)
+                    await _client.AuthenticateAsync(authentication.UserName, authentication.Password);
 
-            await _client.SendAsync(emailMessage.AsMimeMessage());
-            await _client.DisconnectAsync(true);
+                await _client.SendAsync(emailMessage.AsMimeMessage());
+            }
+            finally
+            {
+                await _client.DisconnectAsync(true);
+            }
         }
     }
 }

@@ -95,6 +95,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
+        public void SendEmailAsync_Exception_Disconnects()
+        {
+            var mockTransport = new Mock<IMailTransport>();
+            mockTransport.Setup(
+                t => t.ConnectAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<int>(),
+                    It.IsAny<SecureSocketOptions>(),
+                    It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new SslHandshakeException());
+
+            var service = new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+
+            Assert.ThrowsAsync<SslHandshakeException>(async () => await service.SendEmailAsync(new EmailMessage()));
+
+            mockTransport.Verify(
+                t => t.DisconnectAsync(
+                    It.Is<bool>(q => q),
+                    It.IsAny<CancellationToken>()),
+                Times.Once());
+        }
+
+        [Test]
         public void SendEmailAsync_NullEmailMessage_ThrowsException()
         {
             static async Task SendEmail()
