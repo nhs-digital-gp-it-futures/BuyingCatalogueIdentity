@@ -17,23 +17,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             AdminConnectionString = config.GetConnectionString("CatalogueUsersAdmin");
             ConnectionString = config.GetConnectionString("CatalogueUsers");
             OrganisationApiBaseUrl = config.GetValue<string>("OrganisationApiBaseUrl");
-            Smtp = new SmtpServerSettings(config.GetSection("SmtpServer"));
+            Smtp = config.GetSection("SmtpServer").Get<SmtpServerSettings>();
         }
 
         public sealed class SmtpServerSettings
         {
-            public SmtpServerSettings(IConfigurationSection config)
-            {
-                Host = config.GetValue<string>("Host");
-                Port = config.GetValue<ushort>("Port");
-                ApiBaseUrl = config.GetValue<string>("ApiBaseUrl");
-            }
 
-            public string Host { get; }
+            public string Host { get; set; }
 
-            public ushort Port { get; }
+            public ushort Port { get; set; }
 
-            public string ApiBaseUrl { get; }
+            public string ApiBaseUrl { get; set; }
         }
     }
 }
