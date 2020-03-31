@@ -9,7 +9,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
     public sealed class ResetPasswordViewModel
     {
         [DataType(DataType.Password)]
-        [StringLength(257, MinimumLength = 10, ErrorMessage = ErrorMessages.PasswordConditionsNotMet)]
         [PasswordValidation(ErrorMessage = ErrorMessages.PasswordConditionsNotMet)]
         [DisplayName("Enter a password")]
         public string Password { get; set; }
@@ -21,8 +20,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 
         internal static class ErrorMessages
         {
-            internal const string PasswordConditionsNotMet = "Password does not meet the Password Policy";
-            internal const string PasswordMismatch = "Password does not match";
+            internal const string PasswordConditionsNotMet = "The password you’ve entered does not meet the criteria";
+            internal const string PasswordMismatch = "Passwords do not match";
         }
 
         [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
@@ -34,9 +33,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
                 {
                     return false;
                 }
+
                 var specialCharacters = "!@#$%^&*";
 
                 var password = value as string;
+
+                if (password.Length < 10)
+                    return false;
 
                 var validationRules = new List<Func<bool>>
                 {

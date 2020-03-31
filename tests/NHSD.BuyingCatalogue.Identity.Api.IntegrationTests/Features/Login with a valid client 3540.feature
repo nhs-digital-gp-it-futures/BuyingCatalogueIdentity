@@ -41,7 +41,7 @@ Scenario: 4. Logging in with an existing client with empty username
     Then the user is redirected to page account/login
     When a login request is made with email address  and password Invalid
     Then the user is redirected to page account/login
-    And the page contains an email address error with text Enter your email address
+    And the element with Data ID field-email-address has validation error with text Enter your email address
 
 @3540
 Scenario: 5. Logging in with an existing client with empty password
@@ -49,7 +49,7 @@ Scenario: 5. Logging in with an existing client with empty password
     Then the user is redirected to page account/login
     When a login request is made with email address test@user.com and no password
     Then the user is redirected to page account/login
-    And the page contains a password error with text Enter your password
+    And the element with Data ID password-field has validation error with text Enter your password
 
 @3540
 Scenario: 6. Logging in with an invalid email address
@@ -57,4 +57,4 @@ Scenario: 6. Logging in with an invalid email address
     Then the user is redirected to page account/login
     When a login request is made with email address AliceSmith and password Pass123$
     Then the user is redirected to page account/login
-    And the page contains an email address error with text Enter a valid email address
+    And the element with Data ID field-email-address has validation error with text Enter a valid email address

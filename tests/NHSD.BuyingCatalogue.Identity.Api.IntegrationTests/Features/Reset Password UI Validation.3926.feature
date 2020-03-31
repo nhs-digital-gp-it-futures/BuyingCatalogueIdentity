@@ -1,10 +1,10 @@
 ﻿Feature: Reset Password UI
     As an User
-    I want to see the reset password page
+    I want to view the reset password page
     So that I can request an account
 
 Background:
-	When the user navigates to a restricted web page
+    When the user navigates to identity url account/resetpassword
 	Then the user is redirected to page account/resetpassword
 
 @3926
@@ -15,13 +15,13 @@ Scenario: 1. The NHS Header is displayed correctly
 
 @3926
 Scenario: 2. The Reset Password page title is displayed correctly
-	Then the page contains element with Data ID registration-page-title
+	Then the page contains element with Data ID reset-password-page-title
 	And element with Data ID reset-password-page-title has tag h1
 	And element with Data ID reset-password-page-title has text Choose your password
 
 @3926
 Scenario: 3. The Reset Password page description is displayed correctly
-	Then the page contains element with Data ID registration-page-description
+	Then the page contains element with Data ID reset-password-page-description
 	And element with Data ID reset-password-page-description has tag h2
 	And element with Data ID reset-password-page-description has text Please read the password policy before proceeding.
 
@@ -44,7 +44,6 @@ Scenario: 6. The Reset Password button is displayed correctly
 	Then the page contains element with Data ID reset-password-button
 	And element with Data ID reset-password-button has tag button
 	And element with Data ID reset-password-button has text Save password
-	And element with Data ID request-account-button is email link to address buying.catalogue@nhs.net
 
 @3926
 Scenario: 7. The NHS Footer is displayed
