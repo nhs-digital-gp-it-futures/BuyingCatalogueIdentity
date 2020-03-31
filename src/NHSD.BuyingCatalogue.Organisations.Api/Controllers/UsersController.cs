@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
@@ -15,11 +16,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Produces("application/json")]
     public sealed class UsersController : Controller
     {
+        private readonly IRegistrationService _registrationService;
         private readonly IUsersRepository _usersRepository;
 
-        public UsersController(IUsersRepository usersRepository)
+        public UsersController(
+            IUsersRepository usersRepository,
+            IRegistrationService registrationService)
         {
             _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
+            _registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
         }
 
         [HttpGet]
@@ -65,8 +70,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 OrganisationFunction = "Buyer",
                 CatalogueAgreementSigned = false
             };
-            
+
             await _usersRepository.CreateUserAsync(newApplicationUser);
+
+            // TODO: discuss exception handling options 
+            // TODO: consider moving sending e-mail out of process
+            // (the current in-process implementation has a significant impact on response time)
+            await _registrationService.SendInitialEmailAsync(newApplicationUser);
 
             return Ok();
         }
