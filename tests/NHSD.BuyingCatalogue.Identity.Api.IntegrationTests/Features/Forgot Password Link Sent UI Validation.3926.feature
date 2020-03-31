@@ -1,6 +1,6 @@
 ﻿Feature: Forgot Password Link Sent UI
     As a User
-    I want to see the forgot password link sent page
+    I want to view the forgot password link sent page
     So that I know to check my emails for a reset link
 
     Background: 
@@ -19,17 +19,18 @@ Scenario: 1. The NHS Header is displayed correctly
     And element with Data ID header-banner contains element with Data ID nhs-digital-logo
 
 @3926
-Scenario: 2. The Forgot Password page title is displayed correctly
+Scenario: 2. The Forgot Password Link Sent page title is displayed correctly
     Then the page contains element with Data ID page-title
     And element with Data ID page-title has tag h1
     And element with Data ID page-title has text You've been sent a link
 
 @3926
-Scenario: 3. The Login page description is displayed correctly
+Scenario: 3. The The Forgot Password Link Sent page description is displayed correctly
     Then the page contains element with Data ID page-description
     And element with Data ID page-description has tag h2
     And element with Data ID page-description has text A link to set your password has been sent to the email address you provided.
-
+    
+@3926
 Scenario: 4. The back to log in link is displayed correctly
     Then the page contains element with Data ID back-to-login
     And element with Data ID back-to-login has text < Back to log in

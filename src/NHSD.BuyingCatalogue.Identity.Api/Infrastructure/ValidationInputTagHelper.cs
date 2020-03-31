@@ -43,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
             var outerDivBuilder = new TagBuilder(TagHelperConstants.Div);
 
-            if (ViewContext.ViewData.ContainsKey(For.Name))
+            if (ViewContext.ViewData.ModelState.ContainsKey(For.Name))
             {
                 outerDivBuilder.AddCssClass(TagHelperConstants.NhsFormGroupError);
             }

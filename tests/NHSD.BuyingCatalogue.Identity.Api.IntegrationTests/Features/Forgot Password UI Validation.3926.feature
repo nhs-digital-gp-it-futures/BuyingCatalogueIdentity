@@ -1,6 +1,6 @@
 ﻿Feature: Forgot Password UI
     As a User
-    I want to see the forgot password page
+    I want to view the forgot password page
     So that I can apply to have my password reset
 
 Background: 
@@ -20,26 +20,26 @@ Scenario: 2. The Forgot Password page title is displayed correctly
     Then the page contains element with Data ID page-title
     And element with Data ID page-title has tag h1
     And element with Data ID page-title has text Enter your email address
-    
+
 @3926
-Scenario: 3. The Login page description is displayed correctly
+Scenario: 3. The Forgot Password page description is displayed correctly
     Then the page contains element with Data ID page-description
     And element with Data ID page-description has tag h2
     And element with Data ID page-description has text You'll be sent a link to the address you provide so you can choose a password.
-    
+
 @3926
 Scenario: 4. The Email Address input element is displayed correctly
     Then the page contains element with Data ID input-email-address
     And element with Data ID input-email-address has tag input
     And element with Data ID input-email-address has label with text Email address
-    
+
 @3926
-Scenario: 6. The Log in button is displayed correctly
+Scenario: 6. The Submit button is displayed correctly
     Then the page contains element with Data ID submit
     And element with Data ID submit has tag button
     And element with Data ID submit is of type submit
     And element with Data ID submit has text Submit
-     
+
 @3926
 Scenario: 9. The NHS Footer is displayed
     Then the page contains element with Data ID nhsuk-footer

@@ -5,7 +5,7 @@ using TechTalk.SpecFlow;
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    class UiInteractionSteps
+    internal sealed class UiInteractionSteps
     {
         private readonly SeleniumContext _seleniumContext;
         
