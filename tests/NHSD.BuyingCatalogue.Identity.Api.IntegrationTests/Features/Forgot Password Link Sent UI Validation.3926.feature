@@ -9,7 +9,7 @@
     When the user clicks on the forgot password button
     Then the user is redirected to page identity/account/forgotpassword
     When element with Data ID input-email-address is populated with test@email.com
-    And element with Data ID submit is clicked
+    And element with Data ID submit-button is clicked
     Then the user is redirected to page identity/account/forgotpasswordlinksent
 
 @3926
@@ -32,9 +32,8 @@ Scenario: 3. The The Forgot Password Link Sent page description is displayed cor
     
 @3926
 Scenario: 4. The back to log in link is displayed correctly
-    Then the page contains element with Data ID back-to-login
-    And element with Data ID back-to-login has text < Back to log in
-    And element with Data ID back-to-login is a link to identity/account/login
+    Then the page contains element with Data ID go-back-link
+    And element with Data ID go-back-link contains a link to identity/account/login with text < Back to log in
 
 @3926
 Scenario: 5. The NHS Footer is displayed
