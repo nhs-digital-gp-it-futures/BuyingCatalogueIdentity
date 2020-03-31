@@ -1,0 +1,164 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Mime;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Moq;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
+using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
+using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Comparers;
+using NHSD.BuyingCatalogue.Organisations.Api.Validators;
+using NUnit.Framework;
+
+namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
+{
+    [TestFixture]
+    [Parallelizable(ParallelScope.All)]
+    public sealed class CreateBuyerServiceTests
+    {
+        [Test]
+        public void Constructor_NullApplicationUserValidator_ThrowsException()
+        {
+            static void Test()
+            {
+                var context = CreateBuyerServiceTestContext.Setup();
+                var sut = new CreateBuyerService(null, context.UsersRepositoryMock.Object);
+            }
+
+            Assert.Throws<ArgumentNullException>(Test);
+        }
+
+        [Test]
+        public void Constructor_NullUserRepository_ThrowsException()
+        {
+            static void Test()
+            {
+                var context = CreateBuyerServiceTestContext.Setup();
+                var sut = new CreateBuyerService(context.ApplicationUserValidatorMock.Object, null);
+            }
+
+            Assert.Throws<ArgumentNullException>(Test);
+        }
+
+        [Test]
+        public void CreateAsync_NullCreateBuyerRequest_ThrowsException()
+        {
+            static async Task TestAsync()
+            {
+                var context = CreateBuyerServiceTestContext.Setup();
+                var sut = context.CreateBuyerService;
+
+                _ = await sut.CreateAsync(null);
+            }
+
+            Assert.ThrowsAsync<ArgumentNullException>(TestAsync);
+        }
+
+        [Test]
+        public async Task CreateAsync_SuccessfulApplicationUserValidation_ReturnsSuccess()
+        {
+            var context = CreateBuyerServiceTestContext.Setup();
+            var sut = context.CreateBuyerService;
+
+            var request = CreateBuyerRequestBuilder.Create().Build();
+
+            var actual = await sut.CreateAsync(request);
+
+            actual.Should().Be(Result.Success());
+        }
+
+        [Test]
+        public async Task CreateAsync_ApplicationUserValidation_CalledOnce()
+        {
+            var context = CreateBuyerServiceTestContext.Setup();
+            var sut = context.CreateBuyerService;
+
+            var request = CreateBuyerRequestBuilder.Create().Build();
+
+            await sut.CreateAsync(request);
+
+            var expected = ApplicationUserBuilder
+                .Create()
+                .WithFirstName(request.FirstName)
+                .WithLastName(request.LastName)
+                .WithPhoneNumber(request.PhoneNumber)
+                .WithEmailAddress(request.EmailAddress)
+                .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
+                .Build();
+
+            context.ApplicationUserValidatorMock.Verify(x => 
+                x.ValidateAsync(It.Is<ApplicationUser>(
+                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_SuccessfulApplicationUserValidation_UserRepository_CalledOnce()
+        {
+            var context = CreateBuyerServiceTestContext.Setup();
+            var sut = context.CreateBuyerService;
+
+            var request = CreateBuyerRequestBuilder.Create().Build();
+
+            await sut.CreateAsync(request);
+
+            var expected = ApplicationUserBuilder
+                .Create()
+                .WithFirstName(request.FirstName)
+                .WithLastName(request.LastName)
+                .WithPhoneNumber(request.PhoneNumber)
+                .WithEmailAddress(request.EmailAddress)
+                .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
+                .Build();
+
+            context.UsersRepositoryMock.Verify(x => 
+                x.CreateUserAsync(It.Is<ApplicationUser>(
+                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_ApplicationUserValidationFails_ReturnFailureResult()
+        {
+            var context = CreateBuyerServiceTestContext.Setup();
+            context.ApplicationUserValidatorResult = Result.Failure(new List<Error>());
+
+            var sut = context.CreateBuyerService;
+
+            var request = CreateBuyerRequestBuilder.Create().Build();
+
+            var actual = await sut.CreateAsync(request);
+
+            var expected = Result.Failure(new List<Error>());
+            actual.Should().Be(expected);
+        }
+    }
+
+    internal sealed class CreateBuyerServiceTestContext
+    {
+        private CreateBuyerServiceTestContext()
+        {
+            ApplicationUserValidatorMock = new Mock<IApplicationUserValidator>();
+            ApplicationUserValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(() => ApplicationUserValidatorResult);
+
+            UsersRepositoryMock = new Mock<IUsersRepository>();
+            UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
+
+            CreateBuyerService = new CreateBuyerService(ApplicationUserValidatorMock.Object, UsersRepositoryMock.Object);
+        }
+
+        public Mock<IApplicationUserValidator> ApplicationUserValidatorMock { get; set; }
+
+        public Result ApplicationUserValidatorResult { get; set; } = Result.Success();
+
+        public Mock<IUsersRepository> UsersRepositoryMock { get; set; }
+
+        public CreateBuyerService CreateBuyerService { get; }
+
+        public static CreateBuyerServiceTestContext Setup()
+        {
+            return new CreateBuyerServiceTestContext();
+        }
+    }
+}

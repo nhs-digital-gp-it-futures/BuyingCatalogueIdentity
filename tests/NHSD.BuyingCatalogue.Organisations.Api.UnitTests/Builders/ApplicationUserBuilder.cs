@@ -1,7 +1,8 @@
 ﻿﻿using System;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
+ using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
+ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class ApplicationUserBuilder
     {
@@ -14,7 +15,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         private string _username;
         private string _normalizedUsername;
         private Guid _primaryOrganisationId;
-        private string _organisationFunction;
         private bool _disabled;
         private bool _catalogueAgreementSigned;
 
@@ -29,7 +29,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             _username = _emailAddress;
             _normalizedUsername = _normalizedEmailAddress;
             _primaryOrganisationId = Guid.NewGuid();
-            _organisationFunction = "Buyer";
             _catalogueAgreementSigned = false;
         }
 
@@ -84,12 +83,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
-        internal ApplicationUserBuilder WithOrganisationFunction(string organisationFunction)
-        {
-            _organisationFunction = organisationFunction;
-            return this;
-        }
-
         internal ApplicationUserBuilder WithDisabled(bool disabled)
         {
             _disabled = disabled;
@@ -104,21 +97,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
         internal ApplicationUser Build()
         {
-            return new ApplicationUser
+            var user = ApplicationUser.CreateBuyer(
+                _username, 
+                _firstName, 
+                _lastName, 
+                _phoneNumber, 
+                _emailAddress, 
+                _primaryOrganisationId);
+
+            user.Id = _userId;
+
+            if (_disabled)
             {
-                Id = _userId, 
-                FirstName = _firstName, 
-                LastName = _lastName, 
-                PhoneNumber = _phoneNumber,
-                Email = _emailAddress, 
-                NormalizedEmail = _normalizedEmailAddress,
-                UserName = _username,
-                NormalizedUserName = _normalizedUsername,
-                PrimaryOrganisationId = _primaryOrganisationId, 
-                OrganisationFunction = _organisationFunction,
-                Disabled = _disabled,
-                CatalogueAgreementSigned = _catalogueAgreementSigned
-            };
+                user.MarkAsDisabled();
+            }
+
+            if (_catalogueAgreementSigned)
+            {
+                user.MarkCatalogueAgreementAsSigned();
+            }
+
+            return user;
         }
     }
 }

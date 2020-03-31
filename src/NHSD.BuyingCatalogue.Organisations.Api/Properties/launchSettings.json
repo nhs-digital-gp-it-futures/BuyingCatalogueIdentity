@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ConnectionStrings__CatalogueUsers": "Data Source=localhost,1533;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=true;User ID=NHSD;Password=DisruptTheMarket1!"
       },
-      "applicationUrl": "http://localhost:55075"
+      "applicationUrl": "http://localhost:5103"
     }
   }
 }

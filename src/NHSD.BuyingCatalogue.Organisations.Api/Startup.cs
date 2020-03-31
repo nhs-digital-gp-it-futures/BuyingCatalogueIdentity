@@ -14,6 +14,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Organisations.Api.Validators;
 using Serilog;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api
@@ -32,8 +33,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IOrganisationRepository, OrganisationRepository>();
-            services.AddTransient<IUsersRepository, UsersRepository>();
+            services
+                .AddTransient<IOrganisationRepository, OrganisationRepository>()
+                .AddTransient<IUsersRepository, UsersRepository>();
+
+            services
+                .AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("CatalogueUsers")));
@@ -50,8 +55,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddSingleton(registrationSettings);
             services.AddSingleton(smtpSettings);
             services.AddScoped<IMailTransport, SmtpClient>();
-            services.AddTransient<IEmailService, MailKitEmailService>();
-            services.AddTransient<IRegistrationService, RegistrationService>();
+            
+            services.AddTransient<IEmailService, MailKitEmailService>()
+            	.AddTransient<IRegistrationService, RegistrationService>()
+                .AddTransient<ICreateBuyerService, CreateBuyerService>();
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
@@ -69,7 +76,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     }
                 });
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
 
             services.AddAuthorization(options =>
             {
