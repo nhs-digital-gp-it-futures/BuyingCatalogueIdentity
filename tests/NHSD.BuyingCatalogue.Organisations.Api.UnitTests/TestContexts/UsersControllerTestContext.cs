@@ -4,6 +4,7 @@ using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Controllers;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
 {
@@ -14,8 +15,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
         	CreateBuyerServiceMock = new Mock<ICreateBuyerService>();
             CreateBuyerServiceMock.Setup(x => x.CreateAsync(It.IsAny<CreateBuyerRequest>()))
                 .ReturnsAsync(() => CreateBuyerResult);
-        	
-            RegistrationServiceMock = new Mock<IRegistrationService>();
+            
             UsersRepositoryMock = new Mock<IUsersRepository>();
 
             Users = new List<ApplicationUser>();
@@ -24,7 +24,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
 
             UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
 
-            Controller = new UsersController(CreateBuyerServiceMock.Object, UsersRepositoryMock.Object, RegistrationServiceMock.Object);
+            Controller = new UsersController(CreateBuyerServiceMock.Object, UsersRepositoryMock.Object);
         }
 
 		public Mock<ICreateBuyerService> CreateBuyerServiceMock { get; set; }
@@ -36,8 +36,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
         public IEnumerable<ApplicationUser> Users { get; set; }
 
         public UsersController Controller { get; set; }
-
-        internal Mock<IRegistrationService> RegistrationServiceMock { get; set; }
 
         internal static UsersControllerTestContext Setup()
         {

@@ -18,18 +18,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Produces("application/json")]
     public sealed class UsersController : Controller
     {
-    	private readonly IRegistrationService _registrationService;
         private readonly ICreateBuyerService _createBuyerService;
         private readonly IUsersRepository _usersRepository;
 
         public UsersController(
         	ICreateBuyerService createBuyerService, 
-        	IUsersRepository usersRepository,
-        	IRegistrationService registrationService)
+        	IUsersRepository usersRepository)
         {
             _createBuyerService = createBuyerService ?? throw new ArgumentNullException(nameof(createBuyerService));
             _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
-			_registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
         }
 
         [HttpGet]
@@ -61,6 +58,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 throw new ArgumentNullException(nameof(createBuyerRequest));
             }
 
+            var response = new CreateBuyerResponseViewModel();
+
             var result = await _createBuyerService.CreateAsync(new CreateBuyerRequest(
                 organisationId, 
                 createBuyerRequest.FirstName,
@@ -69,19 +68,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 createBuyerRequest.EmailAddress
                 ));
 
-            var response = new CreateBuyerResponseViewModel();
-
             if (!result.IsSuccess)
             {
                 response.Errors = result.Errors.Select(x => new ErrorViewModel { Id = x.Id,  Field = x.Field });
             
                 return BadRequest(response);
             }
-            
-            // TODO: discuss exception handling options 
-            // TODO: consider moving sending e-mail out of process
-            // (the current in-process implementation has a significant impact on response time)
-            await _registrationService.SendInitialEmailAsync(newApplicationUser);
             
             return Ok(response);
         }

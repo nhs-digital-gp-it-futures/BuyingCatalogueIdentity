@@ -6,6 +6,7 @@ using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
@@ -54,8 +55,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             var settings = new RegistrationSettings { EmailMessage = inputMessage };
             var mockEmailService = new Mock<IEmailService>();
 
+            var user = ApplicationUserBuilder
+                .Create()
+                .WithEmailAddress("ricardo@burton.com")
+                .Build();
+
             var registrationService = new RegistrationService(mockEmailService.Object, settings);
-            await registrationService.SendInitialEmailAsync(new ApplicationUser { Email = "ricardo@burton.com" });
+            await registrationService.SendInitialEmailAsync(user);
 
             mockEmailService.Verify(e => e.SendEmailAsync(It.IsNotNull<EmailMessage>()), Times.Once());
         }
@@ -80,12 +86,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             mockEmailService.Setup(s => s.SendEmailAsync(It.IsNotNull<EmailMessage>()))
                 .Callback<EmailMessage>(m => actualMessage = m);
 
-            var user = new ApplicationUser
-            {
-                FirstName = "Uncle",
-                LastName = "Bob",
-                Email = "uncle@bob.com",
-            };
+            var user = ApplicationUserBuilder
+                .Create()
+                .WithFirstName("Uncle")
+                .WithLastName("Bob")
+                .WithEmailAddress("uncle@bob.com")
+                .Build();
 
             var registrationService = new RegistrationService(mockEmailService.Object, settings);
             await registrationService.SendInitialEmailAsync(user);

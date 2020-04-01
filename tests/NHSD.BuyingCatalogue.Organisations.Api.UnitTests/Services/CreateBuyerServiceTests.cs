@@ -24,7 +24,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             static void Test()
             {
                 var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(null, context.UsersRepositoryMock.Object);
+                var sut = new CreateBuyerService(null, context.UsersRepositoryMock.Object, context.RegistrationServiceMock.Object);
             }
 
             Assert.Throws<ArgumentNullException>(Test);
@@ -36,7 +36,19 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             static void Test()
             {
                 var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(context.ApplicationUserValidatorMock.Object, null);
+                var sut = new CreateBuyerService(context.ApplicationUserValidatorMock.Object, null, context.RegistrationServiceMock.Object);
+            }
+
+            Assert.Throws<ArgumentNullException>(Test);
+        }
+
+        [Test]
+        public void Constructor_NullRegistrationService_ThrowsException()
+        {
+            static void Test()
+            {
+                var context = CreateBuyerServiceTestContext.Setup();
+                var sut = new CreateBuyerService(context.ApplicationUserValidatorMock.Object, context.UsersRepositoryMock.Object, null);
             }
 
             Assert.Throws<ArgumentNullException>(Test);
@@ -132,6 +144,31 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             var expected = Result.Failure(new List<Error>());
             actual.Should().Be(expected);
         }
+
+        [Test]
+        public async Task CreateBuyerAsync_NewApplicationUser_SendsEmail()
+        {
+            var context = CreateBuyerServiceTestContext.Setup();
+
+            var sut = context.CreateBuyerService;
+
+            var request = CreateBuyerRequestBuilder.Create().Build();
+
+            await sut.CreateAsync(request);
+
+            var expected = ApplicationUserBuilder
+                .Create()
+                .WithFirstName(request.FirstName)
+                .WithLastName(request.LastName)
+                .WithPhoneNumber(request.PhoneNumber)
+                .WithEmailAddress(request.EmailAddress)
+                .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
+                .Build();
+
+            context.RegistrationServiceMock.Verify(x => 
+                x.SendInitialEmailAsync(It.Is<ApplicationUser>(
+                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
+        }
     }
 
     internal sealed class CreateBuyerServiceTestContext
@@ -145,7 +182,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             UsersRepositoryMock = new Mock<IUsersRepository>();
             UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
 
-            CreateBuyerService = new CreateBuyerService(ApplicationUserValidatorMock.Object, UsersRepositoryMock.Object);
+            CreateBuyerService = new CreateBuyerService(ApplicationUserValidatorMock.Object, UsersRepositoryMock.Object, RegistrationServiceMock.Object);
         }
 
         public Mock<IApplicationUserValidator> ApplicationUserValidatorMock { get; set; }
@@ -155,6 +192,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         public Mock<IUsersRepository> UsersRepositoryMock { get; set; }
 
         public CreateBuyerService CreateBuyerService { get; }
+
+        internal Mock<IRegistrationService> RegistrationServiceMock { get; set; }
 
         public static CreateBuyerServiceTestContext Setup()
         {

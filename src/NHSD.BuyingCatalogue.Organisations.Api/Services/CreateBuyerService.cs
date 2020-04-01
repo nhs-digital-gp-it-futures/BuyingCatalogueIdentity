@@ -10,12 +10,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
     {
         private readonly IApplicationUserValidator _applicationUserValidator;
         private readonly IUsersRepository _usersRepository;
+        private readonly IRegistrationService _registrationService;
 
         public CreateBuyerService(
             IApplicationUserValidator applicationUserValidator,
-            IUsersRepository usersRepository)
+            IUsersRepository usersRepository,
+            IRegistrationService registrationService)
         {
             _applicationUserValidator = applicationUserValidator ?? throw new ArgumentNullException(nameof(applicationUserValidator));
+            _registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
             _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
 
@@ -39,6 +42,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
             if (result.IsSuccess)
             {
                 await _usersRepository.CreateUserAsync(newApplicationUser);
+
+                // TODO: discuss exception handling options 
+                // TODO: consider moving sending e-mail out of process
+                // (the current in-process implementation has a significant impact on response time)
+                await _registrationService.SendInitialEmailAsync(newApplicationUser);
             }
 
             return result;

@@ -144,26 +144,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task CreateUserAsync_NewApplicationUser_SendsEmail()
+        public void CreateBuyerAsync_NullApplicationUser_ThrowsException()
         {
             var context = UsersControllerTestContext.Setup();
 
-            using var controller = context.Controller;
-
-            await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel());
-
-            context.RegistrationServiceMock.Verify(r => r.SendInitialEmailAsync(It.IsNotNull<ApplicationUser>()), Times.Once());
-        }
-
-        [Test]
-        public void CreateUserAsync_NullApplicationUser_ThrowsException()
-        {
-            var context = UsersControllerTestContext.Setup();
-
-            async Task<ActionResult> CreateUser()
+            async Task<ActionResult<CreateBuyerResponseViewModel>> CreateUser()
             {
                 using var controller = context.Controller;
-                return await controller.CreateUserAsync(Guid.Empty, null);
+                return await controller.CreateBuyerAsync(Guid.Empty, null);
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(CreateUser);
