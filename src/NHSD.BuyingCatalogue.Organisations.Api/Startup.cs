@@ -37,6 +37,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+        	var connectionString = Configuration.GetConnectionString("CatalogueUsers");
             var authority = Configuration.GetValue<string>("authority");
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
@@ -51,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
  			services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("CatalogueUsers")));
+                options.UseSqlServer(connectionString));
 
             services.AddSingleton(registrationSettings);
             services.AddSingleton(smtpSettings);
@@ -82,6 +83,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     "self",
                     () => HealthCheckResult.Healthy(),
                     new[] { HealthCheckTags.Live })
+                .AddSqlServer(
+                    connectionString,
+                    "SELECT 1;",
+                    "db",
+                    HealthStatus.Unhealthy,
+                    new[] { HealthCheckTags.Ready },
+                    TimeSpan.FromSeconds(10))
                 .AddSmtpHealthCheck(
                     smtp =>
                     {

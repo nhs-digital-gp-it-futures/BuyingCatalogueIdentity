@@ -22,8 +22,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context["organisationBaseUrl"] = _settings.OrganisationApiBaseUrl;
         }
 
-        [Given(@"The Smtp Server is (up|down)")]
-        public void GivenTheSmptSeverIsInState(string state)
+        [Given(@"The (Smtp|Database) Server is (up|down)")]
+        public void GivenTheServerIsInState(string server, string state)
         {
             _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenOrganisationApiBaseUrl;
         }
