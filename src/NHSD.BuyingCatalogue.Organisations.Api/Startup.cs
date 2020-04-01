@@ -1,4 +1,6 @@
 ﻿using System.Net.Http;
+using MailKit;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,8 @@ using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
+using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 using Serilog;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api
@@ -37,6 +41,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var authority = Configuration.GetValue<string>("authority");
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
+            var registrationSettings = Configuration.GetSection("Registration").Get<RegistrationSettings>();
+
+            var smtpSettings = Configuration.GetSection("SmtpServer").Get<SmtpSettings>();
+            if (!smtpSettings.AllowInvalidCertificate.HasValue)
+                smtpSettings.AllowInvalidCertificate = allowInvalidCertificate;
+
+            services.AddSingleton(registrationSettings);
+            services.AddSingleton(smtpSettings);
+            services.AddScoped<IMailTransport, SmtpClient>();
+            services.AddTransient<IEmailService, MailKitEmailService>();
+            services.AddTransient<IRegistrationService, RegistrationService>();
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>

@@ -97,6 +97,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ForgotPassword(ForgotPasswordViewModel viewModel)
         {
             viewModel.ThrowIfNull(nameof(viewModel));
@@ -106,7 +107,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return View(viewModel);
             }
 
-            return RedirectToAction("ForgotPasswordLinkSent");
+            return RedirectToAction(nameof(ForgotPasswordLinkSent));
         }
 
         [HttpGet]

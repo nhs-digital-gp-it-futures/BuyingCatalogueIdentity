@@ -27,43 +27,73 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 return;
             }
 
-            var errorSummary = new TagBuilder(TagHelperConstants.Div);
-            errorSummary.AddCssClass(TagHelperConstants.NhsValidationSummary);
-            errorSummary.Attributes[TagHelperConstants.Role] = TagHelperConstants.RoleAlert;
-            errorSummary.Attributes[TagHelperConstants.LabelledBy] = TagHelperConstants.ErrorSummaryTitle;
+            var errorSummary = GetErrorSummaryBuilder();
+            var header = GetHeaderBuilder();
+            var errorList = GetErrorListBuilder();
 
-            var header = new TagBuilder(TagHelperConstants.SubHeader);
-            header.AddCssClass(TagHelperConstants.NhsValidationSummaryTitle);
-            header.Attributes[TagHelperConstants.Id] = TagHelperConstants.ErrorSummaryTitle;
-            header.InnerHtml.Append(Title);
             errorSummary.InnerHtml.AppendHtml(header);
-
-            var errorList = new TagBuilder(TagHelperConstants.UnorderedList);
-            errorList.AddCssClass(TagHelperConstants.NhsList);
-            errorList.AddCssClass(TagHelperConstants.NhsValidationSummaryList);
             errorSummary.InnerHtml.AppendHtml(errorList);
-
-            foreach (var model in ViewContext.ViewData.ModelState)
-            {
-                if (!model.Value.Errors.Any())
-                {
-                    continue;
-                }
-
-                foreach (var error in model.Value.Errors)
-                {
-                    var listItem = new TagBuilder(TagHelperConstants.ListItem);
-                    var errorElement = new TagBuilder(TagHelperConstants.Anchor);
-                    errorElement.Attributes.Add(TagHelperConstants.Link, $"#{model.Key}");
-                    errorElement.InnerHtml.Append(error.ErrorMessage);
-                    listItem.InnerHtml.AppendHtml(errorElement);
-                    errorList.InnerHtml.AppendHtml(listItem);
-                }
-            }
 
             output.TagName = TagHelperConstants.Div;
             output.TagMode = TagMode.StartTagAndEndTag;
             output.Content.AppendHtml(errorSummary);
+        }
+
+        private static TagBuilder GetErrorSummaryBuilder()
+        {
+            var builder = new TagBuilder(TagHelperConstants.Div);
+            builder.AddCssClass(TagHelperConstants.NhsValidationSummary);
+            builder.Attributes[TagHelperConstants.Role] = TagHelperConstants.RoleAlert;
+            builder.Attributes[TagHelperConstants.LabelledBy] = TagHelperConstants.ErrorSummaryTitle;
+
+            return builder;
+        }
+
+        private TagBuilder GetHeaderBuilder()
+        {
+            var builder = new TagBuilder(TagHelperConstants.SubHeader);
+            builder.AddCssClass(TagHelperConstants.NhsValidationSummaryTitle);
+            builder.Attributes[TagHelperConstants.Id] = TagHelperConstants.ErrorSummaryTitle;
+            builder.InnerHtml.Append(Title);
+
+            return builder;
+        }
+
+        private TagBuilder GetErrorListBuilder()
+        {
+            var builder = new TagBuilder(TagHelperConstants.UnorderedList);
+            builder.AddCssClass(TagHelperConstants.NhsList);
+            builder.AddCssClass(TagHelperConstants.NhsValidationSummaryList);
+
+            var viewType = ViewContext.ViewData.Model.GetType();
+            viewType.ThrowIfNull();
+
+            var propertyNames = viewType.GetProperties().Select(x => x.Name).ToList();
+            var orderedStates = ViewContext.ViewData.ModelState
+                .OrderBy(d => propertyNames.IndexOf(d.Key))
+                .ToList();
+
+            foreach (var model in orderedStates)
+            {
+                foreach (var error in model.Value.Errors)
+                {
+                    var listItem = GetListItemBuilder(model.Key, error.ErrorMessage);
+                    builder.InnerHtml.AppendHtml(listItem);
+                }
+            }
+
+            return builder;
+        }
+
+        private static TagBuilder GetListItemBuilder(string linkElement, string errorMessage)
+        {
+            var listItemBuilder = new TagBuilder(TagHelperConstants.ListItem);
+            var linkBuilder = new TagBuilder(TagHelperConstants.Anchor);
+            linkBuilder.Attributes.Add(TagHelperConstants.Link, $"#{linkElement}");
+            linkBuilder.InnerHtml.Append(errorMessage);
+            listItemBuilder.InnerHtml.AppendHtml(linkBuilder);
+
+            return listItemBuilder;
         }
     }
 }

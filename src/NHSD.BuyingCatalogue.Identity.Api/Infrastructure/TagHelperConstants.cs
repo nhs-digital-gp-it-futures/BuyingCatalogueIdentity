@@ -18,6 +18,7 @@
         public const string LabelledBy = "aria-labelledy";
         public const string Role = "role";
         public const string RoleAlert = "alert";
+        public const string Type = "type";
 
         // classes
         public const string ErrorSummaryTitle = "error-summary-title";
