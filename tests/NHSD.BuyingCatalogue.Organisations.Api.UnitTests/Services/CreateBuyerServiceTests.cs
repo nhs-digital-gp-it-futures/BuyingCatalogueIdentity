@@ -98,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
                 .WithPhoneNumber(request.PhoneNumber)
                 .WithEmailAddress(request.EmailAddress)
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
-                .Build();
+                .BuildBuyer();
 
             context.ApplicationUserValidatorMock.Verify(x => 
                 x.ValidateAsync(It.Is<ApplicationUser>(
@@ -122,7 +122,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
                 .WithPhoneNumber(request.PhoneNumber)
                 .WithEmailAddress(request.EmailAddress)
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
-                .Build();
+                .BuildBuyer();
 
             context.UsersRepositoryMock.Verify(x => 
                 x.CreateUserAsync(It.Is<ApplicationUser>(
@@ -133,7 +133,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         public async Task CreateAsync_ApplicationUserValidationFails_ReturnFailureResult()
         {
             var context = CreateBuyerServiceTestContext.Setup();
-            context.ApplicationUserValidatorResult = Result.Failure(new List<Error>());
+            context.ApplicationUserValidatorResult = Result.Failure(new List<ErrorMessage>());
 
             var sut = context.CreateBuyerService;
 
@@ -141,7 +141,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 
             var actual = await sut.CreateAsync(request);
 
-            var expected = Result.Failure(new List<Error>());
+            var expected = Result.Failure(new List<ErrorMessage>());
             actual.Should().Be(expected);
         }
 
@@ -163,7 +163,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
                 .WithPhoneNumber(request.PhoneNumber)
                 .WithEmailAddress(request.EmailAddress)
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
-                .Build();
+                .BuildBuyer();
 
             context.RegistrationServiceMock.Verify(x => 
                 x.SendInitialEmailAsync(It.Is<ApplicationUser>(

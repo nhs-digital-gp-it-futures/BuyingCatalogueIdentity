@@ -2,23 +2,23 @@
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
-    public sealed class Error
+    public sealed class ErrorMessage
     {
         public string Id { get; }
 
         public string Field { get; }
 
-        public Error(string id) : this(id, null)
+        public ErrorMessage(string id) : this(id, null)
         {
         }
 
-        public Error(string id, string field)
+        public ErrorMessage(string id, string field)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Field = field;
         }
 
-        private bool Equals(Error other)
+        private bool Equals(ErrorMessage other)
         {
             return string.Equals(Id, other.Id, StringComparison.Ordinal)
                 && string.Equals(Field, other.Field, StringComparison.Ordinal);
@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) || obj is Error other && Equals(other);
+            return ReferenceEquals(this, obj) || obj is ErrorMessage other && Equals(other);
         }
 
         public override int GetHashCode()

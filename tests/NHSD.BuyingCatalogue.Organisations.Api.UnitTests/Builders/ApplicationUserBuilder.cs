@@ -1,6 +1,5 @@
 ﻿﻿using System;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
- using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 
  namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
@@ -95,7 +94,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.Models;
             return this;
         }
 
-        internal ApplicationUser Build()
+        internal ApplicationUser BuildBuyer()
         {
             var user = ApplicationUser.CreateBuyer(
                 _username, 

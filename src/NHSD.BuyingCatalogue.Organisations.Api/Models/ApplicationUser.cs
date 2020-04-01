@@ -33,12 +33,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             OrganisationFunction organisationFunction,
             Guid primaryOrganisationId) : this()
         {
+            if (userName is null)
+                throw new ArgumentNullException(nameof(userName));
+
+            if (firstName is null)
+                throw new ArgumentNullException(nameof(firstName));
+
+            if (lastName is null)
+                throw new ArgumentNullException(nameof(lastName));
+
+            if (email is null)
+                throw new ArgumentNullException(nameof(email));
+
             Id = userId.ToString();
             UserName = userName?.Trim();
             NormalizedUserName = UserName?.ToUpperInvariant();
             FirstName = firstName?.Trim();
             LastName = lastName?.Trim();
-            PhoneNumber = phoneNumber;
+            PhoneNumber = phoneNumber ?? throw new ArgumentNullException(nameof(phoneNumber));
             Email = email?.Trim();
             NormalizedEmail = Email?.ToUpperInvariant();
             OrganisationFunction = organisationFunction ?? throw new ArgumentNullException(nameof(organisationFunction));
@@ -55,7 +67,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             string email,
             Guid primaryOrganisationId)
         {
-            return new ApplicationUser(Guid.NewGuid(), userName, firstName, lastName, phoneNumber, email, OrganisationFunction.Buyer, primaryOrganisationId);
+            return new ApplicationUser(
+                Guid.NewGuid(), 
+                userName, 
+                firstName, 
+                lastName, 
+                phoneNumber, 
+                email, 
+                OrganisationFunction.Buyer, 
+                primaryOrganisationId);
         }
 
         public void MarkAsDisabled()

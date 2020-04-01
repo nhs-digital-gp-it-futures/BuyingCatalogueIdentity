@@ -125,7 +125,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public async Task CreateBuyerAsync_Failure_ReturnsBadRequest()
         {
-            var errors = new List<Error> { new Error("TestErrorId", "TestField") };
+            var errors = new List<ErrorMessage> { new ErrorMessage("TestErrorId", "TestField") };
 
             var context = UsersControllerTestContext.Setup();
             context.CreateBuyerResult = Result.Failure(errors);
@@ -166,7 +166,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithPhoneNumber(Guid.NewGuid().ToString())
                 .WithEmailAddress(Guid.NewGuid().ToString())
                 .WithDisabled(disabled)
-                .Build();
+                .BuildBuyer();
 
             return (
                 RepoUser: repositoryApplicationUser,

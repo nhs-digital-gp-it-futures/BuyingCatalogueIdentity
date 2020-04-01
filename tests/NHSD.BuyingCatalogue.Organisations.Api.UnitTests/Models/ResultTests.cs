@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
         [Test]
         public void FailureResult_EmptyErrors_IsSuccessIsFalse()
         {
-            var actual = Result.Failure(Array.Empty<Error>());
+            var actual = Result.Failure(Array.Empty<ErrorMessage>());
             actual.IsSuccess.Should().BeFalse();
         }
 
@@ -37,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
         [Test]
         public void FailureResult_OneError_Errors_ReturnsError()
         {
-            var expectedErrors = new List<Error> { new Error("Test") };
+            var expectedErrors = new List<ErrorMessage> { new ErrorMessage("Test") };
 
             var actual = Result.Failure(expectedErrors);
 
@@ -48,7 +48,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
         public void TwoDifferenceResults_AreNotEqual()
         {
             var success = Result.Success();
-            var failure = Result.Failure(Array.Empty<Error>());
+            var failure = Result.Failure(Array.Empty<ErrorMessage>());
 
             var actual = success.Equals(failure);
 

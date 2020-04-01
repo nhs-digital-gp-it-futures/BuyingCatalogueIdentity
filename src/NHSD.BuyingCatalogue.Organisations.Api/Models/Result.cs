@@ -11,17 +11,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 
         public bool IsSuccess { get; }
 
-        public IReadOnlyCollection<Error> Errors { get; }
+        public IReadOnlyCollection<ErrorMessage> Errors { get; }
 
         private Result()
         {
             IsSuccess = true;
         }
 
-        private Result(IEnumerable<Error> errors)
+        private Result(IEnumerable<ErrorMessage> errors)
         {
             IsSuccess = false;
-            Errors = new ReadOnlyCollection<Error>(errors != null ? errors.ToList() : new List<Error>());
+            Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
         }
 
         public static Result Success()
@@ -29,12 +29,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             return _success;
         }
 
-        public static Result Failure(IEnumerable<Error> errors)
+        public static Result Failure(IEnumerable<ErrorMessage> errors)
         {
             return new Result(errors);
         }
 
-        private static bool AreErrorsEqual(IEnumerable<Error> first, IEnumerable<Error> second)
+        private static bool AreErrorsEqual(IEnumerable<ErrorMessage> first, IEnumerable<ErrorMessage> second)
         {
             if (first is null)
                 return second is null;

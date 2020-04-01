@@ -4,49 +4,49 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Errors
 {
     public static class ApplicationUserErrors
     {
-        public static Error FirstNameRequired()
+        public static ErrorMessage FirstNameRequired()
         {
-            return new Error("FirstNameRequired", nameof(ApplicationUser.FirstName));
+            return new ErrorMessage("FirstNameRequired", nameof(ApplicationUser.FirstName));
         }
 
-        public static Error FirstNameTooLong()
+        public static ErrorMessage FirstNameTooLong()
         {
-            return new Error("FirstNameTooLong", nameof(ApplicationUser.FirstName));
+            return new ErrorMessage("FirstNameTooLong", nameof(ApplicationUser.FirstName));
         }
 
-        public static Error LastNameRequired()
+        public static ErrorMessage LastNameRequired()
         {
-            return new Error("LastNameRequired", nameof(ApplicationUser.LastName));
+            return new ErrorMessage("LastNameRequired", nameof(ApplicationUser.LastName));
         }
 
-        public static Error LastNameTooLong()
+        public static ErrorMessage LastNameTooLong()
         {
-            return new Error("LastNameTooLong", nameof(ApplicationUser.LastName));
+            return new ErrorMessage("LastNameTooLong", nameof(ApplicationUser.LastName));
         }
 
-        public static Error PhoneNumberRequired()
+        public static ErrorMessage PhoneNumberRequired()
         {
-            return new Error("PhoneNumberRequired", nameof(ApplicationUser.PhoneNumber));
+            return new ErrorMessage("PhoneNumberRequired", nameof(ApplicationUser.PhoneNumber));
         }
 
-        public static Error EmailRequired()
+        public static ErrorMessage EmailRequired()
         {
-            return new Error("EmailRequired", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailRequired", nameof(ApplicationUser.Email));
         }
 
-        public static Error EmailTooLong()
+        public static ErrorMessage EmailTooLong()
         {
-            return new Error("EmailTooLong", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailTooLong", nameof(ApplicationUser.Email));
         }
 
-        public static Error EmailInvalidFormat()
+        public static ErrorMessage EmailInvalidFormat()
         {
-            return new Error("EmailInvalidFormat", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailInvalidFormat", nameof(ApplicationUser.Email));
         }
         
-        public static Error EmailAlreadyExists()
+        public static ErrorMessage EmailAlreadyExists()
         {
-            return new Error("EmailAlreadyExists", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailAlreadyExists", nameof(ApplicationUser.Email));
         }
     }
 }

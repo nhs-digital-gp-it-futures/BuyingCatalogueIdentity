@@ -7,14 +7,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class ErrorTests
+    public sealed class ErrorMessageTests
     {
         [Test]
         public void Constructor_String_InitializesCorrectly()
         {
             const string expectedId = "ErrorMessageId";
 
-            var actual = new Error(expectedId);
+            var actual = new ErrorMessage(expectedId);
 
             actual.Field.Should().BeNull();
             actual.Id.Should().Be(expectedId);
@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
 
-            var actual = new Error(expectedId, expectedField);
+            var actual = new ErrorMessage(expectedId, expectedField);
 
             actual.Id.Should().Be(expectedId);
             actual.Field.Should().Be(expectedField);
@@ -37,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
         {
             static void CreateError()
             {
-                _ = new Error(null);
+                _ = new ErrorMessage(null);
             }
 
             Assert.Throws<ArgumentNullException>(CreateError);
@@ -49,8 +49,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
 
-            var first = new Error(expectedId, expectedField);
-            var second = new Error(expectedId, expectedField);
+            var first = new ErrorMessage(expectedId, expectedField);
+            var second = new ErrorMessage(expectedId, expectedField);
 
             var actual = first.Equals(second);
 
@@ -63,8 +63,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
 
-            var first = new Error(expectedId, expectedField);
-            var second = new Error(expectedId, null);
+            var first = new ErrorMessage(expectedId, expectedField);
+            var second = new ErrorMessage(expectedId, null);
 
             var actual = first.Equals(second);
 

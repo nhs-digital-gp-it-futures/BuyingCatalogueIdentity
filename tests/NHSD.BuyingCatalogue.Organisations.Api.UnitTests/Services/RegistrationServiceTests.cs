@@ -58,7 +58,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             var user = ApplicationUserBuilder
                 .Create()
                 .WithEmailAddress("ricardo@burton.com")
-                .Build();
+                .BuildBuyer();
 
             var registrationService = new RegistrationService(mockEmailService.Object, settings);
             await registrationService.SendInitialEmailAsync(user);
@@ -91,7 +91,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
                 .WithFirstName("Uncle")
                 .WithLastName("Bob")
                 .WithEmailAddress("uncle@bob.com")
-                .Build();
+                .BuildBuyer();
 
             var registrationService = new RegistrationService(mockEmailService.Object, settings);
             await registrationService.SendInitialEmailAsync(user);

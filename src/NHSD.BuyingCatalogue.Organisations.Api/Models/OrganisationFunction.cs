@@ -1,9 +1,8 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Models
+ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
     public sealed class OrganisationFunction
     {
@@ -32,15 +31,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             return _values.SingleOrDefault(x => string.Equals(x.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
         }
 
+        private bool Equals(OrganisationFunction other)
+        {
+            return Equals(Value, other.Value);
+        }
+
         public override bool Equals(object obj)
         {
-            if (!(obj is OrganisationFunction comparisonValue))
-                return false;
-
-            if (GetType() != obj.GetType())
-                return false;
-
-            return Value.Equals(comparisonValue.Value);
+            return ReferenceEquals(this, obj) || obj is OrganisationFunction other && Equals(other);
         }
 
         public override int GetHashCode()

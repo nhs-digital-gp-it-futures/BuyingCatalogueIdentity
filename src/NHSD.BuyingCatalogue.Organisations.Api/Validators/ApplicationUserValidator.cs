@@ -27,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
 
-            List<Error> errors = new List<Error>();
+            List<ErrorMessage> errors = new List<ErrorMessage>();
 
             await ValidateNameAsync(user.FirstName, user.LastName, errors);
             await ValidatePhoneNumberAsync(user.PhoneNumber, errors);
@@ -39,13 +39,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
         private static async Task ValidateNameAsync( 
             string firstName, 
             string lastName,
-            List<Error> errors)
+            List<ErrorMessage> errors)
         {
             await ValidateFirstNameAsync(firstName, errors);
             await ValidateLastNameAsync(lastName, errors);
         }
 
-        private static Task ValidateFirstNameAsync(string firstName, List<Error> errors)
+        private static Task ValidateFirstNameAsync(string firstName, List<ErrorMessage> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -64,7 +64,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             return Task.CompletedTask;
         }
 
-        private static Task ValidateLastNameAsync(string lastName, List<Error> errors)
+        private static Task ValidateLastNameAsync(string lastName, List<ErrorMessage> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -84,7 +84,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             return Task.CompletedTask;
         }
 
-        private static Task ValidatePhoneNumberAsync(string phoneNumber, List<Error> errors)
+        private static Task ValidatePhoneNumberAsync(string phoneNumber, List<ErrorMessage> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -97,7 +97,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             return Task.CompletedTask;
         }
 
-        private async Task ValidateEmailAsync(string email, List<Error> errors)
+        private async Task ValidateEmailAsync(string email, List<ErrorMessage> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
