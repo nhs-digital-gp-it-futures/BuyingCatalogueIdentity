@@ -64,12 +64,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         {
             var builder = new TagBuilder(TagHelperConstants.Div);
 
-            if (ViewContext.ViewData.ModelState.ContainsKey(For.Name))
+            builder.Attributes[TagHelperConstants.DataTestId] = FieldDataTestId ?? $"{For.Name}-field";
+
+            var modelState = ViewContext.ViewData.ModelState;
+            if (!modelState.ContainsKey(For.Name))
+            {
+                return builder;
+            }
+
+            if(modelState[For.Name].Errors.Any())
             {
                 builder.AddCssClass(TagHelperConstants.NhsFormGroupError);
             }
-
-            builder.Attributes[TagHelperConstants.DataTestId] = FieldDataTestId ?? $"{For.Name}-field";
 
             return builder;
         }
