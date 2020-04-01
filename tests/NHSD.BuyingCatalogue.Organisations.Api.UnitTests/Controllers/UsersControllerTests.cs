@@ -76,7 +76,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task CreateUserAsync_NewApplicationUser_ReturnsStatusOk()
+        public async Task CreateUserAsync_NewApplicationUser_ReturnsStatusOkObjectResult()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -84,7 +84,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var response = await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel());
 
-            response.Should().BeOfType<OkResult>();
+            response.Should().NotBeNull();
+            response.Result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Test]
+        public async Task CreateUserAsync_NewApplicationUser_ReturnsUserId()
+        {
+            ApplicationUser createdUser = null;
+
+            var context = UsersControllerTestContext.Setup();
+            context.UsersRepositoryMock.Setup(r => r.CreateUserAsync(It.IsNotNull<ApplicationUser>()))
+                .Callback<ApplicationUser>(u => createdUser = u);
+
+            using var controller = context.Controller;
+
+            var response = await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel());
+            var result = response.Result as OkObjectResult;
+
+            Assert.NotNull(result);
+            result.Value.Should().Be(createdUser.Id);
         }
 
         [Test]
@@ -138,7 +157,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             var context = UsersControllerTestContext.Setup();
 
-            async Task<ActionResult> CreateUser()
+            async Task<ActionResult<Guid>> CreateUser()
             {
                 using var controller = context.Controller;
                 return await controller.CreateUserAsync(Guid.Empty, null);

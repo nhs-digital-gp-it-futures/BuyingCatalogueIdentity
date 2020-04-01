@@ -49,7 +49,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         [HttpPost]
         [Authorize(Policy = Policy.CanManageOrganisationUsers)]
-        public async Task<ActionResult> CreateUserAsync(Guid organisationId, CreateUserRequestViewModel viewModel)
+        public async Task<ActionResult<Guid>> CreateUserAsync(Guid organisationId, CreateUserRequestViewModel viewModel)
         {
             if (viewModel is null)
             {
@@ -78,7 +78,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             // (the current in-process implementation has a significant impact on response time)
             await _registrationService.SendInitialEmailAsync(newApplicationUser);
 
-            return Ok();
+            return Ok(newApplicationUser.Id);
         }
     }
 }
