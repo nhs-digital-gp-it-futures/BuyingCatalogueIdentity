@@ -1,19 +1,18 @@
 ﻿@model NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account.LoginViewModel
 
 @{
-    ViewData["PageTitle"] = "NHSD Buying Catalogue Login";
-    ViewData["PageDescription"] = "Welcome to the login page for the NHSD Buying Catalogue.";
+    ViewData["PageTitle"] = "Buying Catalogue log in";
+    ViewData["PageDescription"] = "Enter your details to access the full functionality of this website.";
 }
 
 <div class="bc-u-background-colour--blue">
     <div class="nhsuk-width-container">
         <main class="nhsuk-main-wrapper">
             <div data-test-id="login-page" class="bc-t-font-color--white">
-
                 <div class="nhsuk-grid-row">
                     <div class="nhsuk-grid-column-two-thirds">
-                        <h1 data-test-id="login-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">Buying Catalogue log in</h1>
-                        <h2 data-test-id="login-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">Enter your details to access the full functionality of this website.</h2>
+                        <h1 data-test-id="login-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
+                        <h2 data-test-id="login-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
                     </div>
                 </div>
                 <div class="nhsuk-grid-row">
@@ -22,12 +21,12 @@
 
                             <input type="hidden" asp-for="ReturnUrl" />
 
-                            <div data-test-id="email-field">
+                            <div data-test-id="field-email-address">
                                 <div data-test-id="text-field-input">
                                     <div class="nhsuk-form-group">
                                         <label asp-for="EmailAddress" class="nhsuk-label"></label>
-                                        <input asp-for="EmailAddress" class="nhsuk-input" data-test-id="login-email-address" />
-                                        <span asp-validation-for="EmailAddress"></span>
+                                        <input asp-for="EmailAddress" class="nhsuk-input" data-test-id="input-email-address" />
+                                        <span asp-validation-for="EmailAddress" data-test-id="error-email-address"></span>
                                     </div>
                                 </div>
                             </div>
@@ -42,8 +41,8 @@
                                 </div>
                             </div>
 
-                            <div data-test-id="forgot-password-link" class="bc-c-data-link bc-c-login-page-link">
-                                <a asp-action="ResetPassword" asp-route-returnurl="@ViewData["ReturnUrl"]" target="_blank">
+                            <div class="bc-c-data-link bc-c-login-page-link">
+                                <a data-test-id="forgot-password-link" asp-controller="Account" asp-action="ForgotPassword">
                                     Forgot password?
                                 </a>
                             </div>
@@ -62,6 +61,7 @@
                         </form>
                     </div>
                 </div>
+            </div>
         </main>
     </div>
 </div>
