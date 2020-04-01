@@ -27,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _settings = settings;
         }
 
-        [Then(@"sent email contains the following information")]
+        [Then(@"the email sent contains the following information")]
         public async Task ThenEmailContains(Table table)
         {
             var expectedEmail = table.CreateInstance<EmailTable>();
@@ -38,11 +38,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actualEmail.Should().BeEquivalentTo(expectedEmail, options => options.Excluding(e => e.ResetPasswordLink));
         }
 
-        [Then(@"email is not sent")]
+        [Then(@"no email is sent")]
         public async Task EmailIsNotSent()
         {
             var emails = await GetAllEmailsFromSmtpServer();
             emails.Should().BeNullOrEmpty();
+        }
+
+        [Then(@"only one email is sent")]
+        public async Task OnlyOneEmailIsSent()
+        {
+            var emails = await GetAllEmailsFromSmtpServer();
+            emails.Count().Should().Be(1);
         }
 
         private async Task<Email> GetActualEmail()
@@ -54,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private async Task<IEnumerable<Email>> GetAllEmailsFromSmtpServer()
         {
             using var client = new HttpClient();
-            _response.Result = await client.GetAsync(new Uri($"{_settings.Smtp.ApiBaseUrl}/email"));
+            _response.Result = await client.GetAsync(new Uri($"{_settings.SmtpServerApiBaseUrl}/email"));
             _response.Result.Should().NotBeNull();
 
             return (await _response.ReadBody()).Select(x => new Email()
@@ -73,7 +80,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             if (_context.TryGetValue("emailSent", out bool _))
             {
                 using var client = new HttpClient();
-                await client.DeleteAsync(new Uri($"{_settings.Smtp.ApiBaseUrl}/email/all"));
+                await client.DeleteAsync(new Uri($"{_settings.SmtpServerApiBaseUrl}/email/all"));
             }
         }
 

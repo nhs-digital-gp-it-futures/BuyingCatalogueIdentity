@@ -15,7 +15,7 @@ Background:
 
 @3540
 Scenario: 1. A authority user can create a user
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	When a POST request is made to create a user for organisation Organisation 2
@@ -30,7 +30,7 @@ Scenario: 1. A authority user can create a user
 
 @3540
 Scenario: 2. A non authority user cannot create a user
-	Given an user is logged in
+	Given a user is logged in
 		| Username            | Password     | Scope        |
 		| PennyLane@email.com | S0mePa$$w0rd | Organisation |
 	When a POST request is made to create a user for organisation Organisation 2
@@ -47,7 +47,7 @@ Scenario: 3. Create user with valid details when unauthorised
 
 @3540
 Scenario: 4. Service Failure
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	Given the call to the database will fail
