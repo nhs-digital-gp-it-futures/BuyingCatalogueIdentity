@@ -1,6 +1,6 @@
 ﻿Feature: Buying Catalogue Organisations healthchecks
-	As BuyingCatalogueOrganisations
-	I want to be be able to check the health of my dependencies
+    As BuyingCatalogueOrganisations
+    I want to be be able to check the health of my dependencies
     So that I can behave accordingly
 
 @3538

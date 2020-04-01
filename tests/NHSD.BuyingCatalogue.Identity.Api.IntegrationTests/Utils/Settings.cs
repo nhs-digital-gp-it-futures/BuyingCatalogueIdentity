@@ -12,7 +12,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 
         public string BrokenOrganisationApiBaseUrl { get; }
 
-        public Settings(IConfigurationRoot config)
+        public Settings(IConfiguration config)
         {
             AdminConnectionString = config.GetConnectionString("CatalogueUsersAdmin");
             ConnectionString = config.GetConnectionString("CatalogueUsers");

@@ -16,9 +16,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class AuthorisedSteps
     {
         private readonly ScenarioContext _context;
-        private IConfigurationRoot _configuration { get; }
+        private IConfiguration _configuration { get; }
 
-        public AuthorisedSteps(IConfigurationRoot configuration, ScenarioContext context)
+        public AuthorisedSteps(IConfiguration configuration, ScenarioContext context)
         {
             _configuration = configuration;
             _context = context;

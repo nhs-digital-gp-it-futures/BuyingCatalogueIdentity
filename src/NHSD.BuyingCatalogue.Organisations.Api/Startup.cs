@@ -75,20 +75,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddHealthChecks()
                 .AddCheck(
-                    name: "self",
-                    check: () => HealthCheckResult.Healthy(),
-                    tags: new[] { HealthCheckTags.Live })
+                    "self",
+                    () => HealthCheckResult.Healthy(),
+                    new[] { HealthCheckTags.Live })
                 .AddSmtpHealthCheck(
-                    setup: (smtp) =>
+                    smtp =>
                     {
                         smtp.Host = smtpSettings.Host;
                         smtp.Port = smtpSettings.Port;
                         smtp.ConnectionType = SmtpConnectionType.TLS;
                     },
-                    name: "smtp",
-                    failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { HealthCheckTags.Ready },
-                    timeout: TimeSpan.FromSeconds(10));
+                    "smtp", 
+                    HealthStatus.Unhealthy,
+                    new[] { HealthCheckTags.Ready }, 
+                    TimeSpan.FromSeconds(10));
 
             services.AddControllers();
 
@@ -127,12 +127,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
                 {
-                    Predicate = (healthCheckRegistration) => healthCheckRegistration.Tags.Contains(HealthCheckTags.Live)
+                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Live)
                 });
 
                 endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
                 {
-                    Predicate = (healthCheckRegistration) => healthCheckRegistration.Tags.Contains(HealthCheckTags.Ready)
+                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Ready)
                 });
             });
 
