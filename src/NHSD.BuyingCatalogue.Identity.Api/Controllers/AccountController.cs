@@ -97,6 +97,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ForgotPassword(ForgotPasswordViewModel viewModel)
         {
             viewModel.ThrowIfNull(nameof(viewModel));

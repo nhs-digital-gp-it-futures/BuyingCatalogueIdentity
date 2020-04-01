@@ -44,38 +44,75 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
             output.Content.Clear();
 
-            var outerDivBuilder = new TagBuilder(TagHelperConstants.Div);
+            var outerDiv = GetOuterDivBuilder();
+            var formGroup = GetFormGroupBuilder();
+            var label = GetLabelBuilder();
+            var validation = GetValidationBuilder();
+            var input = GetInputBuilder();
+
+            formGroup.InnerHtml.AppendHtml(label);
+            formGroup.InnerHtml.AppendHtml(validation);
+            formGroup.InnerHtml.AppendHtml(input);
+            outerDiv.InnerHtml.AppendHtml(formGroup);
+
+            output.TagName = TagHelperConstants.Div;
+            output.TagMode = TagMode.StartTagAndEndTag;
+            output.Content.AppendHtml(outerDiv);
+        }
+
+        private TagBuilder GetOuterDivBuilder()
+        {
+            var builder = new TagBuilder(TagHelperConstants.Div);
 
             if (ViewContext.ViewData.ModelState.ContainsKey(For.Name))
             {
-                outerDivBuilder.AddCssClass(TagHelperConstants.NhsFormGroupError);
+                builder.AddCssClass(TagHelperConstants.NhsFormGroupError);
             }
 
-            outerDivBuilder.Attributes[TagHelperConstants.DataTestId] = FieldDataTestId ?? $"{For.Name}-field";
+            builder.Attributes[TagHelperConstants.DataTestId] = FieldDataTestId ?? $"{For.Name}-field";
 
-            var formGroup = new TagBuilder(TagHelperConstants.Div);
-            formGroup.AddCssClass(TagHelperConstants.NhsFormGroup);
+            return builder;
+        }
 
-            var labelBuilder = _htmlGenerator.GenerateLabel(
+        private static TagBuilder GetFormGroupBuilder()
+        {
+            var builder = new TagBuilder(TagHelperConstants.Div);
+            builder.AddCssClass(TagHelperConstants.NhsFormGroup);
+            return builder;
+        }
+
+        private TagBuilder GetLabelBuilder()
+        {
+            var builder = _htmlGenerator.GenerateLabel(
                 ViewContext,
                 For.ModelExplorer,
                 For.Name,
-                null, 
+                null,
                 null);
 
-            labelBuilder.AddCssClass(TagHelperConstants.NhsLabel);
+            builder.AddCssClass(TagHelperConstants.NhsLabel);
 
-            var validationBuilder = _htmlGenerator.GenerateValidationMessage(ViewContext,
+            return builder;
+        }
+
+        private TagBuilder GetValidationBuilder()
+        {
+            var builder = _htmlGenerator.GenerateValidationMessage(ViewContext,
                 For.ModelExplorer,
                 For.Name,
                 null,
                 TagHelperConstants.Span,
                 null);
 
-            validationBuilder.AddCssClass(TagHelperConstants.NhsErrorMessage);
-            validationBuilder.Attributes[TagHelperConstants.DataTestId] = ErrorDataTestId ?? $"{For.Name}-error";
-            
-            var inputBuilder = _htmlGenerator.GenerateTextBox(ViewContext,
+            builder.AddCssClass(TagHelperConstants.NhsErrorMessage);
+            builder.Attributes[TagHelperConstants.DataTestId] = ErrorDataTestId ?? $"{For.Name}-error";
+
+            return builder;
+        }
+
+        private TagBuilder GetInputBuilder()
+        {
+            var builder = _htmlGenerator.GenerateTextBox(ViewContext,
                 For.ModelExplorer,
                 For.Name,
                 null,
@@ -83,26 +120,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 null);
 
             var dataTypeAttributes = For?.Metadata?
-                    .ContainerType?
-                    .GetProperty(For.Name)?
-                    .GetCustomAttributes<DataTypeAttribute>();
-            
+                .ContainerType?
+                .GetProperty(For.Name)?
+                .GetCustomAttributes<DataTypeAttribute>();
+
             if (dataTypeAttributes?.Any(x => x.DataType == DataType.Password) == true)
             {
-                inputBuilder.Attributes[TagHelperConstants.Type] = "password";
+                builder.Attributes[TagHelperConstants.Type] = "password";
             }
 
-            inputBuilder.AddCssClass(TagHelperConstants.NhsInput);
-            inputBuilder.Attributes[TagHelperConstants.DataTestId] = InputDataTestId ?? $"{For.Name}-input";
+            builder.AddCssClass(TagHelperConstants.NhsInput);
+            builder.Attributes[TagHelperConstants.DataTestId] = InputDataTestId ?? $"{For.Name}-input";
 
-            formGroup.InnerHtml.AppendHtml(labelBuilder);
-            formGroup.InnerHtml.AppendHtml(validationBuilder);
-            formGroup.InnerHtml.AppendHtml(inputBuilder);
-            outerDivBuilder.InnerHtml.AppendHtml(formGroup);
-
-            output.TagName = TagHelperConstants.Div;
-            output.TagMode = TagMode.StartTagAndEndTag;
-            output.Content.AppendHtml(outerDivBuilder);
+            return builder;
         }
     }
 }

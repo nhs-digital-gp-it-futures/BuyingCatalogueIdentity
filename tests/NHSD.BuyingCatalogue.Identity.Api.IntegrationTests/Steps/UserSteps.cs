@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Equivalency;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Newtonsoft.Json;
@@ -56,7 +55,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                         OrganisationFunction = user.OrganisationFunction,
                         SecurityStamp = "TestUser"
                     };
-                
+
                 await userEntity.InsertAsync(_settings.ConnectionString);
             }
         }
