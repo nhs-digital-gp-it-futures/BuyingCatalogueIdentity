@@ -12,7 +12,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
     [ApiController]
     [Authorize(Policy = Policy.CanAccessOrganisationUsers)]
-    [Route("api/v1/Organisations/{organisationId}/Users")]
     [Produces("application/json")]
     public sealed class UsersController : Controller
     {
@@ -27,6 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             _registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
         }
 
+        [Route("api/v1/Organisations/{organisationId}/Users")]
         [HttpGet]
         public async Task<ActionResult> GetUsersByOrganisationId(Guid organisationId)
         {
@@ -47,6 +47,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             });
         }
 
+        [Route("api/v1/Organisations/{organisationId}/Users")]
         [HttpPost]
         [Authorize(Policy = Policy.CanManageOrganisationUsers)]
         public async Task<ActionResult> CreateUserAsync(Guid organisationId, CreateUserRequestViewModel viewModel)
@@ -79,6 +80,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             await _registrationService.SendInitialEmailAsync(newApplicationUser);
 
             return Ok();
+        }
+
+        [Route("users/{userId}")]
+        [HttpGet]
+        public async Task<ActionResult> GetUserById(string userId)
+        {
+            var user = await _usersRepository.GetUserById(userId);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            var userViewModel = new GetUserViewModel()
+            {
+                Name = $"{user.FirstName} {user.LastName}",
+                PhoneNumber = user.PhoneNumber,
+                EmailAddress =  user.Email,
+                Disabled = user.Disabled,
+                PrimaryOrganisationId = user.PrimaryOrganisationId
+            };
+
+            return Ok(userViewModel);
         }
     }
 }

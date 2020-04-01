@@ -44,18 +44,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 var organisationId = GetOrganisationIdFromName(user.OrganisationName);
 
                 var userEntity = new UserEntity
-                    {
-                        PasswordHash = GenerateHash(user.Password),
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        Email = user.Email,
-                        Disabled = user.Disabled,
-                        PhoneNumber = user.PhoneNumber,
-                        Id = user.Id,
-                        OrganisationId = organisationId,
-                        OrganisationFunction = user.OrganisationFunction,
-                        SecurityStamp = "TestUser"
-                    };
+                {
+                    PasswordHash = GenerateHash(user.Password),
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Disabled = user.Disabled,
+                    PhoneNumber = user.PhoneNumber,
+                    Id = user.Id,
+                    OrganisationId = organisationId,
+                    OrganisationFunction = user.OrganisationFunction,
+                    SecurityStamp = "TestUser"
+                };
 
                 await userEntity.InsertAsync(_settings.ConnectionString);
             }
@@ -101,6 +101,37 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var payload = JsonConvert.SerializeObject(data);
             using var content = new StringContent(payload, Encoding.UTF8, "application/json");
             _response.Result = await client.PostAsync(new Uri($"{_organisationUrl}/{organisationId}/users"), content);
+        }
+
+        [When(@"a GET request is made for a user with id (.*)")]
+        public async Task WhenAGETRequestIsMadeForAUserWithId(string userId)
+        {
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
+            _response.Result = await client.GetAsync(new Uri($"{_settings.OrganisationApiBaseUrl}/users/{userId}"));
+        }
+
+        [Then(@"a user is returned with the following values")]
+        public async Task ThenAUserIsReturnedWithTheFollowingValues(Table table)
+        {
+            var expected = table.CreateSet<ExpectedGetUserTable>().First();
+
+            var organisationId = GetOrganisationIdFromName(expected.OrganisationName);
+
+            expected.PrimaryOrganisationId = organisationId;
+
+            var response = (await _response.ReadBody());
+
+            var actual = new ExpectedGetUserTable
+            {
+                Name = response.SelectToken("name").ToString(),
+                PhoneNumber = response.SelectToken("phoneNumber").ToString(),
+                EmailAddress = response.SelectToken("emailAddress").ToString(),
+                Disabled = response.SelectToken("disabled").ToObject<bool>(),
+                PrimaryOrganisationId = response.SelectToken("primaryOrganisationId").ToObject<Guid>()
+            };
+
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(user => user.OrganisationName));
         }
 
         private static string GenerateHash(string password)
@@ -212,5 +243,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             public string OrganisationFunction { get; set; } = "Authority";
         }
+
+        private sealed class ExpectedGetUserTable
+        {
+            public string Name { get; set; }
+
+            public string PhoneNumber { get; set; }
+
+            public string EmailAddress { get; set; }
+
+            public bool Disabled { get; set; }
+
+            public string OrganisationName { get; set; }
+
+            public Guid PrimaryOrganisationId { get; set; }
+        }
+
     }
 }

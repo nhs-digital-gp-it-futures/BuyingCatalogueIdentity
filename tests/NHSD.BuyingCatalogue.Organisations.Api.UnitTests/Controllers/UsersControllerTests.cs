@@ -171,5 +171,51 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 }
             );
         }
+
+        [Test]
+        public async Task GetUserById_WithExistingUserId_ReturnsOkayObjectResult()
+        {
+            var context = UsersControllerTestContext.Setup();
+            context.GetUserById = ApplicationUserBuilder.Create().Build();
+
+            var expected = new GetUserViewModel
+            {
+                Name = context.GetUserById.FirstName + " " + context.GetUserById.LastName,
+                PhoneNumber = context.GetUserById.PhoneNumber,
+                EmailAddress = context.GetUserById.Email,
+                Disabled = context.GetUserById.Disabled,
+                PrimaryOrganisationId = context.GetUserById.PrimaryOrganisationId
+            };
+
+            using var controller = context.Controller;
+
+            var result = await controller.GetUserById(context.GetUserById.Id) as OkObjectResult;
+            var user = result.Value as GetUserViewModel;
+
+            user.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public async Task GetUserById_NoExistingUserId_ReturnsNotFound()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            var result = await controller.GetUserById(string.Empty);
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public async Task GetUserById_UserRepository_GetUserById_CalledOnce()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            await controller.GetUserById(string.Empty);
+
+            context.UsersRepositoryMock.Verify(x => x.GetUserById(String.Empty), Times.Once);
+        }
     }
 }

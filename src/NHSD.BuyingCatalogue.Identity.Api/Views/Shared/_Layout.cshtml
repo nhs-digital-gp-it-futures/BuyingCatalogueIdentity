@@ -5,7 +5,7 @@
 
     string PrefixReference(string reference)
     {
-        return $"/{pathBase}/{reference}";
+        return string.IsNullOrWhiteSpace(pathBase) ? $"/{reference}" : $"/{pathBase}/{reference}";
     }
 }
 
@@ -23,7 +23,7 @@
 
     <title>@ViewData["PageTitle"]</title>
 
-    <link href="/@pathBase/css/main.min.css" rel="stylesheet">
+    <link href=@PrefixReference("css/main.min.css") rel="stylesheet">
 
     @RenderSection("Styles", false)
 

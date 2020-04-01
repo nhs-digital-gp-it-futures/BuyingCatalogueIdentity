@@ -32,5 +32,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<ApplicationUser> GetUserById(string userId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        }
     }
 }
