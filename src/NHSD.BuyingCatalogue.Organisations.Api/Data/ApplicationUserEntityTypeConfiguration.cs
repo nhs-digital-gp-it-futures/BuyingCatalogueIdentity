@@ -8,6 +8,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
+            builder.Property(x => x.FirstName)
+                .HasColumnName("FirstName");
+
+            builder.Property(x => x.LastName)
+                .HasColumnName("LastName");
+
             builder.Property(x => x.PrimaryOrganisationId)
                 .HasColumnName("PrimaryOrganisationId");
 
