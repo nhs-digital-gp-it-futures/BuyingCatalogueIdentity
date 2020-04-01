@@ -21,6 +21,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
 
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfiguration(new ApplicationUserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OrganisationEntityTypeConfiguration());
         }
     }
