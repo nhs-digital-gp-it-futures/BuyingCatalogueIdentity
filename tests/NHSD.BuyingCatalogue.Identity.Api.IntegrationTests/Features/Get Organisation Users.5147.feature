@@ -14,7 +14,7 @@ Background:
 
 @5147
 Scenario: 1. As an Authority user, get all of the users for an organisation
-    Given an user is logged in
+    Given a user is logged in
     	| Username          | Password | Scope        |
     	| authority@doe.com | yolo     | Organisation |
     When a GET request is made for an organisation's users with name Organisation 1
@@ -26,7 +26,7 @@ Scenario: 1. As an Authority user, get all of the users for an organisation
         
 @5147
 Scenario: 2. If an organisation does not exist, an empty list is returned
-    Given an user is logged in
+    Given a user is logged in
     	| Username          | Password | Scope        |
     	| authority@doe.com | yolo     | Organisation |
     When a GET request is made for an organisation's users with name Organisation 2
@@ -36,7 +36,7 @@ Scenario: 2. If an organisation does not exist, an empty list is returned
 
 @5147
 Scenario: 3. If a user is not authorised then they cannot access the organisations
-    Given an user is logged in
+    Given a user is logged in
     	| Username      | Password | Scope        |
     	| buyer@doe.com | oloy     | Organisation |
     When a GET request is made for an organisation's users with name Organisation 1
@@ -49,7 +49,7 @@ Scenario: 4. If a user is not logged in then they cannot access the organisation
 
 @5147
 Scenario: 5. Service Failure
-    Given an user is logged in
+    Given a user is logged in
     	| Username          | Password | Scope        |
     	| authority@doe.com | yolo     | Organisation |
     Given the call to the database will fail

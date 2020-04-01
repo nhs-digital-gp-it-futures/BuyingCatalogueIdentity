@@ -15,7 +15,7 @@ Background:
 
 @5147
 Scenario: 1. Get the details of a single organisation
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	When a GET request is made for an organisation with name Organisation 1
@@ -26,7 +26,7 @@ Scenario: 1. Get the details of a single organisation
 
 @5147
 Scenario: 2. Organisation is not found
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	And an Organisation with name Organisation 3 does not exist
@@ -35,7 +35,7 @@ Scenario: 2. Organisation is not found
 
 @5147
 Scenario: 3. A non authority user cannot access the organisations
-	Given an user is logged in
+	Given a user is logged in
 		| Username            | Password     | Scope        |
 		| PennyLane@email.com | S0mePa$$w0rd | Organisation |
 	When a GET request is made for an organisation's users with name Organisation 1
@@ -48,7 +48,7 @@ Scenario: 4. If a user is not authorised then they cannot access the organisatio
 
 @5147
 Scenario: 5. Service Failure
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	And the call to the database will fail

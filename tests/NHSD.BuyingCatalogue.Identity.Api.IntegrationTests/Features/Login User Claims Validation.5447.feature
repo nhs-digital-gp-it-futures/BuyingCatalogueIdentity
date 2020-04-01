@@ -14,14 +14,14 @@ Background:
 
 @5447
 Scenario: 1. Get the claims of a user who provides no scope
-	Given an user is logged in
+	Given a user is logged in
 		| Username            | Password     | Scope |
 		| PennyLane@email.com | S0mePa$$w0rd | NULL  |
 	Then the access token should be empty
 
 @5447
 Scenario: 2. Get the claims of a buyer user
-	Given an user is logged in
+	Given a user is logged in
 		| Username            | Password     | Scope   |
 		| PennyLane@email.com | S0mePa$$w0rd | profile |
 	And the claims contains the following information
@@ -41,7 +41,7 @@ Scenario: 2. Get the claims of a buyer user
 
 @5447
 Scenario: 3. Get the claims of an authority user
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	And the claims contains the following information

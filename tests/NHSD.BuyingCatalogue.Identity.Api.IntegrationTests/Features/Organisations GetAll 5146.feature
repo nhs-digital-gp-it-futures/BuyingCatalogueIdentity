@@ -16,7 +16,7 @@ Background:
 
 @5146
 Scenario: 1. Get all of the organisations
-	Given an user is logged in
+	Given a user is logged in
 		| Username          | Password       | Scope        |
 		| authority@doe.com | Str0nkP4s5w0rd | Organisation |
 	When a GET request is made for the Organisations section
@@ -34,7 +34,7 @@ Scenario: 2. If a user is not authorised then they cannot access the organisatio
 
 @5146
 Scenario: 3. A non authority user cannot access the organisations
-	Given an user is logged in
+	Given a user is logged in
 		| Username      | Password     | Scope        |
 		| buyer@doe.com | W3AkP4s5w0rd | Organisation |
 	When a GET request is made for an organisation's users with name Organisation 1
@@ -42,7 +42,7 @@ Scenario: 3. A non authority user cannot access the organisations
 
 @5146
 Scenario: 4. Service Failure
-	Given an user is logged in
+	Given a user is logged in
 		| Username          | Password       | Scope        |
 		| authority@doe.com | Str0nkP4s5w0rd | Organisation |
 	Given the call to the database will fail
