@@ -64,7 +64,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response.Result = await client.GetAsync(new Uri($"{_settings.SmtpServerApiBaseUrl}/email"));
             _response.Result.Should().NotBeNull();
 
-            return (await _response.ReadBody()).Select(x => new Email()
+            return (await _response.ReadBody()).Select(x => new Email
             {
                 PlainTextBody = x.SelectToken("text").ToString().Trim(),
                 HtmlBody = x.SelectToken("html").ToString().Trim(),
