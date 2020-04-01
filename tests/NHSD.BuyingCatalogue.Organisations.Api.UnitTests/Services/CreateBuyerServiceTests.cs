@@ -182,16 +182,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             UsersRepositoryMock = new Mock<IUsersRepository>();
             UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
 
+            RegistrationServiceMock = new Mock<IRegistrationService>();
+
             CreateBuyerService = new CreateBuyerService(ApplicationUserValidatorMock.Object, UsersRepositoryMock.Object, RegistrationServiceMock.Object);
         }
 
-        public Mock<IApplicationUserValidator> ApplicationUserValidatorMock { get; set; }
+        internal Mock<IApplicationUserValidator> ApplicationUserValidatorMock { get; set; }
 
-        public Result ApplicationUserValidatorResult { get; set; } = Result.Success();
+        internal Result ApplicationUserValidatorResult { get; set; } = Result.Success();
 
-        public Mock<IUsersRepository> UsersRepositoryMock { get; set; }
+        internal Mock<IUsersRepository> UsersRepositoryMock { get; set; }
 
-        public CreateBuyerService CreateBuyerService { get; }
+        internal CreateBuyerService CreateBuyerService { get; }
 
         internal Mock<IRegistrationService> RegistrationServiceMock { get; set; }
 

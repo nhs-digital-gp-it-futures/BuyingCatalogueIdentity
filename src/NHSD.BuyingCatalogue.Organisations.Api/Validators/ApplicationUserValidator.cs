@@ -36,7 +36,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             return errors.Any() ? Result.Failure(errors) : Result.Success();
         }
 
-        private async Task ValidateNameAsync( 
+        private static async Task ValidateNameAsync( 
             string firstName, 
             string lastName,
             List<Error> errors)
@@ -45,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             await ValidateLastNameAsync(lastName, errors);
         }
 
-        private Task ValidateFirstNameAsync(string firstName, List<Error> errors)
+        private static Task ValidateFirstNameAsync(string firstName, List<Error> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -64,7 +64,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             return Task.CompletedTask;
         }
 
-        private Task ValidateLastNameAsync(string lastName, List<Error> errors)
+        private static Task ValidateLastNameAsync(string lastName, List<Error> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -84,7 +84,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             return Task.CompletedTask;
         }
 
-        private Task ValidatePhoneNumberAsync(string phoneNumber, List<Error> errors)
+        private static Task ValidatePhoneNumberAsync(string phoneNumber, List<Error> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
