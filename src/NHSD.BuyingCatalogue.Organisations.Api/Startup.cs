@@ -18,6 +18,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Organisations.Api.Validators;
 using Serilog;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api
@@ -48,14 +49,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IUsersRepository, UsersRepository>();
 
+ 			services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("CatalogueUsers")));
 
             services.AddSingleton(registrationSettings);
             services.AddSingleton(smtpSettings);
             services.AddScoped<IMailTransport, SmtpClient>();
-            services.AddTransient<IEmailService, MailKitEmailService>();
-            services.AddTransient<IRegistrationService, RegistrationService>();
+
+            services.AddTransient<IEmailService, MailKitEmailService>()
+                .AddTransient<IRegistrationService, RegistrationService>()
+                .AddTransient<ICreateBuyerService, CreateBuyerService>();
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
@@ -90,7 +94,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     new[] { HealthCheckTags.Ready }, 
                     TimeSpan.FromSeconds(10));
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
 
             services.AddAuthorization(options =>
             {

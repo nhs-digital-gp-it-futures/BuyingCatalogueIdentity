@@ -9,6 +9,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
     {
         Task<IEnumerable<ApplicationUser>> GetUsersByOrganisationIdAsync(Guid organisationId);
 
+        Task<ApplicationUser> FindUserByEmailAsync(string email);
+
         Task CreateUserAsync(ApplicationUser user);
     }
 }

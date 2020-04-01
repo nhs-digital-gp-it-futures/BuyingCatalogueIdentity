@@ -41,7 +41,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Comparers
                 && string.Equals(original.UserName, comparison.UserName, StringComparison.Ordinal)
                 && string.Equals(original.NormalizedUserName, comparison.NormalizedUserName, StringComparison.Ordinal)
                 && Equals(original.PrimaryOrganisationId, comparison.PrimaryOrganisationId)
-                && string.Equals(original.OrganisationFunction, comparison.OrganisationFunction, StringComparison.Ordinal)
+                && Equals(original.OrganisationFunction, comparison.OrganisationFunction)
                 && Equals(original.Disabled, comparison.Disabled)
                 && Equals(original.CatalogueAgreementSigned, comparison.CatalogueAgreementSigned);
         }
