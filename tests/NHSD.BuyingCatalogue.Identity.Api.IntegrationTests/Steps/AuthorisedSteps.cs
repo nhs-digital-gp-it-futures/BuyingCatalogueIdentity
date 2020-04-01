@@ -25,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         }
         
 
-        [Given(@"an user is logged in")]
+        [Given(@"a user is logged in")]
         public async Task GivenAnUserIsLoggedInWithUsernameAndPassword(Table table)
         {
             var user = table.CreateSet<UserTable>().First();

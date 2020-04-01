@@ -10,11 +10,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 
         public string OrganisationApiBaseUrl { get; }
 
+        public string SmtpServerApiBaseUrl { get; }
+
         public Settings(IConfigurationRoot config)
         {
             AdminConnectionString = config.GetConnectionString("CatalogueUsersAdmin");
             ConnectionString = config.GetConnectionString("CatalogueUsers");
             OrganisationApiBaseUrl = config.GetValue<string>("OrganisationApiBaseUrl");
+            SmtpServerApiBaseUrl = config.GetValue<string>("SmtpServerApiBaseUrl");
         }
     }
 }

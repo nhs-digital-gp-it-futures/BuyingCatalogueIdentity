@@ -13,9 +13,9 @@ Background:
 		| 012345 | Organisation 1   | Penny     | Lane     | PennyLane@email.com  | 01234567890 | false    | S0mePa$$w0rd    | Buyer                |
 		| 123456 | Organisation 1   | Post      | Pat      | PostmanPat@email.com | 12345678901 | false    | An0therPa$$w0rd | Authority            |
 
-@5582
+@3540
 Scenario: 1. A authority user can create a user
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	When a POST request is made to create a user for organisation Organisation 2
@@ -28,9 +28,9 @@ Scenario: 1. A authority user can create a user
 		| FirstName | LastName   | EmailAddress             | PhoneNumber | IsDisabled |
 		| Bob       | Bobkovitch | bob.bobkovitch@email.com | 0123456789  | False      |
 
-@5582
+@3540
 Scenario: 2. A non authority user cannot create a user
-	Given an user is logged in
+	Given a user is logged in
 		| Username            | Password     | Scope        |
 		| PennyLane@email.com | S0mePa$$w0rd | Organisation |
 	When a POST request is made to create a user for organisation Organisation 2
@@ -38,16 +38,16 @@ Scenario: 2. A non authority user cannot create a user
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
 	Then a response with status code 403 is returned
 
-@5582
+@3540
 Scenario: 3. Create user with valid details when unauthorised
 	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
 	Then a response with status code 401 is returned
 
-@5582
+@3540
 Scenario: 4. Service Failure
-	Given an user is logged in
+	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	Given the call to the database will fail
