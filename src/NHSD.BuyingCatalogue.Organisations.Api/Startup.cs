@@ -55,9 +55,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddSingleton(registrationSettings);
             services.AddSingleton(smtpSettings);
             services.AddScoped<IMailTransport, SmtpClient>();
-            
+
             services.AddTransient<IEmailService, MailKitEmailService>()
-            	.AddTransient<IRegistrationService, RegistrationService>()
+                .AddTransient<IRegistrationService, RegistrationService>()
                 .AddTransient<ICreateBuyerService, CreateBuyerService>();
 
             services.AddAuthentication(BearerToken)

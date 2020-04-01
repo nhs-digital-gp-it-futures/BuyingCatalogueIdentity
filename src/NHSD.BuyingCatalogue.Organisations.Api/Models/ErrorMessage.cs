@@ -8,11 +8,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 
         public string Field { get; }
 
-        public ErrorMessage(string id) : this(id, null)
-        {
-        }
-
-        public ErrorMessage(string id, string field)
+        public ErrorMessage(string id, string field = null)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Field = field;

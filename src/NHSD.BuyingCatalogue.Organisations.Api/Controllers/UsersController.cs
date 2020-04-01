@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -70,7 +69,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             if (!result.IsSuccess)
             {
-                response.Errors = result.Errors.Select(x => new ErrorViewModel { Id = x.Id,  Field = x.Field });
+                response.Errors = result.Errors.Select(x => new ErrorMessageViewModel { Id = x.Id,  Field = x.Field });
             
                 return BadRequest(response);
             }

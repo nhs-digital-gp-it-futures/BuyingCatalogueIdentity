@@ -138,7 +138,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
             var actual = response.Result;
 
-            var expectedErrors = new List<ErrorViewModel> { new ErrorViewModel { Id = "TestErrorId", Field = "TestField" } };
+            var expectedErrors = new List<ErrorMessageViewModel> { new ErrorMessageViewModel { Id = "TestErrorId", Field = "TestField" } };
             var expected = new BadRequestObjectResult(new CreateBuyerResponseViewModel { Errors = expectedErrors});
             actual.Should().BeEquivalentTo(expected);
         }

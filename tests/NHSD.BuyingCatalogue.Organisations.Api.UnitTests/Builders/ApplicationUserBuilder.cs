@@ -1,7 +1,7 @@
-﻿﻿using System;
+﻿using System;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
- namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
+namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class ApplicationUserBuilder
     {
@@ -97,11 +97,11 @@ using NHSD.BuyingCatalogue.Organisations.Api.Models;
         internal ApplicationUser BuildBuyer()
         {
             var user = ApplicationUser.CreateBuyer(
-                _username, 
-                _firstName, 
-                _lastName, 
-                _phoneNumber, 
-                _emailAddress, 
+                _username,
+                _firstName,
+                _lastName,
+                _phoneNumber,
+                _emailAddress,
                 _primaryOrganisationId);
 
             user.Id = _userId;

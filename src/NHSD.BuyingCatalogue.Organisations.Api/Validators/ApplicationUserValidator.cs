@@ -56,8 +56,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
                 return Task.CompletedTask;
             }
 
-            firstName = firstName.Trim();
-
             if (firstName.Length > MaximumFirstNameLength)
                 errors.Add(ApplicationUserErrors.FirstNameTooLong());
 
@@ -74,8 +72,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
                 errors.Add(ApplicationUserErrors.LastNameRequired());
                 return Task.CompletedTask;
             }
-
-            lastName = lastName.Trim();
 
             if (lastName.Length > MaximumLastNameLength)
                 errors.Add(ApplicationUserErrors.LastNameTooLong());
@@ -107,8 +103,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
                 errors.Add(ApplicationUserErrors.EmailRequired());
                 return;
             }
-
-            email = email.Trim();
 
             if (email.Length > MaximumEmailLength)
             {
