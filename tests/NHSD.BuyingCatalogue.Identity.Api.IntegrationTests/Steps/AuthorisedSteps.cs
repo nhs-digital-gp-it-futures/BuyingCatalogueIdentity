@@ -16,16 +16,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class AuthorisedSteps
     {
         private readonly ScenarioContext _context;
-        private IConfigurationRoot _configuration { get; }
+        private IConfiguration _configuration { get; }
 
-        public AuthorisedSteps(IConfigurationRoot configuration, ScenarioContext context)
+        public AuthorisedSteps(IConfiguration configuration, ScenarioContext context)
         {
             _configuration = configuration;
             _context = context;
         }
         
 
-        [Given(@"an user is logged in")]
+        [Given(@"a user is logged in")]
         public async Task GivenAnUserIsLoggedInWithUsernameAndPassword(Table table)
         {
             var user = table.CreateSet<UserTable>().First();

@@ -74,6 +74,17 @@ services:
     ports:
         - "8075:80"
 
+  nhsd.buyingcatalogue.organisations.api.broken:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/organisations-api:${TAG:-latest}
+    container_name: organisations_api_broken
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - nhsd.buyingcatalogue.identity.api.user.db
+      - nhsd.buyingcatalogue.organisations.api
+    ports:
+        - "8175:80"
+
   nhsd.buyingcatalogue.identity.api.sampleresource:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-sampleresource:${TAG:-latest}
     container_name: identity_api_sample_resource
