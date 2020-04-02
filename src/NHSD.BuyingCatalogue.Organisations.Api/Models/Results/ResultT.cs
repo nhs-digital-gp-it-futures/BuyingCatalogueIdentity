@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Models.Results
 {
-    public class Result<T>
+    public sealed class Result<T>
     {
         public bool IsSuccess { get; }
 
