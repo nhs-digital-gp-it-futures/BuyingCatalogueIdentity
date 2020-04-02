@@ -44,12 +44,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             if (email is null)
                 throw new ArgumentNullException(nameof(email));
 
-            UserName = userName?.Trim();
-            NormalizedUserName = UserName?.ToUpperInvariant();
-            FirstName = firstName?.Trim();
-            LastName = lastName?.Trim();
+            UserName = userName.Trim();
+            NormalizedUserName = UserName.ToUpperInvariant();
+            FirstName = firstName.Trim();
+            LastName = lastName.Trim();
             PhoneNumber = phoneNumber ?? throw new ArgumentNullException(nameof(phoneNumber));
-            Email = email?.Trim();
+            Email = email.Trim();
             NormalizedEmail = Email?.ToUpperInvariant();
             OrganisationFunction = organisationFunction ?? throw new ArgumentNullException(nameof(organisationFunction));
             PrimaryOrganisationId = primaryOrganisationId;
