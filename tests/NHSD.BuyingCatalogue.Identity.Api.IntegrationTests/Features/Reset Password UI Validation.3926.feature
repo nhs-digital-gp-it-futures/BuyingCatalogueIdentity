@@ -15,15 +15,15 @@ Scenario: 1. The NHS Header is displayed correctly
 
 @3926
 Scenario: 2. The Reset Password page title is displayed correctly
-	Then the page contains element with Data ID reset-password-page-title
-	And element with Data ID reset-password-page-title has tag h1
-	And element with Data ID reset-password-page-title has text Choose your password
+	Then the page contains element with Data ID page-title
+	And element with Data ID page-title has tag h1
+	And element with Data ID page-title has text Choose your password
 
 @3926
 Scenario: 3. The Reset Password page description is displayed correctly
-	Then the page contains element with Data ID reset-password-page-description
-	And element with Data ID reset-password-page-description has tag h2
-	And element with Data ID reset-password-page-description has text Please read the password policy before proceeding.
+	Then the page contains element with Data ID page-description
+	And element with Data ID page-description has tag h2
+	And element with Data ID page-description has text Please read the password policy before proceeding.
 
 @3926
 Scenario: 4. The Password input element is displayed correctly

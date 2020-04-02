@@ -18,14 +18,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
         [DisplayName("Confirm password")]
         public string ConfirmPassword { get; set; }
 
-        internal static class ErrorMessages
+        private static class ErrorMessages
         {
             internal const string PasswordConditionsNotMet = "The password you’ve entered does not meet the criteria";
             internal const string PasswordMismatch = "Passwords do not match";
         }
 
-        [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
-        internal class PasswordValidation : ValidationAttribute
+        [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+        private class PasswordValidation : ValidationAttribute
         {
             public override bool IsValid(object value)
             {
@@ -34,9 +34,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
                     return false;
                 }
 
-                var specialCharacters = "!@#$%^&*";
+                const string specialCharacters = "!@#$%^&*";
 
-                var password = value as string;
+                var password = value.ToString();
 
                 if (password.Length < 10)
                     return false;

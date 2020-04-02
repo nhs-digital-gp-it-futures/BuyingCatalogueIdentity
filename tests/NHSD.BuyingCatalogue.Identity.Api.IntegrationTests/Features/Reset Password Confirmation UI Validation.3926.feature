@@ -20,15 +20,15 @@ Scenario: 2. The Back to log in link displays correctly
 
 @3926
 Scenario: 3. The Reset Password Confirmation page title is displayed correctly
-	Then the page contains element with Data ID reset-password-confirmation-page-title
-	And element with Data ID reset-password-confirmation-page-title has tag h1
-	And element with Data ID reset-password-confirmation-page-title has text Password set
+	Then the page contains element with Data ID page-title
+	And element with Data ID page-title has tag h1
+	And element with Data ID page-title has text Password set
 
 @3926
 Scenario: 4. The Reset Password Confirmation page description is displayed correctly
-	Then the page contains element with Data ID reset-password-confirmation-page-description
-	And element with Data ID reset-password-confirmation-page-description has tag h2
-	And element with Data ID reset-password-confirmation-page-description has text You can now use your new password to log in.
+	Then the page contains element with Data ID page-description
+	And element with Data ID page-description has tag h2
+	And element with Data ID page-description has text You can now use your new password to log in.
 
 @3926
 Scenario: 5. The NHS Footer is displayed

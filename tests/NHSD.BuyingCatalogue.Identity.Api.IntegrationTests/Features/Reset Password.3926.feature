@@ -1,5 +1,5 @@
 ﻿Feature: Reset Password
-	As a User 
+    As a User 
     I want to be able to reset my password
 	So that I can be able to login with correct details
 
@@ -20,7 +20,7 @@ Scenario: 2. Not adhering to the password policy but entering matching passwords
 	And element with Data ID input-confirm-reset-password is populated with Pass1
 	And element with Data ID reset-password-button is clicked
 	Then the user is redirected to page account/resetpassword
-	And the element with Data ID reset-password-field has validation error with text The password you’ve entered does not meet the criteria
+	And the element with Data ID field-reset-password has validation error with text The password you’ve entered does not meet the criteria
 
 @3926
 Scenario: 3. Adhering to the password policy but entering mismatched passwords gives the user a relevant error message
@@ -28,7 +28,7 @@ Scenario: 3. Adhering to the password policy but entering mismatched passwords g
 	And element with Data ID input-confirm-reset-password is populated with Password124!
 	And element with Data ID reset-password-button is clicked
 	Then the user is redirected to page account/resetpassword
-	And the element with Data ID confirm-reset-password-field has validation error with text Passwords do not match
+	And the element with Data ID field-confirm-reset-password has validation error with text Passwords do not match
 
 @3926
 Scenario: 4. Not adhering to the password policy & entering mismatched passwords gives the user a relevant error message
@@ -36,5 +36,5 @@ Scenario: 4. Not adhering to the password policy & entering mismatched passwords
 	And element with Data ID input-confirm-reset-password is populated with Pass2
 	And element with Data ID reset-password-button is clicked
 	Then the user is redirected to page account/resetpassword
-	And the element with Data ID reset-password-field has validation error with text The password you’ve entered does not meet the criteria
-	And the element with Data ID confirm-reset-password-field has validation error with text Passwords do not match
+	And the element with Data ID field-reset-password has validation error with text The password you’ve entered does not meet the criteria
+	And the element with Data ID field-confirm-reset-password has validation error with text Passwords do not match

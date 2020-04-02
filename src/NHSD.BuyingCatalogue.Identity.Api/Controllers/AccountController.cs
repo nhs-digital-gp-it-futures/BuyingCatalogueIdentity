@@ -123,6 +123,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ResetPassword(ResetPasswordViewModel viewModel)
         {
             viewModel.ThrowIfNull(nameof(viewModel));
@@ -132,7 +133,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return View(viewModel);
             }
             
-            return RedirectToAction("ResetPasswordConfirmation");
+            return RedirectToAction(nameof(ResetPasswordConfirmation));
         }
 
         [HttpGet]
