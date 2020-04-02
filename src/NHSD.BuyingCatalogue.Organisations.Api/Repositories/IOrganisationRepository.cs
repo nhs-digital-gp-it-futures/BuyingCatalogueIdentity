@@ -10,5 +10,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
         Task<IEnumerable<Organisation>> ListOrganisationsAsync();
 
         Task<Organisation> GetByIdAsync(Guid id);
+
+        Task UpdateAsync(Organisation organisation);
     }
 }
