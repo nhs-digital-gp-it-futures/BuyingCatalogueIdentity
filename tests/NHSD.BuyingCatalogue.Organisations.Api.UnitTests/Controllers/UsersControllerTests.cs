@@ -186,7 +186,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public async Task GetUserById_WithExistingUserId_ReturnsOkayObjectResult()
         {
             var context = UsersControllerTestContext.Setup();
-            context.GetUserById = ApplicationUserBuilder.Create().Build();
+            context.GetUserById = ApplicationUserBuilder.Create().BuildBuyer();
 
             var expected = new GetUserViewModel
             {
