@@ -34,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             modelState.Count.Should().Be(1);
 
             (string key, ModelStateEntry entry) = modelState.First();
-            key.Should().Be(string.Empty);
+            key.Should().Be("LoginError");
             entry.Errors.Count.Should().Be(1);
             entry.Errors.First().ErrorMessage.Should().Be(AccountController.SignInErrorMessage);
         }

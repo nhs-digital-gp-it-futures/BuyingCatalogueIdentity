@@ -13,6 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         public const string TagHelperName = "nhs-validation-input";
         public const string InputDataTestIdName = "input-data-test-id";
         public const string FieldDataTestIdName = "field-data-test-id";
+        public const string LabelDataTestIdName = "label-data-test-id";
         public const string ErrorDataTestIdName = "error-data-test-id";
 
         private readonly IHtmlGenerator _htmlGenerator;
@@ -31,6 +32,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
         [HtmlAttributeName(FieldDataTestIdName)]
         public string FieldDataTestId { get; set; }
+
+        [HtmlAttributeName(LabelDataTestIdName)]
+        public string LabelDataTestId { get; set; }
 
         [HtmlAttributeName(InputDataTestIdName)]
         public string InputDataTestId { get; set; }
@@ -97,6 +101,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 null);
 
             builder.AddCssClass(TagHelperConstants.NhsLabel);
+            builder.Attributes[TagHelperConstants.DataTestId] = LabelDataTestId ?? $"{For.Name}-label";
 
             return builder;
         }

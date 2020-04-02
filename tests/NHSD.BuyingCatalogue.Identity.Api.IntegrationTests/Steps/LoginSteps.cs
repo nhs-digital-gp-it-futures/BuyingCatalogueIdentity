@@ -37,14 +37,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
             _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id=input-email-address]")).SendKeys(emailAddress);
-            _seleniumContext.WebDriver.FindElement(By.Name("Password")).SendKeys(password);
+            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id=input-password]")).SendKeys(password);
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
         [When(@"a login request is made with email address (.*) and no password")]
         public void WhenALoginRequestIsMadeWithNoPassword(string emailAddress)
         {
-            _seleniumContext.WebDriver.FindElement(By.Name("EmailAddress")).SendKeys(emailAddress);
+            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id=input-email-address]")).SendKeys(emailAddress);
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
@@ -63,7 +63,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the page contains a validation summary with text (.*)")]
         public void ThenThePageContainsValidationSummaryWithText(string value)
         {
-            var errorElements = _seleniumContext.WebDriver.FindElements(By.CssSelector(".validation-summary-errors li"));
+            var errorElements = _seleniumContext.WebDriver.FindElements(By.CssSelector("[data-test-id=error-summary] li"));
             errorElements.Should().HaveCount(1);
             errorElements.First().Text.Should().Be(value);
         }

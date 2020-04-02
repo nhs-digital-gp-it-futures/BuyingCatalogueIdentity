@@ -9,3 +9,8 @@
 .bc-u-background-colour--blue {
     background-color: $color_nhsuk-blue;
 }
+
+.nhsuk-error-message ul {
+    list-style: none;
+    padding-left: 0;
+}

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -75,9 +76,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
             foreach (var model in orderedStates)
             {
+                var redirectAttribute = ViewContext.ViewData.Model.GetType().GetProperty(model.Key)
+                    ?.GetCustomAttributes<SummaryRedirectAttribute>().FirstOrDefault();
+                
                 foreach (var error in model.Value.Errors)
                 {
-                    var listItem = GetListItemBuilder(model.Key, error.ErrorMessage);
+                    var redirect = model.Key;
+                    if (redirectAttribute != null)
+                    {
+                        redirect = redirectAttribute.Link;
+                    }
+
+                    var listItem = GetListItemBuilder(redirect, error.ErrorMessage);
                     builder.InnerHtml.AppendHtml(listItem);
                 }
             }
