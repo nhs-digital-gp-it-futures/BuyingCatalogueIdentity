@@ -13,7 +13,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
     [ApiController]
     [Authorize(Policy = Policy.CanAccessOrganisationUsers)]
-    [Route("api/v1/Organisations/{organisationId}/Users")]
     [Produces("application/json")]
     public sealed class UsersController : Controller
     {
@@ -28,6 +27,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
 
+        [Route("api/v1/Organisations/{organisationId}/Users")]
         [HttpGet]
         public async Task<ActionResult> GetUsersByOrganisationId(Guid organisationId)
         {
@@ -48,6 +48,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             });
         }
 
+        [Route("api/v1/Organisations/{organisationId}/Users")]
         [HttpPost]
         [Authorize(Policy = Policy.CanManageOrganisationUsers)]
         public async Task<ActionResult<CreateBuyerResponseViewModel>> CreateBuyerAsync(Guid organisationId, CreateBuyerRequestViewModel createBuyerRequest)
@@ -75,6 +76,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             }
             
             return Ok(response);
+        }
+
+        [Route("api/v1/users/{userId}")]
+        [HttpGet]
+        public async Task<ActionResult<GetUser>> GetUserById(string userId)
+        {
+            var user = await _usersRepository.GetUserById(userId);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            var getUser = new GetUser
+            {
+                Name = $"{user.FirstName} {user.LastName}",
+                PhoneNumber = user.PhoneNumber,
+                EmailAddress =  user.Email,
+                Disabled = user.Disabled,
+                PrimaryOrganisationId = user.PrimaryOrganisationId
+            };
+
+            return Ok(getUser);
         }
     }
 }
