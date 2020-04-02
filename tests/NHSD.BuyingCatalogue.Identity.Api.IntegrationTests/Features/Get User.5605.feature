@@ -14,7 +14,7 @@ Background:
 
 @5605
 Scenario: 1. Searching for an existing user
-	Given an user is logged in
+	Given a user is logged in
 		| Username          | Password | Scope        |
 		| authority@doe.com | yolo     | Organisation |
 	When a GET request is made for a user with id 234
@@ -25,7 +25,7 @@ Scenario: 1. Searching for an existing user
 
 @5605
 Scenario: 2. Searching for a user that does not exist
-	Given an user is logged in
+	Given a user is logged in
 		| Username          | Password | Scope        |
 		| authority@doe.com | yolo     | Organisation |
 	When a GET request is made for a user with id unknown
@@ -33,7 +33,7 @@ Scenario: 2. Searching for a user that does not exist
 
 @5605
 Scenario: 3. If a user is not authorised then they cannot search for a user
-	Given an user is logged in
+	Given a user is logged in
 		| Username      | Password | Scope        |
 		| buyer@doe.com | oloy     | Organisation |
 	When a GET request is made for a user with id 234
@@ -46,7 +46,7 @@ Scenario: 4. If a user is not logged in then they cannot search for a user
 
 @5605
 Scenario: 5. Service Failure
-	Given an user is logged in
+	Given a user is logged in
 		| Username          | Password | Scope        |
 		| authority@doe.com | yolo     | Organisation |
 	Given the call to the database will fail
