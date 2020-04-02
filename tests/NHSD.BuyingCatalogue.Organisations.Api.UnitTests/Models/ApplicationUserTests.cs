@@ -11,6 +11,62 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
     internal sealed class ApplicationUserTests
     {
         [Test]
+        public void UserName_Trimmed()
+        {
+            var actual = ApplicationUserBuilder
+                .Create()
+                .WithUsername("  Test  ")
+                .BuildBuyer();
+
+            actual.UserName.Should().Be("Test");
+        }
+
+        [TestCase("Test", "TEST")]
+        [TestCase("  Test   ", "TEST")]
+        public void NormalizedUserName_SetUserName_ReturnsNormalizedUserName(string input, string expected)
+        {
+            var actual = ApplicationUserBuilder
+                .Create()
+                .WithUsername(input)
+                .BuildBuyer();
+
+            actual.NormalizedUserName.Should().Be(expected);
+        }
+
+        [Test]
+        public void NormalizedUserName_Trimmed()
+        {
+            var actual = ApplicationUserBuilder
+                .Create()
+                .WithUsername("  Test  ")
+                .BuildBuyer();
+
+            actual.NormalizedUserName.Should().Be("TEST");
+        }
+
+        [Test]
+        public void FirstName_Trimmed()
+        {
+            var actual = ApplicationUserBuilder
+                .Create()
+                .WithFirstName("  Dan  ")
+                .BuildBuyer();
+
+            actual.FirstName.Should().Be("Dan");
+        }
+
+        [Test]
+        public void LastName_Trimmed()
+        {
+            var actual = ApplicationUserBuilder
+                .Create()
+                .WithLastName("  Smith  ")
+                .BuildBuyer();
+
+            actual.LastName.Should().Be("Smith");
+        }
+
+        [Test]
         public void DisplayName_ReturnsExpectedValue()
         {
             var actual = ApplicationUserBuilder
@@ -23,25 +79,37 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
         }
 
         [Test]
-        public void UserName_SetsNormalizedUserName()
+        public void PhoneNumber_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
-                .WithUsername("Test")
+                .WithPhoneNumber("  0123456  ")
                 .BuildBuyer();
 
-            actual.NormalizedUserName.Should().Be("TEST");
+            actual.PhoneNumber.Should().Be("0123456");
         }
 
         [Test]
-        public void EmailAddress_SetsNormalizedEmail()
+        public void EmailAddress_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
-                .WithEmailAddress("a.b@c.com")
+                .WithEmailAddress("  a.b@c.com  ")
                 .BuildBuyer();
 
-            actual.NormalizedEmail.Should().Be("A.B@C.COM");
+            actual.Email.Should().Be("a.b@c.com");
+        }
+
+        [TestCase("a.b@c.com", "A.B@C.COM")]
+        [TestCase("  a.b@c.com   ", "A.B@C.COM")]
+        public void NormalizedEmail_SetEmail_ReturnsNormalizedEmail(string input, string expected)
+        {
+            var actual = ApplicationUserBuilder
+                .Create()
+                .WithEmailAddress(input)
+                .BuildBuyer();
+
+            actual.NormalizedEmail.Should().Be(expected);
         }
 
         [Test]

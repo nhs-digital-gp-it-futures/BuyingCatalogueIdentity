@@ -48,9 +48,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             NormalizedUserName = UserName.ToUpperInvariant();
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
-            PhoneNumber = phoneNumber ?? throw new ArgumentNullException(nameof(phoneNumber));
+            PhoneNumber = phoneNumber?.Trim() ?? throw new ArgumentNullException(nameof(phoneNumber));
             Email = email.Trim();
-            NormalizedEmail = Email?.ToUpperInvariant();
+            NormalizedEmail = Email.ToUpperInvariant();
             OrganisationFunction = organisationFunction ?? throw new ArgumentNullException(nameof(organisationFunction));
             PrimaryOrganisationId = primaryOrganisationId;
             Disabled = false;
