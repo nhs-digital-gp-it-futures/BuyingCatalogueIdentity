@@ -1,6 +1,6 @@
 ﻿Feature: Display an Organisations by Id in the Authority Section
   As an Authority User
-  I want to view an Organisation information for a single orgnisation
+  I want to view an Organisation information for a single organisation
   So that I can manage access to the Buying Catalogue
 
 Background:

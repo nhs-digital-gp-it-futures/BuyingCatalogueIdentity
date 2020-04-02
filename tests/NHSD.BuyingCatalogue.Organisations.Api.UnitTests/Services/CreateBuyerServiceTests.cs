@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
@@ -78,7 +78,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 
             var actual = await sut.CreateAsync(request);
 
-            actual.Should().Be(Result.Success());
+            actual.IsSuccess.Should().BeTrue();
+            actual.Value.Should().NotBeNull();
         }
 
         [Test]

@@ -3,35 +3,29 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Models
+namespace NHSD.BuyingCatalogue.Organisations.Api.Models.Results
 {
-    public sealed class Result
+    public sealed class Result<T>
     {
-        private static readonly Result _success = new Result();
-
         public bool IsSuccess { get; }
 
         public IReadOnlyCollection<ErrorMessage> Errors { get; }
 
-        private Result()
-        {
-            IsSuccess = true;
-        }
+        public T Value { get; }
 
-        private Result(IEnumerable<ErrorMessage> errors)
+        internal Result(bool isSuccess, IEnumerable<ErrorMessage> errors, T value)
         {
-            IsSuccess = false;
+            IsSuccess = isSuccess;
             Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
+            Value = value;
         }
 
-        public static Result Success()
+        public Result ToResult()
         {
-            return _success;
-        }
-
-        public static Result Failure(IEnumerable<ErrorMessage> errors)
-        {
-            return new Result(errors);
+            if (IsSuccess)
+                return Result.Success();
+            
+            return Result.Failure(Errors);
         }
 
         private static bool AreErrorsEqual(IEnumerable<ErrorMessage> first, IEnumerable<ErrorMessage> second)

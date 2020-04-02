@@ -24,7 +24,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
         }
 
         private ApplicationUser(
-            Guid userId,
             string userName,
             string firstName, 
             string lastName, 
@@ -45,14 +44,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             if (email is null)
                 throw new ArgumentNullException(nameof(email));
 
-            Id = userId.ToString();
-            UserName = userName?.Trim();
-            NormalizedUserName = UserName?.ToUpperInvariant();
-            FirstName = firstName?.Trim();
-            LastName = lastName?.Trim();
-            PhoneNumber = phoneNumber ?? throw new ArgumentNullException(nameof(phoneNumber));
-            Email = email?.Trim();
-            NormalizedEmail = Email?.ToUpperInvariant();
+            UserName = userName.Trim();
+            NormalizedUserName = UserName.ToUpperInvariant();
+            FirstName = firstName.Trim();
+            LastName = lastName.Trim();
+            PhoneNumber = phoneNumber?.Trim() ?? throw new ArgumentNullException(nameof(phoneNumber));
+            Email = email.Trim();
+            NormalizedEmail = Email.ToUpperInvariant();
             OrganisationFunction = organisationFunction ?? throw new ArgumentNullException(nameof(organisationFunction));
             PrimaryOrganisationId = primaryOrganisationId;
             Disabled = false;
@@ -68,7 +66,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             Guid primaryOrganisationId)
         {
             return new ApplicationUser(
-                Guid.NewGuid(), 
                 userName, 
                 firstName, 
                 lastName, 
