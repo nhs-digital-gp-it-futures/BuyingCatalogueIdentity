@@ -11,9 +11,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
     {
         public static IServiceCollection RegisterHealthChecks(this IServiceCollection services, string connectionString, SmtpSettings smtpSettings)
         {
-            if (connectionString is null) throw new ArgumentNullException(nameof(connectionString));
+            if (connectionString is null)
+                throw new ArgumentNullException(nameof(connectionString));
 
-            if (smtpSettings is null) throw new ArgumentNullException(nameof(smtpSettings));
+            if (smtpSettings is null) 
+                throw new ArgumentNullException(nameof(smtpSettings));
 
             services.AddHealthChecks()
                 .AddCheck(
