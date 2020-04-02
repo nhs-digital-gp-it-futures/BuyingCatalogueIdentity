@@ -24,7 +24,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
         }
 
         private ApplicationUser(
-            Guid userId,
             string userName,
             string firstName, 
             string lastName, 
@@ -45,7 +44,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             if (email is null)
                 throw new ArgumentNullException(nameof(email));
 
-            Id = userId.ToString();
             UserName = userName?.Trim();
             NormalizedUserName = UserName?.ToUpperInvariant();
             FirstName = firstName?.Trim();
@@ -68,7 +66,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             Guid primaryOrganisationId)
         {
             return new ApplicationUser(
-                Guid.NewGuid(), 
                 userName, 
                 firstName, 
                 lastName, 

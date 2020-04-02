@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Comparers;
@@ -78,9 +79,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task CreateBuyerAsync_EmptyOrganisationId_EmptyCreateBuyerRequestViewModel_ReturnsStatusOk()
+        public async Task CreateBuyerAsync_CreateBuyerSuccessfulResult_ReturnsUserId()
         {
+            const string newUserId = "New Test User Id";
+
             var context = UsersControllerTestContext.Setup();
+            context.CreateBuyerResult = Result.Success(newUserId);
 
             using var controller = context.Controller;
 
@@ -89,7 +93,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
             var actual = response.Result;
 
-            actual.Should().BeEquivalentTo(new OkObjectResult(new CreateBuyerResponseViewModel()));
+            actual.Should().BeEquivalentTo(new OkObjectResult(new CreateBuyerResponseViewModel { UserId = newUserId }));
         }
 
         [Test]
@@ -123,12 +127,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task CreateBuyerAsync_Failure_ReturnsBadRequest()
+        public async Task CreateBuyerAsync_CreateBuyerFailureResult_ReturnsBadRequest()
         {
             var errors = new List<ErrorMessage> { new ErrorMessage("TestErrorId", "TestField") };
 
             var context = UsersControllerTestContext.Setup();
-            context.CreateBuyerResult = Result.Failure(errors);
+            context.CreateBuyerResult = Result.Failure<string>(errors);
 
             var organisationId = Guid.NewGuid();
             var createUserRequestViewModel = new CreateBuyerRequestViewModel();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Controllers;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 
@@ -30,7 +31,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
         }
 		public Mock<ICreateBuyerService> CreateBuyerServiceMock { get; set; }
 
-		public Result CreateBuyerResult { get; set; } = Result.Success();
+		public Result<string> CreateBuyerResult { get; set; } = Result.Success("NewUserId");
 
         public Mock<IUsersRepository> UsersRepositoryMock { get; set; }
 

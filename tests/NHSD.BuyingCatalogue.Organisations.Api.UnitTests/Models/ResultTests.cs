@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models

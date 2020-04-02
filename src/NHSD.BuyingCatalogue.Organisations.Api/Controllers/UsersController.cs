@@ -68,14 +68,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 createBuyerRequest.EmailAddress
                 ));
 
-            if (!result.IsSuccess)
+            if (result.IsSuccess)
             {
-                response.Errors = result.Errors.Select(x => new ErrorMessageViewModel { Id = x.Id,  Field = x.Field });
-            
-                return BadRequest(response);
+                response.UserId = result.Value;
+                return Ok(response);
             }
             
-            return Ok(response);
+            response.Errors = result.Errors.Select(x => new ErrorMessageViewModel { Id = x.Id,  Field = x.Field });
+            return BadRequest(response);
         }
 
         [Route("api/v1/users/{userId}")]
@@ -91,7 +91,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             var getUser = new GetUser
             {
-                Name = $"{user.FirstName} {user.LastName}",
+                Name = user.DisplayName,
                 PhoneNumber = user.PhoneNumber,
                 EmailAddress =  user.Email,
                 Disabled = user.Disabled,
