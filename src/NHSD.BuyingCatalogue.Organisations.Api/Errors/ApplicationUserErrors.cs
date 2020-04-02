@@ -31,22 +31,22 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Errors
 
         public static ErrorMessage EmailRequired()
         {
-            return new ErrorMessage("EmailRequired", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailRequired", "EmailAddress");
         }
 
         public static ErrorMessage EmailTooLong()
         {
-            return new ErrorMessage("EmailTooLong", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailTooLong", "EmailAddress");
         }
 
         public static ErrorMessage EmailInvalidFormat()
         {
-            return new ErrorMessage("EmailInvalidFormat", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailInvalidFormat", "EmailAddress");
         }
         
         public static ErrorMessage EmailAlreadyExists()
         {
-            return new ErrorMessage("EmailAlreadyExists", nameof(ApplicationUser.Email));
+            return new ErrorMessage("EmailAlreadyExists", "EmailAddress");
         }
     }
 }

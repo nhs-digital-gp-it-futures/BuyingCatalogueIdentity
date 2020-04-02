@@ -102,7 +102,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorMessage(id, nameof(ApplicationUser.Email))));
+            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorMessage(id, "EmailAddress")));
             actual.Should().Be(expected);
         }
 
@@ -126,7 +126,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(new List<ErrorMessage> { new ErrorMessage("EmailAlreadyExists", nameof(ApplicationUser.Email)) });
+            var expected = Result.Failure(new List<ErrorMessage> { new ErrorMessage("EmailAlreadyExists", "EmailAddress") });
             actual.Should().Be(expected);
         }
 
