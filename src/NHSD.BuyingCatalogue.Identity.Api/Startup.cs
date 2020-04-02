@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
+using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using Serilog;
 using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
 
@@ -34,6 +37,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = _configuration.GetConnectionString("CatalogueUsers");
             var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
@@ -53,7 +57,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddScoped<ILogoutService, LogoutService>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(_configuration.GetConnectionString("CatalogueUsers")));
+                options.UseSqlServer(connectionString));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -80,6 +84,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 options.SlidingExpiration = cookieExpiration.SlidingExpiration;
             });
 
+            services.RegisterHealthChecks(connectionString);
             services.AddControllers();
             services.AddControllersWithViews();
             services.AddAuthentication();
@@ -131,6 +136,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
+                {
+                    Predicate = (healthCheckRegistration) => healthCheckRegistration.Tags.Contains(HealthCheckTags.Live)
+                });
+
+                endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
+                {
+                    Predicate = (healthCheckRegistration) => healthCheckRegistration.Tags.Contains(HealthCheckTags.Ready)
+                });
             });
         }
     }
