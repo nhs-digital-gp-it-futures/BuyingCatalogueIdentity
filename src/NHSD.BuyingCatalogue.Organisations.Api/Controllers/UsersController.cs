@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Messages;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
@@ -15,15 +16,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Produces("application/json")]
     public sealed class UsersController : Controller
     {
-        private readonly IRegistrationService _registrationService;
+        private readonly ICreateBuyerService _createBuyerService;
         private readonly IUsersRepository _usersRepository;
 
         public UsersController(
-            IUsersRepository usersRepository,
-            IRegistrationService registrationService)
+        	ICreateBuyerService createBuyerService, 
+        	IUsersRepository usersRepository)
         {
+            _createBuyerService = createBuyerService ?? throw new ArgumentNullException(nameof(createBuyerService));
             _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
-            _registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
         }
 
         [Route("api/v1/Organisations/{organisationId}/Users")]
@@ -50,36 +51,31 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         [Route("api/v1/Organisations/{organisationId}/Users")]
         [HttpPost]
         [Authorize(Policy = Policy.CanManageOrganisationUsers)]
-        public async Task<ActionResult> CreateUserAsync(Guid organisationId, CreateUserRequestViewModel viewModel)
+        public async Task<ActionResult<CreateBuyerResponseViewModel>> CreateBuyerAsync(Guid organisationId, CreateBuyerRequestViewModel createBuyerRequest)
         {
-            if (viewModel is null)
+            if (createBuyerRequest is null)
             {
-                throw new ArgumentNullException(nameof(viewModel));
+                throw new ArgumentNullException(nameof(createBuyerRequest));
             }
 
-            ApplicationUser newApplicationUser = new ApplicationUser
+            var response = new CreateBuyerResponseViewModel();
+
+            var result = await _createBuyerService.CreateAsync(new CreateBuyerRequest(
+                organisationId, 
+                createBuyerRequest.FirstName,
+                createBuyerRequest.LastName,
+                createBuyerRequest.PhoneNumber,
+                createBuyerRequest.EmailAddress
+                ));
+
+            if (!result.IsSuccess)
             {
-                Id = Guid.NewGuid().ToString(),
-                FirstName = viewModel.FirstName,
-                LastName = viewModel.LastName,
-                UserName = viewModel.EmailAddress,
-                NormalizedUserName = viewModel.EmailAddress?.ToUpperInvariant(),
-                PhoneNumber = viewModel.PhoneNumber,
-                Email = viewModel.EmailAddress,
-                NormalizedEmail = viewModel.EmailAddress?.ToUpperInvariant(),
-                PrimaryOrganisationId = organisationId,
-                OrganisationFunction = "Buyer",
-                CatalogueAgreementSigned = false
-            };
-
-            await _usersRepository.CreateUserAsync(newApplicationUser);
-
-            // TODO: discuss exception handling options 
-            // TODO: consider moving sending e-mail out of process
-            // (the current in-process implementation has a significant impact on response time)
-            await _registrationService.SendInitialEmailAsync(newApplicationUser);
-
-            return Ok();
+                response.Errors = result.Errors.Select(x => new ErrorMessageViewModel { Id = x.Id,  Field = x.Field });
+            
+                return BadRequest(response);
+            }
+            
+            return Ok(response);
         }
 
         [Route("users/{userId}")]

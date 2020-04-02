@@ -22,6 +22,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             return await _context.Users.Where(x => x.PrimaryOrganisationId == organisationId).ToListAsync();
         }
 
+        public async Task<ApplicationUser> FindUserByEmailAsync(string email)
+        {
+            if (email is null)
+            {
+                throw new ArgumentNullException(nameof(email));
+            }
+
+            return await _context.Users.SingleOrDefaultAsync(applicationUser => applicationUser.Email == email);
+        }
+
         public async Task CreateUserAsync(ApplicationUser user)
         {
             if (user is null)

@@ -6,9 +6,11 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Comparers;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Messages;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Users;
 using NUnit.Framework;
 
@@ -76,72 +78,80 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task CreateUserAsync_NewApplicationUser_ReturnsStatusOk()
+        public async Task CreateBuyerAsync_EmptyOrganisationId_EmptyCreateBuyerRequestViewModel_ReturnsStatusOk()
         {
             var context = UsersControllerTestContext.Setup();
 
             using var controller = context.Controller;
 
-            var response = await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel());
+            var response = await controller.CreateBuyerAsync(Guid.Empty, new CreateBuyerRequestViewModel());
+            
+            response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
+            var actual = response.Result;
 
-            response.Should().BeOfType<OkResult>();
+            actual.Should().BeEquivalentTo(new OkObjectResult(new CreateBuyerResponseViewModel()));
         }
 
         [Test]
-        public async Task CreateUserAsync_UserRepository_CreateUserAsync_CalledOnce()
+        public async Task CreateBuyerAsync_CreateBuyerService_CreateAsync_CalledOnce()
         {
             var context = UsersControllerTestContext.Setup();
 
             using var controller = context.Controller;
 
             var organisationId = Guid.NewGuid();
-            var createUserRequestViewModel = new CreateUserRequestViewModel
+            var createUserRequestViewModel = new CreateBuyerRequestViewModel
             {
                 FirstName = "Bob",
                 LastName = "Smith",
-                PhoneNumber = "0123456789",
-                EmailAddress = "a.b@c.com"
+                PhoneNumber = "98654321",
+                EmailAddress = "bob@smith.com"
             };
 
-            await controller.CreateUserAsync(organisationId, createUserRequestViewModel);
+            await controller.CreateBuyerAsync(organisationId, createUserRequestViewModel);
 
-            var expectedApplicationUser = ApplicationUserBuilder
+            var expected = CreateBuyerRequestBuilder
                 .Create()
                 .WithFirstName(createUserRequestViewModel.FirstName)
                 .WithLastName(createUserRequestViewModel.LastName)
                 .WithPhoneNumber(createUserRequestViewModel.PhoneNumber)
                 .WithEmailAddress(createUserRequestViewModel.EmailAddress)
-                .WithUsername(createUserRequestViewModel.EmailAddress)
                 .WithPrimaryOrganisationId(organisationId)
                 .Build();
 
-            context.UsersRepositoryMock.Verify(x => x.CreateUserAsync(
-                It.Is<ApplicationUser>(
-                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expectedApplicationUser, actual))),
-                Times.Once);
+            context.CreateBuyerServiceMock.Verify(x => x.CreateAsync(expected), Times.Once);
         }
 
         [Test]
-        public async Task CreateUserAsync_NewApplicationUser_SendsEmail()
+        public async Task CreateBuyerAsync_Failure_ReturnsBadRequest()
         {
+            var errors = new List<ErrorMessage> { new ErrorMessage("TestErrorId", "TestField") };
+
             var context = UsersControllerTestContext.Setup();
+            context.CreateBuyerResult = Result.Failure(errors);
 
-            using var controller = context.Controller;
+            var organisationId = Guid.NewGuid();
+            var createUserRequestViewModel = new CreateBuyerRequestViewModel();
 
-            await controller.CreateUserAsync(Guid.Empty, new CreateUserRequestViewModel());
+            var response = await context.Controller.CreateBuyerAsync(organisationId, createUserRequestViewModel);
 
-            context.RegistrationServiceMock.Verify(r => r.SendInitialEmailAsync(It.IsNotNull<ApplicationUser>()), Times.Once());
+            response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
+            var actual = response.Result;
+
+            var expectedErrors = new List<ErrorMessageViewModel> { new ErrorMessageViewModel { Id = "TestErrorId", Field = "TestField" } };
+            var expected = new BadRequestObjectResult(new CreateBuyerResponseViewModel { Errors = expectedErrors});
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Test]
-        public void CreateUserAsync_NullApplicationUser_ThrowsException()
+        public void CreateBuyerAsync_NullApplicationUser_ThrowsException()
         {
             var context = UsersControllerTestContext.Setup();
 
-            async Task<ActionResult> CreateUser()
+            async Task<ActionResult<CreateBuyerResponseViewModel>> CreateUser()
             {
                 using var controller = context.Controller;
-                return await controller.CreateUserAsync(Guid.Empty, null);
+                return await controller.CreateBuyerAsync(Guid.Empty, null);
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(CreateUser);
@@ -156,7 +166,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithPhoneNumber(Guid.NewGuid().ToString())
                 .WithEmailAddress(Guid.NewGuid().ToString())
                 .WithDisabled(disabled)
-                .Build();
+                .BuildBuyer();
 
             return (
                 RepoUser: repositoryApplicationUser,

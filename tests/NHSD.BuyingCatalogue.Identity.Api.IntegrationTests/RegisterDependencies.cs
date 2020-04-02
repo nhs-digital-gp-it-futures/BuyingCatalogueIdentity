@@ -15,7 +15,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests
                 .AddEnvironmentVariables()
                 .Build();
 
-            objectContainer.RegisterInstanceAs<IConfigurationRoot>(config);
+            objectContainer.RegisterInstanceAs<IConfiguration>(config);
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Equivalency;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Newtonsoft.Json;
@@ -101,6 +100,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var payload = JsonConvert.SerializeObject(data);
             using var content = new StringContent(payload, Encoding.UTF8, "application/json");
             _response.Result = await client.PostAsync(new Uri($"{_organisationUrl}/{organisationId}/users"), content);
+
+            _context["emailSent"] = true;
         }
 
         [When(@"a GET request is made for a user with id (.*)")]

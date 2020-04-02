@@ -11,7 +11,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
     public sealed class Database
     {
         [BeforeScenario]
-        public async Task Reset(IConfigurationRoot config)
+        public async Task Reset(IConfiguration config)
         {
             using IDbConnection databaseConnection = new SqlConnection(config.GetConnectionString("CatalogueUsersAdmin"));
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader ADD MEMBER NHSD;");
