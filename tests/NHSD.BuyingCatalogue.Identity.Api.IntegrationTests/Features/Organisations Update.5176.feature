@@ -1,5 +1,5 @@
 ﻿Feature: Edit Buyer Organisation
-    As a Authority User
+    As an Authority User
     I want to edit an Organisation's account
     So that I can change an Organisation's data
 
@@ -13,7 +13,7 @@ Background:
 		| 234 | Organisation 1   | Jane      | Doe      | buyer@doe.com     | 01234567890 | false    | W3AkP4s5w0rd   | Buyer                |
 
 @5176
-Scenario: 1. A authority user can update organisations Catalogue Agreement Status
+Scenario: 1. An authority user can update organisations Catalogue Agreement Status
 	Given a user is logged in
 		| Username          | Password       | Scope        |
 		| authority@doe.com | Str0nkP4s5w0rd | Organisation |

@@ -90,13 +90,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid id, UpdateOrganisationViewModel viewModel)
         {
             if (viewModel is null)
+            {
                 throw new ArgumentNullException(nameof(viewModel));
-            
-
+            }
             var organisation = await _organisationRepository.GetByIdAsync(id);
 
             if (organisation is null)
+            {
                 return NotFound();
+            }
 
             organisation.CatalogueAgreementSigned = viewModel.CatalogueAgreementSigned;
 

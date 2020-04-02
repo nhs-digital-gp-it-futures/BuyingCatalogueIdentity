@@ -221,7 +221,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task UpdateOrganisationByIdAsync_UpdateOrganisation_ReturnsStatusNotFound()
+        public async Task UpdateOrganisationByIdAsync_UpdateOrganisation_NonExistentOrganisation_ReturnsStatusNotFound()
         {
             using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(null).Build();
 
