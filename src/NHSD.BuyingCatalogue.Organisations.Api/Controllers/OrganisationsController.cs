@@ -84,5 +84,25 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 }
             });
         }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid id, UpdateOrganisationViewModel viewModel)
+        {
+            if (viewModel is null)
+                throw new ArgumentNullException(nameof(viewModel));
+            
+
+            var organisation = await _organisationRepository.GetByIdAsync(id);
+
+            if (organisation is null)
+                return NotFound();
+
+            organisation.CatalogueAgreementSigned = viewModel.CatalogueAgreementSigned;
+
+            await _organisationRepository.UpdateAsync(organisation);
+
+            return NoContent();
+        }
     }
 }

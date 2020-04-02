@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -101,17 +103,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for an organisation with name (.*)")]
         public async Task WhenAGETRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
-
-            var organisationId = Guid.Empty.ToString();
-            if (allOrganisations.ContainsKey(organisationName))
-            {
-                organisationId = allOrganisations?[organisationName].ToString();
-            }
+            var organisationId = GetOrganisationIdFromName(organisationName);
 
             using var client = new HttpClient();
             client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
             _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}"));
+        }
+
+        [When(@"a PUT request is made to update an organisation with name (.*)")]
+        public async Task WhenAPUTRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName, Table table)
+        {
+            var data = table.CreateInstance<UpdateOrganisationPayload>();
+            var organisationId = GetOrganisationIdFromName(organisationName);
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
+            var payload = JsonConvert.SerializeObject(data);
+            using var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            _response.Result = await client.PutAsync(new Uri($"{_organisationUrl}/{organisationId}"), content);
         }
 
         [Given(@"an Organisation with name (.*) does not exist")]
@@ -138,6 +147,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 Postcode = token.SelectToken("address.postcode").ToString(),
                 Country = token.SelectToken("address.country").ToString()
             };
+        }
+
+        private Guid GetOrganisationIdFromName(string organisationName)
+        {
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
+            return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
+        }
+
+        private class UpdateOrganisationPayload
+        {
+            public bool CatalogueAgreementSigned { get; set; }
         }
 
         private class OrganisationTable

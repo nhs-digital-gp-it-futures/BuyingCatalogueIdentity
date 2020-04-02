@@ -39,6 +39,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
+        internal OrganisationControllerBuilder WithUpdateOrganisation(Organisation organisation)
+        {
+            var repositoryMock = new Mock<IOrganisationRepository>();
+            repositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(organisation);
+            repositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Organisation>()));
+            _organisationRepository = repositoryMock.Object;
+            return this;
+        }
+
         public OrganisationControllerBuilder WithOrganisationRepository(IOrganisationRepository organisationRepository)
         {
             _organisationRepository = organisationRepository;

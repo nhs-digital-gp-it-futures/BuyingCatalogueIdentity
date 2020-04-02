@@ -209,5 +209,65 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             mockGetOrganisation.Verify(x => x.GetByIdAsync(expectedId), Times.Once);
         }
+
+        [Test]
+        public async Task UpdateOrganisationByIdAsync_UpdateOrganisation_ReturnsStatusNoContent()
+        {
+            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
+
+            var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationViewModel());
+
+            response.Should().BeOfType<NoContentResult>();
+        }
+
+        [Test]
+        public async Task UpdateOrganisationByIdAsync_UpdateOrganisation_ReturnsStatusNotFound()
+        {
+            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(null).Build();
+
+            var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationViewModel());
+
+            response.Should().BeEquivalentTo(new NotFoundResult());
+        }
+
+        [Test]
+        public async Task UpdateOrganisationByIdAsync_UpdateOrganisation_UpdatesCatalogueAgreementSigned()
+        {
+            var organisation = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(true).Build();
+
+            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(organisation).Build();
+
+            var response = await controller.UpdateOrganisationByIdAsync(organisation.OrganisationId, new UpdateOrganisationViewModel { CatalogueAgreementSigned = false });
+
+            response.Should().BeOfType<NoContentResult>();
+
+            organisation.CatalogueAgreementSigned.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task UpdateOrganisationByIdAsync_OrganisationRepository_UpdateAsync_And_GetByIdAsync_CalledOnce()
+        {
+            var repositoryMock = new Mock<IOrganisationRepository>();
+            repositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(new Organisation());
+            repositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Organisation>()));
+
+            using var controller = OrganisationControllerBuilder.Create().WithOrganisationRepository(repositoryMock.Object).Build();
+
+            await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationViewModel());
+
+            repositoryMock.Verify(x => x.UpdateAsync(
+                It.IsAny<Organisation>()), Times.Once);
+
+            repositoryMock.Verify(x => x.GetByIdAsync(
+                It.IsAny<Guid>()), Times.Once);
+        }
+
+        [Test]
+        public void UpdateOrganisationByIdAsync_NullUpdateViewModel_ThrowsException()
+        {
+            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
+
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await controller.UpdateOrganisationByIdAsync(Guid.Empty, null));
+        }
     }
 }
