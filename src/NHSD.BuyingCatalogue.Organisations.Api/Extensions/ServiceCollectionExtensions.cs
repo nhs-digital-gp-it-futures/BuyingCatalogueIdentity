@@ -37,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
                         smtp.ConnectionType = SmtpConnectionType.TLS;
                     },
                     "smtp",
-                    HealthStatus.Unhealthy,
+                    HealthStatus.Degraded,
                     new[] { HealthCheckTags.Ready },
                     TimeSpan.FromSeconds(10));
 

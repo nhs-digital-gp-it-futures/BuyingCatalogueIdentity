@@ -22,10 +22,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context["organisationBaseUrl"] = _settings.OrganisationApiBaseUrl;
         }
 
-        [Given(@"The (?:Smtp|Database) Server is (up|down)")]
-        public void GivenTheServerIsInState(string state)
+        [Given(@"The Database Server is (up|down)")]
+        public void GivenTheDatabaseServerIsInState(string state)
         {
-            _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenOrganisationApiBaseUrl;
+            _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenDbOrganisationApiBaseUrl;
+        }
+
+        [Given(@"The Smtp Server is (up|down)")]
+        public void GivenTheSmtpServerIsInState(string state)
+        {
+            _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenSmtpOrganisationApiBaseUrl;
         }
 
         [When(@"the dependency health-check endpoint is hit")]
