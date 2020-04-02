@@ -20,12 +20,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context = context;
             _settings = settings;
             _context["organisationBaseUrl"] = _settings.OrganisationApiBaseUrl;
+            _context["identityBaseUrl"] = _settings.IdentityApiBaseUrl;
         }
 
-        [Given(@"The Database Server is (up|down)")]
-        public void GivenTheDatabaseServerIsInState(string state)
+        [Given(@"The Database Server is (up|down) for OAPI")]
+        public void GivenTheOrganisationsDatabaseServerIsInState(string state)
         {
             _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenDbOrganisationApiBaseUrl;
+        }
+
+        [Given(@"The Database Server is (up|down) for ISAPI")]
+        public void GivenTheIdentityDatabaseServerIsInState(string state)
+        {
+            _context["identityBaseUrl"] = state == "up" ? _settings.IdentityApiBaseUrl : _settings.BrokenIdentityApiBaseUrl;
         }
 
         [Given(@"The Smtp Server is (up|down)")]
@@ -34,11 +41,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenSmtpOrganisationApiBaseUrl;
         }
 
-        [When(@"the dependency health-check endpoint is hit")]
-        public async Task WhenTheHealthCheckEndpointIsHit()
+        [When(@"the dependency health-check endpoint is hit for (ISAPI|OAPI)")]
+        public async Task WhenTheHealthCheckEndpointIsHit(string service)
         {
+            var baseUrl = service == "ISAPI" ? _context["identityBaseUrl"] : _context["organisationBaseUrl"];
             using var client = new HttpClient();
-            _response.Result = await client.GetAsync($"{_context["organisationBaseUrl"]}/health/ready");
+            _response.Result = await client.GetAsync($"{baseUrl}/health/ready");
         }
 
         [Then(@"the response will be (Healthy|Degraded|Unhealthy)")]
