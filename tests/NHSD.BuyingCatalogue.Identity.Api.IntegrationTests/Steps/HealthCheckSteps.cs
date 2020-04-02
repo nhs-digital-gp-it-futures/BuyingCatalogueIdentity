@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context["organisationBaseUrl"] = _settings.OrganisationApiBaseUrl;
         }
 
-        [Given(@"The Smtp|Database Server is (up|down)")]
+        [Given(@"The (?:Smtp|Database) Server is (up|down)")]
         public void GivenTheServerIsInState(string state)
         {
             _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenOrganisationApiBaseUrl;
