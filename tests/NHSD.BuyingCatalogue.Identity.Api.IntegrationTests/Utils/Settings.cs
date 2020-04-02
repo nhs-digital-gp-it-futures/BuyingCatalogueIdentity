@@ -10,7 +10,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 
         public string OrganisationApiBaseUrl { get; }
 
-        public string BrokenOrganisationApiBaseUrl { get; }
+        public string BrokenDbOrganisationApiBaseUrl { get; }
+
+        public string BrokenSmtpOrganisationApiBaseUrl { get; }
 
         public string SmtpServerApiBaseUrl { get; }
         
@@ -19,7 +21,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             AdminConnectionString = config.GetConnectionString("CatalogueUsersAdmin");
             ConnectionString = config.GetConnectionString("CatalogueUsers");
             OrganisationApiBaseUrl = config.GetValue<string>("OrganisationApiBaseUrl");
-            BrokenOrganisationApiBaseUrl = config.GetValue<string>("BrokenOrganisationApiBaseUrl");
+            BrokenDbOrganisationApiBaseUrl = config.GetValue<string>("BrokenDbOrganisationApiBaseUrl");
+            BrokenSmtpOrganisationApiBaseUrl = config.GetValue<string>("BrokenSmtpOrganisationApiBaseUrl");
             SmtpServerApiBaseUrl = config.GetValue<string>("SmtpServerApiBaseUrl");
         }
     }
