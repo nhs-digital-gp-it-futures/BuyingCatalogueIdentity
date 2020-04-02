@@ -68,22 +68,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             errorElements.First().Text.Should().Be(value);
         }
 
-        [Then(@"the page contains an email address error with text (.*)")]
-        public void ThenThePageContainsEmailAddressErrorWithText(string value)
-        {
-            var emailGroup = _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=field-email-address]"));
-            var errorElement = emailGroup.FindElement(By.ClassName("field-validation-error"));
-            errorElement.Text.Should().Be(value);
-        }
-
-        [Then(@"the page contains a password error with text (.*)")]
-        public void ThenThePageContainsPasswordErrorWithText(string value)
-        {
-            var passwordGroup = _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=password-field]"));
-            var errorElement = passwordGroup.FindElement(By.ClassName("field-validation-error"));
-            errorElement.Text.Should().Be(value);
-        }
-
         [Given(@"a user has successfully logged in with email address (.*) and password (.*)")]
         public void GivenAUserHasLoggedIn(string email, string password)
         {

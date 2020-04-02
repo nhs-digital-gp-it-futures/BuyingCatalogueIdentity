@@ -20,10 +20,11 @@ Scenario: 2. Entering an invalid email address gives the user a relevant error m
     When element with Data ID input-email-address is populated with not.an.email.address
     And element with Data ID submit-button is clicked
     Then the user is redirected to page identity/account/forgotpassword
-    And the page contains an email address error with text Enter an email address in the correct format, like name@example.com
+    And the element with Data ID field-email-address has validation error with text Enter an email address in the correct format, like name@example.com
 
 @3926
 Scenario: 3. Entering no email address gives the user a relevant error message
     When element with Data ID submit-button is clicked
     Then the user is redirected to page identity/account/forgotpassword
-    And the page contains an email address error with text Enter an email address
+    And the element with Data ID field-email-address has validation error with text Enter an email address
+
