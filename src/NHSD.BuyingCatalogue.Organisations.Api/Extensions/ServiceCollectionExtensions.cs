@@ -1,0 +1,41 @@
+﻿using System;
+using HealthChecks.Network.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
+using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+
+namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
+{
+    internal static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection RegisterHealthChecks(this IServiceCollection services, string connectionString, SmtpSettings smtpSettings)
+        {
+            services.AddHealthChecks()
+                .AddCheck(
+                    "self",
+                    () => HealthCheckResult.Healthy(),
+                    new[] { HealthCheckTags.Live })
+                .AddSqlServer(
+                    connectionString,
+                    "SELECT 1;",
+                    "db",
+                    HealthStatus.Unhealthy,
+                    new[] { HealthCheckTags.Ready },
+                    TimeSpan.FromSeconds(10))
+                .AddSmtpHealthCheck(
+                    smtp =>
+                    {
+                        smtp.Host = smtpSettings.Host;
+                        smtp.Port = smtpSettings.Port;
+                        smtp.ConnectionType = SmtpConnectionType.TLS;
+                    },
+                    "smtp",
+                    HealthStatus.Unhealthy,
+                    new[] { HealthCheckTags.Ready },
+                    TimeSpan.FromSeconds(10));
+
+            return services;
+        }
+    }
+}

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
+using NHSD.BuyingCatalogue.Organisations.Api.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
@@ -37,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-        	var connectionString = Configuration.GetConnectionString("CatalogueUsers");
+            var connectionString = Configuration.GetConnectionString("CatalogueUsers");
             var authority = Configuration.GetValue<string>("authority");
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
@@ -50,7 +51,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IUsersRepository, UsersRepository>();
 
- 			services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
+            services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -61,6 +62,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddTransient<IEmailService, MailKitEmailService>()
                 .AddTransient<IRegistrationService, RegistrationService>()
                 .AddTransient<ICreateBuyerService, CreateBuyerService>();
+
+            services.RegisterHealthChecks(connectionString, smtpSettings);
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
@@ -77,30 +80,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                         };
                     }
                 });
-
-            services.AddHealthChecks()
-                .AddCheck(
-                    "self",
-                    () => HealthCheckResult.Healthy(),
-                    new[] { HealthCheckTags.Live })
-                .AddSqlServer(
-                    connectionString,
-                    "SELECT 1;",
-                    "db",
-                    HealthStatus.Unhealthy,
-                    new[] { HealthCheckTags.Ready },
-                    TimeSpan.FromSeconds(10))
-                .AddSmtpHealthCheck(
-                    smtp =>
-                    {
-                        smtp.Host = smtpSettings.Host;
-                        smtp.Port = smtpSettings.Port;
-                        smtp.ConnectionType = SmtpConnectionType.TLS;
-                    },
-                    "smtp", 
-                    HealthStatus.Unhealthy,
-                    new[] { HealthCheckTags.Ready }, 
-                    TimeSpan.FromSeconds(10));
 
             services.AddControllers()
                 .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
