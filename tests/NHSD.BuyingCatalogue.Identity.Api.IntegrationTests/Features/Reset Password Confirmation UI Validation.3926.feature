@@ -15,9 +15,8 @@ Scenario: 1. The NHS Header is displayed correctly
 
 @3926
 Scenario: 2. The Back to log in link displays correctly
-	Then the page contains element with Data ID back-to-login
-	And element with Data ID back-to-login has tag a
-	And element with Data ID back-to-login has text < Back to log in
+	Then the page contains element with Data ID go-back-link
+	And element with Data ID go-back-link contains a link to identity/account/login with text < Back to log in
 
 @3926
 Scenario: 3. The Reset Password Confirmation page title is displayed correctly

@@ -27,17 +27,17 @@ Scenario: 3. The Reset Password page description is displayed correctly
 
 @3926
 Scenario: 4. The Password input element is displayed correctly
-	Then the page contains element with Data ID reset-password
-	And element with Data ID reset-password has tag input
-	And element with Data ID reset-password is of type password
-	And element with Data ID reset-password has label with text Enter a password
+	Then the page contains element with Data ID input-reset-password
+	And element with Data ID input-reset-password has tag input
+	And element with Data ID input-reset-password is of type password
+	And element with Data ID input-reset-password has label with text Enter a password
 
 @3926
 Scenario: 5. The confirm Reset Password input element is displayed correctly
-	Then the page contains element with Data ID confirm-reset-password
-	And element with Data ID confirm-reset-password has tag input
-	And element with Data ID confirm-reset-password is of type password
-	And element with Data ID confirm-reset-password has label with text Confirm password
+	Then the page contains element with Data ID input-confirm-reset-password
+	And element with Data ID input-confirm-reset-password has tag input
+	And element with Data ID input-confirm-reset-password is of type password
+	And element with Data ID input-confirm-reset-password has label with text Confirm password
 
 @3926
 Scenario: 6. The Reset Password button is displayed correctly

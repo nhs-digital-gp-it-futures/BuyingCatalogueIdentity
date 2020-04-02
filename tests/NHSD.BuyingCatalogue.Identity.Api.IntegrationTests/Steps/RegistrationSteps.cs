@@ -7,10 +7,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class RegistrationSteps
     {
-        private IConfigurationRoot _configuration { get; }
+        private IConfiguration _configuration { get; }
         private readonly SeleniumContext _seleniumContext;
 
-        public RegistrationSteps(IConfigurationRoot configuration, SeleniumContext seleniumContext)
+        public RegistrationSteps(IConfiguration configuration, SeleniumContext seleniumContext)
         {
             _configuration = configuration;
             _seleniumContext = seleniumContext;
