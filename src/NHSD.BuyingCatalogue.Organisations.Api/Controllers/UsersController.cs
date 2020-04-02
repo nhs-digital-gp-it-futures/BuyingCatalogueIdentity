@@ -78,9 +78,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             return Ok(response);
         }
 
-        [Route("users/{userId}")]
+        [Route("api/v1/users/{userId}")]
         [HttpGet]
-        public async Task<ActionResult> GetUserById(string userId)
+        public async Task<ActionResult<GetUser>> GetUserById(string userId)
         {
             var user = await _usersRepository.GetUserById(userId);
 
@@ -89,7 +89,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            var userViewModel = new GetUserViewModel()
+            var getUser = new GetUser
             {
                 Name = $"{user.FirstName} {user.LastName}",
                 PhoneNumber = user.PhoneNumber,
@@ -98,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 PrimaryOrganisationId = user.PrimaryOrganisationId
             };
 
-            return Ok(userViewModel);
+            return Ok(getUser);
         }
     }
 }

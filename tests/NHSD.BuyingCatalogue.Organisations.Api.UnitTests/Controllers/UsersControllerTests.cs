@@ -183,26 +183,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task GetUserById_WithExistingUserId_ReturnsOkayObjectResult()
+        public async Task GetUserById_WithExistingUserId_ReturnsTheUser()
         {
             var context = UsersControllerTestContext.Setup();
-            context.GetUserById = ApplicationUserBuilder.Create().BuildBuyer();
+            context.User = ApplicationUserBuilder.Create().BuildBuyer();
 
-            var expected = new GetUserViewModel
+            var expected = new GetUser
             {
-                Name = context.GetUserById.FirstName + " " + context.GetUserById.LastName,
-                PhoneNumber = context.GetUserById.PhoneNumber,
-                EmailAddress = context.GetUserById.Email,
-                Disabled = context.GetUserById.Disabled,
-                PrimaryOrganisationId = context.GetUserById.PrimaryOrganisationId
+                Name = context.User.FirstName + " " + context.User.LastName,
+                PhoneNumber = context.User.PhoneNumber,
+                EmailAddress = context.User.Email,
+                Disabled = context.User.Disabled,
+                PrimaryOrganisationId = context.User.PrimaryOrganisationId
             };
 
             using var controller = context.Controller;
 
-            var result = await controller.GetUserById(context.GetUserById.Id) as OkObjectResult;
-            var user = result.Value as GetUserViewModel;
-
-            user.Should().BeEquivalentTo(expected);
+            var result = await controller.GetUserById(context.User.Id);
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var objectResult = result.Result as OkObjectResult;
+            objectResult.Value.Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -213,7 +213,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             using var controller = context.Controller;
 
             var result = await controller.GetUserById(string.Empty);
-            result.Should().BeOfType<NotFoundResult>();
+            result.Result.Should().BeOfType<NotFoundResult>();
         }
 
         [Test]

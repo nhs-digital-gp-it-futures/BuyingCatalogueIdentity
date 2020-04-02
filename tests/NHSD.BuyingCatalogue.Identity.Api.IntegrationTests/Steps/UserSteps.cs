@@ -108,8 +108,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public async Task WhenAGETRequestIsMadeForAUserWithId(string userId)
         {
             using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-            _response.Result = await client.GetAsync(new Uri($"{_settings.OrganisationApiBaseUrl}/users/{userId}"));
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
+            _response.Result = await client.GetAsync(new Uri($"{_settings.OrganisationApiBaseUrl}/api/v1/users/{userId}"));
         }
 
         [Then(@"a user is returned with the following values")]
@@ -121,7 +121,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             expected.PrimaryOrganisationId = organisationId;
 
-            var response = (await _response.ReadBody());
+            var response = await _response.ReadBody();
 
             var actual = new ExpectedGetUserTable
             {

@@ -25,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
             UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
 
             Controller = new UsersController(CreateBuyerServiceMock.Object, UsersRepositoryMock.Object);
-            UsersRepositoryMock.Setup(x => x.GetUserById(It.IsAny<string>())).ReturnsAsync(() => GetUserById);
+            UsersRepositoryMock.Setup(x => x.GetUserById(It.IsAny<string>())).ReturnsAsync(() => User);
 
         }
 		public Mock<ICreateBuyerService> CreateBuyerServiceMock { get; set; }
@@ -37,8 +37,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
         public IEnumerable<ApplicationUser> Users { get; set; }
 
         public UsersController Controller { get; set; }
-        
-        public ApplicationUser GetUserById { get; set; }
+
+        public ApplicationUser User { get; set; }
 
         internal static UsersControllerTestContext Setup()
         {
