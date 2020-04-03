@@ -13,6 +13,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         Task CreateUserAsync(ApplicationUser user);
 
-        Task<ApplicationUser> GetUserById(string userId);
+        Task<ApplicationUser> GetUserByIdAsync(string userId);
+
+        Task UpdateAsync(ApplicationUser user);
     }
 }

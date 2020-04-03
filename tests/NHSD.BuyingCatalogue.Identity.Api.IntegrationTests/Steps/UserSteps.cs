@@ -135,6 +135,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actual.Should().BeEquivalentTo(expected, options => options.Excluding(user => user.OrganisationName));
         }
 
+        [When(@"a POST request is made to (disable|enable) user (.*)")]
+        public async Task WhenAPOSTRequestIsMadeToChangeTheUsersState(string request, string userId)
+        {
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
+            _response.Result = await client.PostAsync(new Uri($"{_settings.OrganisationApiBaseUrl}/api/v1/users/{userId}/{request}"), null);
+        }
+        
         private static string GenerateHash(string password)
         {
             const int identityVersion = 1; // 1 = Identity V3
