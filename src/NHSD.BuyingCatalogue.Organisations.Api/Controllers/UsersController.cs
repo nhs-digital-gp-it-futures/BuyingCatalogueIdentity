@@ -91,7 +91,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             var getUser = new GetUser
             {
-                Name = $"{user.FirstName} {user.LastName}",
+                Name = user.DisplayName,
                 PhoneNumber = user.PhoneNumber,
                 EmailAddress = user.Email,
                 Disabled = user.Disabled,
