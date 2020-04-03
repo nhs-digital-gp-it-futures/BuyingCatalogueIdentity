@@ -8,11 +8,11 @@ using MailKit;
 using MailKit.Security;
 using MimeKit;
 using Moq;
-using NHSD.BuyingCatalogue.Organisations.Api.Services;
-using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Common.Email;
+using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using NUnit.Framework;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
+namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]

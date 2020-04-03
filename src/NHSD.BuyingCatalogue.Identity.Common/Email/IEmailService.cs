@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Services
+namespace NHSD.BuyingCatalogue.Identity.Common.Email
 {
     /// <summary>
     /// Defines operations for sending e-mails.
     /// </summary>
-    internal interface IEmailService
+    public interface IEmailService
     {
         /// <summary>
         /// Sends an e-mail message asynchronously.

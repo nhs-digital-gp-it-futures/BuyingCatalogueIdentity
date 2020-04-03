@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using NUnit.Framework;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Settings
+namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Settings
 {
     [TestFixture]
     internal sealed class SmtpSettingsTests

@@ -2,14 +2,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using MailKit;
-using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Common.Settings;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Services
+namespace NHSD.BuyingCatalogue.Identity.Common.Email
 {
     /// <summary>
     /// A service for sending e-mails using MailKit.
     /// </summary>
-    internal sealed class MailKitEmailService : IEmailService
+    public sealed class MailKitEmailService : IEmailService
     {
         private readonly IMailTransport _client;
         private readonly SmtpSettings _settings;

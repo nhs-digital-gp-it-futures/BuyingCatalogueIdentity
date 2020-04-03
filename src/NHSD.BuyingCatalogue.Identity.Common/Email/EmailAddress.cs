@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Services
+namespace NHSD.BuyingCatalogue.Identity.Common.Email
 {
     /// <summary>
     /// An e-mail address.
     /// </summary>
-    internal sealed class EmailAddress
+    public sealed class EmailAddress
     {
-        private string _address;
+        private string? _address;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailAddress"/> class.
@@ -23,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         /// <param name="displayName">An optional display name.</param>
         /// <param name="address"></param>
-        internal EmailAddress(string displayName, string address)
+        public EmailAddress(string displayName, string address)
         {
             DisplayName = displayName;
             Address = address;
@@ -34,14 +34,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         /// <remarks>An optional display name, for example
         /// Buying Catalogue Team.</remarks>
-        public string DisplayName { get; set; }
+        public string? DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the actual e-mail address.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langref="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="value"/> is empty or white space.</exception>
-        public string Address
+        public string? Address
         {
             get => _address;
             set

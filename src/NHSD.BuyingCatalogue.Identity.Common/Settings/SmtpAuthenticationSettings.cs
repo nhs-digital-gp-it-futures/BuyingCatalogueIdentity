@@ -1,9 +1,9 @@
-﻿namespace NHSD.BuyingCatalogue.Organisations.Api.Settings
+﻿namespace NHSD.BuyingCatalogue.Identity.Common.Settings
 {
     /// <summary>
     /// SMTP authentication settings.
     /// </summary>
-    internal sealed class SmtpAuthenticationSettings
+    public sealed class SmtpAuthenticationSettings
     {
         /// <summary>
         /// Gets or sets a value indicating whether the SMTP server requires authentication.
@@ -13,11 +13,11 @@
         /// <summary>
         /// Gets or sets the user name to authenticate with.
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         /// <summary>
         /// Gets or sets the password for authentication.
         /// </summary>
-        public string Password { get; set; }
+        public string? Password { get; set; }
     }
 }

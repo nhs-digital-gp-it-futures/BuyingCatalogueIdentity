@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Common", "src\NHSD.BuyingCatalogue.Identity.Common\NHSD.BuyingCatalogue.Identity.Common.csproj", "{FC020EEB-60F3-456C-B206-0FB8B357790A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Common.UnitTests", "tests\NHSD.BuyingCatalogue.Identity.Common.UnitTests\NHSD.BuyingCatalogue.Identity.Common.UnitTests.csproj", "{C7801439-A853-47A4-81A2-71016B443982}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,10 @@ Global
 		{FC020EEB-60F3-456C-B206-0FB8B357790A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC020EEB-60F3-456C-B206-0FB8B357790A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC020EEB-60F3-456C-B206-0FB8B357790A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7801439-A853-47A4-81A2-71016B443982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7801439-A853-47A4-81A2-71016B443982}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7801439-A853-47A4-81A2-71016B443982}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7801439-A853-47A4-81A2-71016B443982}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{22FF755F-4D13-469F-AC26-07A9FC738899} = {33728341-9F25-493F-942A-8766990C2F9A}
 		{3EE9F379-F890-4E7E-93F1-D0FCF11BEA57} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
 		{FC020EEB-60F3-456C-B206-0FB8B357790A} = {33728341-9F25-493F-942A-8766990C2F9A}
+		{C7801439-A853-47A4-81A2-71016B443982} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A081915E-3D8B-4509-9F67-1971797275B2}
