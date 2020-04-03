@@ -77,16 +77,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             foreach (var model in orderedStates)
             {
                 var redirectAttribute = ViewContext.ViewData.Model.GetType().GetProperty(model.Key)
-                    ?.GetCustomAttributes<SummaryRedirectAttribute>().FirstOrDefault();
-                
+                    ?.GetCustomAttributes<SummaryAnchorAttribute>().FirstOrDefault();
+
+                var redirect = redirectAttribute?.Link ?? model.Key;
+
                 foreach (var error in model.Value.Errors)
                 {
-                    var redirect = model.Key;
-                    if (redirectAttribute != null)
-                    {
-                        redirect = redirectAttribute.Link;
-                    }
-
                     var listItem = GetListItemBuilder(redirect, error.ErrorMessage);
                     builder.InnerHtml.AppendHtml(listItem);
                 }

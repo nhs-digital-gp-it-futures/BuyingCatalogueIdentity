@@ -18,7 +18,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 
         public Uri ReturnUrl { get; set; }
 
-        [SummaryRedirect(Link = "EmailAddress")]
+        [SummaryAnchor(Link = nameof(EmailAddress))]
         public string LoginError { get; set; }
 
         internal static class ErrorMessages

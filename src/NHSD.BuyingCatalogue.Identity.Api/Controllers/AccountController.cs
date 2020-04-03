@@ -55,7 +55,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
             if (!signInResult.IsSuccessful)
             {
-                ModelState.AddModelError("LoginError", SignInErrorMessage);
+                ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
                 return View(NewLoginViewModel());
             }
 

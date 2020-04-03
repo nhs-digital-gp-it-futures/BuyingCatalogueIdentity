@@ -36,15 +36,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a login request is made with email address (.*) and password (.*)")]
         public void WhenALoginRequestIsMade(string emailAddress, string password)
         {
-            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id=input-email-address]")).SendKeys(emailAddress);
-            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id=input-password]")).SendKeys(password);
+            _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=input-email-address]")).SendKeys(emailAddress);
+            _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=input-password]")).SendKeys(password);
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
         [When(@"a login request is made with email address (.*) and no password")]
         public void WhenALoginRequestIsMadeWithNoPassword(string emailAddress)
         {
-            _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id=input-email-address]")).SendKeys(emailAddress);
+            _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=input-email-address]")).SendKeys(emailAddress);
             _seleniumContext.WebDriver.FindElement(By.TagName("form")).Submit();
         }
 
