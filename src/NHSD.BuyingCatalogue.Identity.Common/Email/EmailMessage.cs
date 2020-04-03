@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Services
+namespace NHSD.BuyingCatalogue.Identity.Common.Email
 {
     /// <summary>
     /// An e-mail message.
     /// </summary>
-    internal sealed class EmailMessage
+    public sealed class EmailMessage
     {
         /// <summary>
         /// The placeholder to use in any body text that will be replaced by the URL
@@ -13,8 +13,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// </summary>
         internal const string ResetPasswordLinkPlaceholder = "[ResetPasswordLink]";
 
-        private EmailAddress _sender;
-        private EmailAddress _recipient;
+        private EmailAddress? _sender;
+        private EmailAddress? _recipient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailMessage"/> class.
@@ -34,22 +34,28 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// the sender, subject and bodies of the <paramref name="message"/> parameter.
         /// Any password reset placeholders (<see cref="ResetPasswordLinkPlaceholder"/> will
         /// be replaced by the value of <paramref name="passwordResetUrl"/>.</remarks>
-        internal EmailMessage(EmailMessage message, Uri passwordResetUrl)
+        public EmailMessage(EmailMessage message, Uri passwordResetUrl)
         {
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+
+            if (passwordResetUrl is null)
+                throw new ArgumentNullException(nameof(passwordResetUrl));
+
             Sender = message.Sender;
             Subject = message.Subject;
 
             var passwordResetLink = passwordResetUrl.ToString();
 
-            HtmlBody = message.HtmlBody.Replace(ResetPasswordLinkPlaceholder, passwordResetLink, StringComparison.Ordinal);
-            TextBody = message.TextBody.Replace(ResetPasswordLinkPlaceholder, passwordResetLink, StringComparison.Ordinal);
+            HtmlBody = message.HtmlBody?.Replace(ResetPasswordLinkPlaceholder, passwordResetLink, StringComparison.Ordinal);
+            TextBody = message.TextBody?.Replace(ResetPasswordLinkPlaceholder, passwordResetLink, StringComparison.Ordinal);
         }
 
         /// <summary>
         /// Gets or sets the sender (from address) of the message.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langref="null"/>.</exception>
-        public EmailAddress Sender
+        public EmailAddress? Sender
         {
             get => _sender;
             set => _sender = value ?? throw new ArgumentNullException(nameof(value));
@@ -58,23 +64,23 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         /// <summary>
         /// Gets or sets the subject of the message.
         /// </summary>
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the HTML version of the body.
         /// </summary>
-        public string HtmlBody { get; set; }
+        public string? HtmlBody { get; set; }
 
         /// <summary>
         /// Gets or sets the plain text version of the body.
         /// </summary>
-        public string TextBody { get; set; }
+        public string? TextBody { get; set; }
 
         /// <summary>
         /// Gets or sets the recipient (to address) of the message.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langref="null"/>.</exception>
-        internal EmailAddress Recipient
+        public EmailAddress? Recipient
         {
             get => _recipient;
             set => _recipient = value ?? throw new ArgumentNullException(nameof(value));

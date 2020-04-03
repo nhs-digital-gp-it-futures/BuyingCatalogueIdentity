@@ -1,8 +1,8 @@
 ﻿using MimeKit;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Services
+namespace NHSD.BuyingCatalogue.Identity.Common.Email
 {
-    internal static class MimeKitExtensions
+    public static class MimeKitExtensions
     {
         /// <summary>
         /// Returns the receiver as a <see cref="MailboxAddress"/>.
@@ -31,8 +31,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
                 Body = bodyBuilder.ToMessageBody(),
             };
 
-            message.From.Add(emailMessage.Sender.AsMailboxAddress());
-            message.To.Add(emailMessage.Recipient.AsMailboxAddress());
+            message.From.Add(emailMessage.Sender?.AsMailboxAddress());
+            message.To.Add(emailMessage.Recipient?.AsMailboxAddress());
 
             return message;
         }

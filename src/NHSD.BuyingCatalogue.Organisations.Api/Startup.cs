@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
+using NHSD.BuyingCatalogue.Identity.Common.Email;
+using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
 using NHSD.BuyingCatalogue.Organisations.Api.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;

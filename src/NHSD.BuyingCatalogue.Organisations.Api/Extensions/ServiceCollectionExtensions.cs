@@ -3,7 +3,7 @@ using HealthChecks.Network.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
-using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Common.Settings;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
 {
@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
             if (connectionString is null)
                 throw new ArgumentNullException(nameof(connectionString));
 
-            if (smtpSettings is null) 
+            if (smtpSettings is null)
                 throw new ArgumentNullException(nameof(smtpSettings));
 
             services.AddHealthChecks()

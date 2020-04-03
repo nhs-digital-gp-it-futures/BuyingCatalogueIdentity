@@ -2,10 +2,10 @@
 using System.Linq;
 using FluentAssertions;
 using MimeKit;
-using NHSD.BuyingCatalogue.Organisations.Api.Services;
+using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NUnit.Framework;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
+namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]

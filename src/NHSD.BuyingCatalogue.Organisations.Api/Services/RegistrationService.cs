@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 

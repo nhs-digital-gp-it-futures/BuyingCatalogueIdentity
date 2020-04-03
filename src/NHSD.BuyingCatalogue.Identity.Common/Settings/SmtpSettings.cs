@@ -1,9 +1,9 @@
-﻿namespace NHSD.BuyingCatalogue.Organisations.Api.Settings
+﻿namespace NHSD.BuyingCatalogue.Identity.Common.Settings
 {
     /// <summary>
     /// SMTP server settings.
     /// </summary>
-    internal sealed class SmtpSettings
+    public sealed class SmtpSettings
     {
         /// <summary>
         /// Gets or sets the authentication settings for the SMTP server.
@@ -13,7 +13,7 @@
         /// <summary>
         /// Gets or sets the host name of the SMTP server.
         /// </summary>
-        public string Host { get; set; }
+        public string? Host { get; set; }
 
         /// <summary>
         /// Gets or sets the port to use to connect to the SMTP server.

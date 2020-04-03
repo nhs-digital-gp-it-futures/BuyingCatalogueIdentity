@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;

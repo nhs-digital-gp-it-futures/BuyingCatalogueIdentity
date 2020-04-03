@@ -1,4 +1,4 @@
-﻿using NHSD.BuyingCatalogue.Organisations.Api.Services;
+﻿using NHSD.BuyingCatalogue.Identity.Common.Email;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Settings
 {
