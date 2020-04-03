@@ -14,13 +14,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
+        private readonly IPasswordService passwordService;
 
         public AccountController(
             ILoginService loginService,
-            ILogoutService logoutService)
+            ILogoutService logoutService,
+            IPasswordService passwordService)
         {
             _loginService = loginService;
             _logoutService = logoutService;
+            this.passwordService = passwordService;
         }
 
         [HttpGet]
@@ -98,7 +101,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ForgotPassword(ForgotPasswordViewModel viewModel)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
         {
             viewModel.ThrowIfNull(nameof(viewModel));
 
@@ -106,6 +109,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             {
                 return View(viewModel);
             }
+
+            var resetToken = await passwordService.GeneratePasswordResetTokenAsync(viewModel.EmailAddress);
+            if (resetToken == null)
+                return RedirectToAction(nameof(ForgotPasswordLinkSent));
+
+            var callback = Url.Action(
+                nameof(ResetPassword),
+                nameof(AccountController),
+                new { resetToken.Token, viewModel.EmailAddress },
+                Request.Scheme);
+
+            await passwordService.SendResetEmailAsync(resetToken.User, callback);
 
             return RedirectToAction(nameof(ForgotPasswordLinkSent));
         }
@@ -115,7 +130,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             return View();
         }
-        
+
         [HttpGet]
         public IActionResult ResetPassword()
         {
@@ -127,12 +142,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         public IActionResult ResetPassword(ResetPasswordViewModel viewModel)
         {
             viewModel.ThrowIfNull(nameof(viewModel));
-            
+
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
             }
-            
+
             return RedirectToAction(nameof(ResetPasswordConfirmation));
         }
 

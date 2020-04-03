@@ -9,11 +9,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
     {
         private ILoginService _loginService;
         private ILogoutService _logoutService;
+        private IPasswordService _passwordService;
 
         internal AccountControllerBuilder()
         {
             _loginService = Mock.Of<ILoginService>();
             _logoutService = Mock.Of<ILogoutService>();
+            _passwordService = Mock.Of<IPasswordService>();
         }
 
         internal AccountControllerBuilder WithLogoutService(ILogoutService logoutService)
@@ -35,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         internal AccountController Build()
         {
-            return new AccountController(_loginService, _logoutService);
+            return new AccountController(_loginService, _logoutService, _passwordService);
         }
     }
 }
