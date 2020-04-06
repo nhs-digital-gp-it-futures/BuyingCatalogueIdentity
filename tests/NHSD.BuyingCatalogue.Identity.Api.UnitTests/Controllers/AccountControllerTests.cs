@@ -352,5 +352,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             Assert.NotNull(result);
             result.ActionName.Should().Be(nameof(AccountController.ForgotPasswordLinkSent));
         }
+
+        [Test]
+        public void ResetPassword_String_String_ReturnsExpectedView()
+        {
+            const string email = "a@b.test";
+            const string expectedToken = "TokenMcToken";
+
+            using var controller = new AccountControllerBuilder().Build();
+
+            var result = controller.ResetPassword(email, expectedToken) as ViewResult;
+            Assert.NotNull(result);
+
+            var model = result.Model as ResetPasswordViewModel;
+            Assert.NotNull(model);
+
+            model.Email.Should().Be(email);
+            model.Token.Should().Be(expectedToken);
+        }
     }
 }

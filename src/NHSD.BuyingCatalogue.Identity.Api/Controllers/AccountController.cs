@@ -132,9 +132,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult ResetPassword()
+        public IActionResult ResetPassword(string email, string token)
         {
-            return View();
+            return View(new ResetPasswordViewModel { Email = email, Token = token });
         }
 
         [HttpPost]
