@@ -39,6 +39,9 @@ services:
       - CLIENTS__1__POSTLOGOUTREDIRECTURLS__1=http://host.docker.internal:8072/signout-callback-oidc
       - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
       - ISSUERURL=http://host.docker.internal:8070/identity
+      - SmtpServer__Host=nhsd.buyingcatalogue.email
+      - SmtpServer__Port=587
+      - AllowInvalidCertificate=True
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
     entrypoint: 
