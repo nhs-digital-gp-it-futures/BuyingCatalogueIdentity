@@ -21,3 +21,9 @@ services:
     container_name: identity_api_user_db
     build: 
       context: src/NHSD.BuyingCatalogue.Identity.UserDatabase
+
+  nhsd.buyingcatalogue.email:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/smtp-server:${TAG:-latest}
+    container_name: smtp_server
+    build: 
+      context: src/NHSD.BuyingCatalogue.Smtp
