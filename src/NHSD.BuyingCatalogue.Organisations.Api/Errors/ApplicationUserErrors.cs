@@ -29,6 +29,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Errors
             return new ErrorMessage("PhoneNumberRequired", nameof(ApplicationUser.PhoneNumber));
         }
 
+        public static ErrorMessage PhoneNumberTooLong()
+        {
+            return new ErrorMessage("PhoneNumberTooLong", nameof(ApplicationUser.PhoneNumber));
+        }
+
         public static ErrorMessage EmailRequired()
         {
             return new ErrorMessage("EmailRequired", "EmailAddress");

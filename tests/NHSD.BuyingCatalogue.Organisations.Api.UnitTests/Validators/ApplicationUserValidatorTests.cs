@@ -72,8 +72,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
             actual.Should().Be(expected);
         }
 
-        [TestCase("", "PhoneNumberRequired")]
-        [TestCase("  ", "PhoneNumberRequired")]
+        [TestCaseSource(typeof(TestContextTestCaseData), nameof(TestContextTestCaseData.InvalidPhoneNumberCases))]
         public async Task ValidateAsync_WithPhoneNumber_ReturnsFailure(string input, params string[] errorMessageIds)
         {
             var context = ApplicationUserValidatorTestContext.Setup();
@@ -159,6 +158,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 
     internal class TestContextTestCaseData
     {
+        internal static IEnumerable<TestCaseData> InvalidPhoneNumberCases
+        {
+            get
+            {
+                yield return new TestCaseData("", new[] { "PhoneNumberRequired" });
+                yield return new TestCaseData("  ", new[] { "PhoneNumberRequired" });
+                yield return new TestCaseData(new string('p', 36), new[] { "PhoneNumberTooLong" });
+            }
+        }
+
         internal static IEnumerable<TestCaseData> InvalidEmailTestCases
         {
             get
