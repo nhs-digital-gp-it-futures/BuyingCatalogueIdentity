@@ -23,14 +23,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// <param name="emailService">The service to use to send e-mails.</param>
         /// <param name="settings">The configured password reset settings.</param>
         /// <param name="userManager">The Identity framework user manager.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="emailService"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="settings"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="userManager"/> is <see langref="null"/>.</exception>
         public PasswordService(
             IEmailService emailService,
             PasswordResetSettings settings,
             UserManager<ApplicationUser> userManager)
         {
-            _emailService = emailService;
-            _settings = settings;
-            _userManager = userManager;
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
         /// <summary>
@@ -66,10 +69,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// the password reset.</param>
         /// <returns>An asynchronous task context.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="user"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="callback"/> is empty or white space.</exception>
         public async Task SendResetEmailAsync(ApplicationUser user, string callback)
         {
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
+
+            if (callback is null)
+                throw new ArgumentNullException(nameof(callback));
+
+            if (string.IsNullOrWhiteSpace(callback))
+                throw new ArgumentException($"{callback} must be provided", nameof(callback));
 
             var message = new EmailMessage(_settings.EmailMessage, new Uri(callback))
             {

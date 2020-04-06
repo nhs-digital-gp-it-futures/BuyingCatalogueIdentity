@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +25,39 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         null,
         null,
         null);
+
+        [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Constructor exception testing")]
+        public void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullEmailService_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new PasswordService(
+                    null,
+                    new PasswordResetSettings(),
+                    MockUserManager.Object));
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Constructor exception testing")]
+        public void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullSettings_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new PasswordService(
+                    Mock.Of<IEmailService>(),
+                    null,
+                    MockUserManager.Object));
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Constructor exception testing")]
+        public void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullUserManager_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new PasswordService(
+                    Mock.Of<IEmailService>(),
+                    new PasswordResetSettings(),
+                    null));
+        }
 
         [Test]
         public void GeneratePasswordResetTokenAsync_NullEmailAddress_ThrowsException()
@@ -112,6 +146,39 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(SendResetEmailAsync);
+        }
+
+        [Test]
+        public void SendResetEmailAsync_NullCallback_ThrowsException()
+        {
+            static async Task SendResetEmailAsync()
+            {
+                var service = new PasswordService(
+                    Mock.Of<IEmailService>(),
+                    new PasswordResetSettings(),
+                    MockUserManager.Object);
+
+                await service.SendResetEmailAsync(new ApplicationUser(), null);
+            }
+
+            Assert.ThrowsAsync<ArgumentNullException>(SendResetEmailAsync);
+        }
+
+        [TestCase("")]
+        [TestCase("\t")]
+        public void SendResetEmailAsync_EmptyOrWhiteSpaceCallback_ThrowsException(string callback)
+        {
+            async Task SendResetEmailAsync()
+            {
+                var service = new PasswordService(
+                    Mock.Of<IEmailService>(),
+                    new PasswordResetSettings(),
+                    MockUserManager.Object);
+
+                await service.SendResetEmailAsync(new ApplicationUser(), callback);
+            }
+
+            Assert.ThrowsAsync<ArgumentException>(SendResetEmailAsync);
         }
 
         [Test]
