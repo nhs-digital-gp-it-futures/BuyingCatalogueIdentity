@@ -13,14 +13,34 @@ Background:
 		| 123456 | Organisation 1   | Post      | Pat      | PostmanPat@email.com | 12345678901 | false    | An0therPa$$w0rd | Authority            |
 
 @5447
-Scenario: 1. Get the claims of a user who provides no scope
+Scenario: 1. Null scope yields the expected claims
 	Given a user is logged in
 		| Username            | Password     | Scope |
 		| PennyLane@email.com | S0mePa$$w0rd | NULL  |
+	And the claims contains the following information
+		| ClaimType            | ClaimValue          |
+		| client_id            | PasswordClient      |
+		| sub                  | 012345              |
+		| idp                  | local               |
+		| preferred_username   | PennyLane@email.com |
+		| unique_name          | PennyLane@email.com |
+		| given_name           | Penny               |
+		| family_name          | Lane                |
+		| name                 | Penny Lane          |
+		| email                | PennyLane@email.com |
+		| email_verified       | true                |
+		| organisationFunction | Buyer               |
+		| scope                | profile             |
+
+@5447
+Scenario: 2. Unknown scope yields no access token
+	Given a user is logged in
+		| Username            | Password     | Scope   |
+		| PennyLane@email.com | S0mePa$$w0rd | Unknown |
 	Then the access token should be empty
 
 @5447
-Scenario: 2. Get the claims of a buyer user
+Scenario: 3. Get the claims of a buyer user
 	Given a user is logged in
 		| Username            | Password     | Scope   |
 		| PennyLane@email.com | S0mePa$$w0rd | profile |
@@ -40,7 +60,7 @@ Scenario: 2. Get the claims of a buyer user
 		| scope                | profile             |
 
 @5447
-Scenario: 3. Get the claims of an authority user
+Scenario: 4. Get the claims of an authority user
 	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |

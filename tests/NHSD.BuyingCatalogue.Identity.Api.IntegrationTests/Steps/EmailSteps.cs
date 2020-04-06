@@ -75,7 +75,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         }
 
         [AfterScenario]
-        public async Task CleanUp()
+        public async Task CleanUpAsync()
         {
             if (_context.TryGetValue("emailSent", out bool _))
             {
@@ -84,7 +84,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             }
         }
 
-        private class EmailTable
+        private sealed class EmailTable
         {
             public string From { get; set; }
 
@@ -95,7 +95,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string ResetPasswordLink { get; set; }
         }
 
-        private class Email
+        private sealed class Email
         {
             public string From { get; set; }
 

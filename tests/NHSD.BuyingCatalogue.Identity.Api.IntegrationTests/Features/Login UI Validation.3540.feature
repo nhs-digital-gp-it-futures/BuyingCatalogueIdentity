@@ -15,29 +15,30 @@ Scenario: 1. The NHS Header is displayed correctly
     
 @3540
 Scenario: 2. The Login page title is displayed correctly
-    Then the page contains element with Data ID login-page-title
-    And element with Data ID login-page-title has tag h1
-    And element with Data ID login-page-title has text Buying Catalogue log in
+    Then the page contains element with Data ID page-title
+    And element with Data ID page-title has tag h1
+    And element with Data ID page-title has text Buying Catalogue log in
     
 @3540
 Scenario: 3. The Login page description is displayed correctly
-    Then the page contains element with Data ID login-page-description
-    And element with Data ID login-page-description has tag h2
-    And element with Data ID login-page-description has text Enter your details to access the full functionality of this website.
+    Then the page contains element with Data ID page-description
+    And element with Data ID page-description has tag h2
+    And element with Data ID page-description has text Enter your details to access the full functionality of this website.
     
 @3540
 Scenario: 4. The Email Address input element is displayed correctly
     Then the page contains element with Data ID input-email-address
+    Then the page contains element with Data ID label-email-address
     And element with Data ID input-email-address has tag input
-    And element with Data ID input-email-address is of type email
-    And element with Data ID input-email-address has label with text Email address
+    And element with Data ID label-email-address has text Email address
     
 @3540
 Scenario: 5. The Password input element is displayed correctly
-    Then the page contains element with Data ID login-password
-    And element with Data ID login-password has tag input
-    And element with Data ID login-password is of type password
-    And element with Data ID login-password has label with text Password
+    Then the page contains element with Data ID input-password
+    Then the page contains element with Data ID label-password
+    And element with Data ID input-password has tag input
+    And element with Data ID input-password is of type password
+    And element with Data ID label-password has text Password
     
 @3540
 Scenario: 6. The Log in button is displayed correctly

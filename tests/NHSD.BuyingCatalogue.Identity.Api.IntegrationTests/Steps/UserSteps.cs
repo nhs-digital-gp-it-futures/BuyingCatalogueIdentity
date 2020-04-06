@@ -9,6 +9,7 @@ using FluentAssertions;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
@@ -135,6 +136,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actual.Should().BeEquivalentTo(expected, options => options.Excluding(user => user.OrganisationName));
         }
 
+        [Then(@"the response contains the following errors")]
+        public async Task ThenTheResponseContainsTheFollowingErrors(Table table)
+        {
+            var expected = table.CreateSet<UserErrorsTable>();
+            
+            var response = await _response.ReadBody();
+
+            var actual = response
+                .SelectToken("errors")
+                .Select(t => new UserErrorsTable
+                {
+                    ErrorMessageId = t.SelectToken("id").ToString(),
+                    FieldName = t.SelectToken("field").ToString()
+                });
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
         [When(@"a POST request is made to (disable|enable) user (.*)")]
         public async Task WhenAPOSTRequestIsMadeToChangeTheUsersState(string request, string userId)
         {
@@ -145,6 +164,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         
         private static string GenerateHash(string password)
         {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return password;
+            }
+
             const int identityVersion = 1; // 1 = Identity V3
             const int iterationCount = 10000;
             const int passwordHashLength = 32;
@@ -266,6 +290,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string OrganisationName { get; set; }
 
             public Guid PrimaryOrganisationId { get; set; }
+        }
+
+        private sealed class UserErrorsTable
+        {
+            public string ErrorMessageId { get; set; }
+
+            public string FieldName { get; set; }
         }
 
     }
