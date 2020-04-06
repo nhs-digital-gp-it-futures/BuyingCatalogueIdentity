@@ -16,81 +16,81 @@ Background:
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 
-@3540
+@3538
 Scenario: 1. Empty first name yields a first name is required error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		|           | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 2   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		|           | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId    | FieldName |
 		| FirstNameRequired | FirstName |
 
-@3540
+@3538
 Scenario: 2. A fifty one character first name yields a first name is too long error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName               | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		| #a string of length 51# | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 2   |
+		| FirstName               | LastName   | PhoneNumber | EmailAddress             |
+		| #a string of length 51# | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId   | FieldName |
 		| FirstNameTooLong | FirstName |
 
-@3540
+@3538
 Scenario: 3. Empty last name yields a last name is required error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       |          | 0123456789  | bob.bobkovitch@email.com | Organisation 2   |
+		| FirstName | LastName | PhoneNumber | EmailAddress             |
+		| Bob       |          | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId   | FieldName |
 		| LastNameRequired | LastName  |
 
-@3540
+@3538
 Scenario: 4. A fifty one character last name yields a last name is too long error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName                | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       | #a string of length 51# | 0123456789  | bob.bobkovitch@email.com | Organisation 2   |
+		| FirstName | LastName                | PhoneNumber | EmailAddress             |
+		| Bob       | #a string of length 51# | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId  | FieldName |
 		| LastNameTooLong | LastName  |
 
-@3540
+@3538
 Scenario: 5. Empty phone number yields a phone number is required error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       | Bobkovitch |             | bob.bobkovitch@email.com | Organisation 2   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		| Bob       | Bobkovitch |             | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId      | FieldName   |
 		| PhoneNumberRequired | PhoneNumber |
 
-@3540
+@3538
 Scenario: 6. Empty email address yields an email is required error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  |              | Organisation 2   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress |
+		| Bob       | Bobkovitch | 0123456789  |              |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId | FieldName    |
 		| EmailRequired  | EmailAddress |
 
-@3540
+@3538
 Scenario: 7. A two hundred and fifty seven character email address yields an email is too long error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress                                      | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  | #a string of length 128#@#a string of length 128# | Organisation 2   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress                                      |
+		| Bob       | Bobkovitch | 0123456789  | #a string of length 128#@#a string of length 128# |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId | FieldName    |
 		| EmailTooLong   | EmailAddress |
 
-@3540
+@3538
 Scenario Outline: 8. Email address format combinations yields an invalid email format error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress   | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  | <EmailAddress> | Organisation 2   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress   |
+		| Bob       | Bobkovitch | 0123456789  | <EmailAddress> |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId     | FieldName    |
@@ -104,14 +104,14 @@ Scenario Outline: 8. Email address format combinations yields an invalid email f
 		| test.com     |
 		| @            |
 
-@3540
+@3538
 Scenario: 9. Duplicate email address yields an email already exists error
 	Given Users exist
 		| Id | FirstName | LastName   | Email                    | OrganisationName |
 		| U1 | Bob       | Bobkovitch | bob.bobkovitch@email.com | Organisation 2   |
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 2   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId     | FieldName    |
