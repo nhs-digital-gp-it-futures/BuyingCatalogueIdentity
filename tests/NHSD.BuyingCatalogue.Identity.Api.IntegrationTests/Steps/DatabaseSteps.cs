@@ -17,8 +17,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"the call to the database will fail")]
         public async Task GivenTheCallToTheDatabaseWillFail()
         {
-            await Database.RemoveReadRole(_settings.AdminConnectionString);
-            await Database.RemoveWriteRole(_settings.AdminConnectionString);
+            await IntegrationDatabase.RemoveReadRoleAsync(_settings.AdminConnectionString);
+            await IntegrationDatabase.RemoveWriteRoleAsync(_settings.AdminConnectionString);
         }
     }
 }

@@ -28,11 +28,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"a user is logged in")]
         public async Task GivenAnUserIsLoggedInWithUsernameAndPassword(Table table)
         {
-            var user = table.CreateSet<UserTable>().First();
-
             var discoveryAddress = _configuration.GetValue<string>("DiscoveryAddress");
 
-            var client = new HttpClient();
+            using var client = new HttpClient();
 
             var discoveryDocument =
                 await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
@@ -47,7 +45,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 return;
             }
 
-            // request token
+            var user = table.CreateSet<UserTable>().First();
+
             TokenResponse tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
