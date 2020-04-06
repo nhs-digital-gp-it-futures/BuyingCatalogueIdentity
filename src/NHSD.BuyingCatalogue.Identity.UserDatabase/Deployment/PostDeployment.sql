@@ -14,3 +14,4 @@ Post-Deployment Script Template
 :r ./CreateExecutiveAgency.sql
 :r ./CreateExecutiveAgencyUser.sql
 :r ./CreateTestUsers.sql
+:r ./CreateTestBuyers.sql

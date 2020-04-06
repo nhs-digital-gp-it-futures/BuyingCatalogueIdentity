@@ -120,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Deployment\CreateTestUsers.sql" />
+    <None Include="Deployment\CreateTestBuyers.sql" />
     <None Include="Deployment\CreateTables.sql" />
     <None Include="Deployment\CreateCommissioningSupportUnits.sql" />
     <None Include="Deployment\CreateClinicalCommissioningGroups.sql" />
