@@ -43,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// <param name="emailAddress">The e-mail of the user to generate the password
         /// reset token for.</param>
         /// <returns>A <see cref="PasswordResetToken"/> if the user was found;
-        /// otherwise, <see lagref="null"/>.</returns>
+        /// otherwise, <see langref="null"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="emailAddress"/> is <see langref="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="emailAddress"/> is empty or white space.</exception>
         public async Task<PasswordResetToken> GeneratePasswordResetTokenAsync(string emailAddress)
