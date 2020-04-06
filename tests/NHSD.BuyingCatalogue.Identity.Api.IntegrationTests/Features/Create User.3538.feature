@@ -19,8 +19,8 @@ Scenario: 1. A authority user can create a user
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 2   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 200 is returned
 	When a GET request is made for an organisation's users with name Organisation 2
 	Then a response with status code 200 is returned
@@ -28,30 +28,40 @@ Scenario: 1. A authority user can create a user
 		| FirstName | LastName   | EmailAddress             | PhoneNumber | IsDisabled |
 		| Bob       | Bobkovitch | bob.bobkovitch@email.com | 0123456789  | False      |
 
+Scenario: 2. Create a new user yields the ID of the new user
+	Given a user is logged in
+		| Username             | Password        | Scope        |
+		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
+	When a POST request is made to create a user for organisation Organisation 2
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
+	Then a response with status code 200 is returned
+	And the response returns a user id
+
 @3538
-Scenario: 2. A non authority user cannot create a user
+Scenario: 3. A non authority user cannot create a user
 	Given a user is logged in
 		| Username            | Password     | Scope        |
 		| PennyLane@email.com | S0mePa$$w0rd | Organisation |
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 403 is returned
 
 @3538
-Scenario: 3. Create user with valid details when unauthorised
+Scenario: 4. Create user with valid details when unauthorised
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 401 is returned
 
 @3538
-Scenario: 4. Service Failure
+Scenario: 5. Service Failure
 	Given a user is logged in
 		| Username             | Password        | Scope        |
 		| PostmanPat@email.com | An0therPa$$w0rd | Organisation |
 	Given the call to the database will fail
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
-		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
+		| FirstName | LastName   | PhoneNumber | EmailAddress             |
+		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 500 is returned

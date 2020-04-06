@@ -177,6 +177,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actual.Should().BeEquivalentTo(expected);
         }
 
+        [Then(@"the response returns a user id")]
+        public async Task ThenTheResponseContainsAUserId()
+        {
+            var response = await _response.ReadBody();
+
+            var actual = response.SelectToken("userId").Value<string>();
+
+            actual.Should().NotBeNull();
+        }
+
         private static string GenerateHash(string password)
         {
             if (string.IsNullOrWhiteSpace(password))
