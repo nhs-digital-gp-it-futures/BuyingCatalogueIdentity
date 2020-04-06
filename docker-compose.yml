@@ -51,7 +51,7 @@ services:
       - "8070:80"
 
   nhsd.buyingcatalogue.identity.api.broken:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-api:${TAG:-latest}
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
     container_name: identity_api_broken
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
