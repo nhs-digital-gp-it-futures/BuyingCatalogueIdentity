@@ -141,5 +141,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult ResetPasswordExpired()
+        {
+            return View();
+        }
     }
 }
