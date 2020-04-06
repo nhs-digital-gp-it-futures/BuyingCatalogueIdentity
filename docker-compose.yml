@@ -44,6 +44,7 @@ services:
       - AllowInvalidCertificate=True
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
+      - nhsd.buyingcatalogue.email
     entrypoint: 
       - /bin/sh
       - -c 
@@ -78,6 +79,7 @@ services:
         - AllowInvalidCertificate=True
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
+      - nhsd.buyingcatalogue.email
     entrypoint: 
       - /bin/sh
       - -c 
