@@ -201,7 +201,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             using var controller = context.Controller;
 
-            var result = await controller.GetUserById(context.User.Id);
+            var result = await controller.GetUserByIdAsync(context.User.Id);
             result.Result.Should().BeOfType<OkObjectResult>();
             var objectResult = result.Result as OkObjectResult;
             objectResult.Value.Should().BeEquivalentTo(expected);
@@ -214,7 +214,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             using var controller = context.Controller;
 
-            var result = await controller.GetUserById(string.Empty);
+            var result = await controller.GetUserByIdAsync(string.Empty);
             result.Result.Should().BeOfType<NotFoundResult>();
         }
 
@@ -225,7 +225,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             using var controller = context.Controller;
 
-            await controller.GetUserById(string.Empty);
+            await controller.GetUserByIdAsync(string.Empty);
 
             context.UsersRepositoryMock.Verify(x => x.GetUserByIdAsync(String.Empty), Times.Once);
         }

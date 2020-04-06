@@ -41,6 +41,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                                      @CatalogueAgreementSigned,
                                      @LastUpdated)";
 
+        protected override string GetSql { get; }
+
         public static async Task<OrganisationEntity> GetByNameAsync(string connectionString, string organisationName) =>
             await SqlRunner.FetchSingleResultAsync<OrganisationEntity>(connectionString, $@"SELECT TOP (1)
                                     OrganisationId,

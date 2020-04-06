@@ -80,7 +80,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         [Route("api/v1/users/{userId}")]
         [HttpGet]
-        public async Task<ActionResult<GetUser>> GetUserById(string userId)
+        public async Task<ActionResult<GetUser>> GetUserByIdAsync(string userId)
         {
             var user = await _usersRepository.GetUserByIdAsync(userId);
 
@@ -101,25 +101,23 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             return Ok(getUser);
         }
 
+        [Authorize(Policy = Policy.CanManageOrganisationUsers)]
         [Route("api/v1/users/{userid}/enable")]
         [HttpPost]
         public async Task<ActionResult> EnableUserAsync(string userId)
         {
-            var user = await _usersRepository.GetUserByIdAsync(userId);
-
-            if (user is null)
-            {
-                return NotFound();
-            }
-
-            user.MarkAsEnabled();
-            await _usersRepository.UpdateAsync(user);
-            return NoContent();
+            return await ChangingUsersStatusAsync(userId, x => x.MarkAsEnabled());
         }
 
+        [Authorize(Policy = Policy.CanManageOrganisationUsers)]
         [Route("api/v1/users/{userid}/disable")]
         [HttpPost]
         public async Task<ActionResult> DisableUserAsync(string userId)
+        {
+            return await ChangingUsersStatusAsync(userId, x => x.MarkAsDisabled());
+        }
+
+        private async Task<ActionResult> ChangingUsersStatusAsync(string userId, Action<ApplicationUser> userAction)
         {
             var user = await _usersRepository.GetUserByIdAsync(userId);
 
@@ -128,7 +126,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            user.MarkAsDisabled();
+            userAction(user);
+
             await _usersRepository.UpdateAsync(user);
             return NoContent();
         }
