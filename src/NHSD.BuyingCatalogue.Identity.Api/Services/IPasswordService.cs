@@ -29,6 +29,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// the password reset.</param>
         /// <returns>An asynchronous task context.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="user"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="callback"/> is empty or white space.</exception>
         Task SendResetEmailAsync(ApplicationUser user, string callback);
     }
 }
