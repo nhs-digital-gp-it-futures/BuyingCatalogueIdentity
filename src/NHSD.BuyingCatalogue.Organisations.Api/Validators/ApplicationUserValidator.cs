@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NHSD.BuyingCatalogue.Organisations.Api.Errors;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
@@ -15,6 +15,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
         private const int MaximumFirstNameLength = 50;
         private const int MaximumLastNameLength = 50;
         private const int MaximumEmailLength = 256;
+
+        private static readonly EmailAddressAttribute _emailAddressAttribute = new EmailAddressAttribute();
 
         private readonly IUsersRepository _usersRepository;
 
@@ -109,7 +111,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             {
                 errors.Add(ApplicationUserErrors.EmailTooLong());
             }
-            else if (!Regex.IsMatch(email, @"^(.+)@(.+)$"))
+            else if (!_emailAddressAttribute.IsValid(email))
             {
                 errors.Add(ApplicationUserErrors.EmailInvalidFormat());
             }
