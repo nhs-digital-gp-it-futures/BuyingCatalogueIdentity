@@ -19,7 +19,7 @@ Scenario: 1. An authority user can enable a users account
 		| authority@doe.com | yolo     | Organisation |
 	When a POST request is made to enable user with id 234
 	Then a response with status code 204 is returned
-    And the database has user with id 234
+	And the database has user with id 234
 		| Name     | PhoneNumber | EmailAddress  | Disabled | OrganisationName |
 		| Jane Doe | 01234567890 | buyer@doe.com | false    | Organisation 1   |
 
