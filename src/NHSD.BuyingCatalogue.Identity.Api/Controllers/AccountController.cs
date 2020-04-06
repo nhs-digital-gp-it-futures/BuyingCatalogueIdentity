@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
-        private readonly IPasswordService passwordService;
+        private readonly IPasswordService _passwordService;
 
         public AccountController(
             ILoginService loginService,
@@ -23,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             _loginService = loginService;
             _logoutService = logoutService;
-            this.passwordService = passwordService;
+            _passwordService = passwordService;
         }
 
         [HttpGet]
@@ -110,7 +110,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return View(viewModel);
             }
 
-            var resetToken = await passwordService.GeneratePasswordResetTokenAsync(viewModel.EmailAddress);
+            var resetToken = await _passwordService.GeneratePasswordResetTokenAsync(viewModel.EmailAddress);
             if (resetToken == null)
                 return RedirectToAction(nameof(ForgotPasswordLinkSent));
 
@@ -120,7 +120,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 new { resetToken.Token, viewModel.EmailAddress },
                 Request.Scheme);
 
-            await passwordService.SendResetEmailAsync(resetToken.User, callback);
+            await _passwordService.SendResetEmailAsync(resetToken.User, callback);
 
             return RedirectToAction(nameof(ForgotPasswordLinkSent));
         }
