@@ -52,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentNullException(nameof(emailAddress));
 
             if (string.IsNullOrWhiteSpace(emailAddress))
-                throw new ArgumentException($"{emailAddress} must be provided", nameof(emailAddress));
+                throw new ArgumentException($"{nameof(emailAddress)} must be provided", nameof(emailAddress));
 
             var user = await _userManager.FindByEmailAsync(emailAddress);
 
@@ -80,7 +80,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentNullException(nameof(callback));
 
             if (string.IsNullOrWhiteSpace(callback))
-                throw new ArgumentException($"{callback} must be provided", nameof(callback));
+                throw new ArgumentException($"{nameof(callback)} must be provided", nameof(callback));
 
             var message = new EmailMessage(_settings.EmailMessage, new Uri(callback))
             {
