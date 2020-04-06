@@ -67,7 +67,17 @@ Scenario: 5. Empty phone number yields a phone number is required error
 		| PhoneNumberRequired | PhoneNumber |
 
 @3538
-Scenario: 6. Empty email address yields an email is required error
+Scenario: 6. A thirty six character phone number yields a phone number is too long error
+	When a POST request is made to create a user for organisation Organisation 2
+		| FirstName | LastName   | PhoneNumber             | EmailAddress             |
+		| Bob       | Bobkovitch | #a string of length 36# | bob.bobkovitch@email.com |
+	Then a response with status code 400 is returned
+	And the response contains the following errors
+		| ErrorMessageId     | FieldName   |
+		| PhoneNumberTooLong | PhoneNumber |
+
+@3538
+Scenario: 7. Empty email address yields an email is required error
 	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress |
 		| Bob       | Bobkovitch | 0123456789  |              |
@@ -77,7 +87,7 @@ Scenario: 6. Empty email address yields an email is required error
 		| EmailRequired  | EmailAddress |
 
 @3538
-Scenario: 7. A two hundred and fifty seven character email address yields an email is too long error
+Scenario: 8. A two hundred and fifty seven character email address yields an email is too long error
 	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress                                      |
 		| Bob       | Bobkovitch | 0123456789  | #a string of length 128#@#a string of length 128# |
@@ -87,7 +97,7 @@ Scenario: 7. A two hundred and fifty seven character email address yields an ema
 		| EmailTooLong   | EmailAddress |
 
 @3538
-Scenario Outline: 8. Email address format combinations yields an invalid email format error
+Scenario Outline: 9. Email address format combinations yields an invalid email format error
 	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress   |
 		| Bob       | Bobkovitch | 0123456789  | <EmailAddress> |
@@ -105,7 +115,7 @@ Scenario Outline: 8. Email address format combinations yields an invalid email f
 		| @            |
 
 @3538
-Scenario: 9. Duplicate email address yields an email already exists error
+Scenario: 10. Duplicate email address yields an email already exists error
 	Given Users exist
 		| Id | FirstName | LastName   | Email                    | OrganisationName |
 		| U1 | Bob       | Bobkovitch | bob.bobkovitch@email.com | Organisation 2   |

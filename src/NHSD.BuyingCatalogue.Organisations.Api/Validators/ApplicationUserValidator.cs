@@ -14,6 +14,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
     {
         private const int MaximumFirstNameLength = 50;
         private const int MaximumLastNameLength = 50;
+        private const int MaximumPhoneNumberLength = 35;
         private const int MaximumEmailLength = 256;
 
         private readonly IUsersRepository _usersRepository;
@@ -30,23 +31,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
 
             List<ErrorMessage> errors = new List<ErrorMessage>();
 
-            await ValidateNameAsync(user.FirstName, user.LastName, errors);
-            await ValidatePhoneNumberAsync(user.PhoneNumber, errors);
+            ValidateName(user.FirstName, user.LastName, errors);
+            ValidatePhoneNumber(user.PhoneNumber, errors);
+
             await ValidateEmailAsync(user.Email, errors);
 
             return errors.Any() ? Result.Failure(errors) : Result.Success();
         }
 
-        private static async Task ValidateNameAsync( 
+        private static void ValidateName( 
             string firstName, 
             string lastName,
             List<ErrorMessage> errors)
         {
-            await ValidateFirstNameAsync(firstName, errors);
-            await ValidateLastNameAsync(lastName, errors);
+            ValidateFirstName(firstName, errors);
+            ValidateLastName(lastName, errors);
         }
 
-        private static Task ValidateFirstNameAsync(string firstName, List<ErrorMessage> errors)
+        private static void ValidateFirstName(string firstName, List<ErrorMessage> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -54,16 +56,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             if (string.IsNullOrWhiteSpace(firstName))
             {
                 errors.Add(ApplicationUserErrors.FirstNameRequired());
-                return Task.CompletedTask;
+                return;
             }
 
             if (firstName.Length > MaximumFirstNameLength)
                 errors.Add(ApplicationUserErrors.FirstNameTooLong());
-
-            return Task.CompletedTask;
         }
 
-        private static Task ValidateLastNameAsync(string lastName, List<ErrorMessage> errors)
+        private static void ValidateLastName(string lastName, List<ErrorMessage> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -71,17 +71,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             if (string.IsNullOrWhiteSpace(lastName))
             {
                 errors.Add(ApplicationUserErrors.LastNameRequired());
-                return Task.CompletedTask;
+                return;
             }
 
             if (lastName.Length > MaximumLastNameLength)
                 errors.Add(ApplicationUserErrors.LastNameTooLong());
-            
-
-            return Task.CompletedTask;
         }
 
-        private static Task ValidatePhoneNumberAsync(string phoneNumber, List<ErrorMessage> errors)
+        private static void ValidatePhoneNumber(string phoneNumber, List<ErrorMessage> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -89,9 +86,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             if (string.IsNullOrWhiteSpace(phoneNumber))
             {
                 errors.Add(ApplicationUserErrors.PhoneNumberRequired());
+                return;
             }
 
-            return Task.CompletedTask;
+            phoneNumber = phoneNumber.Trim();
+
+            if (phoneNumber.Length > MaximumPhoneNumberLength)
+                errors.Add(ApplicationUserErrors.PhoneNumberTooLong());
         }
 
         private async Task ValidateEmailAsync(string email, List<ErrorMessage> errors)
