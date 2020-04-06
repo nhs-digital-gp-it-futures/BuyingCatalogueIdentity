@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using MailKit;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +19,8 @@ using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
+using NHSD.BuyingCatalogue.Identity.Common.Email;
+using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using Serilog;
 using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
 
@@ -44,6 +48,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var identityResources =
                 _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
+            var passwordResetSettings = _configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
+            var smtpSettings = _configuration.GetSection("SmtpServer").Get<SmtpSettings>();
 
             var issuerUrl = _configuration.GetValue<string>("issuerUrl");
 
@@ -53,14 +59,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
             Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
 
+            services.AddSingleton(passwordResetSettings);
+            services.AddSingleton(smtpSettings);
+
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();
+            services.AddScoped<IMailTransport, SmtpClient>();
+            services.AddScoped<IPasswordService, PasswordService>();
+
+            services.AddTransient<IEmailService, MailKitEmailService>();
             services.AddTransient<IUserRepository, UserRepository>();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>(TokenOptions.DefaultProvider);
 
             services.AddIdentityServer(options =>
                 {
@@ -106,6 +121,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 });
             }
         }
+
         public void ConfigureApp(IApplicationBuilder app)
         {
             app.UseSerilogRequestLogging(opts =>

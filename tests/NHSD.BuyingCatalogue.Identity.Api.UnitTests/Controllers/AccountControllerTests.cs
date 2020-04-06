@@ -5,8 +5,10 @@ using FluentAssertions;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
+using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
@@ -260,6 +262,113 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
                 await sut.Logout(logoutId);
             });
+        }
+
+        [Test]
+        public void ForgotPassword_ForgotPasswordViewModel_NullViewModel_ThrowsException()
+        {
+            static async Task ForgotPassword()
+            {
+                using var controller = new AccountControllerBuilder().Build();
+                await controller.ForgotPassword(null);
+            }
+
+            Assert.ThrowsAsync<ArgumentNullException>(ForgotPassword);
+        }
+
+        [Test]
+        public async Task ForgotPassword_ForgotPasswordViewModel_InvalidViewModel_ReturnsExpectedView()
+        {
+            using var controller = new AccountControllerBuilder()
+                .Build();
+
+            controller.ModelState.AddModelError(string.Empty, "Fake error!");
+
+            var expectedViewModel = new ForgotPasswordViewModel();
+            var result = await controller.ForgotPassword(expectedViewModel) as ViewResult;
+
+            Assert.NotNull(result);
+            var actualViewModel = result.Model;
+            actualViewModel.Should().Be(expectedViewModel);
+        }
+
+        [Test]
+        public async Task ForgotPassword_ForgotPasswordViewModel_NullResetToken_RedirectedToExpectedAction()
+        {
+            using var controller = new AccountControllerBuilder()
+                .WithResetToken(null)
+                .Build();
+
+            var result = await controller.ForgotPassword(
+                new ForgotPasswordViewModel { EmailAddress = "a@b.com" }) as RedirectToActionResult;
+
+            Assert.NotNull(result);
+            result.ActionName.Should().Be(nameof(AccountController.ForgotPasswordLinkSent));
+        }
+
+        [Test]
+        public async Task ForgotPassword_ForgotPasswordViewModel_WithResetToken_SendsResetEmail()
+        {
+            var callbackCount = 0;
+            ApplicationUser actualUser = null;
+            string actualCallback = null;
+
+            void EmailCallback(ApplicationUser user, string callback)
+            {
+                callbackCount++;
+                actualUser = user;
+                actualCallback = callback;
+            }
+
+            const string expectedCallback = "https://identity/account/resetPassword?token=1234&emailAddress=a@b.com";
+            var expectedUser = new ApplicationUser();
+
+            using var controller = new AccountControllerBuilder()
+                .WithResetEmailCallback(EmailCallback)
+                .WithResetToken(new PasswordResetToken("token", expectedUser))
+                .WithScheme(HttpScheme.Https.ToString())
+                .WithUrlAction(expectedCallback)
+                .Build();
+
+            await controller.ForgotPassword(new ForgotPasswordViewModel { EmailAddress = "a@b.com" });
+
+            callbackCount.Should().Be(1);
+            actualUser.Should().Be(expectedUser);
+            actualCallback.Should().Be(expectedCallback);
+        }
+
+        [Test]
+        public async Task ForgotPassword_ForgotPasswordViewModel_WithResetToken_RedirectedToExpectedAction()
+        {
+            using var controller = new AccountControllerBuilder()
+                .WithResetToken(new PasswordResetToken("token", new ApplicationUser()))
+                .WithScheme(HttpScheme.Https.ToString())
+                .WithUrlAction("https://identity/account/action")
+                .Build();
+
+            var result = await controller.ForgotPassword(
+                new ForgotPasswordViewModel { EmailAddress = "a@b.com" }) as RedirectToActionResult;
+
+            Assert.NotNull(result);
+            result.ActionName.Should().Be(nameof(AccountController.ForgotPasswordLinkSent));
+        }
+
+        [Test]
+        public void ResetPassword_String_String_ReturnsExpectedView()
+        {
+            const string email = "a@b.test";
+            const string expectedToken = "TokenMcToken";
+
+            using var controller = new AccountControllerBuilder().Build();
+
+            var result = controller.ResetPassword(email, expectedToken) as ViewResult;
+            Assert.NotNull(result);
+
+            var model = result.Model as ResetPasswordViewModel;
+            Assert.NotNull(model);
+
+            model.Email.Should().Be(email);
+            model.Token.Should().Be(expectedToken);
         }
     }
 }

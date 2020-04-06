@@ -18,6 +18,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
         [DisplayName("Confirm password")]
         public string ConfirmPassword { get; set; }
 
+        public string Email { get; set; }
+
+        public string Token { get; set; }
+
         private static class ErrorMessages
         {
             internal const string PasswordConditionsNotMet = "The password you’ve entered does not meet the criteria";
