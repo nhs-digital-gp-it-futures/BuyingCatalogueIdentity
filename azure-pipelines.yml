@@ -102,6 +102,7 @@ jobs:
 
   - task: DockerCompose@0
     displayName: 'Push: Dev'
+    condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'))
     inputs:
       containerregistrytype: 'Azure Container Registry'
       azureSubscription: 'NHSAPP-BuyingCatalogue (Non-Prod)'
