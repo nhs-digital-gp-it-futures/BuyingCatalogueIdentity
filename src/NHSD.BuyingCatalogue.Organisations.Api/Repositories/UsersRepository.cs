@@ -43,9 +43,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ApplicationUser> GetUserById(string userId)
+        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            return await _context.Users.FindAsync(userId);
+        }
+
+        public async Task UpdateAsync(ApplicationUser user)
+        {
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

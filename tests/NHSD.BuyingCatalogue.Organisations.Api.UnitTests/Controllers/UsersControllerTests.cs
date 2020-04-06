@@ -201,7 +201,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             using var controller = context.Controller;
 
-            var result = await controller.GetUserById(context.User.Id);
+            var result = await controller.GetUserByIdAsync(context.User.Id);
             result.Result.Should().BeOfType<OkObjectResult>();
             var objectResult = result.Result as OkObjectResult;
             objectResult.Value.Should().BeEquivalentTo(expected);
@@ -214,20 +214,100 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             using var controller = context.Controller;
 
-            var result = await controller.GetUserById(string.Empty);
+            var result = await controller.GetUserByIdAsync(string.Empty);
             result.Result.Should().BeOfType<NotFoundResult>();
         }
 
         [Test]
-        public async Task GetUserById_UserRepository_GetUserById_CalledOnce()
+        public async Task GetUserById_UserRepository_GetUserByIdAsync_CalledOnce()
         {
             var context = UsersControllerTestContext.Setup();
 
             using var controller = context.Controller;
 
-            await controller.GetUserById(string.Empty);
+            await controller.GetUserByIdAsync(string.Empty);
 
-            context.UsersRepositoryMock.Verify(x => x.GetUserById(String.Empty), Times.Once);
+            context.UsersRepositoryMock.Verify(x => x.GetUserByIdAsync(String.Empty), Times.Once);
+        }
+
+        [Test]
+        public async Task EnableUserAsync_GetUserByIdAndEnableThem_ReturnsOk()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(true).BuildBuyer();
+
+            var result = await controller.EnableUserAsync(context.User.Id);
+            result.Should().BeOfType<NoContentResult>();
+
+            context.User.Disabled.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task EnableUserAsync_UserIsNull_ReturnsNotFound()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            var result = await controller.EnableUserAsync("unknown");
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public async Task EnableUserAsync_UserRepository_UpdateAsync_CalledOnce()
+        {
+            var context = UsersControllerTestContext.Setup();
+            using var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(true).BuildBuyer();
+
+            await controller.EnableUserAsync(context.User.Id);
+
+            context.UsersRepositoryMock.Verify(x => x.GetUserByIdAsync(context.User.Id), Times.Once);
+            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
+        }
+
+        [Test]
+        public async Task DisableUserAsync_GetUserByIdAndDisableThem_ReturnsOk()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(false).BuildBuyer();
+
+            var result = await controller.DisableUserAsync(context.User.Id);
+            result.Should().BeOfType<NoContentResult>();
+
+            context.User.Disabled.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task DisableUserAsync_UserIsNull_ReturnsNotFound()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            using var controller = context.Controller;
+
+            var result = await controller.DisableUserAsync("unknown");
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public async Task DisableUser_UserRepository_UpdateAsync_CalledOnce()
+        {
+            var context = UsersControllerTestContext.Setup();
+            using var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(false).BuildBuyer();
+
+            await controller.DisableUserAsync(context.User.Id);
+
+            context.UsersRepositoryMock.Verify(x => x.GetUserByIdAsync(context.User.Id), Times.Once);
+            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
         }
     }
 }

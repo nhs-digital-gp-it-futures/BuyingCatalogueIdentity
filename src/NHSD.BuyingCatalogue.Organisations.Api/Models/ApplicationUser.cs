@@ -80,6 +80,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
             Disabled = true;
         }
 
+        public void MarkAsEnabled()
+        {
+            Disabled = false;
+        }
+
         public void MarkCatalogueAgreementAsSigned()
         {
             CatalogueAgreementSigned = true;

@@ -20,8 +20,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         private readonly IUsersRepository _usersRepository;
 
         public UsersController(
-        	ICreateBuyerService createBuyerService, 
-        	IUsersRepository usersRepository)
+            ICreateBuyerService createBuyerService,
+            IUsersRepository usersRepository)
         {
             _createBuyerService = createBuyerService ?? throw new ArgumentNullException(nameof(createBuyerService));
             _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
@@ -61,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             var response = new CreateBuyerResponseViewModel();
 
             var result = await _createBuyerService.CreateAsync(new CreateBuyerRequest(
-                organisationId, 
+                organisationId,
                 createBuyerRequest.FirstName,
                 createBuyerRequest.LastName,
                 createBuyerRequest.PhoneNumber,
@@ -73,16 +73,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 response.UserId = result.Value;
                 return Ok(response);
             }
-            
-            response.Errors = result.Errors.Select(x => new ErrorMessageViewModel { Id = x.Id,  Field = x.Field });
+
+            response.Errors = result.Errors.Select(x => new ErrorMessageViewModel { Id = x.Id, Field = x.Field });
             return BadRequest(response);
         }
 
         [Route("api/v1/users/{userId}")]
         [HttpGet]
-        public async Task<ActionResult<GetUser>> GetUserById(string userId)
+        public async Task<ActionResult<GetUser>> GetUserByIdAsync(string userId)
         {
-            var user = await _usersRepository.GetUserById(userId);
+            var user = await _usersRepository.GetUserByIdAsync(userId);
 
             if (user is null)
             {
@@ -93,12 +93,43 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             {
                 Name = user.DisplayName,
                 PhoneNumber = user.PhoneNumber,
-                EmailAddress =  user.Email,
+                EmailAddress = user.Email,
                 Disabled = user.Disabled,
                 PrimaryOrganisationId = user.PrimaryOrganisationId
             };
 
             return Ok(getUser);
+        }
+
+        [Authorize(Policy = Policy.CanManageOrganisationUsers)]
+        [Route("api/v1/users/{userid}/enable")]
+        [HttpPost]
+        public async Task<ActionResult> EnableUserAsync(string userId)
+        {
+            return await ChangingUsersStatusAsync(userId, x => x.MarkAsEnabled());
+        }
+
+        [Authorize(Policy = Policy.CanManageOrganisationUsers)]
+        [Route("api/v1/users/{userid}/disable")]
+        [HttpPost]
+        public async Task<ActionResult> DisableUserAsync(string userId)
+        {
+            return await ChangingUsersStatusAsync(userId, x => x.MarkAsDisabled());
+        }
+
+        private async Task<ActionResult> ChangingUsersStatusAsync(string userId, Action<ApplicationUser> userAction)
+        {
+            var user = await _usersRepository.GetUserByIdAsync(userId);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            userAction(user);
+
+            await _usersRepository.UpdateAsync(user);
+            return NoContent();
         }
     }
 }

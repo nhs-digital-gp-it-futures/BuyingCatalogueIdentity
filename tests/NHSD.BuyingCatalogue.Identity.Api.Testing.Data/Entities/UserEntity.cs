@@ -37,5 +37,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 	            0, 0, 0,
 	            @organisationId, @organisationFunction, @disabled, 0,
 	            @firstName, @lastName);";
+
+        protected override string GetSql => @"
+              SELECT FirstName, LastName, PhoneNumber, Email AS EmailAddress, Disabled, dbo.Organisations.Name AS OrganisationName
+              FROM dbo.AspNetUsers
+              INNER JOIN dbo.Organisations
+              ON dbo.AspNetUsers.PrimaryOrganisationId = dbo.Organisations.OrganisationId
+              WHERE Id = @id";
     }
 }

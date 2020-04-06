@@ -136,11 +136,34 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actual.Should().BeEquivalentTo(expected, options => options.Excluding(user => user.OrganisationName));
         }
 
+        [When(@"a POST request is made to (disable|enable) user with id (.*)")]
+        public async Task WhenAPOSTRequestIsMadeToChangeTheUsersState(string request, string userId)
+        {
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
+            _response.Result = await client.PostAsync(new Uri($"{_settings.OrganisationApiBaseUrl}/api/v1/users/{userId}/{request}"), null);
+        }
+
+        [Then(@"the database has user with id (.*)")]
+        public async Task ThenTheDatabaseIsUpdatedWithTheUsersNewValues(string userId, Table table)
+        {
+            var expected = table.CreateSet<ExpectedGetUserTable>().First();
+
+            var userEntity = new UserEntity
+            {
+                Id = userId
+            };
+
+            var userInDb = await userEntity.GetAsync(_settings.ConnectionString);
+
+            userInDb.Should().BeEquivalentTo(expected, options => options.Excluding(user => user.PrimaryOrganisationId));
+        }
+
         [Then(@"the response contains the following errors")]
         public async Task ThenTheResponseContainsTheFollowingErrors(Table table)
         {
             var expected = table.CreateSet<UserErrorsTable>();
-            
+
             var response = await _response.ReadBody();
 
             var actual = response
