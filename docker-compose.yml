@@ -26,7 +26,7 @@ services:
       - "${NHSD_LOCAL_DB_PORT:-1533}:1433"
       
   nhsd.buyingcatalogue.identity.api:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-api:${TAG:-latest}
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
     container_name: identity_api
     build: 
       context: .
@@ -54,7 +54,7 @@ services:
       - "8070:80"
 
   nhsd.buyingcatalogue.identity.api.broken:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-api:${TAG:-latest}
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
     container_name: identity_api_broken
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
