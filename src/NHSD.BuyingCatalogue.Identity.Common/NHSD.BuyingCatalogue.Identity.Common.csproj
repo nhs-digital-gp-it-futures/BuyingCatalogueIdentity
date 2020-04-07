@@ -18,14 +18,6 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>NHSD.BuyingCatalogue.Identity.Api.UnitTests</_Parameter1>
     </AssemblyAttribute>
-
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>NHSD.BuyingCatalogue.Identity.Api</_Parameter1>
-    </AssemblyAttribute>
-
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>NHSD.BuyingCatalogue.Organisations.Api</_Parameter1>
-    </AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>
