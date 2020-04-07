@@ -11,6 +11,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
         public static async Task ResetAsync(IConfiguration config)
         {
             using IDbConnection databaseConnection = new SqlConnection(config.GetConnectionString("CatalogueUsersAdmin"));
+            await databaseConnection.ExecuteAsync("GRANT CONNECT TO NHSD;");
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("DELETE FROM Organisations;");
@@ -29,20 +30,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter DROP MEMBER NHSD;");
         }
 
-        public static async Task DropUser(string connectionString)
+        public static async Task DenyAccessForNhsdUser(string connectionString)
         {
             using IDbConnection databaseConnection = new SqlConnection(connectionString);
-            await databaseConnection.ExecuteAsync("ALTER DATABASE [CatalogueUsers] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;");
-            await databaseConnection.ExecuteAsync("DROP USER NHSD;");
-            await databaseConnection.ExecuteAsync("DROP LOGIN NHSD;");
-        }
-
-        public static async Task AddUser(string connectionString)
-        {
-            using IDbConnection databaseConnection = new SqlConnection(connectionString);
-            await databaseConnection.ExecuteAsync("ALTER DATABASE [CatalogueUsers] SET MULTI_USER;");
-            await databaseConnection.ExecuteAsync("CREATE LOGIN NHSD WITH PASSWORD = 'DisruptTheMarket1!';");
-            await databaseConnection.ExecuteAsync("CREATE USER NHSD FOR LOGIN NHSD;");
+            await databaseConnection.ExecuteAsync("DENY CONNECT TO NHSD;");
+         
         }
     }
 }

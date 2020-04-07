@@ -26,17 +26,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"The Database Server is down")]
         public async Task GivenTheDatabaseServerIsDown()
         {
-            await IntegrationDatabase.DropUser(_settings.AdminConnectionString);
-            _context["isUserDropped"] = true;
-        }
-
-        [AfterScenario]
-        public async Task CleanUpByAddingDroppedUser()
-        {
-            if (_context.TryGetValue("isUserDropped", out bool _))
-            {
-                await IntegrationDatabase.AddUser(_settings.AdminConnectionString);
-            }
+            await IntegrationDatabase.DenyAccessForNhsdUser(_settings.AdminConnectionString);
         }
     }
 }
