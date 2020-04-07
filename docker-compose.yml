@@ -53,13 +53,18 @@ services:
     ports:
       - "8070:80"
 
-  nhsd.buyingcatalogue.identity.api.broken:
+  nhsd.buyingcatalogue.identity.api.broken.smtp:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
-    container_name: identity_api_broken
+    container_name: identity_api_broken_smtp
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
+      - SmtpServer__Host=broken.smtp
+      - SmtpServer__Port=1337
     depends_on:
       - nhsd.buyingcatalogue.identity.api
+    networks:
+      - nhsd_bcnetwork
     ports:
       - "8170:80"
 
@@ -87,22 +92,6 @@ services:
     ports:
         - "8075:80"
 
-  nhsd.buyingcatalogue.organisations.api.broken.db:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/organisations-api:${TAG:-latest}
-    container_name: organisations_api_broken_db
-    environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - ConnectionStrings__CatalogueUsers=Data Source=broken.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!
-        - SmtpServer__Host=nhsd.buyingcatalogue.email
-        - SmtpServer__Port=587
-    depends_on:
-      - nhsd.buyingcatalogue.identity.api.user.db
-      - nhsd.buyingcatalogue.organisations.api
-    networks:
-      - nhsd_bcnetwork
-    ports:
-        - "8175:80"
-
   nhsd.buyingcatalogue.organisations.api.broken.smtp:
     image: ${REGISTRY:-nhsd}/buying-catalogue/organisations-api:${TAG:-latest}
     container_name: organisations_api_broken_smtp
@@ -116,7 +105,7 @@ services:
     networks:
       - nhsd_bcnetwork
     ports:
-        - "8275:80"
+        - "8175:80"
 
   nhsd.buyingcatalogue.identity.api.sampleresource:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-sampleresource:${TAG:-latest}

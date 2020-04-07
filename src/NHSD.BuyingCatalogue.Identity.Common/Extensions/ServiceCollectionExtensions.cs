@@ -5,7 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Settings;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
+namespace NHSD.BuyingCatalogue.Identity.Common.Extensions
 {
     internal static class ServiceCollectionExtensions
     {

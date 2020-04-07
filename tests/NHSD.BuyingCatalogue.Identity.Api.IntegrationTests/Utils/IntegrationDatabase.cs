@@ -28,5 +28,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             using IDbConnection databaseConnection = new SqlConnection(connectionString);
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter DROP MEMBER NHSD;");
         }
+
+        public static async Task DropUser(string connectionString)
+        {
+            using IDbConnection databaseConnection = new SqlConnection(connectionString);
+            await databaseConnection.ExecuteAsync("ALTER DATABASE [CatalogueUsers] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;");
+            await databaseConnection.ExecuteAsync("DROP USER NHSD;");
+            await databaseConnection.ExecuteAsync("DROP LOGIN NHSD;");
+        }
+
+        public static async Task AddUser(string connectionString)
+        {
+            using IDbConnection databaseConnection = new SqlConnection(connectionString);
+            await databaseConnection.ExecuteAsync("ALTER DATABASE [CatalogueUsers] SET MULTI_USER;");
+            await databaseConnection.ExecuteAsync("CREATE LOGIN NHSD WITH PASSWORD = 'DisruptTheMarket1!';");
+            await databaseConnection.ExecuteAsync("CREATE USER NHSD FOR LOGIN NHSD;");
+        }
     }
 }

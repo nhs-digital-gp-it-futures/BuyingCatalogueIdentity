@@ -8,10 +8,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class DatabaseSteps
     {
         private readonly Settings _settings;
+        private readonly ScenarioContext _context;
 
-        public DatabaseSteps(Settings settings)
+        public DatabaseSteps(Settings settings, ScenarioContext context)
         {
             _settings = settings;
+            _context = context;
         }
 
         [Given(@"the call to the database will fail")]
@@ -19,6 +21,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             await IntegrationDatabase.RemoveReadRoleAsync(_settings.AdminConnectionString);
             await IntegrationDatabase.RemoveWriteRoleAsync(_settings.AdminConnectionString);
+        }
+
+        [Given(@"The Database Server is down")]
+        public async Task GivenTheDatabaseServerIsDown()
+        {
+            await IntegrationDatabase.DropUser(_settings.AdminConnectionString);
+            _context["isUserDropped"] = true;
+        }
+
+        [AfterScenario]
+        public async Task CleanUpByAddingDroppedUser()
+        {
+            if (_context.TryGetValue("isUserDropped", out bool _))
+            {
+                await IntegrationDatabase.AddUser(_settings.AdminConnectionString);
+            }
         }
     }
 }
