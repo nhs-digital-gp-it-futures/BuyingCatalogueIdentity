@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
-using NHSD.BuyingCatalogue.Identity.Api.Extensions;
+using Microsoft.AspNetCore.Mvc.Routing;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
@@ -115,9 +115,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (resetToken == null)
                 return RedirectToAction(nameof(ForgotPasswordLinkSent));
 
-            var callback = this.Action(
-                nameof(ResetPassword),
-                new { resetToken.Token, Email = viewModel.EmailAddress });
+            var callback = Url.Action(
+                new UrlActionContext
+                {
+                    Action = nameof(ResetPassword),
+                    Protocol = Request.Scheme,
+                    Values = new { resetToken.Token, Email = viewModel.EmailAddress }
+                });
 
             await _passwordService.SendResetEmailAsync(resetToken.User, callback);
 
