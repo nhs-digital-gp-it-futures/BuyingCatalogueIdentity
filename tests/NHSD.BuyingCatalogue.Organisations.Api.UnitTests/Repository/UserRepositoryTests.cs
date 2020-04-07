@@ -27,11 +27,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public async Task UpdateAsync_UserIsNull_ReturnsNullExcepetion()
+        public void UpdateAsync_UserIsNull_ReturnsNullException()
         {
-            var context = UserRepositoryTestContext.Setup();
+            static async Task TestAsync()
+            {
+                var context = UserRepositoryTestContext.Setup();
+                await context.UserRepository.UpdateAsync(null);
+            }
 
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await context.UserRepository.UpdateAsync(null));
+            Assert.ThrowsAsync<ArgumentNullException>(TestAsync);
         }
     }
 }

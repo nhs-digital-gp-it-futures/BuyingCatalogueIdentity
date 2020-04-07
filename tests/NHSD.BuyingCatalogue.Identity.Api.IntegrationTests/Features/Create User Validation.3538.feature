@@ -27,10 +27,10 @@ Scenario: 1. Empty first name yields a first name is required error
 		| FirstNameRequired | FirstName |
 
 @3538
-Scenario: 2. A fifty one character first name yields a first name is too long error
+Scenario: 2. One hundred and one character first name yields a first name is too long error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName               | LastName   | PhoneNumber | EmailAddress             |
-		| #a string of length 51# | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
+		| FirstName                | LastName   | PhoneNumber | EmailAddress             |
+		| #a string of length 101# | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId   | FieldName |
@@ -47,10 +47,10 @@ Scenario: 3. Empty last name yields a last name is required error
 		| LastNameRequired | LastName  |
 
 @3538
-Scenario: 4. A fifty one character last name yields a last name is too long error
+Scenario: 4. One hundred and one character last name yields a last name is too long error
 	When a POST request is made to create a user for organisation Organisation 2
-		| FirstName | LastName                | PhoneNumber | EmailAddress             |
-		| Bob       | #a string of length 51# | 0123456789  | bob.bobkovitch@email.com |
+		| FirstName | LastName                 | PhoneNumber | EmailAddress             |
+		| Bob       | #a string of length 101# | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 400 is returned
 	And the response contains the following errors
 		| ErrorMessageId  | FieldName |
