@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using BoDi;
 using Microsoft.Extensions.Configuration;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Support;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
@@ -30,6 +30,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
             await ResetDatabaseAsync();
         }
 
+        [AfterScenario]
+        public async Task CleanUpAsync() => await DeleteAllSentEmailsAsync();
+
         public void RegisterTestConfiguration()
         {
             var configurationBuilder = new ConfigurationBuilder()
@@ -48,9 +51,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
             valueRetrievers.Register(new GenerateStringLengthValueRetriever());
         }
 
-        private async Task ResetDatabaseAsync()
-        {
+        private async Task ResetDatabaseAsync() => 
             await IntegrationDatabase.ResetAsync(_objectContainer.Resolve<IConfiguration>());
+
+        private async Task DeleteAllSentEmailsAsync()
+        {
+            var emailServerDriver = _objectContainer.Resolve<EmailServerDriver>();
+            await emailServerDriver.ClearAllEmailsAsync();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using TechTalk.SpecFlow.Assist;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Support

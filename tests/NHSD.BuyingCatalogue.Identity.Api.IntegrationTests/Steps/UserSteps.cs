@@ -102,7 +102,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             using var content = new StringContent(payload, Encoding.UTF8, "application/json");
             _response.Result = await client.PostAsync(new Uri($"{_organisationUrl}/{organisationId}/users"), content);
 
-            _context["emailSent"] = true;
+            _context[ScenarioContextKeys.EmailSent] = true;
         }
 
         [When(@"a GET request is made for a user with id (.*)")]
@@ -122,7 +122,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             expected.PrimaryOrganisationId = organisationId;
 
-            var response = await _response.ReadBody();
+            var response = await _response.ReadBodyAsJsonAsync();
 
             var actual = new ExpectedGetUserTable
             {
@@ -164,7 +164,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var expected = table.CreateSet<UserErrorsTable>();
 
-            var response = await _response.ReadBody();
+            var response = await _response.ReadBodyAsJsonAsync();
 
             var actual = response
                 .SelectToken("errors")
@@ -180,7 +180,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the response returns a user id")]
         public async Task ThenTheResponseContainsAUserId()
         {
-            var response = await _response.ReadBody();
+            var response = await _response.ReadBodyAsJsonAsync();
 
             var actual = response.SelectToken("userId").Value<string>();
 
@@ -244,7 +244,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
         private async Task<IEnumerable<ExpectedUserTable>> CreateUserTableFromResponse()
         {
-            return (await _response.ReadBody()).SelectToken("users").Select(x => new ExpectedUserTable
+            return (await _response.ReadBodyAsJsonAsync()).SelectToken("users").Select(x => new ExpectedUserTable
             {
                 UserId = x.SelectToken("userId").ToString(),
                 FirstName = x.SelectToken("firstName").ToString(),
