@@ -107,12 +107,13 @@ Scenario Outline: 9. Email address format combinations yields an invalid email f
 		| EmailInvalidFormat | EmailAddress |
 
 	Examples:
-		| EmailAddress |
-		| test         |
-		| test@        |
-		| @test        |
-		| test.com     |
-		| @            |
+		| EmailAddress       |
+		| test               |
+		| test@              |
+		| @test              |
+		| test.com           |
+		| @                  |
+		| bob@Bobkovitch@com |
 
 @3538
 Scenario: 10. Duplicate email address yields an email already exists error

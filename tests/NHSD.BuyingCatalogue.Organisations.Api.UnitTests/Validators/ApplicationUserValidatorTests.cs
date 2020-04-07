@@ -193,6 +193,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
                 yield return new TestCaseData("test@", new[] { "EmailInvalidFormat" });
                 yield return new TestCaseData("@test", new[] { "EmailInvalidFormat" });
                 yield return new TestCaseData("@", new[] { "EmailInvalidFormat" });
+                yield return new TestCaseData("bobsmith@test@com", new[] { "EmailInvalidFormat" });
             }
         }
     }
