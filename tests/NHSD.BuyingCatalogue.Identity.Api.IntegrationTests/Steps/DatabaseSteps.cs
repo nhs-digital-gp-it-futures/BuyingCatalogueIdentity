@@ -8,12 +8,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     public sealed class DatabaseSteps
     {
         private readonly Settings _settings;
-        private readonly ScenarioContext _context;
 
-        public DatabaseSteps(Settings settings, ScenarioContext context)
+        public DatabaseSteps(Settings settings)
         {
             _settings = settings;
-            _context = context;
         }
 
         [Given(@"the call to the database will fail")]
