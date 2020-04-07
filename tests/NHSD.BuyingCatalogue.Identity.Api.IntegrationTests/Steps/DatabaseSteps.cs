@@ -20,5 +20,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             await IntegrationDatabase.RemoveReadRoleAsync(_settings.AdminConnectionString);
             await IntegrationDatabase.RemoveWriteRoleAsync(_settings.AdminConnectionString);
         }
+
+        [Given(@"The Database Server is down")]
+        public async Task GivenTheDatabaseServerIsDown()
+        {
+            await IntegrationDatabase.DenyAccessForNhsdUser(_settings.AdminConnectionString);
+        }
     }
 }

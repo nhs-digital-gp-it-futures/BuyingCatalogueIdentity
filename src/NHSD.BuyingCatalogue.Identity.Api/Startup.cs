@@ -13,13 +13,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
-using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Email;
+using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using Serilog;
 using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
@@ -99,7 +99,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 options.SlidingExpiration = cookieExpiration.SlidingExpiration;
             });
 
-            services.RegisterHealthChecks(connectionString);
+            services.RegisterHealthChecks(connectionString, smtpSettings);
             services.AddControllers();
             services.AddControllersWithViews();
             services.AddAuthentication();

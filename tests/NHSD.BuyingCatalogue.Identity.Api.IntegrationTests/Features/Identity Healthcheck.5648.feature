@@ -3,14 +3,25 @@
     I want to be be able to check the health of my dependencies
     So that I can behave accordingly
 
+@3926
+Scenario: 1. Smtp Server is up
+	Given The Smtp Server is up for ISAPI
+	When the dependency health-check endpoint is hit for ISAPI
+	Then the response will be Healthy
+
+@3926
+Scenario: 2. Smtp Server is down
+	Given The Smtp Server is down for ISAPI
+	When the dependency health-check endpoint is hit for ISAPI
+	Then the response will be Degraded
+
 @5648
-Scenario: 1. Database Server is up
-	Given The Database Server is up for ISAPI
+Scenario: 3. Database Server is up
 	When the dependency health-check endpoint is hit for ISAPI
 	Then the response will be Healthy
 
 @5648
-Scenario: 2. Database Server is down
-	Given The Database Server is down for ISAPI
+Scenario: 4. Database Server is down
+	Given The Database Server is down
 	When the dependency health-check endpoint is hit for ISAPI
 	Then the response will be Unhealthy

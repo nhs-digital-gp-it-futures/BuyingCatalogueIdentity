@@ -11,6 +11,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
         public static async Task ResetAsync(IConfiguration config)
         {
             using IDbConnection databaseConnection = new SqlConnection(config.GetConnectionString("CatalogueUsersAdmin"));
+            await databaseConnection.ExecuteAsync("GRANT CONNECT TO NHSD;");
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datareader ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter ADD MEMBER NHSD;");
             await databaseConnection.ExecuteAsync("DELETE FROM Organisations;");
@@ -27,6 +28,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
         {
             using IDbConnection databaseConnection = new SqlConnection(connectionString);
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter DROP MEMBER NHSD;");
+        }
+
+        public static async Task DenyAccessForNhsdUser(string connectionString)
+        {
+            using IDbConnection databaseConnection = new SqlConnection(connectionString);
+            await databaseConnection.ExecuteAsync("DENY CONNECT TO NHSD;");
+         
         }
     }
 }

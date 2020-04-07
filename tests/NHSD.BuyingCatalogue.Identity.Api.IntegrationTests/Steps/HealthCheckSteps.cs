@@ -23,22 +23,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context["identityBaseUrl"] = _settings.IdentityApiBaseUrl;
         }
 
-        [Given(@"The Database Server is (up|down) for OAPI")]
-        public void GivenTheOrganisationsDatabaseServerIsInState(string state)
-        {
-            _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenDbOrganisationApiBaseUrl;
-        }
-
-        [Given(@"The Database Server is (up|down) for ISAPI")]
-        public void GivenTheIdentityDatabaseServerIsInState(string state)
-        {
-            _context["identityBaseUrl"] = state == "up" ? _settings.IdentityApiBaseUrl : _settings.BrokenIdentityApiBaseUrl;
-        }
-
-        [Given(@"The Smtp Server is (up|down)")]
-        public void GivenTheSmtpServerIsInState(string state)
+        [Given(@"The Smtp Server is (up|down) for OAPI")]
+        public void GivenTheOrganisationsSmtpServerIsInState(string state)
         {
             _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenSmtpOrganisationApiBaseUrl;
+        }
+
+        [Given(@"The Smtp Server is (up|down) for ISAPI")]
+        public void GivenTheIdentitySmtpServerIsInState(string state)
+        {
+            _context["identityBaseUrl"] = state == "up" ? _settings.IdentityApiBaseUrl : _settings.BrokenSmtpIdentityApiBaseUrl;
         }
 
         [When(@"the dependency health-check endpoint is hit for (ISAPI|OAPI)")]
