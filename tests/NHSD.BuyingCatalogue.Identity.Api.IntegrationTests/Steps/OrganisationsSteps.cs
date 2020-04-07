@@ -83,7 +83,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var expectedOrganisations = table.CreateSet<OrganisationTable>().ToList();
 
-            var organisations = (await _response.ReadBody()).SelectToken("organisations").Select(CreateOrganisation);
+            var organisations = (await _response.ReadBodyAsJsonAsync()).SelectToken("organisations").Select(CreateOrganisation);
 
             organisations.Should().BeEquivalentTo(expectedOrganisations, options => options.WithStrictOrdering());
         }
@@ -93,7 +93,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var expectedOrganisation = table.CreateSet<OrganisationTable>().FirstOrDefault();
 
-            JToken responseBody = await _response.ReadBody();
+            JToken responseBody = await _response.ReadBodyAsJsonAsync();
 
             var organisation = CreateOrganisation(responseBody);
 
