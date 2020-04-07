@@ -12,8 +12,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
 {
     public class ApplicationUserValidator : IApplicationUserValidator
     {
-        private const int MaximumFirstNameLength = 50;
-        private const int MaximumLastNameLength = 50;
+        private const int MaximumFirstNameLength = 100;
+        private const int MaximumLastNameLength = 100;
         private const int MaximumPhoneNumberLength = 35;
         private const int MaximumEmailLength = 256;
 
@@ -88,8 +88,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
                 errors.Add(ApplicationUserErrors.PhoneNumberRequired());
                 return;
             }
-
-            phoneNumber = phoneNumber.Trim();
 
             if (phoneNumber.Length > MaximumPhoneNumberLength)
                 errors.Add(ApplicationUserErrors.PhoneNumberTooLong());

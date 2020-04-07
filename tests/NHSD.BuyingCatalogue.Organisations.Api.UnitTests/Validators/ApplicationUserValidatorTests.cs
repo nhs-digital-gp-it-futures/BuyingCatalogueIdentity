@@ -17,8 +17,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
     [Parallelizable(ParallelScope.All)]
     public sealed class ApplicationUserValidatorTests
     {
-        private const string FiftyFiveCharacterString = "0123456789_0123456789_0123456789_0123456789_0123456789_";
-
         [Test]
         public async Task ValidateAsync_ValidApplicationUser_ReturnsSuccess()
         {
@@ -34,9 +32,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
             actual.Should().Be(Result.Success());
         }
 
-        [TestCase("", "FirstNameRequired")]
-        [TestCase("  ", "FirstNameRequired")]
-        [TestCase(FiftyFiveCharacterString, "FirstNameTooLong")]
+        [TestCaseSource(typeof(TestContextTestCaseData), nameof(TestContextTestCaseData.InvalidFirstNameCases))]
         public async Task ValidateAsync_WithFirstName_ReturnsFailure(string input, params string[] errorMessageIds)
         {
             var context = ApplicationUserValidatorTestContext.Setup();
@@ -53,9 +49,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
             actual.Should().Be(expected);
         }
 
-        [TestCase("", "LastNameRequired")]
-        [TestCase("  ", "LastNameRequired")]
-        [TestCase(FiftyFiveCharacterString, "LastNameTooLong")]
+        [TestCaseSource(typeof(TestContextTestCaseData), nameof(TestContextTestCaseData.InvalidLastNameCases))]
         public async Task ValidateAsync_WithLastName_ReturnsFailure(string input, params string[] errorMessageIds)
         {
             var context = ApplicationUserValidatorTestContext.Setup();
@@ -158,6 +152,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 
     internal class TestContextTestCaseData
     {
+        internal static IEnumerable<TestCaseData> InvalidFirstNameCases
+        {
+            get
+            {
+                yield return new TestCaseData("", new[] { "FirstNameRequired" });
+                yield return new TestCaseData("  ", new[] { "FirstNameRequired" });
+                yield return new TestCaseData(new string('a', 101), new[] { "FirstNameTooLong" });
+            }
+        }
+
+        internal static IEnumerable<TestCaseData> InvalidLastNameCases
+        {
+            get
+            {
+                yield return new TestCaseData("", new[] { "LastNameRequired" });
+                yield return new TestCaseData("  ", new[] { "LastNameRequired" });
+                yield return new TestCaseData(new string('a', 101), new[] { "LastNameTooLong" });
+            }
+        }
+
         internal static IEnumerable<TestCaseData> InvalidPhoneNumberCases
         {
             get

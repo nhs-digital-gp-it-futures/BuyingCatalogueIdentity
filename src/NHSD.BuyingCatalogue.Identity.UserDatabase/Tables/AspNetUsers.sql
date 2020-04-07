@@ -19,8 +19,8 @@
      OrganisationFunction NVARCHAR(50) NOT NULL, 
      Disabled bit NOT NULL,
      CatalogueAgreementSigned bit NOT NULL,
-     FirstName NVARCHAR(50) NOT NULL, 
-     LastName NVARCHAR(50) NOT NULL, 
+     FirstName NVARCHAR(100) NOT NULL, 
+     LastName NVARCHAR(100) NOT NULL, 
     CONSTRAINT PK_AspNetUsers PRIMARY KEY CLUSTERED (Id),
      INDEX EmailIndex NONCLUSTERED (NormalizedEmail)
 );
