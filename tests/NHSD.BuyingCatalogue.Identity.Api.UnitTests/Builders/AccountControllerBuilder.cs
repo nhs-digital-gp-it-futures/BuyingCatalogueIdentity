@@ -76,12 +76,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         internal AccountControllerBuilder WithUrlAction(string action)
         {
-            var mockUrlHeper = new Mock<IUrlHelper>();
-            mockUrlHeper.Setup(h => h.Action(
-                    It.IsNotNull<UrlActionContext>()))
+            var mockUrlHelper = new Mock<IUrlHelper>();
+            mockUrlHelper.Setup(h => h.Action(It.IsNotNull<UrlActionContext>()))
                 .Returns(action);
 
-            _urlHelper = mockUrlHeper.Object;
+            _urlHelper = mockUrlHelper.Object;
+
+            return this;
+        }
+
+        internal AccountControllerBuilder WithUrlActionCallback(Action<UrlActionContext> actionCallback)
+        {
+            var mockUrlHelper = new Mock<IUrlHelper>();
+            mockUrlHelper.Setup(h => h.Action(It.IsNotNull<UrlActionContext>()))
+                .Callback(actionCallback);
+
+            _urlHelper = mockUrlHelper.Object;
 
             return this;
         }
