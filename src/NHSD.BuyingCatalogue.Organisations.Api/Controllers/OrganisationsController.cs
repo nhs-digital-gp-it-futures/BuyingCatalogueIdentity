@@ -106,5 +106,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpPost]
+        public async Task<ActionResult<CreateOrganisationResponseViewModel>> CreateOrganisationAsync(CreateOrganisationRequestViewModel viewModel)
+        {
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            //TODO: Task #6168
+
+            // Canned data
+            var firstOrganisation = (await _organisationRepository.ListOrganisationsAsync()).First();
+
+            var response = new CreateOrganisationResponseViewModel
+            {
+                Errors = null,
+                OrganisationId = firstOrganisation.OrganisationId.ToString()
+            };
+
+            return Created(new Uri($"/{response.OrganisationId}", UriKind.Relative), response);
+        }
     }
 }
