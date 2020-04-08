@@ -25,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             // Canned data
             return Ok(new OdsViewModel
             {
-                Name = "Canned Organisation",
+                OrganisationName = "Canned Organisation",
                 OdsCode = odsCode,
                 PrimaryRoleId = "123",
                 CatalogueAgreementSigned = true,
