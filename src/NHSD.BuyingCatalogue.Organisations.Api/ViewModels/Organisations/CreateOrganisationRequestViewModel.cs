@@ -2,7 +2,7 @@
 {
     public sealed class CreateOrganisationRequestViewModel
     {
-        public string Name { get; set; }
+        public string OrganisationName { get; set; }
 
         public string OdsCode { get; set; }
 
