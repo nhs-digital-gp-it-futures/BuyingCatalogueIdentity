@@ -86,7 +86,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policy.CanAccessOrganisation, policy => policy.RequireClaim(ApplicationClaimTypes.Organisation));
-                options.AddPolicy(Policy.CanAccessOrganisation, policy => 
+                options.AddPolicy(Policy.CanManageOrganisation, policy => 
                     policy.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage));
         
                 options.AddPolicy(Policy.CanAccessOrganisationUsers, policyBuilder =>
