@@ -1,10 +1,12 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
-    //[Authorize(Policy = Policy.CanAccessOrganisation)]
+    [Authorize(Policy = Policy.CanAccessOrganisation)]
     [Route("api/v1/ods")]
     [ApiController]
     [Produces("application/json")]
@@ -18,10 +20,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 throw new ArgumentNullException(nameof(odsCode));
 
             if (string.IsNullOrWhiteSpace(odsCode))
-                throw new ArgumentException($"{nameof(odsCode)} cannot be empty.", nameof(odsCode));
+                return NotFound();
 
             // Canned data
-            return Ok(new OrganisationViewModel
+            return Ok(new OdsViewModel
             {
                 OrganisationId = Guid.NewGuid(),
                 Name = "Canned Organisation",
