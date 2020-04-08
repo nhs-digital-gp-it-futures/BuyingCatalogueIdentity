@@ -21,13 +21,14 @@ Scenario: 1. A authority user can create a user
 	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
-	Then a response with status code 200 is returned
+	Then a response with status code 201 is returned
 	When a GET request is made for an organisation's users with name Organisation 2
 	Then a response with status code 200 is returned
 	And the Users list is returned with the following values excluding ID
 		| FirstName | LastName   | EmailAddress             | PhoneNumber | IsDisabled |
 		| Bob       | Bobkovitch | bob.bobkovitch@email.com | 0123456789  | False      |
 
+@3538
 Scenario: 2. Create a new user yields the ID of the new user
 	Given a user is logged in
 		| Username             | Password        | Scope        |
@@ -35,7 +36,7 @@ Scenario: 2. Create a new user yields the ID of the new user
 	When a POST request is made to create a user for organisation Organisation 2
 		| FirstName | LastName   | PhoneNumber | EmailAddress             |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
-	Then a response with status code 200 is returned
+	Then a response with status code 201 is returned
 	And the response returns a user id
 
 @3538

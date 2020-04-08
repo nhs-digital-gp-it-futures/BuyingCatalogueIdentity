@@ -91,7 +91,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
             var actual = response.Result;
 
-            actual.Should().BeEquivalentTo(new OkObjectResult(new CreateBuyerResponseViewModel { UserId = newUserId }));
+            var expectation = new CreatedResult(new Uri($"/{newUserId}", UriKind.Relative), new CreateBuyerResponseViewModel { UserId = newUserId });
+
+            actual.Should().BeEquivalentTo(expectation);
         }
 
         [Test]
