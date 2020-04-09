@@ -28,7 +28,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 OrganisationName = "Canned Organisation",
                 OdsCode = odsCode,
                 PrimaryRoleId = "123",
-                CatalogueAgreementSigned = true,
                 Address = new AddressViewModel
                 {
                     Line1 = "294  Charmaine Lane",
