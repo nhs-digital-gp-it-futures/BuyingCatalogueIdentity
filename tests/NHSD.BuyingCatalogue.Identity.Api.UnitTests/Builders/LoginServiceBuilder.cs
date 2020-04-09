@@ -8,6 +8,7 @@ using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using IdentitySignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
@@ -17,12 +18,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private IIdentityServerInteractionService _identityServerInteractionService;
         private SignInManager<ApplicationUser> _signInManager;
         private UserManager<ApplicationUser> _userManager;
+        private CookieExpirationSettings _cookieExpirationSettings;
 
         internal LoginServiceBuilder()
         {
             _eventService = Mock.Of<IEventService>();
             _identityServerInteractionService = Mock.Of<IIdentityServerInteractionService>();
             _userManager = CreateDefaultMockUserManager(new ApplicationUser());
+            _cookieExpirationSettings = new CookieExpirationSettings();
         }
 
         internal LoginService Build()
@@ -31,7 +34,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 _eventService,
                 _identityServerInteractionService,
                 _signInManager,
-                _userManager);
+                _userManager,
+                _cookieExpirationSettings);
         }
 
         internal LoginServiceBuilder WithAuthorizationContextResult(
@@ -83,7 +87,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 null,
                 null,
                 null);
-
             mockUserManager
                 .Setup(s => s.FindByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(findByNameResult);
@@ -103,7 +106,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 null);
 
             mockSignInManager
-                .Setup(s => s.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), false, true))
+                .Setup(s => s.CheckPasswordSignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), true))
                 .ReturnsAsync(signInResult);
 
             return mockSignInManager.Object;

@@ -8,8 +8,9 @@ Background:
         | Name           | OdsCode |
         | Organisation 1 | Ods 1   |
     And Users exist
-        | Id  | OrganisationName | FirstName | LastName | Email         | PhoneNumber | Disabled | Password          |
-        | 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 |
+        | Id  | OrganisationName | FirstName | LastName | Email          | PhoneNumber | Disabled | Password          |
+        | 123 | Organisation 1   | John      | Doe      | test@user.com  | 01234567890 | false    | testingtesting123 |
+        | 234 | Organisation 1   | Jane      | Doe      | test2@user.com | 01234567890 | true     | testingtesting321 |
 
 @3540
 Scenario: 1. Logging in with an existing client with valid credentials
@@ -58,3 +59,12 @@ Scenario: 6. Logging in with an invalid email address
     When a login request is made with email address AliceSmith and password Pass123$
     Then the user is redirected to page identity/account/login
     And the element with Data ID field-email-address has validation error with text Enter a valid email address
+
+@3543
+Scenario: 7. Logging in with a disabled user account
+    When the user navigates to a restricted web page
+    Then the user is redirected to page identity/account/login
+    When a login request is made with email address test2@user.com and password testingtesting321
+    Then the user is redirected to page identity/account/login
+    And the page contains a validation summary with text There is a problem accessing your account.\n\nContact the account administrator at: exeter.helpdesk@nhs.net or call 0300 303 4034 
+

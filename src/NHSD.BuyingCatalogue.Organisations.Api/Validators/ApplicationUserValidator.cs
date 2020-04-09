@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
+using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Errors;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
-using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Validators

@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Models
+namespace NHSD.BuyingCatalogue.Identity.Common.Models
 {
     public sealed class ErrorMessage
     {
         public string Id { get; }
 
-        public string Field { get; }
+        public string? Field { get; }
 
-        public ErrorMessage(string id, string field = null)
+        public ErrorMessage(string id, string? field = null)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Field = field;
@@ -20,7 +20,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
                 && string.Equals(Field, other.Field, StringComparison.Ordinal);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return ReferenceEquals(this, obj) || obj is ErrorMessage other && Equals(other);
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using NHSD.BuyingCatalogue.Organisations.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models

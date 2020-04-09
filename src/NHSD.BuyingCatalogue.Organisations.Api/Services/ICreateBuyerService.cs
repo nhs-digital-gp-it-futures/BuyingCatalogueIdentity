@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
+using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 {

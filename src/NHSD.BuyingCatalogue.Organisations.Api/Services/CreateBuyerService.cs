@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
-using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Validators;
 

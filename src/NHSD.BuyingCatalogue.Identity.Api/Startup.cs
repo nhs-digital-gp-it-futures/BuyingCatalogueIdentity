@@ -61,6 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
+            services.AddSingleton(cookieExpiration);
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();

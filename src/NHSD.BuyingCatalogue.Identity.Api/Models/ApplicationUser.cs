@@ -14,5 +14,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
         public Guid PrimaryOrganisationId { get; set; }
 
         public string OrganisationFunction { get; set; }
+
+        public bool Disabled { get; set; }
     }
 }

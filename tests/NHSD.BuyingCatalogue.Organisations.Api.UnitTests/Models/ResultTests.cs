@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using NHSD.BuyingCatalogue.Organisations.Api.Models;
-using NHSD.BuyingCatalogue.Organisations.Api.Models.Results;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
+using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models

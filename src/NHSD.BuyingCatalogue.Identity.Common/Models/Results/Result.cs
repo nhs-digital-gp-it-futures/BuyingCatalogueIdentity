@@ -3,29 +3,46 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace NHSD.BuyingCatalogue.Organisations.Api.Models.Results
+namespace NHSD.BuyingCatalogue.Identity.Common.Models.Results
 {
-    public sealed class Result<T>
+    public sealed class Result
     {
+        private static readonly Result _success = new Result();
+
         public bool IsSuccess { get; }
 
         public IReadOnlyCollection<ErrorMessage> Errors { get; }
 
-        public T Value { get; }
-
-        internal Result(bool isSuccess, IEnumerable<ErrorMessage> errors, T value)
+        private Result()
         {
-            IsSuccess = isSuccess;
-            Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
-            Value = value;
+            IsSuccess = true;
+            Errors = new ReadOnlyCollection<ErrorMessage>(new List<ErrorMessage>());
         }
 
-        public Result ToResult()
+        private Result(IEnumerable<ErrorMessage> errors)
         {
-            if (IsSuccess)
-                return Result.Success();
-            
-            return Result.Failure(Errors);
+            IsSuccess = false;
+            Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
+        }
+
+        public static Result Success()
+        {
+            return _success;
+        }
+
+        public static Result<T> Success<T>(T value)
+        {
+            return new Result<T>(true, default!, value);
+        }
+
+        public static Result Failure(IEnumerable<ErrorMessage> errors)
+        {
+            return new Result(errors);
+        }
+
+        public static Result<T> Failure<T>(IEnumerable<ErrorMessage> errors)
+        {
+            return new Result<T>(false, errors, default!);
         }
 
         private static bool AreErrorsEqual(IEnumerable<ErrorMessage> first, IEnumerable<ErrorMessage> second)
@@ -44,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models.Results
             return IsSuccess == other.IsSuccess && AreErrorsEqual(Errors, other.Errors);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return ReferenceEquals(this, obj) || obj is Result other && Equals(other);
         }

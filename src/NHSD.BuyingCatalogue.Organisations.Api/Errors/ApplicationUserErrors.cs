@@ -1,4 +1,5 @@
-﻿using NHSD.BuyingCatalogue.Organisations.Api.Models;
+﻿using NHSD.BuyingCatalogue.Identity.Common.Models;
+using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Errors
 {

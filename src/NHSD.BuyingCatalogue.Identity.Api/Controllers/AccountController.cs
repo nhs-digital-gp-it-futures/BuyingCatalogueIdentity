@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
@@ -12,6 +14,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
     public sealed class AccountController : Controller
     {
         internal const string SignInErrorMessage = "Enter a valid email address and password";
+
+        internal const string UserDisabledErrorMessage = @"There is a problem accessing your account.
+
+Contact the account administrator at: exeter.helpdesk@nhs.net or call 0300 303 4034";
 
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
@@ -52,22 +58,29 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, viewModel.ReturnUrl);
 
             LoginViewModel NewLoginViewModel() =>
-                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.LoginHint };
+                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.Value?.LoginHint };
 
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
 
-            if (!signInResult.IsSuccessful)
+            if (!signInResult.IsSuccess)
             {
-                ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
+                if (signInResult.Errors.Contains(LoginUserErrors.UserNameOrPasswordIncorrect()))
+                {
+                    ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
+                }
+                if (signInResult.Errors.Contains(LoginUserErrors.UserIsDisabled()))
+                {
+                    ModelState.AddModelError(nameof(LoginViewModel.DisabledError), UserDisabledErrorMessage);
+                }
+
                 return View(NewLoginViewModel());
             }
 
             var returnUrl = viewModel.ReturnUrl.ToString();
 
-            if (signInResult.IsTrustedReturnUrl)
-
-                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+            // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+            if (signInResult.Value.IsTrustedReturnUrl)
                 return Redirect(returnUrl);
 
             return LocalRedirect(returnUrl);
