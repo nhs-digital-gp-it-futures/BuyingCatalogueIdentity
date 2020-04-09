@@ -20,7 +20,7 @@ Scenario: 1. User receives email after their account is created
 	When a POST request is made to create a user for organisation Organisation 1
 		| FirstName | LastName   | PhoneNumber | EmailAddress             | OrganisationName |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
-	Then a response with status code 200 is returned
+	Then a response with status code 201 is returned
 	And the email sent contains the following information
 		| From                           | To                       | Subject                           | ResetPasswordLink         |
 		| noreply@buyingcatalogue.nhs.uk | bob.bobkovitch@email.com | Set password for Buying Catalogue | https://www.google.co.uk/ |
