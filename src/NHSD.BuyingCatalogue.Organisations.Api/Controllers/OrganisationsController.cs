@@ -10,7 +10,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
-    [Authorize(Policy = Policy.CanAccessOrganisation)]
+    [Authorize(Policy = Policy.CanAccessOrganisations)]
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces("application/json")]
@@ -85,6 +85,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             });
         }
 
+        [Authorize(Policy = Policy.CanManageOrganisations)]
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid id, UpdateOrganisationViewModel viewModel)
@@ -107,6 +108,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = Policy.CanManageOrganisations)]
         [HttpPost]
         public async Task<ActionResult<CreateOrganisationResponseViewModel>> CreateOrganisationAsync(CreateOrganisationRequestViewModel viewModel)
         {
