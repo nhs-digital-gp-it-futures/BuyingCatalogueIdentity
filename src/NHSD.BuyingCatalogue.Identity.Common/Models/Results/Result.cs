@@ -32,7 +32,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models.Results
 
         public static Result<T> Success<T>(T value)
         {
-            return new Result<T>(true, default!, value);
+            return new Result<T>(true, new List<ErrorMessage>(), value);
         }
 
         public static Result Failure(IEnumerable<ErrorMessage> errors)
@@ -42,7 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models.Results
 
         public static Result<T> Failure<T>(IEnumerable<ErrorMessage> errors)
         {
-            return new Result<T>(false, errors, default!);
+            return new Result<T>(false, errors, default);
         }
 
         private static bool AreErrorsEqual(IEnumerable<ErrorMessage> first, IEnumerable<ErrorMessage> second)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace NHSD.BuyingCatalogue.Identity.Common.Models.Results
@@ -11,13 +12,14 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models.Results
 
         public IReadOnlyCollection<ErrorMessage> Errors { get; }
 
+        [MaybeNull]
         public T Value { get; }
 
-        internal Result(bool isSuccess, IEnumerable<ErrorMessage> errors, T value)
+        internal Result(bool isSuccess, IEnumerable<ErrorMessage> errors, [AllowNull]T value)
         {
             IsSuccess = isSuccess;
             Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
-            Value = value;
+            Value = value!;
         }
 
         public Result ToResult()
