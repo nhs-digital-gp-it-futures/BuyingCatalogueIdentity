@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
+using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
@@ -12,7 +12,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         public void Constructor_String_ApplicationUser_InitializesExpectedMembers()
         {
             const string expectedToken = "TokenToken";
-            var expectedUser = new ApplicationUser();
+            var expectedUser = ApplicationUserBuilder.Create().Build();
 
             var token = new PasswordResetToken(expectedToken, expectedUser);
 

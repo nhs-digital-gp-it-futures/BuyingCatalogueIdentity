@@ -9,16 +9,14 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection RegisterHealthChecks(this IServiceCollection services, string connectionString, SmtpSettings smtpSettings)
+        public static IServiceCollection RegisterHealthChecks(this IServiceCollection services, string connectionString, SmtpSettings? smtpSettings = null)
         {
             if (connectionString is null)
                 throw new ArgumentNullException(nameof(connectionString));
 
-            if (smtpSettings is null)
-                throw new ArgumentNullException(nameof(smtpSettings));
+            var healthChecksBuilder = services.AddHealthChecks();
 
-            services.AddHealthChecks()
-                .AddCheck(
+            healthChecksBuilder.AddCheck(
                     "self",
                     () => HealthCheckResult.Healthy(),
                     new[] { HealthCheckTags.Live })
@@ -28,8 +26,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Extensions
                     "db",
                     HealthStatus.Unhealthy,
                     new[] { HealthCheckTags.Ready },
-                    TimeSpan.FromSeconds(10))
-                .AddSmtpHealthCheck(
+                    TimeSpan.FromSeconds(10));
+
+            if (smtpSettings != null)
+            {
+                healthChecksBuilder.AddSmtpHealthCheck(
                     smtp =>
                     {
                         smtp.Host = smtpSettings.Host;
@@ -40,6 +41,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Extensions
                     HealthStatus.Degraded,
                     new[] { HealthCheckTags.Ready },
                     TimeSpan.FromSeconds(10));
+            }
 
             return services;
         }

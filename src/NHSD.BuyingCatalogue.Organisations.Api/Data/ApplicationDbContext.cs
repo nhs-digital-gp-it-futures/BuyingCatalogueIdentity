@@ -1,11 +1,10 @@
 ﻿using System;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Data
 {
-    public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public sealed class ApplicationDbContext : DbContext
     {
         public DbSet<Organisation> Organisations { get; set; }
 
@@ -21,7 +20,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
 
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new ApplicationUserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OrganisationEntityTypeConfiguration());
         }
     }

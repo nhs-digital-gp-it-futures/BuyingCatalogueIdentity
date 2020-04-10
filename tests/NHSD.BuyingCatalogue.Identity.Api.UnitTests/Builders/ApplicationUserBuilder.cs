@@ -1,29 +1,60 @@
 ﻿using System;
+using System.Collections.Generic;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     internal sealed class ApplicationUserBuilder
     {
+        private static readonly IDictionary<
+            OrganisationFunction, 
+            Func<ApplicationUserBuilder, ApplicationUser>> s_ApplicationUserFactory 
+            = new Dictionary<OrganisationFunction, Func<ApplicationUserBuilder, ApplicationUser>>
+            {
+                {
+                    OrganisationFunction.Authority, builder => 
+                        ApplicationUser.CreateAuthority(
+                            builder._username, 
+                            builder._firstName, 
+                            builder._lastName, 
+                            builder._phoneNumber, 
+                            builder._emailAddress, 
+                            builder._primaryOrganisationId)
+                },
+                {
+                    OrganisationFunction.Buyer, builder => 
+                        ApplicationUser.CreateBuyer(
+                            builder._username, 
+                            builder._firstName, 
+                            builder._lastName, 
+                            builder._phoneNumber, 
+                            builder._emailAddress, 
+                            builder._primaryOrganisationId)
+                },
+            };
+
         private string _userId;
-        private string _userName;
-        private string _email;
         private string _firstName;
         private string _lastName;
-        private bool _emailConfirmed;
+        private string _phoneNumber;
+        private string _emailAddress;
+        private string _username;
         private Guid _primaryOrganisationId;
-        private string _organisationFunction;
+        private bool _disabled;
+        private bool _catalogueAgreementSigned;
+        private OrganisationFunction _organisationFunction;
 
         private ApplicationUserBuilder()
         {
-            _userId = "TestUserId";
-            _userName = "TestUserName";
-            _email = null;
-            _emailConfirmed = false;
-            _firstName = null;
-            _lastName = null;
+            _userId = Guid.NewGuid().ToString();
+            _firstName = "Bob";
+            _lastName = "Smith";
+            _phoneNumber = "0123456789";
+            _emailAddress = "a.b@c.com";
+            _username = _emailAddress;
             _primaryOrganisationId = Guid.NewGuid();
-            _organisationFunction = null;
+            _catalogueAgreementSigned = false;
+            _organisationFunction = OrganisationFunction.Buyer;
         }
 
         internal static ApplicationUserBuilder Create()
@@ -31,27 +62,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return new ApplicationUserBuilder();
         }
 
-        internal ApplicationUserBuilder WithId(string userId)
+        internal ApplicationUserBuilder WithUserId(string userId)
         {
             _userId = userId;
-            return this;
-        }
-
-        internal ApplicationUserBuilder WithUserName(string userName)
-        {
-            _userName = userName;
-            return this;
-        }
-
-        internal ApplicationUserBuilder WithEmail(string email)
-        {
-            _email = email;
-            return this;
-        }
-
-        internal ApplicationUserBuilder WithEmailConfirmation(bool emailConfirmed)
-        {
-            _emailConfirmed = emailConfirmed;
             return this;
         }
 
@@ -67,31 +80,74 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
+        internal ApplicationUserBuilder WithPhoneNumber(string phoneNumber)
+        {
+            _phoneNumber = phoneNumber;
+            return this;
+        }
+
+        internal ApplicationUserBuilder WithEmailAddress(string emailAddress)
+        {
+            _emailAddress = emailAddress;
+            return this;
+        }
+
+        internal ApplicationUserBuilder WithUsername(string userName)
+        {
+            _username = userName;
+            return this;
+        }
+
         internal ApplicationUserBuilder WithPrimaryOrganisationId(Guid primaryOrganisationId)
         {
             _primaryOrganisationId = primaryOrganisationId;
             return this;
         }
 
-        internal ApplicationUserBuilder WithOrganisationFunction(string organisationFunction)
+        internal ApplicationUserBuilder WithOrganisationFunction(OrganisationFunction organisationFunction)
         {
             _organisationFunction = organisationFunction;
             return this;
         }
 
+        internal ApplicationUserBuilder WithDisabled(bool disabled)
+        {
+            _disabled = disabled;
+            return this;
+        }
+
+        internal ApplicationUserBuilder WithCatalogueAgreementSigned(bool catalogueAgreementSigned)
+        {
+            _catalogueAgreementSigned = catalogueAgreementSigned;
+            return this;
+        }
+
         internal ApplicationUser Build()
         {
-            return new ApplicationUser
+            return CreateUserByOrganisationFunction();
+        }
+
+        private ApplicationUser CreateUserByOrganisationFunction()
+        {
+            if (s_ApplicationUserFactory.TryGetValue(_organisationFunction, out var factory))
             {
-                Id = _userId,
-                UserName = _userName,
-                Email = _email,
-                EmailConfirmed = _emailConfirmed,
-                FirstName = _firstName,
-                LastName = _lastName,
-                PrimaryOrganisationId = _primaryOrganisationId,
-                OrganisationFunction = _organisationFunction
-            };
+                var user = factory(this);
+                user.Id = _userId;
+
+                if (_disabled)
+                {
+                    user.MarkAsDisabled();
+                }
+
+                if (_catalogueAgreementSigned)
+                {
+                    user.MarkCatalogueAgreementAsSigned();
+                }
+
+                return user;
+            }
+
+            throw new InvalidOperationException($"Unknown type of user '{_organisationFunction?.DisplayName}'");
         }
     }
 }

@@ -16,13 +16,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     public sealed class ProfileService : IProfileService
     {
-        private readonly IUserRepository _applicationUserRepository;
+        private readonly IUsersRepository _applicationUserRepository;
 
-        private static readonly IDictionary<string, IEnumerable<Claim>> _organisationFunctionClaims =
-            new Dictionary<string, IEnumerable<Claim>>
+        private static readonly IDictionary<OrganisationFunction, IEnumerable<Claim>> _organisationFunctionClaims =
+            new Dictionary<OrganisationFunction, IEnumerable<Claim>>
             {
-                { 
-                    "Authority", new List<Claim>
+                {
+                    OrganisationFunction.Authority,
+                    new List<Claim>
                     {
                         new Claim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage),
                         new Claim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage)
@@ -30,9 +31,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 }
             };
 
-        public ProfileService(IUserRepository applicationUserRepository)
+        public ProfileService(IUsersRepository applicationUserRepository)
         {
-            _applicationUserRepository = applicationUserRepository ?? throw new ArgumentNullException(nameof(applicationUserRepository));
+            _applicationUserRepository = applicationUserRepository ??
+                                         throw new ArgumentNullException(nameof(applicationUserRepository));
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -60,7 +62,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             subject.ThrowIfNull(nameof(subject));
 
             string subjectId = subject.GetSubjectId();
-            return await _applicationUserRepository.FindByIdAsync(subjectId);
+            return await _applicationUserRepository.GetByIdAsync(subjectId);
         }
 
         private List<Claim> GetClaimsFromUser(ApplicationUser user)
@@ -81,7 +83,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (!string.IsNullOrWhiteSpace(email))
             {
                 yield return new Claim(JwtClaimTypes.Email, email);
-                yield return new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean);
+                yield return new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false",
+                    ClaimValueTypes.Boolean);
             }
         }
 
@@ -118,17 +121,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         {
             yield return new Claim(ApplicationClaimTypes.PrimaryOrganisationId, user.PrimaryOrganisationId.ToString());
 
-            string organisationFunction = user.OrganisationFunction;
-            if (!string.IsNullOrWhiteSpace(organisationFunction))
-            {
-                yield return new Claim(ApplicationClaimTypes.OrganisationFunction, organisationFunction);
+            OrganisationFunction organisationFunction = user.OrganisationFunction;
 
-                if (_organisationFunctionClaims.TryGetValue(organisationFunction, out IEnumerable<Claim> organisationClaims))
+            yield return new Claim(ApplicationClaimTypes.OrganisationFunction, organisationFunction.DisplayName);
+
+            if (_organisationFunctionClaims.TryGetValue(organisationFunction, out IEnumerable<Claim> organisationClaims))
+            {
+                foreach (Claim claim in organisationClaims)
                 {
-                    foreach (Claim claim in organisationClaims)
-                    {
-                        yield return claim;
-                    }
+                    yield return claim;
                 }
             }
         }

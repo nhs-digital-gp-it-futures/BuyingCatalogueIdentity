@@ -7,6 +7,7 @@ using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NUnit.Framework;
 
@@ -110,7 +111,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string emailAddress = "a@b.com";
             const string expectedToken = "HereBeToken";
-            var expectedUser = new ApplicationUser();
+            var expectedUser = ApplicationUserBuilder.Create().Build();
 
             var mockUserManager = MockUserManager;
             mockUserManager.Setup(m => m.FindByEmailAsync(It.Is<string>(e => e == emailAddress)))
@@ -158,7 +159,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                     new PasswordResetSettings(),
                     MockUserManager.Object);
 
-                await service.SendResetEmailAsync(new ApplicationUser(), null);
+                await service.SendResetEmailAsync(ApplicationUserBuilder.Create().Build(), null);
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(SendResetEmailAsync);
@@ -175,7 +176,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                     new PasswordResetSettings(),
                     MockUserManager.Object);
 
-                await service.SendResetEmailAsync(new ApplicationUser(), callback);
+                await service.SendResetEmailAsync(ApplicationUserBuilder.Create().Build(), callback);
             }
 
             Assert.ThrowsAsync<ArgumentException>(SendResetEmailAsync);
@@ -186,12 +187,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string emailAddress = "a@b.com";
             const string expectedCallback = "https://identity/account/resetPassword?token=1234&emailAddress=a@b.com";
-            var expectedUser = new ApplicationUser
-            {
-                Email = emailAddress,
-                FirstName = "Eggs",
-                LastName = "Benedict",
-            };
+            var expectedUser = ApplicationUserBuilder
+                .Create()
+                .WithFirstName("Eggs")
+                .WithLastName("Benedict")
+                .WithEmailAddress(emailAddress)
+                .Build();
 
             var expectedSender = new EmailAddress("Uncle Robert", "uncle@bob.com");
             const string expectedSubject = "Password Reset";

@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Http;
 using MailKit;
 using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +18,9 @@ using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
+using NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Api.Validators;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
@@ -44,31 +48,45 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var connectionString = _configuration.GetConnectionString("CatalogueUsers");
             var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
-            var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
+            var apiResources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
             var identityResources =
                 _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
             var passwordResetSettings = _configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
+            
+            var allowInvalidCertificate = _configuration.GetValue<bool>("AllowInvalidCertificate");
+
             var smtpSettings = _configuration.GetSection("SmtpServer").Get<SmtpSettings>();
+            if (!smtpSettings.AllowInvalidCertificate.HasValue)
+                smtpSettings.AllowInvalidCertificate = allowInvalidCertificate;
+
+            var registrationSettings = _configuration.GetSection("Registration").Get<RegistrationSettings>();
 
             var issuerUrl = _configuration.GetValue<string>("issuerUrl");
 
             Log.Logger.Information("Clients: {@clients}", clients);
-            Log.Logger.Information("Api Resources: {@resources}", resources);
+            Log.Logger.Information("Api Resources: {@resources}", apiResources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
             Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
 
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
+            services.AddSingleton(registrationSettings);
+                
+            services.AddTransient<IUsersRepository, UsersRepository>();
 
-            services.AddScoped<ILoginService, LoginService>();
-            services.AddScoped<ILogoutService, LogoutService>();
+            services
+                .AddTransient<IRegistrationService, RegistrationService>()
+                .AddTransient<ICreateBuyerService, CreateBuyerService>()
+                .AddTransient<IEmailService, MailKitEmailService>()
+                .AddScoped<ILoginService, LoginService>()
+                .AddScoped<ILogoutService, LogoutService>()
+                .AddScoped<IPasswordService, PasswordService>();
+
+            services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
+
             services.AddScoped<IMailTransport, SmtpClient>();
-            services.AddScoped<IPasswordService, PasswordService>();
-
-            services.AddTransient<IEmailService, MailKitEmailService>();
-            services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -87,7 +105,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     options.UserInteraction.ErrorIdParameter = "errorId";
                 })
                 .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
-                .AddInMemoryApiResources(resources.Select(x => x.ToResource()))
+                .AddInMemoryApiResources(apiResources.Select(x => x.ToResource()))
                 .AddInMemoryClients(clients.Select(x => x.ToClient()))
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<ProfileService>()
@@ -100,9 +118,46 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             });
 
             services.RegisterHealthChecks(connectionString, smtpSettings);
+
+            var builder = services.AddAuthentication(options =>
+                {
+                    foreach (AuthenticationSchemeBuilder authenticationSchemeBuilder in options.Schemes)
+                    {
+                        Log.Logger.Information("AuthenticationScheme : {@authenticationSchemeBuilder}", authenticationSchemeBuilder);
+                    }
+                })
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = issuerUrl;
+                    options.ApiName = "Organisation";
+                    options.RequireHttpsMetadata = false;
+
+                    if (allowInvalidCertificate)
+                    {
+                        options.JwtBackChannelHandler = new HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback =
+                                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        };
+                    }
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(PolicyName.CanAccessOrganisationUsers, policyBuilder =>
+                {
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Account);
+                });
+                options.AddPolicy(PolicyName.CanManageOrganisationUsers, policyBuilder =>
+                {
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage);
+                    policyBuilder.RequireClaim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage);
+                });
+            });
+
             services.AddControllers();
             services.AddControllersWithViews();
-            services.AddAuthentication();
         }
 
         public void Configure(IApplicationBuilder app)
