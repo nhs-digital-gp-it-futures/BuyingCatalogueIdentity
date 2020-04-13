@@ -156,7 +156,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 });
             });
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
+
             services.AddControllersWithViews();
         }
 
