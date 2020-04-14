@@ -43,12 +43,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
             var registrationSettings = Configuration.GetSection("Registration").Get<RegistrationSettings>();
 
+            var odsApiBaseUrl = Configuration.GetValue<string>("OdsApiBaseUrl");
+
             var smtpSettings = Configuration.GetSection("SmtpServer").Get<SmtpSettings>();
             if (!smtpSettings.AllowInvalidCertificate.HasValue)
                 smtpSettings.AllowInvalidCertificate = allowInvalidCertificate;
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IUsersRepository, UsersRepository>();
+            services.AddTransient<IOdsRepository>(r => new OdsRepository(odsApiBaseUrl));
 
             services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -86,9 +89,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policy.CanAccessOrganisations, policy => policy.RequireClaim(ApplicationClaimTypes.Organisation));
-                options.AddPolicy(Policy.CanManageOrganisations, policy => 
+                options.AddPolicy(Policy.CanManageOrganisations, policy =>
                     policy.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage));
-        
+
                 options.AddPolicy(Policy.CanAccessOrganisationUsers, policyBuilder =>
                 {
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);

@@ -1,6 +1,6 @@
 ﻿namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 {
-    public sealed class OdsViewModel
+    public sealed class OdsOrganisationViewModel
     {
         public string OdsCode { get; set; }
 
