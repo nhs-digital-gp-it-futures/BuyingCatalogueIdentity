@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
-using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
@@ -21,20 +20,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly CookieExpirationSettings _cookieExpirationSettings;
 
         public LoginService(
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager,
-            CookieExpirationSettings cookieExpirationSettings)
+            UserManager<ApplicationUser> userManager)
         {
             _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
             _userManager = userManager;
-            _cookieExpirationSettings = cookieExpirationSettings;
         }
 
         public void Dispose()
