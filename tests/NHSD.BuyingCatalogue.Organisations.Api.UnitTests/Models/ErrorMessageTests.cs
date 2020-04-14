@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
         {
             const string expectedId = "ErrorMessageId";
 
-            var actual = new ErrorMessage(expectedId);
+            var actual = new ErrorDetails(expectedId);
 
             actual.Field.Should().BeNull();
             actual.Id.Should().Be(expectedId);
@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
 
-            var actual = new ErrorMessage(expectedId, expectedField);
+            var actual = new ErrorDetails(expectedId, expectedField);
 
             actual.Id.Should().Be(expectedId);
             actual.Field.Should().Be(expectedField);
@@ -37,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
         {
             static void CreateError()
             {
-                _ = new ErrorMessage(null);
+                _ = new ErrorDetails(null);
             }
 
             Assert.Throws<ArgumentNullException>(CreateError);
@@ -49,8 +49,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
 
-            var first = new ErrorMessage(expectedId, expectedField);
-            var second = new ErrorMessage(expectedId, expectedField);
+            var first = new ErrorDetails(expectedId, expectedField);
+            var second = new ErrorDetails(expectedId, expectedField);
 
             var actual = first.Equals(second);
 
@@ -63,8 +63,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Models
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
 
-            var first = new ErrorMessage(expectedId, expectedField);
-            var second = new ErrorMessage(expectedId, null);
+            var first = new ErrorDetails(expectedId, expectedField);
+            var second = new ErrorDetails(expectedId, null);
 
             var actual = first.Equals(second);
 

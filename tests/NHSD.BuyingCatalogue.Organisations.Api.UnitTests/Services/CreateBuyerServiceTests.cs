@@ -135,7 +135,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         public async Task CreateAsync_ApplicationUserValidationFails_ReturnFailureResult()
         {
             var context = CreateBuyerServiceTestContext.Setup();
-            context.ApplicationUserValidatorResult = Result.Failure(new List<ErrorMessage>());
+            context.ApplicationUserValidatorResult = Result.Failure(new List<ErrorDetails>());
 
             var sut = context.CreateBuyerService;
 
@@ -143,7 +143,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 
             var actual = await sut.CreateAsync(request);
 
-            var expected = Result.Failure(new List<ErrorMessage>());
+            var expected = Result.Failure(new List<ErrorDetails>());
             actual.Should().Be(expected);
         }
 

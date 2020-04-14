@@ -11,18 +11,18 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models.Results
 
         public bool IsSuccess { get; }
 
-        public IReadOnlyCollection<ErrorMessage> Errors { get; }
+        public IReadOnlyCollection<ErrorDetails> Errors { get; }
 
         private Result()
         {
             IsSuccess = true;
-            Errors = new ReadOnlyCollection<ErrorMessage>(new List<ErrorMessage>());
+            Errors = new ReadOnlyCollection<ErrorDetails>(new List<ErrorDetails>());
         }
 
-        private Result(IEnumerable<ErrorMessage> errors)
+        private Result(IEnumerable<ErrorDetails> errors)
         {
             IsSuccess = false;
-            Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
+            Errors = new ReadOnlyCollection<ErrorDetails>(errors != null ? errors.ToList() : new List<ErrorDetails>());
         }
 
         public static Result Success()
@@ -32,24 +32,34 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models.Results
 
         public static Result<T> Success<T>(T value)
         {
-            return new Result<T>(true, new List<ErrorMessage>(), value);
+            return new Result<T>(true, new List<ErrorDetails>(), value);
         }
 
-        public static Result Failure(IEnumerable<ErrorMessage> errors)
+        public static Result Failure(IEnumerable<ErrorDetails> errors)
         {
             return new Result(errors);
         }
 
-        public static Result<T> Failure<T>(IEnumerable<ErrorMessage> errors)
+        public static Result Failure(params ErrorDetails[] errors)
+        {
+            return new Result(errors);
+        }
+
+        public static Result<T> Failure<T>(IEnumerable<ErrorDetails> errors)
         {
             return new Result<T>(false, errors, default);
         }
 
-        private static bool AreErrorsEqual(IEnumerable<ErrorMessage> first, IEnumerable<ErrorMessage> second)
+        public static Result<T> Failure<T>(params ErrorDetails[] errors)
+        {
+            return new Result<T>(false, errors, default);
+        }
+
+        private static bool AreErrorsEqual(IEnumerable<ErrorDetails> first, IEnumerable<ErrorDetails> second)
         {
             if (first is null)
                 return second is null;
-            
+
             if (second is null)
                 return false;
 

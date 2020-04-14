@@ -135,7 +135,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var result = await loginService.SignInAsync("user", "pass", null);
 
             Assert.NotNull(result);
-            result.Value.IsSuccessful.Should().BeTrue();
+            result.IsSuccess.Should().BeTrue();
             result.Value.IsTrustedReturnUrl.Should().BeFalse();
             result.Value.LoginHint.Should().BeNull();
         }
@@ -151,7 +151,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var result = await loginService.SignInAsync("user", "pass", null);
 
             Assert.NotNull(result);
-            result.Value.IsSuccessful.Should().BeTrue();
+            result.IsSuccess.Should().BeTrue();
             result.Value.IsTrustedReturnUrl.Should().BeTrue();
             result.Value.LoginHint.Should().BeNull();
         }

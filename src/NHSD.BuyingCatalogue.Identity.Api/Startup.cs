@@ -45,6 +45,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var resources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
+            var disabledErrorMessage = _configuration.GetSection("disabledErrorMessage").Get<DisabledErrorMessageSetting>();
             var identityResources =
                 _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
@@ -62,6 +63,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
             services.AddSingleton(cookieExpiration);
+            services.AddSingleton(disabledErrorMessage);
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILogoutService, LogoutService>();

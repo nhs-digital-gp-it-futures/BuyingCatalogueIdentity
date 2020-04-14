@@ -128,7 +128,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public async Task CreateBuyerAsync_CreateBuyerFailureResult_ReturnsBadRequest()
         {
-            var errors = new List<ErrorMessage> { new ErrorMessage("TestErrorId", "TestField") };
+            var errors = new List<ErrorDetails> { new ErrorDetails("TestErrorId", "TestField") };
 
             var context = UsersControllerTestContext.Setup();
             context.CreateBuyerResult = Result.Failure<string>(errors);

@@ -2,16 +2,16 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Errors
 {
-    public static class LoginUserErrors
+    internal static class LoginUserErrors
     {
-        public static ErrorMessage UserNameOrPasswordIncorrect()
+        internal static ErrorDetails UserNameOrPasswordIncorrect()
         {
-            return new ErrorMessage("UsernameOrPasswordIsIncorrect");
+            return new ErrorDetails("UsernameOrPasswordIsIncorrect");
         }
 
-        public static ErrorMessage UserIsDisabled()
+        internal static ErrorDetails UserIsDisabled()
         {
-            return new ErrorMessage("UserIsDisabled");
+            return new ErrorDetails("UserIsDisabled");
         }
     }
 }

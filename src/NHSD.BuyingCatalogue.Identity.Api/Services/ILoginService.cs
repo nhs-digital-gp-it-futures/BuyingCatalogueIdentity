@@ -6,6 +6,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     public interface ILoginService
     {
-        Task<Result<SignInResult>> SignInAsync(string username, string password, Uri returnUrl);
+        Task<Result<SignInResponse>> SignInAsync(string username, string password, Uri returnUrl);
     }
 }

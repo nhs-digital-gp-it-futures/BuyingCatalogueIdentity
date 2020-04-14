@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
@@ -15,22 +17,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
     {
         internal const string SignInErrorMessage = "Enter a valid email address and password";
 
-        internal const string UserDisabledErrorMessage = @"There is a problem accessing your account.
+        internal const string UserDisabledErrorMessageTemplate = @"There is a problem accessing your account.
 
-Contact the account administrator at: exeter.helpdesk@nhs.net or call 0300 303 4034";
+Contact the account administrator at: {0} or call {1}";
 
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
         private readonly IPasswordService _passwordService;
+        private readonly DisabledErrorMessageSetting _disabledErrorMessageSetting;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
-            IPasswordService passwordService)
+            IPasswordService passwordService,
+            DisabledErrorMessageSetting disabledErrorMessageSetting)
         {
             _loginService = loginService;
             _logoutService = logoutService;
             _passwordService = passwordService;
+            _disabledErrorMessageSetting = disabledErrorMessageSetting;
         }
 
         [HttpGet]
@@ -65,13 +70,19 @@ Contact the account administrator at: exeter.helpdesk@nhs.net or call 0300 303 4
 
             if (!signInResult.IsSuccess)
             {
-                if (signInResult.Errors.Contains(LoginUserErrors.UserNameOrPasswordIncorrect()))
+                var signInErrors = signInResult.Errors;
+
+                if (signInErrors.Contains(LoginUserErrors.UserNameOrPasswordIncorrect()))
                 {
                     ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
                 }
-                if (signInResult.Errors.Contains(LoginUserErrors.UserIsDisabled()))
+                if (signInErrors.Contains(LoginUserErrors.UserIsDisabled()))
                 {
-                    ModelState.AddModelError(nameof(LoginViewModel.DisabledError), UserDisabledErrorMessage);
+                    var a = string.Format(CultureInfo.CurrentCulture, UserDisabledErrorMessageTemplate, _disabledErrorMessageSetting.EmailAddress,
+                        _disabledErrorMessageSetting.PhoneNumber);
+
+                    ModelState.AddModelError(nameof(LoginViewModel.DisabledError),
+                        a);
                 }
 
                 return View(NewLoginViewModel());

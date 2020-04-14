@@ -5,54 +5,54 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Errors
 {
     public static class ApplicationUserErrors
     {
-        public static ErrorMessage FirstNameRequired()
+        public static ErrorDetails FirstNameRequired()
         {
-            return new ErrorMessage("FirstNameRequired", nameof(ApplicationUser.FirstName));
+            return new ErrorDetails("FirstNameRequired", nameof(ApplicationUser.FirstName));
         }
 
-        public static ErrorMessage FirstNameTooLong()
+        public static ErrorDetails FirstNameTooLong()
         {
-            return new ErrorMessage("FirstNameTooLong", nameof(ApplicationUser.FirstName));
+            return new ErrorDetails("FirstNameTooLong", nameof(ApplicationUser.FirstName));
         }
 
-        public static ErrorMessage LastNameRequired()
+        public static ErrorDetails LastNameRequired()
         {
-            return new ErrorMessage("LastNameRequired", nameof(ApplicationUser.LastName));
+            return new ErrorDetails("LastNameRequired", nameof(ApplicationUser.LastName));
         }
 
-        public static ErrorMessage LastNameTooLong()
+        public static ErrorDetails LastNameTooLong()
         {
-            return new ErrorMessage("LastNameTooLong", nameof(ApplicationUser.LastName));
+            return new ErrorDetails("LastNameTooLong", nameof(ApplicationUser.LastName));
         }
 
-        public static ErrorMessage PhoneNumberRequired()
+        public static ErrorDetails PhoneNumberRequired()
         {
-            return new ErrorMessage("PhoneNumberRequired", nameof(ApplicationUser.PhoneNumber));
+            return new ErrorDetails("PhoneNumberRequired", nameof(ApplicationUser.PhoneNumber));
         }
 
-        public static ErrorMessage PhoneNumberTooLong()
+        public static ErrorDetails PhoneNumberTooLong()
         {
-            return new ErrorMessage("PhoneNumberTooLong", nameof(ApplicationUser.PhoneNumber));
+            return new ErrorDetails("PhoneNumberTooLong", nameof(ApplicationUser.PhoneNumber));
         }
 
-        public static ErrorMessage EmailRequired()
+        public static ErrorDetails EmailRequired()
         {
-            return new ErrorMessage("EmailRequired", "EmailAddress");
+            return new ErrorDetails("EmailRequired", "EmailAddress");
         }
 
-        public static ErrorMessage EmailTooLong()
+        public static ErrorDetails EmailTooLong()
         {
-            return new ErrorMessage("EmailTooLong", "EmailAddress");
+            return new ErrorDetails("EmailTooLong", "EmailAddress");
         }
 
-        public static ErrorMessage EmailInvalidFormat()
+        public static ErrorDetails EmailInvalidFormat()
         {
-            return new ErrorMessage("EmailInvalidFormat", "EmailAddress");
+            return new ErrorDetails("EmailInvalidFormat", "EmailAddress");
         }
         
-        public static ErrorMessage EmailAlreadyExists()
+        public static ErrorDetails EmailAlreadyExists()
         {
-            return new ErrorMessage("EmailAlreadyExists", "EmailAddress");
+            return new ErrorDetails("EmailAlreadyExists", "EmailAddress");
         }
     }
 }

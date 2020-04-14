@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -14,10 +15,10 @@ using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
+using NHSD.BuyingCatalogue.Identity.Common.Email;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
 using NUnit.Framework;
-using ErrorMessage = NHSD.BuyingCatalogue.Identity.Common.Models.ErrorMessage;
-using SignInResult = NHSD.BuyingCatalogue.Identity.Api.Services.SignInResult;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 {
@@ -29,7 +30,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         public async Task Login_LoginViewModel_FailedSignIn_AddsUsernameOrPasswordValidationError()
         {
             using var controller = new AccountControllerBuilder()
-                .WithSignInResult(Result.Failure<SignInResult>(new List<ErrorMessage>{ LoginUserErrors.UserNameOrPasswordIncorrect() }))
+                .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails> { LoginUserErrors.UserNameOrPasswordIncorrect() }))
                 .Build();
 
             await controller.Login(new LoginViewModel());
@@ -48,8 +49,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task Login_LoginViewModel_FailedSignIn_AddsDisabledValidationError()
         {
+            string email = "test@email.com";
+            string phoneNumber = "012345678901";
+
             using var controller = new AccountControllerBuilder()
-                .WithSignInResult(Result.Failure<SignInResult>(new List<ErrorMessage> { LoginUserErrors.UserIsDisabled() }))
+                .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails> { LoginUserErrors.UserIsDisabled() }))
+                .WithDisabledErrorMessageSetting(email, phoneNumber)
                 .Build();
 
             await controller.Login(new LoginViewModel());
@@ -62,14 +67,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             (string key, ModelStateEntry entry) = modelState.First();
             key.Should().Be(nameof(LoginViewModel.DisabledError));
             entry.Errors.Count.Should().Be(1);
-            entry.Errors.First().ErrorMessage.Should().Be(AccountController.UserDisabledErrorMessage);
+
+            var expected = string.Format(CultureInfo.CurrentCulture, AccountController.UserDisabledErrorMessageTemplate, email,
+            phoneNumber);
+            entry.Errors.First().ErrorMessage.Should().Be(expected);
         }
 
         [Test]
         public async Task Login_LoginViewModel_FailedSignIn_ReturnsExpectedView()
         {
             using var controller = new AccountControllerBuilder()
-                .WithSignInResult(Result.Failure<SignInResult>(new List<ErrorMessage>()))
+                .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails>()))
                 .Build();
 
             var result = await controller.Login(new LoginViewModel()) as ViewResult;
@@ -84,7 +92,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         public async Task Login_LoginViewModel_InvalidViewModelWithoutAnyValues_ReturnsExpectedView()
         {
             using var controller = new AccountControllerBuilder()
-                .WithSignInResult(Result.Failure<SignInResult>(new List<ErrorMessage>()))
+                .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails>()))
                 .Build();
 
             controller.ModelState.AddModelError(string.Empty, "Fake error!");
@@ -115,7 +123,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             };
 
             using var controller = new AccountControllerBuilder()
-                .WithSignInResult(new Result<SignInResult>(false, null, new SignInResult(false, loginHint: loginHint)))
+                .WithSignInResult(new Result<SignInResponse>(false, null, new SignInResponse(false, loginHint: loginHint)))
                 .Build();
 
             controller.ModelState.AddModelError(string.Empty, "Fake error!");
@@ -148,7 +156,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             const string goodUrl = "https://www.realclient.co.uk/";
 
             using var controller = new AccountControllerBuilder()
-                .WithSignInResult(new Result<SignInResult>(true, null, new SignInResult(true,true)))
+                .WithSignInResult(new Result<SignInResponse>(true, null, new SignInResponse(true)))
                 .Build();
 
             var result = await controller.Login(
@@ -164,7 +172,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             const string rootUrl = "~/";
 
             using var controller = new AccountControllerBuilder()
-                .WithSignInResult(new Result<SignInResult>(true, null, new SignInResult(true)))
+                .WithSignInResult(new Result<SignInResponse>(true, null, new SignInResponse()))
                 .Build();
 
             var result = await controller.Login(
