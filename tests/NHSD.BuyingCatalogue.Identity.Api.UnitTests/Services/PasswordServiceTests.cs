@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
@@ -15,8 +16,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
     [TestFixture]
     internal sealed class PasswordServiceTests
     {
+        private static Mock<IUserStore<ApplicationUser>> MockUserStore => new Mock<IUserStore<ApplicationUser>>();
         private static Mock<UserManager<ApplicationUser>> MockUserManager => new Mock<UserManager<ApplicationUser>>(
-        Mock.Of<IUserStore<ApplicationUser>>(),
+        MockUserStore.Object,
         null,
         null,
         null,
@@ -235,6 +237,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actualEmailMessage.Subject.Should().Be(expectedSubject);
             actualEmailMessage.HtmlBody.Should().Be(expectedCallback);
             actualEmailMessage.TextBody.Should().Be(expectedCallback);
+        }
+
+        [Test]
+        public async Task ResetPasswordAsync_WithUser_ReturnsIdentityResult()
+        {
+            var email = "a@b.c";
+            var token = "I am a token, honest!";
+            var password = "Pass123321";
+            var expectedResult = new IdentityResult();
+            var user = new ApplicationUser();
+            var mockUserManager = MockUserManager;
+            mockUserManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            mockUserManager.Setup(x => x.ResetPasswordAsync(user, token, password)).ReturnsAsync(() => expectedResult);
+
+            var service = new PasswordService(
+                Mock.Of<IEmailService>(),
+                new PasswordResetSettings(),
+                mockUserManager.Object);
+
+            var result = await service.ResetPasswordAsync(email, token, password);
+            result.Should().Be(expectedResult);
         }
     }
 }

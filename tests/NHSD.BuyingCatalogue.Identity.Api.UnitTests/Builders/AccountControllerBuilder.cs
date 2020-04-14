@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
@@ -81,6 +82,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 .Returns(action);
 
             _urlHelper = mockUrlHelper.Object;
+
+            return this;
+        }
+
+        internal AccountControllerBuilder WithPasswordResetResult(IdentityResult result)
+        {
+            _mockPasswordService.Setup(x => x.ResetPasswordAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>())
+                ).ReturnsAsync(result);
 
             return this;
         }
