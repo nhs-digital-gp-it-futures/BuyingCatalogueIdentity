@@ -29,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _logoutService = Mock.Of<ILogoutService>();
             _mockPasswordService = new Mock<IPasswordService>();
             _urlHelper = Mock.Of<IUrlHelper>();
-            _disabledErrorMessageSettings = new DisabledErrorMessageSettings()
+            _disabledErrorMessageSettings = new DisabledErrorMessageSettings
             {
                 EmailAddress = "Email",
                 PhoneNumber = "Phone"

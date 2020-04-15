@@ -79,9 +79,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             await _signInManager.SignInAsync(user, props);
 
             await RaiseLoginSuccessAsync(username, context);
+
             // We can trust returnUrl if GetAuthorizationContextAsync returned non-null
             return Result.Success(new SignInResponse(context is object));
-
         }
 
         private async Task RaiseLoginSuccessAsync(string username, AuthorizationRequest context)
@@ -96,7 +96,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             return result.Succeeded ? Result.Success() : Result.Failure(LoginUserErrors.UserNameOrPasswordIncorrect());
         }
 
-        private Result ValidateIfUserDisabled(ApplicationUser user)
+        private static Result ValidateIfUserDisabled(ApplicationUser user)
         {
             return !user.Disabled ? Result.Success() : Result.Failure(LoginUserErrors.UserIsDisabled());
         }

@@ -11,17 +11,13 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
-<<<<<<< HEAD
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
-=======
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
->>>>>>> development
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
-using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
 using NUnit.Framework;

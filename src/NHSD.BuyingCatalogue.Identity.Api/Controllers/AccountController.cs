@@ -76,13 +76,16 @@ Contact the account administrator at: {0} or call {1}";
                 {
                     ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
                 }
+
                 if (signInErrors.Contains(LoginUserErrors.UserIsDisabled()))
                 {
-                    var disabledErrorFormat = string.Format(CultureInfo.CurrentCulture, UserDisabledErrorMessageTemplate, _disabledErrorMessageSettings.EmailAddress,
+                    var disabledErrorFormat = string.Format(
+                        CultureInfo.CurrentCulture, 
+                        UserDisabledErrorMessageTemplate, 
+                        _disabledErrorMessageSettings.EmailAddress,
                         _disabledErrorMessageSettings.PhoneNumber);
 
-                    ModelState.AddModelError(nameof(LoginViewModel.DisabledError),
-                        disabledErrorFormat);
+                    ModelState.AddModelError(nameof(LoginViewModel.DisabledError), disabledErrorFormat);
                 }
 
                 return View(NewLoginViewModel());
