@@ -43,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
             var registrationSettings = Configuration.GetSection("Registration").Get<RegistrationSettings>();
 
-            var odsApiBaseUrl = Configuration.GetValue<string>("OdsApiBaseUrl");
+            var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
 
             var smtpSettings = Configuration.GetSection("SmtpServer").Get<SmtpSettings>();
             if (!smtpSettings.AllowInvalidCertificate.HasValue)
@@ -51,13 +51,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IUsersRepository, UsersRepository>();
-            services.AddTransient<IOdsRepository>(r => new OdsRepository(odsApiBaseUrl));
+            services.AddTransient<IOdsRepository, OdsRepository>();
 
             services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             services.AddSingleton(registrationSettings);
+            services.AddSingleton(odsSettings);
             services.AddSingleton(smtpSettings);
             services.AddScoped<IMailTransport, SmtpClient>();
 

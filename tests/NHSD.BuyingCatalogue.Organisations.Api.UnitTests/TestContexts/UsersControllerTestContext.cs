@@ -31,6 +31,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
 
             UsersRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<ApplicationUser>()));
         }
+
 		public Mock<ICreateBuyerService> CreateBuyerServiceMock { get; set; }
 
 		public Result<string> CreateBuyerResult { get; set; } = Result.Success("NewUserId");
