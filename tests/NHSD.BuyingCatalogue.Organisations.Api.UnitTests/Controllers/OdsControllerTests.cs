@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class OdsControllerTests
+    internal sealed class OdsControllerTests
     {
         [Test]
         public async Task GetByOdsCodeAsync_OrganisationDoesNotExist_ReturnsNotFound()
@@ -81,7 +81,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             const string odsCode = "123";
 
             var odsRepositoryMock = new Mock<IOdsRepository>();
-            odsRepositoryMock.Setup(x => x.GetBuyerOrganisationByOdsCode(It.IsAny<string>()))
+            odsRepositoryMock.Setup(x => x.GetBuyerOrganisationByOdsCodeAsync(It.IsAny<string>()))
                 .ReturnsAsync(null as OdsOrganisation);
 
             using var controller = OdsControllerBuilder.Create()
@@ -90,9 +90,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             await controller.GetByOdsCodeAsync(odsCode);
 
-            odsRepositoryMock.Verify(x => x.GetBuyerOrganisationByOdsCode(odsCode), Times.Once);
+            odsRepositoryMock.Verify(x => x.GetBuyerOrganisationByOdsCodeAsync(odsCode), Times.Once);
         }
     }
 }
-
-

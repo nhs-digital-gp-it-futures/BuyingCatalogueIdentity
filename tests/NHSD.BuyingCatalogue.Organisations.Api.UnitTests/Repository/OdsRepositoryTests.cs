@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 
             httpTest.RespondWith(status: 200, body: ValidResponseBody);
 
-            var result = await _odsRepository.GetBuyerOrganisationByOdsCode(OdsCode);
+            var result = await _odsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
             result.Should().BeOfType<OdsOrganisation>();
             result.Should().NotBeNull();
@@ -41,7 +41,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 
             httpTest.RespondWithJson(new { ErrorCode = 404, ErrorText = "Not Found." }, 404);
 
-            var result = await _odsRepository.GetBuyerOrganisationByOdsCode(OdsCode);
+            var result = await _odsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
             result.Should().BeNull();
         }
@@ -52,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             using var httpTest = new HttpTest();
             httpTest.RespondWith(status: 500);
 
-            Assert.ThrowsAsync<FlurlHttpException>(async () => await _odsRepository.GetBuyerOrganisationByOdsCode(string.Empty));
+            Assert.ThrowsAsync<FlurlHttpException>(async () => await _odsRepository.GetBuyerOrganisationByOdsCodeAsync(string.Empty));
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             using var httpTest = new HttpTest();
             httpTest.RespondWith(status: 200, body: ValidResponseBody);
 
-            await _odsRepository.GetBuyerOrganisationByOdsCode(OdsCode);
+            await _odsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
             httpTest.ShouldHaveCalled($"{OdsApiBaseUrl}/organisations/{OdsCode}")
                 .WithVerb(HttpMethod.Get)

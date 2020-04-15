@@ -5,6 +5,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
     public interface IOdsRepository
     {
-        Task<OdsOrganisation> GetBuyerOrganisationByOdsCode(string odsCode);
+        Task<OdsOrganisation> GetBuyerOrganisationByOdsCodeAsync(string odsCode);
     }
 }

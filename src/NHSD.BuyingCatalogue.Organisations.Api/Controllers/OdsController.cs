@@ -32,7 +32,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (string.IsNullOrWhiteSpace(odsCode))
                 return NotFound();
 
-            var odsOrganisation = await _odsRepository.GetBuyerOrganisationByOdsCode(odsCode);
+            var odsOrganisation = await _odsRepository.GetBuyerOrganisationByOdsCodeAsync(odsCode);
 
             if (odsOrganisation is null)
                 return NotFound();

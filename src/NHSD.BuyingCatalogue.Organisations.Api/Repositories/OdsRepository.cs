@@ -19,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             _odsApiBaseUrl = odsApiBaseUrl;
         }
 
-        public async Task<OdsOrganisation> GetBuyerOrganisationByOdsCode(string odsCode)
+        public async Task<OdsOrganisation> GetBuyerOrganisationByOdsCodeAsync(string odsCode)
         {
 
             var response = await _odsApiBaseUrl

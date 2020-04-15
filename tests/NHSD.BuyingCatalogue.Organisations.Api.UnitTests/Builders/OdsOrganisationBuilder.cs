@@ -26,40 +26,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return new OdsOrganisationBuilder(index, isActiveBuyerOrganisation);
         }
 
-        internal OdsOrganisationBuilder WithOdsCode(string odsCode)
-        {
-            _odsCode = odsCode;
-            return this;
-        }
-
-        internal OdsOrganisationBuilder WithName(string name)
-        {
-            _name = name;
-            return this;
-        }
-
-        internal OdsOrganisationBuilder WithPrimaryRoleId(string primaryRoleId)
-        {
-            _primaryRoleId = primaryRoleId;
-            return this;
-        }
-
-        internal OdsOrganisationBuilder WithAddress(Address address)
-        {
-            _address = address;
-            return this;
-        }
-        internal OdsOrganisationBuilder WithIsActive(bool isActive)
-        {
-            _isActive = isActive;
-            return this;
-        }
-
-        internal OdsOrganisationBuilder WithIsBuyerOrganisation(bool isBuyerOrganisation)
-        {
-            _isBuyerOrganisation = isBuyerOrganisation;
-            return this;
-        }
         internal OdsOrganisation Build()
         {
             return new OdsOrganisation

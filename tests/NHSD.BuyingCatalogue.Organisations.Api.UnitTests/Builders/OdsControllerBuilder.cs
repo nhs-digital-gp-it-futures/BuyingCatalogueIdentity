@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         internal OdsControllerBuilder WithGetByOdsCode(OdsOrganisation result)
         {
             var odsRepositoryMock = new Mock<IOdsRepository>();
-            odsRepositoryMock.Setup(x => x.GetBuyerOrganisationByOdsCode(It.IsAny<string>())).ReturnsAsync(result);
+            odsRepositoryMock.Setup(x => x.GetBuyerOrganisationByOdsCodeAsync(It.IsAny<string>())).ReturnsAsync(result);
 
             _odsRepository = odsRepositoryMock.Object;
             return this;
