@@ -38,11 +38,13 @@ Scenario: 4. The back to log in link is displayed correctly
 @3926
 Scenario: 5. The NHS Footer is displayed
     Then the page contains element with Data ID nhsuk-footer
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/nhs-sites/
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/about-us/
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/contact-us/
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/personalisation/login.aspx
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/about-us/sitemap/
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/accessibility/
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/our-policies/
-    And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/our-policies/cookies-policy/
+    And element with Data ID nhsuk-footer contains a link to /guide
+    And element with Data ID nhsuk-footer contains a link to /guide#contact-us
+    And element with Data ID nhsuk-footer contains a link to https://digital.nhs.uk/
+    And element with Data ID nhsuk-footer contains a link to https://digital.nhs.uk/services/future-gp-it-systems-and-services
+    And element with Data ID nhsuk-footer contains a link to https://gpitbjss.atlassian.net/wiki/spaces/GPITF/overview
+
+@3926
+Scenario: 6. The NHS Legal is displayed
+    Then the page contains element with Data ID nhsuk-legal-panel
+    And element with Data ID nhsuk-legal-panel contains a link to https://digital.nhs.uk/about-nhs-digital/privacy-and-cookies

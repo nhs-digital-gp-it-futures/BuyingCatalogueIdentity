@@ -89,24 +89,35 @@
         @RenderBody()
     </main>
 
-    <footer role="contentinfo">
-        <div class="nhsuk-footer" id="nhsuk-footer" data-test-id="nhsuk-footer">
-            <div class="nhsuk-width-container">
-                <h2 class="nhsuk-u-visually-hidden">Support links</h2>
-                <ul class="nhsuk-footer__list nhsuk-footer__list--three-columns">
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/nhs-sites/">NHS sites</a></li>
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/about-us/">About us</a></li>
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/contact-us/">Contact us</a></li>
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/personalisation/login.aspx">Profile editor login</a></li>
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/about-us/sitemap/">Sitemap</a></li>
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/accessibility/">Accessibility</a></li>
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/our-policies/">Our policies</a></li>
-                    <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://www.nhs.uk/our-policies/cookies-policy/">Cookies</a></li>
-                </ul>
+    <div data-test-id="footer">
+        <div data-test-id="footer-component">
+            <footer role="contentinfo">
+                <div data-test-id="nhsuk-footer" class="nhsuk-footer">
+                    <div class="nhsuk-width-container">
+                        <h2 class="nhsuk-u-visually-hidden">Support links</h2>
+                        <ul class="nhsuk-footer__list nhsuk-footer__list--three-columns">
+                            <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="/guide">Buyer&#39;s Guide</a></li>
+                            <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="/guide#contact-us">NHS Digital Helpdesk</a></li>
+                            <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://digital.nhs.uk/">NHS Digital</a></li>
+                            <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://digital.nhs.uk/services/future-gp-it-systems-and-services">About GP IT Futures</a></li>
+                            <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="https://gpitbjss.atlassian.net/wiki/spaces/GPITF/overview">Capabilities &amp; Standards Model</a></li>
+                        </ul>
 
-                <p class="nhsuk-footer__copyright">&copy; Crown copyright</p>
+                        <p class="nhsuk-footer__copyright">&copy; Crown copyright</p>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+        <div data-test-id="nhsuk-legal-panel" class="bc-t-bg--grey-4 nhsuk-u-padding-bottom-3">
+            <div class="nhsuk-panel nhsuk-width-container nhsuk-u-padding-0 nhsuk-u-margin-top-0 nhsuk-u-margin-bottom-0">
+                <div class="bc-t-bg--grey-4">
+                    <span class='nhsuk-u-margin-right-1'>Legal</span>
+                    <span class='nhsuk-u-margin-right-1'><a href='https://digital.nhs.uk/about-nhs-digital/privacy-and-cookies'>Privacy and Cookies</a></span>
+                </div>
             </div>
         </div>
-    </footer>
+    </div>
+
 </body>
 </html>
