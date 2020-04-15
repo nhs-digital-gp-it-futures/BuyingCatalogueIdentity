@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
-    [Authorize(Policy = Policy.CanAccessOrganisations)]
+    [Authorize(Policy = PolicyName.CanAccessOrganisations)]
     [Route("api/v1/ods")]
     [ApiController]
     [Produces("application/json")]
