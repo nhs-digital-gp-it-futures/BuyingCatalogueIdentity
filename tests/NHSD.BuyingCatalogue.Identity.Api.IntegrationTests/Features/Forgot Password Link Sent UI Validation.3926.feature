@@ -33,7 +33,7 @@ Scenario: 3. The The Forgot Password Link Sent page description is displayed cor
 @3926
 Scenario: 4. The back to log in link is displayed correctly
     Then the page contains element with Data ID go-back-link
-    And element with Data ID go-back-link contains a link to identity/account/login with text < Back to log in
+    And element with Data ID go-back-link contains a link to identity/account/login with text Back to log in
 
 @3926
 Scenario: 5. The NHS Footer is displayed
