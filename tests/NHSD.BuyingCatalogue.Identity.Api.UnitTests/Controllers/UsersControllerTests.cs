@@ -90,11 +90,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             using var controller = context.Controller;
 
             var response = await controller.CreateBuyerAsync(Guid.Empty, new CreateBuyerRequestViewModel());
-            
+
             response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
             var actual = response.Result;
 
-            var expectation = new CreatedResult(new Uri($"/{newUserId}", UriKind.Relative), new CreateBuyerResponseViewModel { UserId = newUserId });
+            var expectation = new CreatedResult(new Uri($"/{newUserId}", UriKind.Relative),
+                new CreateBuyerResponseViewModel { UserId = newUserId });
 
             actual.Should().BeEquivalentTo(expectation);
         }
@@ -145,8 +146,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
             var actual = response.Result;
 
-            var expectedErrors = new List<ErrorMessageViewModel> { new ErrorMessageViewModel("TestErrorId", "TestField") };
-            var expected = new BadRequestObjectResult(new CreateBuyerResponseViewModel { Errors = expectedErrors});
+            var expectedErrors =
+                new List<ErrorMessageViewModel> { new ErrorMessageViewModel("TestErrorId", "TestField") };
+            var expected = new BadRequestObjectResult(new CreateBuyerResponseViewModel { Errors = expectedErrors });
             actual.Should().BeEquivalentTo(expected);
         }
 
@@ -164,7 +166,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             Assert.ThrowsAsync<ArgumentNullException>(CreateUser);
         }
 
-        private static (ApplicationUser RepoUser, OrganisationUserViewModel ExpectedUser) CreateApplicationUserTestData(bool disabled)
+        private static (ApplicationUser RepoUser, OrganisationUserViewModel ExpectedUser) CreateApplicationUserTestData(
+            bool disabled)
         {
             var repositoryApplicationUser = ApplicationUserBuilder
                 .Create()
@@ -314,45 +317,46 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(context.User.Id), Times.Once);
             context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
         }
-    }
 
-    internal sealed class UsersControllerTestContext
-    {
-        private UsersControllerTestContext()
+        private sealed class UsersControllerTestContext
         {
-            CreateBuyerServiceMock = new Mock<ICreateBuyerService>();
-            CreateBuyerServiceMock.Setup(x => x.CreateAsync(It.IsAny<CreateBuyerRequest>()))
-                .ReturnsAsync(() => CreateBuyerResult);
+            private UsersControllerTestContext()
+            {
+                CreateBuyerServiceMock = new Mock<ICreateBuyerService>();
+                CreateBuyerServiceMock.Setup(x => x.CreateAsync(It.IsAny<CreateBuyerRequest>()))
+                    .ReturnsAsync(() => CreateBuyerResult);
+
+                UsersRepositoryMock = new Mock<IUsersRepository>();
+
+                Users = new List<ApplicationUser>();
+                UsersRepositoryMock.Setup(x => x.FindByOrganisationIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(() => Users);
+
+                UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
+
+                Controller = new UsersController(CreateBuyerServiceMock.Object, UsersRepositoryMock.Object);
+
+                UsersRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(() => User);
+
+                UsersRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<ApplicationUser>()));
+            }
+
+            internal Mock<ICreateBuyerService> CreateBuyerServiceMock { get; }
             
-            UsersRepositoryMock = new Mock<IUsersRepository>();
+            internal Result<string> CreateBuyerResult { get; set; } = Result.Success("NewUserId");
+            
+            internal Mock<IUsersRepository> UsersRepositoryMock { get; }
+            
+            internal IEnumerable<ApplicationUser> Users { get; set; }
+            
+            internal UsersController Controller { get; }
+            
+            internal ApplicationUser User { get; set; }
 
-            Users = new List<ApplicationUser>();
-            UsersRepositoryMock.Setup(x => x.FindByOrganisationIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(() => Users);
-
-            UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
-
-            Controller = new UsersController(CreateBuyerServiceMock.Object, UsersRepositoryMock.Object);
-
-            UsersRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(() => User);
-
-            UsersRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<ApplicationUser>()));
-        }
-        public Mock<ICreateBuyerService> CreateBuyerServiceMock { get; set; }
-
-        public Result<string> CreateBuyerResult { get; set; } = Result.Success("NewUserId");
-
-        public Mock<IUsersRepository> UsersRepositoryMock { get; set; }
-
-        public IEnumerable<ApplicationUser> Users { get; set; }
-
-        public UsersController Controller { get; set; }
-
-        public ApplicationUser User { get; set; }
-
-        internal static UsersControllerTestContext Setup()
-        {
-            return new UsersControllerTestContext();
+            internal static UsersControllerTestContext Setup()
+            {
+                return new UsersControllerTestContext();
+            }
         }
     }
 }

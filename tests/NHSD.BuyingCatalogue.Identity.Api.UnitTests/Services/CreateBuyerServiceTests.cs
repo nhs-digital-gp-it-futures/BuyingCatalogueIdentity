@@ -144,7 +144,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var actual = await sut.CreateAsync(request);
 
-            var expected = Result.Failure(new List<ErrorMessage>());
+            var expected = Result.Failure<string>(new List<ErrorMessage>());
             actual.Should().Be(expected);
         }
 

@@ -8,7 +8,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
     {
         private static readonly IDictionary<
             OrganisationFunction, 
-            Func<ApplicationUserBuilder, ApplicationUser>> s_ApplicationUserFactory 
+            Func<ApplicationUserBuilder, ApplicationUser>> _applicationUserFactory 
             = new Dictionary<OrganisationFunction, Func<ApplicationUserBuilder, ApplicationUser>>
             {
                 {
@@ -57,10 +57,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _organisationFunction = OrganisationFunction.Buyer;
         }
 
-        internal static ApplicationUserBuilder Create()
-        {
-            return new ApplicationUserBuilder();
-        }
+        internal static ApplicationUserBuilder Create() => new ApplicationUserBuilder();
 
         internal ApplicationUserBuilder WithUserId(string userId)
         {
@@ -122,32 +119,29 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal ApplicationUser Build()
-        {
-            return CreateUserByOrganisationFunction();
-        }
+        internal ApplicationUser Build() => CreateUserByOrganisationFunction();
 
         private ApplicationUser CreateUserByOrganisationFunction()
         {
-            if (s_ApplicationUserFactory.TryGetValue(_organisationFunction, out var factory))
+            if (!_applicationUserFactory.TryGetValue(_organisationFunction, out var factory))
             {
-                var user = factory(this);
-                user.Id = _userId;
-
-                if (_disabled)
-                {
-                    user.MarkAsDisabled();
-                }
-
-                if (_catalogueAgreementSigned)
-                {
-                    user.MarkCatalogueAgreementAsSigned();
-                }
-
-                return user;
+                throw new InvalidOperationException($"Unknown type of user '{_organisationFunction?.DisplayName}'");
             }
 
-            throw new InvalidOperationException($"Unknown type of user '{_organisationFunction?.DisplayName}'");
+            var user = factory(this);
+            user.Id = _userId;
+
+            if (_disabled)
+            {
+                user.MarkAsDisabled();
+            }
+
+            if (_catalogueAgreementSigned)
+            {
+                user.MarkCatalogueAgreementAsSigned();
+            }
+
+            return user;
         }
     }
 }

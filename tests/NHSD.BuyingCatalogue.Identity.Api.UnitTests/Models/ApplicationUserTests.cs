@@ -142,7 +142,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         {
             static void Test()
             {
-                var actual = ApplicationUserBuilder
+                ApplicationUserBuilder
                     .Create()
                     .WithUsername(null)
                     .Build();
@@ -156,7 +156,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         {
             static void Test()
             {
-                var actual = ApplicationUserBuilder
+                ApplicationUserBuilder
                     .Create()
                     .WithFirstName(null)
                     .Build();
@@ -170,7 +170,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         {
             static void Test()
             {
-                var actual = ApplicationUserBuilder
+                ApplicationUserBuilder
                     .Create()
                     .WithLastName(null)
                     .Build();
@@ -184,7 +184,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         {
             static void Test()
             {
-                var actual = ApplicationUserBuilder
+                ApplicationUserBuilder
                     .Create()
                     .WithPhoneNumber(null)
                     .Build();
@@ -198,7 +198,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         {
             static void Test()
             {
-                var actual = ApplicationUserBuilder
+                ApplicationUserBuilder
                     .Create()
                     .WithEmailAddress(null)
                     .Build();
