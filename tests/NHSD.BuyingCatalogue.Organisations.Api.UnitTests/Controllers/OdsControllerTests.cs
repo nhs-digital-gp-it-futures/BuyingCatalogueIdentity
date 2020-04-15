@@ -67,12 +67,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public void GetByOdsCodeAsync_NullOdsCode_ThrowsArgumentNullException()
         {
-            using var controller = OdsControllerBuilder
-                .Create()
-                .WithGetByOdsCode(null)
-                .Build();
-
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await controller.GetByOdsCodeAsync(null));
+            static async Task GetOrganisationByNullOdsCode()
+            {
+                using var controller = OdsControllerBuilder.Create().Build();
+                await controller.GetByOdsCodeAsync(null);
+            }
+            Assert.ThrowsAsync<ArgumentNullException>(GetOrganisationByNullOdsCode);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var odsRepositoryMock = new Mock<IOdsRepository>();
             odsRepositoryMock.Setup(x => x.GetBuyerOrganisationByOdsCodeAsync(It.IsAny<string>()))
-                .ReturnsAsync(null as OdsOrganisation);
+                .ReturnsAsync((OdsOrganisation)null);
 
             using var controller = OdsControllerBuilder.Create()
                 .WithOdsRepository(odsRepositoryMock.Object)

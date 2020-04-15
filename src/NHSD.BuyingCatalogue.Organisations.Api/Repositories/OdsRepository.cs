@@ -51,7 +51,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         private static string GetPrimaryRoleId(OdsResponseOrganisation organisation)
         {
-            return organisation.Roles.Role.Where(r => r.primaryRole).Select(r => r.id).FirstOrDefault();
+            return organisation.Roles.Role.FirstOrDefault(r => r.primaryRole)?.id;
         }
 
         private static Address OdsResponseAddressToAddress(OdsResponseAddress odsAddress)

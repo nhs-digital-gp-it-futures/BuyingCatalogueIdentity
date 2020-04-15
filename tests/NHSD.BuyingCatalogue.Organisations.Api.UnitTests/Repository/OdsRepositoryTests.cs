@@ -26,12 +26,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             using var httpTest = new HttpTest();
             httpTest.RespondWith(status: 200, body: ValidResponseBody);
 
-            var result = await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            var expected = new OdsOrganisation
+            {
+                OdsCode = OdsCode,
+                OrganisationName = "SOUTH EAST - H&J COMMISSIONING HUB",
+                PrimaryRoleId = "RO98",
+                Address = new Address
+                {
+                    Line1 = "C/O NHS ENGLAND",
+                    Line2 = "1W09, 1ST FLOOR, QUARRY HOUSE",
+                    Line3 = "QUARRY HILL",
+                    Town = "LEEDS",
+                    Postcode = "LS2 7UA",
+                    Country = "ENGLAND"
+                },
+                IsActive = true,
+                IsBuyerOrganisation = true,
+            };
+            var actual = await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
-            result.Should().BeOfType<OdsOrganisation>();
-            result.Should().NotBeNull();
-            result.IsActive.Should().BeTrue();
-            result.IsBuyerOrganisation.Should().BeTrue();
+            actual.Should().BeOfType<OdsOrganisation>();
+            actual.Should().NotBeNull();
+
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Test]
