@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
@@ -22,8 +21,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
-            IPasswordService passwordService
-            )
+            IPasswordService passwordService)
         {
             _loginService = loginService;
             _logoutService = logoutService;
@@ -160,22 +158,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
 
-            var invalidPasswordError = res.Errors.FirstOrDefault(x => x.Code == PasswordValidator.InvalidPasswordCode);
+            var invalidPasswordError = res.Errors.FirstOrDefault(error => error.Code == PasswordValidator.InvalidPasswordCode);
             if (invalidPasswordError != null)
             {
                 ModelState.AddModelError(nameof(ResetPasswordViewModel.Password), invalidPasswordError.Description);
                 return View(viewModel);
             }
 
-            var invalidTokenError = res.Errors.FirstOrDefault(x => x.Code == "InvalidToken");
+            var invalidTokenError = res.Errors.FirstOrDefault(error => error.Code == PasswordService.InvalidTokenCode);
             if (invalidTokenError != null)
             {
                 return RedirectToAction(nameof(ResetPasswordExpired));
             }
 
-            throw new Exception(
-                $"Unexpected errors whilst resetting password: {String.Join(" & ", res.Errors.Select(x => x.Description))}"
-                );
+            throw new InvalidOperationException(
+                $"Unexpected errors whilst resetting password: {string.Join(" & ", res.Errors.Select(error => error.Description))}");
         }
 
         [HttpGet]

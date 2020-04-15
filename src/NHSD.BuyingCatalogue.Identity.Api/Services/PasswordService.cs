@@ -12,6 +12,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     /// </summary>
     internal sealed class PasswordService : IPasswordService
     {
+        internal const string InvalidTokenCode = "InvalidToken";
+
         private readonly IEmailService _emailService;
         private readonly PasswordResetSettings _settings;
         private readonly UserManager<ApplicationUser> _userManager;

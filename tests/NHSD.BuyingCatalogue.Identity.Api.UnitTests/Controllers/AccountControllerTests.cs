@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Models;
@@ -406,7 +405,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             var viewModel = new ResetPasswordViewModel { Email = email, Token = expectedToken };
             var identityResult = IdentityResult.Failed(new IdentityError
             {
-                Code = "InvalidToken"
+                Code = PasswordService.InvalidTokenCode
             });
             using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
 
@@ -433,7 +432,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
                 await controller.ResetPassword(viewModel);
             }
-            Assert.ThrowsAsync<Exception>(ForgotPassword);
+            Assert.ThrowsAsync<InvalidOperationException>(ForgotPassword);
         }
     }
 }

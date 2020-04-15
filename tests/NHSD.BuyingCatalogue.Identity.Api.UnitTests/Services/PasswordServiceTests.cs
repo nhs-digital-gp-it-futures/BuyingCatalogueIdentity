@@ -242,9 +242,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [Test]
         public async Task ResetPasswordAsync_WithUser_ReturnsIdentityResult()
         {
-            var email = "a@b.c";
-            var token = "I am a token, honest!";
-            var password = "Pass123321";
+            const string email = "a@b.c";
+            const string token = "I am a token, honest!";
+            const string password = "Pass123321";
+
             var expectedResult = new IdentityResult();
             var user = new ApplicationUser();
             var mockUserManager = MockUserManager;

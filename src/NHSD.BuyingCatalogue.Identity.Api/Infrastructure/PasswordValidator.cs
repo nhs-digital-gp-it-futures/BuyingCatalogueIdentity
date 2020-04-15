@@ -9,7 +9,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 {
     internal sealed class PasswordValidator : IPasswordValidator<ApplicationUser>
     {
-        public const string InvalidPasswordCode = "InvalidPassword";
+        internal const string InvalidPasswordCode = "InvalidPassword";
         internal const string PasswordConditionsNotMet = "The password you’ve entered does not meet the criteria";
 
         public Task<IdentityResult> ValidateAsync(UserManager<ApplicationUser> manager, ApplicationUser user, string password)

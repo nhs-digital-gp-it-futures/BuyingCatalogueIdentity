@@ -1,7 +1,7 @@
 ﻿Feature: Reset Password
     As a User 
     I want to be able to reset my password
-    So that I can be able to login with correct details
+    So that I can login with correct details
 
 Background:
     When the user navigates to identity url account/resetpassword
