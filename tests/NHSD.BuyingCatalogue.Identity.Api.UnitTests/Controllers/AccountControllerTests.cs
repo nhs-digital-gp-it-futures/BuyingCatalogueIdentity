@@ -13,6 +13,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 using NHSD.BuyingCatalogue.Identity.Common.Email;
@@ -49,12 +50,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task Login_LoginViewModel_FailedSignIn_AddsDisabledValidationError()
         {
-            string email = "test@email.com";
-            string phoneNumber = "012345678901";
+            const string email = "test@email.com";
+            const string phoneNumber = "012345678901";
+
+            var disabledSetting = new DisabledErrorMessageSettings()
+            {
+                EmailAddress = email,
+                PhoneNumber = phoneNumber
+            };
 
             using var controller = new AccountControllerBuilder()
                 .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails> { LoginUserErrors.UserIsDisabled() }))
-                .WithDisabledErrorMessageSetting(email, phoneNumber)
+                .WithDisabledErrorMessageSetting(disabledSetting)
                 .Build();
 
             await controller.Login(new LoginViewModel());
@@ -67,7 +74,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             (string key, ModelStateEntry entry) = modelState.First();
             key.Should().Be(nameof(LoginViewModel.DisabledError));
             entry.Errors.Count.Should().Be(1);
-
             var expected = string.Format(CultureInfo.CurrentCulture, AccountController.UserDisabledErrorMessageTemplate, email,
             phoneNumber);
             entry.Errors.First().ErrorMessage.Should().Be(expected);

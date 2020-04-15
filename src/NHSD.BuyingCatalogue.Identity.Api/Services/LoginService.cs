@@ -80,7 +80,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             await RaiseLoginSuccessAsync(username, context);
             // We can trust returnUrl if GetAuthorizationContextAsync returned non-null
-            return Result.Success(context == null ? new SignInResponse() : new SignInResponse(true));
+            return Result.Success(new SignInResponse(context is object));
 
         }
 

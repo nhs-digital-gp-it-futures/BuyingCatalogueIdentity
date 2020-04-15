@@ -19,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private ILoginService _loginService;
         private ILogoutService _logoutService;
         private IUrlHelper _urlHelper;
-        private readonly DisabledErrorMessageSetting _disabledErrorMessage;
+        private DisabledErrorMessageSettings _disabledErrorMessageSettings;
 
         internal AccountControllerBuilder()
         {
@@ -28,17 +28,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _logoutService = Mock.Of<ILogoutService>();
             _mockPasswordService = new Mock<IPasswordService>();
             _urlHelper = Mock.Of<IUrlHelper>();
-            _disabledErrorMessage = new DisabledErrorMessageSetting()
+            _disabledErrorMessageSettings = new DisabledErrorMessageSettings()
             {
                 EmailAddress = "Email",
                 PhoneNumber = "Phone"
             };
         }
 
-        internal AccountControllerBuilder WithDisabledErrorMessageSetting(string email, string phoneNumber)
+        internal AccountControllerBuilder WithDisabledErrorMessageSetting(DisabledErrorMessageSettings settings)
         {
-            _disabledErrorMessage.EmailAddress = email;
-            _disabledErrorMessage.PhoneNumber = phoneNumber;
+            _disabledErrorMessageSettings = settings;
             return this;
         }
 
@@ -112,7 +111,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         internal AccountController Build()
         {
-            return new AccountController(_loginService, _logoutService, _mockPasswordService.Object, _disabledErrorMessage)
+            return new AccountController(_loginService, _logoutService, _mockPasswordService.Object, _disabledErrorMessageSettings)
             {
                 ControllerContext = _context,
                 Url = _urlHelper,

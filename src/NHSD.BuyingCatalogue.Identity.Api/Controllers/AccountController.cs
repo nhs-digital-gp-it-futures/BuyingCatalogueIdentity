@@ -24,18 +24,18 @@ Contact the account administrator at: {0} or call {1}";
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
         private readonly IPasswordService _passwordService;
-        private readonly DisabledErrorMessageSetting _disabledErrorMessageSetting;
+        private readonly DisabledErrorMessageSettings _disabledErrorMessageSettings;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
             IPasswordService passwordService,
-            DisabledErrorMessageSetting disabledErrorMessageSetting)
+            DisabledErrorMessageSettings disabledErrorMessageSettings)
         {
             _loginService = loginService;
             _logoutService = logoutService;
             _passwordService = passwordService;
-            _disabledErrorMessageSetting = disabledErrorMessageSetting;
+            _disabledErrorMessageSettings = disabledErrorMessageSettings;
         }
 
         [HttpGet]
@@ -78,11 +78,11 @@ Contact the account administrator at: {0} or call {1}";
                 }
                 if (signInErrors.Contains(LoginUserErrors.UserIsDisabled()))
                 {
-                    var a = string.Format(CultureInfo.CurrentCulture, UserDisabledErrorMessageTemplate, _disabledErrorMessageSetting.EmailAddress,
-                        _disabledErrorMessageSetting.PhoneNumber);
+                    var disabledErrorFormat = string.Format(CultureInfo.CurrentCulture, UserDisabledErrorMessageTemplate, _disabledErrorMessageSettings.EmailAddress,
+                        _disabledErrorMessageSettings.PhoneNumber);
 
                     ModelState.AddModelError(nameof(LoginViewModel.DisabledError),
-                        a);
+                        disabledErrorFormat);
                 }
 
                 return View(NewLoginViewModel());
