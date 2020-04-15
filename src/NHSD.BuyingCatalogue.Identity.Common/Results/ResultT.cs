@@ -7,7 +7,7 @@ using NHSD.BuyingCatalogue.Identity.Common.Messages;
 
 namespace NHSD.BuyingCatalogue.Identity.Common.Results
 {
-    public sealed class Result<T>
+    public sealed class Result<T> : IEquatable<Result<T>>
     {
         public bool IsSuccess { get; }
 
@@ -42,7 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
             return first.SequenceEqual(second);
         }
 
-        private bool Equals(Result<T> other)
+        public bool Equals(Result<T> other)
         {
             return other is object
                 && IsSuccess == other.IsSuccess
