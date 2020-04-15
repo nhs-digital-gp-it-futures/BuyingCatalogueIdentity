@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -142,7 +143,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ResetPassword(ResetPasswordViewModel viewModel)
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
         {
             viewModel.ThrowIfNull(nameof(viewModel));
 
@@ -151,7 +152,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return View(viewModel);
             }
 
-            return RedirectToAction(nameof(ResetPasswordConfirmation));
+            var res = await _passwordService.ResetPasswordAsync(viewModel.Email, viewModel.Token, viewModel.Password);
+            if (res.Succeeded)
+            {
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
+            }
+
+            var invalidPasswordError = res.Errors.FirstOrDefault(error => error.Code == PasswordValidator.InvalidPasswordCode);
+            if (invalidPasswordError != null)
+            {
+                ModelState.AddModelError(nameof(ResetPasswordViewModel.Password), invalidPasswordError.Description);
+                return View(viewModel);
+            }
+
+            var invalidTokenError = res.Errors.FirstOrDefault(error => error.Code == PasswordService.InvalidTokenCode);
+            if (invalidTokenError != null)
+            {
+                return RedirectToAction(nameof(ResetPasswordExpired));
+            }
+
+            throw new InvalidOperationException(
+                $"Unexpected errors whilst resetting password: {string.Join(" & ", res.Errors.Select(error => error.Description))}");
         }
 
         [HttpGet]
