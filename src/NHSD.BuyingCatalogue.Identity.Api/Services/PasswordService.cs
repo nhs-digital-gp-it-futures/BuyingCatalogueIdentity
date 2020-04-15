@@ -12,6 +12,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     /// </summary>
     internal sealed class PasswordService : IPasswordService
     {
+        internal const string InvalidTokenCode = "InvalidToken";
+
         private readonly IEmailService _emailService;
         private readonly PasswordResetSettings _settings;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -55,7 +57,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentException($"{nameof(emailAddress)} must be provided", nameof(emailAddress));
 
             var user = await _userManager.FindByEmailAsync(emailAddress);
-
+            
             return user == null
                 ? null
                 : new PasswordResetToken(await _userManager.GeneratePasswordResetTokenAsync(user), user);
@@ -88,6 +90,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             };
 
             await _emailService.SendEmailAsync(message);
+        }
+
+        /// <summary>
+        /// Resets the password of the user with the specified <paramref name="emailAddress"/>
+        /// </summary>
+        /// <param name="emailAddress">The email address of the user</param>
+        /// <param name="token">The validation token for authorizing the password reset</param>
+        /// <param name="newPassword">The value of the new password</param>
+        /// <returns>The result of the password reset operation</returns>
+        public async Task<IdentityResult> ResetPasswordAsync(string emailAddress, string token, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(emailAddress);
+            return await _userManager.ResetPasswordAsync(user, token, newPassword);
         }
     }
 }

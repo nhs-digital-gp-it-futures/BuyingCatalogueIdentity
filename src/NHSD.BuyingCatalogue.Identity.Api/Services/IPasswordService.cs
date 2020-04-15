@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
@@ -32,5 +33,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langref="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="callback"/> is empty or white space.</exception>
         Task SendResetEmailAsync(ApplicationUser user, string callback);
+
+        /// <summary>
+        /// Resets the password of the user with the specified <paramref name="emailAddress"/>
+        /// </summary>
+        /// <param name="emailAddress">The email address of the user</param>
+        /// <param name="token">The validation token for authorizing the password reset</param>
+        /// <param name="newPassword">The value of the new password</param>
+        /// <returns>The result of the password reset operation</returns>
+        public Task<IdentityResult> ResetPasswordAsync(string emailAddress, string token, string newPassword);
     }
 }

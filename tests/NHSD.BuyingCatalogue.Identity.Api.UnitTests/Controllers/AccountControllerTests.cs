@@ -5,12 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
+<<<<<<< HEAD
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
+=======
+using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
+>>>>>>> development
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
@@ -407,6 +412,68 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             model.Email.Should().Be(email);
             model.Token.Should().Be(expectedToken);
+        }
+
+        [Test]
+        public async Task ResetPassword_InvalidPassword_ReturnsExpectedView()
+        {
+            const string email = "a@b.test";
+            const string expectedToken = "TokenMcToken";
+            var viewModel = new ResetPasswordViewModel {Email = email, Token = expectedToken};
+            var identityResult = IdentityResult.Failed(new IdentityError
+            {
+                Code = PasswordValidator.InvalidPasswordCode,
+                Description = PasswordValidator.PasswordConditionsNotMet
+            });
+
+            using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
+
+            var result = (await controller.ResetPassword(viewModel)) as ViewResult;
+            Assert.NotNull(result);
+
+            var model = result.Model as ResetPasswordViewModel;
+            Assert.NotNull(model);
+
+            model.Email.Should().Be(email);
+            model.Token.Should().Be(expectedToken);
+        }
+
+        [Test]
+        public async Task ResetPassword_InvalidToken_RedirectsToPasswordExpired()
+        {
+            const string email = "a@b.test";
+            const string expectedToken = "TokenMcToken";
+            var viewModel = new ResetPasswordViewModel { Email = email, Token = expectedToken };
+            var identityResult = IdentityResult.Failed(new IdentityError
+            {
+                Code = PasswordService.InvalidTokenCode
+            });
+            using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
+
+            var result = await controller.ResetPassword(viewModel) as RedirectToActionResult;
+
+            Assert.NotNull(result);
+            result.ActionName.Should().Be(nameof(AccountController.ResetPasswordExpired));
+        }
+
+        [Test]
+        public void ResetPassword_UnexpectedError_ThrowsException()
+        {
+            const string email = "a@b.test";
+            const string expectedToken = "TokenMcToken";
+
+            static async Task ForgotPassword()
+            {
+                var viewModel = new ResetPasswordViewModel { Email = email, Token = expectedToken };
+                var identityResult = IdentityResult.Failed(new IdentityError
+                {
+                    Code = "SomethingWeirdHappened"
+                });
+
+                using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
+                await controller.ResetPassword(viewModel);
+            }
+            Assert.ThrowsAsync<InvalidOperationException>(ForgotPassword);
         }
     }
 }

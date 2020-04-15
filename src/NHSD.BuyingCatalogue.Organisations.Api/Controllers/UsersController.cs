@@ -71,7 +71,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (result.IsSuccess)
             {
                 response.UserId = result.Value;
-                return Ok(response);
+                return Created(new Uri($"/{response.UserId}", UriKind.Relative) ,response);
             }
 
             response.Errors = result.Errors.Select(x => new ErrorMessageViewModel { Id = x.Id, Field = x.Field });
