@@ -16,11 +16,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
         [MaybeNull]
         public T Value { get; }
 
-        internal Result(bool isSuccess, IEnumerable<ErrorMessage>? errors, [AllowNull] T value)
+        internal Result(bool isSuccess, IEnumerable<ErrorMessage>? errors, T value)
         {
             IsSuccess = isSuccess;
             Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
-            Value = value!;
+            Value = value;
         }
 
         public Result ToResult()
@@ -42,19 +42,22 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
             return first.SequenceEqual(second);
         }
 
-        private bool Equals(Result other)
+        private bool Equals(Result<T> other)
         {
-            return IsSuccess == other.IsSuccess && AreErrorsEqual(Errors, other.Errors);
+            return other is object
+                && IsSuccess == other.IsSuccess
+                && AreErrorsEqual(Errors, other.Errors)
+                && Equals(Value, other.Value);
         }
 
         public override bool Equals(object? obj)
         {
-            return ReferenceEquals(this, obj) || obj is Result other && Equals(other);
+            return ReferenceEquals(this, obj) || obj is Result<T> other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(IsSuccess, Errors);
+            return HashCode.Combine(IsSuccess, Errors, Value!);
         }
     }
 }

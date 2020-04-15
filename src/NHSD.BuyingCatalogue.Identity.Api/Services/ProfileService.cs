@@ -34,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         public ProfileService(IUsersRepository applicationUserRepository)
         {
             _applicationUserRepository = applicationUserRepository ??
-                                         throw new ArgumentNullException(nameof(applicationUserRepository));
+                throw new ArgumentNullException(nameof(applicationUserRepository));
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -65,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             return await _applicationUserRepository.GetByIdAsync(subjectId);
         }
 
-        private List<Claim> GetClaimsFromUser(ApplicationUser user)
+        private static List<Claim> GetClaimsFromUser(ApplicationUser user)
         {
             var claims = new List<Claim>();
 
@@ -83,7 +83,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (!string.IsNullOrWhiteSpace(email))
             {
                 yield return new Claim(JwtClaimTypes.Email, email);
-                yield return new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false",
+                yield return new Claim(
+                    JwtClaimTypes.EmailVerified, 
+                    user.EmailConfirmed ? "true" : "false",
                     ClaimValueTypes.Boolean);
             }
         }

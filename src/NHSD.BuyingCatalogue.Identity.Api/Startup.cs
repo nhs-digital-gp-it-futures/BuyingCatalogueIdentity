@@ -53,7 +53,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
             var passwordResetSettings = _configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
-            
+
             var allowInvalidCertificate = _configuration.GetValue<bool>("AllowInvalidCertificate");
 
             var smtpSettings = _configuration.GetSection("SmtpServer").Get<SmtpSettings>();
@@ -73,7 +73,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
             services.AddSingleton(registrationSettings);
-                
+
             services.AddTransient<IUsersRepository, UsersRepository>();
 
             services
@@ -119,13 +119,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.RegisterHealthChecks(connectionString, smtpSettings);
 
-            var builder = services.AddAuthentication(options =>
-                {
-                    foreach (AuthenticationSchemeBuilder authenticationSchemeBuilder in options.Schemes)
-                    {
-                        Log.Logger.Information("AuthenticationScheme : {@authenticationSchemeBuilder}", authenticationSchemeBuilder);
-                    }
-                })
+            services.AddAuthentication()
                 .AddIdentityServerAuthentication(options =>
                 {
                     options.Authority = issuerUrl;

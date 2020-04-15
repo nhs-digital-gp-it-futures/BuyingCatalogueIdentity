@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
 {
-    public sealed class CreateBuyerRequest
+    public sealed class CreateBuyerRequest: IEquatable<CreateBuyerRequest>
     {
         public Guid PrimaryOrganisationId { get; }
 
@@ -23,9 +23,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
             EmailAddress = emailAddress;
         }
 
-        private bool Equals(CreateBuyerRequest other)
+        public bool Equals(CreateBuyerRequest other)
         {
-            return PrimaryOrganisationId.Equals(other.PrimaryOrganisationId) 
+            return other is object 
+                   && PrimaryOrganisationId.Equals(other.PrimaryOrganisationId) 
                    && string.Equals(FirstName, other.FirstName, StringComparison.Ordinal)
                    && string.Equals(LastName, other.LastName, StringComparison.Ordinal)
                    && string.Equals(PhoneNumber, other.PhoneNumber, StringComparison.Ordinal)

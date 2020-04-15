@@ -6,7 +6,7 @@ using NHSD.BuyingCatalogue.Identity.Common.Messages;
 
 namespace NHSD.BuyingCatalogue.Identity.Common.Results
 {
-    public sealed class Result
+    public sealed class Result : IEquatable<Result>
     {
         private static readonly Result _success = new Result();
 
@@ -45,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
 
         public static Result<T> Failure<T>(IEnumerable<ErrorMessage> errors)
         {
-            return new Result<T>(false, errors, default);
+            return new Result<T>(false, errors, default!);
         }
 
         private static bool AreErrorsEqual(IEnumerable<ErrorMessage> first, IEnumerable<ErrorMessage> second)
@@ -59,9 +59,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
             return first.SequenceEqual(second);
         }
 
-        private bool Equals(Result other)
+        public bool Equals(Result other)
         {
-            return IsSuccess == other.IsSuccess && AreErrorsEqual(Errors, other.Errors);
+            return other is object
+                && IsSuccess == other.IsSuccess 
+                && AreErrorsEqual(Errors, other.Errors);
         }
 
         public override bool Equals(object? obj)

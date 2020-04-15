@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Common.Messages
 {
-    public sealed class ErrorMessage
+    public sealed class ErrorMessage : IEquatable<ErrorMessage>
     {
         public string Id { get; }
 
@@ -14,9 +14,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Messages
             Field = field;
         }
 
-        private bool Equals(ErrorMessage other)
+        public bool Equals(ErrorMessage other)
         {
-            return string.Equals(Id, other.Id, StringComparison.Ordinal)
+            return other is object
+                && string.Equals(Id, other.Id, StringComparison.Ordinal)
                 && string.Equals(Field, other.Field, StringComparison.Ordinal);
         }
 

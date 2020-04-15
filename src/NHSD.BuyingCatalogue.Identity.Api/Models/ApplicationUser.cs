@@ -18,10 +18,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
         public bool Disabled { get; private set; }
 
         public bool CatalogueAgreementSigned { get; private set; }
-        
-        private ApplicationUser()
-        {
-        }
 
         private ApplicationUser(
             string userName,
@@ -30,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
             string phoneNumber, 
             string email, 
             OrganisationFunction organisationFunction,
-            Guid primaryOrganisationId) : this()
+            Guid primaryOrganisationId)
         {
             if (userName is null)
                 throw new ArgumentNullException(nameof(userName));
