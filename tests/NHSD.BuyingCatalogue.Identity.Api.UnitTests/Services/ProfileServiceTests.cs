@@ -9,10 +9,12 @@ using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NUnit.Framework;
 using static IdentityModel.JwtClaimTypes;
-using static NHSD.BuyingCatalogue.Identity.Common.Constants.ApplicationClaimTypes;
 using static NHSD.BuyingCatalogue.Identity.Common.Constants.ApplicationPermissions;
+using OrganisationFunction = NHSD.BuyingCatalogue.Identity.Api.Models.OrganisationFunction;
+
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
@@ -24,14 +26,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             var expectedApplicationUser = ApplicationUserBuilder
                 .Create()
-                .WithEmail("TestUser@Email.com")
+                .WithEmailAddress("TestUser@Email.com")
                 .WithFirstName("Bob")
                 .WithLastName("Smith")
-                .WithOrganisationFunction("Authority")
+                .WithOrganisationFunction(OrganisationFunction.Authority)
                 .Build();
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -56,18 +58,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 (Name, $"{expectedApplicationUser.FirstName} {expectedApplicationUser.LastName}"),
                 (Email, expectedApplicationUser.Email),
                 (EmailVerified, expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
-                (PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
-                (OrganisationFunction, expectedApplicationUser.OrganisationFunction),
-                (Organisation, Manage),
-                (Account, Manage)
+                (ApplicationClaimTypes.PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
+                (ApplicationClaimTypes.OrganisationFunction, expectedApplicationUser.OrganisationFunction.DisplayName),
+                (ApplicationClaimTypes.Organisation, Manage),
+                (ApplicationClaimTypes.Account, Manage)
             };
 
             var actual = profileDataRequestContext.IssuedClaims.Select(item => (item.Type, item.Value));
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestCase("SomeId", "SomeUserName", Subject, PreferredUserName, JwtRegisteredClaimNames.UniqueName, PrimaryOrganisationId)]
-        [TestCase("SomeId", null, Subject, PrimaryOrganisationId)]
+        [TestCase("SomeId", "SomeUserName", Subject, PreferredUserName, JwtRegisteredClaimNames.UniqueName, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction)]
+        [TestCase("SomeId", "", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithId_ReturnExpectedClaimList(
             string expectedUserId,
             string expectedUserName,
@@ -75,12 +77,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             var expectedApplicationUser = ApplicationUserBuilder
                 .Create()
-                .WithId(expectedUserId)
-                .WithUserName(expectedUserName)
+                .WithUserId(expectedUserId)
+                .WithUsername(expectedUserName)
+                .WithFirstName(string.Empty)
+                .WithLastName(string.Empty)
+                .WithEmailAddress(string.Empty)
                 .Build();
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -99,20 +104,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expectedClaimTypes);
         }
 
-        [TestCase("someone@email.com", Subject, Email, EmailVerified, PrimaryOrganisationId)]
-        [TestCase(null, Subject, PrimaryOrganisationId)]
+        [TestCase("someone@email.com", Subject, Email, EmailVerified, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction)]
+        [TestCase("", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithEmail_ReturnExpectedClaimList(
             string expectedEmail,
             params string[] expectedClaimTypes)
         {
             var expectedApplicationUser = ApplicationUserBuilder
                 .Create()
-                .WithUserName(null)
-                .WithEmail(expectedEmail)
+                .WithUsername(string.Empty)
+                .WithFirstName(string.Empty)
+                .WithLastName(string.Empty)
+                .WithEmailAddress(expectedEmail)
                 .Build();
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -134,8 +141,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [TestCase("Bob", "Smith", "Bob Smith")]
         [TestCase("   Bob  ", "Smith", "Bob Smith")]
         [TestCase("Bob", "  Smith   ", "Bob Smith")]
-        [TestCase("Bob", null, "Bob")]
-        [TestCase(null, "Smith", "Smith")]
+        [TestCase("Bob", "", "Bob")]
+        [TestCase("", "Smith", "Smith")]
         public async Task GetProfileDataAsync_GivenAnApplicationUserWithTheName_ReturnsExpectedClaimList(
             string firstname, 
             string lastname, 
@@ -143,13 +150,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             var expectedApplicationUser = ApplicationUserBuilder
                 .Create()
-                .WithUserName(null)
                 .WithFirstName(firstname)
                 .WithLastName(lastname)
                 .Build();
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -176,20 +182,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestCase("Authority", Subject, PrimaryOrganisationId, OrganisationFunction, Organisation, Account)]
-        [TestCase("Buyer", Subject, PrimaryOrganisationId, OrganisationFunction)]
+        [TestCase("Authority", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Organisation, ApplicationClaimTypes.Account)]
+        [TestCase("Buyer", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithOrganisationFunction_ReturnExpectedClaimList(
-            string organisationFunction, 
+            string organisationFunctionDisplayName, 
             params string[] expectedClaimTypes)
         {
             var expectedApplicationUser = ApplicationUserBuilder
                 .Create()
-                .WithUserName(null)
-                .WithOrganisationFunction(organisationFunction)
+                .WithUsername(string.Empty)
+                .WithFirstName(string.Empty)
+                .WithLastName(string.Empty)
+                .WithEmailAddress(string.Empty)
+                .WithOrganisationFunction(OrganisationFunction.FromDisplayName(organisationFunctionDisplayName))
                 .Build();
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -213,8 +222,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string expectedUserId = "TestUserId";
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(null as ApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -238,8 +247,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string expectedUserId = "TestUserId";
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(null as ApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -254,7 +263,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             await sut.GetProfileDataAsync(profileDataRequestContext);
 
-            applicationUserRepositoryMock.Verify(x => x.FindByIdAsync(
+            applicationUserRepositoryMock.Verify(x => x.GetByIdAsync(
                 It.Is<string>(param => expectedUserId.Equals(param, StringComparison.Ordinal))), 
                 Times.Once);
         }
@@ -286,8 +295,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .Create()
                 .Build();
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -310,8 +319,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string expectedUserId = "TestUserId";
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(null as ApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -334,8 +343,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string expectedUserId = "TestUserId";
 
-            Mock<IUserRepository> applicationUserRepositoryMock = new Mock<IUserRepository>();
-            applicationUserRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(null as ApplicationUser);
 
             var sut = ProfileServiceBuilder
@@ -350,7 +359,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             await sut.IsActiveAsync(isActiveContext);
 
-            applicationUserRepositoryMock.Verify(x => x.FindByIdAsync(
+            applicationUserRepositoryMock.Verify(x => x.GetByIdAsync(
                     It.Is<string>(param => expectedUserId.Equals(param, StringComparison.Ordinal))), 
                 Times.Once);
         }

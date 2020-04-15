@@ -14,8 +14,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 
         public string OrganisationApiBaseUrl { get; }
 
-        public string BrokenSmtpOrganisationApiBaseUrl { get; }
-
         public string SmtpServerApiBaseUrl { get; }
         
         public Settings(IConfiguration config)
@@ -25,7 +23,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             IdentityApiBaseUrl = config.GetValue<string>("IdentityApiBaseUrl");
             BrokenSmtpIdentityApiBaseUrl = config.GetValue<string>("BrokenSmtpIdentityApiBaseUrl");
             OrganisationApiBaseUrl = config.GetValue<string>("OrganisationApiBaseUrl");
-            BrokenSmtpOrganisationApiBaseUrl = config.GetValue<string>("BrokenSmtpOrganisationApiBaseUrl");
             SmtpServerApiBaseUrl = config.GetValue<string>("SmtpServerApiBaseUrl");
         }
     }

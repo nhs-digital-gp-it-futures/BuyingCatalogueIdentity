@@ -360,7 +360,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             }
 
             const string expectedCallback = "https://identity/account/resetPassword?token=1234&emailAddress=a@b.com";
-            var expectedUser = new ApplicationUser();
+            var expectedUser = ApplicationUserBuilder.Create().Build();
 
             using var controller = new AccountControllerBuilder()
                 .WithResetEmailCallback(EmailCallback)
@@ -380,7 +380,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         public async Task ForgotPassword_ForgotPasswordViewModel_WithResetToken_RedirectedToExpectedAction()
         {
             using var controller = new AccountControllerBuilder()
-                .WithResetToken(new PasswordResetToken("token", new ApplicationUser()))
+                .WithResetToken(new PasswordResetToken("token", ApplicationUserBuilder.Create().Build()))
                 .WithScheme(HttpScheme.Https.ToString())
                 .WithUrlAction("https://identity/account/action")
                 .Build();
