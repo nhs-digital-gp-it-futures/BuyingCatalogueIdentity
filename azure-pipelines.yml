@@ -49,7 +49,7 @@ jobs:
   displayName: Build and push docker containers to the acr
 
   pool:
-    vmImage: 'ubuntu-latest'
+    name: GP IT Futures AKS Build Agents
 
   steps:
 
