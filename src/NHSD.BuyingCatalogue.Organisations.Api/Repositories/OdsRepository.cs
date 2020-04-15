@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
-using NHSD.BuyingCatalogue.Organisations.Api.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
@@ -22,53 +21,93 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         public async Task<OdsOrganisation> GetBuyerOrganisationByOdsCode(string odsCode)
         {
-            // instance of an ExpandoObject, containing values from the json response
-            dynamic response = await _odsApiBaseUrl
+
+            var response = await _odsApiBaseUrl
                 .AppendPathSegment("organisations")
                 .AppendPathSegment(odsCode)
                 .AllowHttpStatus("3xx,4xx")
-                .GetJsonAsync();
-            
-            dynamic odsOrganisation = DynamicCast.GetPropertyOrDefault<dynamic>(response, "Organisation");
+                .GetJsonAsync<OdsResponse>();
+
+            var odsOrganisation = response.Organisation;
 
             return odsOrganisation is null ? null : new OdsOrganisation
             {
-                OrganisationName = DynamicCast.GetPropertyOrDefault<string>(odsOrganisation, "Name"),
+                OrganisationName = odsOrganisation.Name,
                 OdsCode = odsCode,
                 PrimaryRoleId = _buyerOrganisationRoleId,
-                Address = ConvertDynamicObjectToAddress(odsOrganisation),
+                Address = OdsResponseAddressToAddress(odsOrganisation.GeoLoc.Location),
                 IsActive = IsActive(odsOrganisation),
                 IsBuyerOrganisation = IsBuyerOrganisation(odsOrganisation)
             };
         }
 
-        private static bool IsActive(dynamic organisation)
+        private static bool IsActive(OdsResponseOrganisation organisation)
         {
-            return DynamicCast.GetPropertyOrDefault<string>(organisation, "Status").Equals("Active", StringComparison.OrdinalIgnoreCase);
+            return organisation.Status.Equals("Active", StringComparison.OrdinalIgnoreCase);
         }
 
-        private bool IsBuyerOrganisation(dynamic organisation)
+        private bool IsBuyerOrganisation(OdsResponseOrganisation organisation)
         {
-            List<dynamic> roles = organisation.Roles.Role;
-            return roles.Select(role => DynamicCast.GetPropertyOrDefault<string>(role, "id"))
-                        .Any(id => id.Equals(_buyerOrganisationRoleId, StringComparison.OrdinalIgnoreCase));
+            return organisation.Roles.Role.Any(role =>
+                 role.id.Equals(_buyerOrganisationRoleId, StringComparison.OrdinalIgnoreCase));
         }
 
-        private static Address ConvertDynamicObjectToAddress(dynamic organisation)
+        private static Address OdsResponseAddressToAddress(OdsResponseAddress odsAddress)
         {
-            var extractProperty = new Func<string, string>(property => DynamicCast.GetPropertyOrDefault<string>(organisation.GeoLoc.Location, property));
-    
             return new Address
             {
-                Line1 = extractProperty("AddrLn1"),
-                Line2 = extractProperty("AddrLn2"),
-                Line3 = extractProperty("AddrLn3"),
-                Line4 = extractProperty("AddrLn4"),
-                Town = extractProperty("Town"),
-                County = extractProperty("County"),
-                Postcode = extractProperty("PostCode"),
-                Country = extractProperty("Country"),
+                Line1 = odsAddress.AddrLn1,
+                Line2 = odsAddress.AddrLn2,
+                Line3 = odsAddress.AddrLn3,
+                Line4 = odsAddress.AddrLn4,
+                Town = odsAddress.Town,
+                County = odsAddress.County,
+                Postcode = odsAddress.PostCode,
+                Country = odsAddress.Country,
             };
+        }
+
+        private class OdsResponse
+        {
+            public OdsResponseOrganisation Organisation { get; set; }
+        }
+
+        private class OdsResponseOrganisation
+        {
+            public string Name { get; set; }
+
+            public string Status { get; set; }
+
+            public GeoLoc GeoLoc { get; set; }
+
+            public OdsResponseRoles Roles { get; set; }
+        }
+
+        private class GeoLoc
+        {
+            public OdsResponseAddress Location { get; set; }
+        }
+
+        private class OdsResponseAddress
+        {
+            public string AddrLn1 { get; set; }
+            public string AddrLn2 { get; set; }
+            public string AddrLn3 { get; set; }
+            public string AddrLn4 { get; set; }
+            public string Town { get; set; }
+            public string County { get; set; }
+            public string PostCode { get; set; }
+            public string Country { get; set; }
+        }
+
+        private class OdsResponseRoles
+        {
+            public List<OdsResponseRole> Role { get; set; }
+        }
+
+        private class OdsResponseRole
+        {
+            public string id { get; set; }
         }
     }
 }
