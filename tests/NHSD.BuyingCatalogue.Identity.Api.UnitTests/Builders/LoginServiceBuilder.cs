@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         {
             _eventService = Mock.Of<IEventService>();
             _identityServerInteractionService = Mock.Of<IIdentityServerInteractionService>();
-            _userManager = CreateDefaultMockUserManager(new ApplicationUser());
+            _userManager = CreateDefaultMockUserManager(ApplicationUserBuilder.Create().Build());
         }
 
         internal LoginService Build()

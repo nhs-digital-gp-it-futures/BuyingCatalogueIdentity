@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Events;
 using IdentityServer4.Models;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NUnit.Framework;
@@ -175,7 +174,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithEventServiceCallback<UserLoginSuccessEvent>(EventCallback)
                 .WithAuthorizationContextResult(new AuthorizationRequest { ClientId = clientId })
                 .WithSignInResult(IdentitySignInResult.Success)
-                .WithFindUserResult(new ApplicationUser { Id = userId, UserName = username })
+                .WithFindUserResult(ApplicationUserBuilder
+                    .Create()
+                    .WithUserId(userId)
+                    .WithUsername(username)
+                    .Build())
                 .Build();
 
             await loginService.SignInAsync("user", "pass", new Uri("~/", UriKind.Relative));
@@ -207,7 +210,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             using var loginService = new LoginServiceBuilder()
                 .WithEventServiceCallback<UserLoginSuccessEvent>(EventCallback)
                 .WithSignInResult(IdentitySignInResult.Success)
-                .WithFindUserResult(new ApplicationUser { Id = userId, UserName = username })
+                .WithFindUserResult(ApplicationUserBuilder
+                    .Create()
+                    .WithUserId(userId)
+                    .WithUsername(username)
+                    .Build())
                 .Build();
 
             await loginService.SignInAsync("user", "pass", new Uri("~/", UriKind.Relative));

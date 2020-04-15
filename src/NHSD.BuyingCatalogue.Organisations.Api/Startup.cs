@@ -1,6 +1,4 @@
 ﻿using System.Net.Http;
-using MailKit;
-using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,15 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
-using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
-using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
-using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
-using NHSD.BuyingCatalogue.Organisations.Api.Services;
-using NHSD.BuyingCatalogue.Organisations.Api.Settings;
-using NHSD.BuyingCatalogue.Organisations.Api.Validators;
 using Serilog;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api
@@ -40,33 +32,25 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var connectionString = Configuration.GetConnectionString("CatalogueUsers");
             var authority = Configuration.GetValue<string>("authority");
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
-            var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
             var registrationSettings = Configuration.GetSection("Registration").Get<RegistrationSettings>();
 
-            var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
+			var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
 
             var smtpSettings = Configuration.GetSection("SmtpServer").Get<SmtpSettings>();
             if (!smtpSettings.AllowInvalidCertificate.HasValue)
                 smtpSettings.AllowInvalidCertificate = allowInvalidCertificate;
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
-            services.AddTransient<IUsersRepository, UsersRepository>();
-            services.AddTransient<IOdsRepository, OdsRepository>();
+			services.AddTransient<IOdsRepository, OdsRepository>();
 
-            services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            services.AddSingleton(registrationSettings);
-            services.AddSingleton(odsSettings);
-            services.AddSingleton(smtpSettings);
-            services.AddScoped<IMailTransport, SmtpClient>();
+            var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
+            
+			services.AddSingleton(odsSettings);
 
-            services.AddTransient<IEmailService, MailKitEmailService>()
-                .AddTransient<IRegistrationService, RegistrationService>()
-                .AddTransient<ICreateBuyerService, CreateBuyerService>();
-
-            services.RegisterHealthChecks(connectionString, smtpSettings);
+            services.RegisterHealthChecks(connectionString);
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
@@ -74,6 +58,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     options.Authority = authority;
                     options.RequireHttpsMetadata = requireHttps;
                     options.Audience = "Organisation";
+
                     if (allowInvalidCertificate)
                     {
                         options.BackchannelHttpHandler = new HttpClientHandler
@@ -89,16 +74,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(Policy.CanAccessOrganisations, policy => policy.RequireClaim(ApplicationClaimTypes.Organisation));
-                options.AddPolicy(Policy.CanManageOrganisations, policy =>
+                options.AddPolicy(PolicyName.CanAccessOrganisations, policy => policy.RequireClaim(ApplicationClaimTypes.Organisation));
+                options.AddPolicy(PolicyName.CanManageOrganisations, policy => 
                     policy.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage));
-
-                options.AddPolicy(Policy.CanAccessOrganisationUsers, policyBuilder =>
+        
+                options.AddPolicy(PolicyName.CanAccessOrganisationUsers, policyBuilder =>
                 {
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Account);
                 });
-                options.AddPolicy(Policy.CanManageOrganisationUsers, policyBuilder =>
+                options.AddPolicy(PolicyName.CanManageOrganisationUsers, policyBuilder =>
                 {
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage);
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage);
