@@ -3,38 +3,46 @@
     ViewData["PageDescription"] = "This is how to register for a user account. You’ll need one to place orders on the Buying Catalogue.";
 }
 
-    <div class="nhsuk-width-container">
-        <main class="nhsuk-main-wrapper">
-            <div data-test-id="registration-page">
+<div class="nhsuk-width-container">
+    <main class="nhsuk-main-wrapper">
+        <div data-test-id="registration-page">
 
-                <div class="nhsuk-grid-row">
-                    <div class="nhsuk-grid-column-two-thirds">
-                        <h1 data-test-id="registration-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
-                        <h2 data-test-id="registration-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
-                    </div>
-                </div>
-                <div class="nhsuk-grid-row">
-                    <div class="nhsuk-grid-column-one-half">
-                        <div data-test-id="registration-information">
-                            <p>
-                                The button below will open an email for you to request an account. You’ll need to provide your <b> name, telephone number, email address and your organisation’s ODS code.</b>
-                            </p>
-                            <p>
-                                Once the correct information has been received, you’ll be sent an email with a link so you can create a password for your account.
-                            </p>
-                            <p>
-                                The link can be used only once to set up one account, and will be valid for 24 hours from the time you receive the email.
-                            </p>
-                            <p>
-                                The Buying Catalogue team aims to respond to account requests within 5 working days.
-                            </p>
-                        </div>
-
-                        <a href="mailto:buying.catalogue@nhs.net?Subject=Registration&body=name%20=%0Aemail%20address%20=%0Aods%20code%20=" class="nhsuk-button nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="button" data-test-id="request-account-button">
-                            Request an account
+            <div class="nhsuk-grid-row">
+                <div class="nhsuk-grid-column-two-thirds">
+                    <div data-test-id="go-back-link" class="nhsuk-back-link">
+                        <a class="nhsuk-back-link__link" asp-controller="Account" asp-action="Login">
+                            <svg class="nhsuk-icon nhsuk-icon__chevron-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M8.5 12c0-.3.1-.5.3-.7l5-5c.4-.4 1-.4 1.4 0s.4 1 0 1.4L10.9 12l4.3 4.3c.4.4.4 1 0 1.4s-1 .4-1.4 0l-5-5c-.2-.2-.3-.4-.3-.7z"></path>
+                            </svg>
+                            Back to log in
                         </a>
                     </div>
+                    <h1 data-test-id="registration-page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
+                    <h2 data-test-id="registration-page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
                 </div>
             </div>
-        </main>
-    </div>
+            <div class="nhsuk-grid-row">
+                <div class="nhsuk-grid-column-one-half">
+                    <div data-test-id="registration-information">
+                        <p>
+                            The button below will open an email for you to request an account. You’ll need to provide your <b> name, telephone number, email address and your organisation’s ODS code.</b>
+                        </p>
+                        <p>
+                            Once the correct information has been received, you’ll be sent an email with a link so you can create a password for your account.
+                        </p>
+                        <p>
+                            The link can be used only once to set up one account, and will be valid for 24 hours from the time you receive the email.
+                        </p>
+                        <p>
+                            The Buying Catalogue team aims to respond to account requests within 5 working days.
+                        </p>
+                    </div>
+
+                    <a href="mailto:buying.catalogue@nhs.net?Subject=Registration&body=name%20=%0Aemail%20address%20=%0Aods%20code%20=" class="nhsuk-button nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="button" data-test-id="request-account-button">
+                        Request an account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

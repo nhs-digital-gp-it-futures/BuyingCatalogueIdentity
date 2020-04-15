@@ -14,21 +14,26 @@ Scenario: 1. The NHS Header is displayed correctly
     Then the page contains element with Data ID header-banner
     And element with Data ID header-banner contains a link to https://digital.nhs.uk/
     And element with Data ID header-banner contains element with Data ID nhs-digital-logo
-    
+
 @4828
-Scenario: 2. The Registration page title is displayed correctly
+Scenario: 2. The back to log in link is displayed correctly
+    Then the page contains element with Data ID go-back-link
+    And element with Data ID go-back-link contains a link to identity/account/login with text Back to log in
+
+@4828
+Scenario: 3. The Registration page title is displayed correctly
     Then the page contains element with Data ID registration-page-title
     And element with Data ID registration-page-title has tag h1
     And element with Data ID registration-page-title has text Request Buying Catalogue account
     
 @4828
-Scenario: 3. The Registration page description is displayed correctly
+Scenario: 4. The Registration page description is displayed correctly
     Then the page contains element with Data ID registration-page-description
     And element with Data ID registration-page-description has tag h2
     And element with Data ID registration-page-description has text This is how to register for a user account. You’ll need one to place orders on the Buying Catalogue.
-    
+     
 @4828
-Scenario: 4. The Request an Account button is displayed correctly
+Scenario: 5. The Request an Account button is displayed correctly
     Then the page contains element with Data ID request-account-button
     And element with Data ID request-account-button has tag a
     And element with Data ID request-account-button is of type button
@@ -36,7 +41,7 @@ Scenario: 4. The Request an Account button is displayed correctly
     And element with Data ID request-account-button is email link to address buying.catalogue@nhs.net
         
 @4828
-Scenario: 5. The NHS Footer is displayed
+Scenario: 6. The NHS Footer is displayed
     Then the page contains element with Data ID nhsuk-footer
     And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/nhs-sites/
     And element with Data ID nhsuk-footer contains a link to https://www.nhs.uk/about-us/
