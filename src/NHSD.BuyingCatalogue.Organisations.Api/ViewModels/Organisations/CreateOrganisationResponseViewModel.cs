@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 {

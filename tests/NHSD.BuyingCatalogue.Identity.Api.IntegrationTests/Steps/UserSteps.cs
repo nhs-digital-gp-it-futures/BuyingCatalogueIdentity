@@ -32,7 +32,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context = context;
             _response = response;
             _settings = settings;
-            _organisationUrl = settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
+            _organisationUrl = settings.IdentityApiBaseUrl + "/api/v1/Organisations";
         }
 
         [Given(@"Users exist")]
@@ -110,7 +110,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             using var client = new HttpClient();
             client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
-            _response.Result = await client.GetAsync(new Uri($"{_settings.OrganisationApiBaseUrl}/api/v1/users/{userId}"));
+            _response.Result = await client.GetAsync(new Uri($"{_settings.IdentityApiBaseUrl}/api/v1/users/{userId}"));
         }
 
         [Then(@"a user is returned with the following values")]
@@ -141,7 +141,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             using var client = new HttpClient();
             client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
-            _response.Result = await client.PostAsync(new Uri($"{_settings.OrganisationApiBaseUrl}/api/v1/users/{userId}/{request}"), null);
+            _response.Result = await client.PostAsync(new Uri($"{_settings.IdentityApiBaseUrl}/api/v1/users/{userId}/{request}"), null);
         }
 
         [Then(@"the database has user with id (.*)")]

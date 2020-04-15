@@ -23,12 +23,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context["identityBaseUrl"] = _settings.IdentityApiBaseUrl;
         }
 
-        [Given(@"The Smtp Server is (up|down) for OAPI")]
-        public void GivenTheOrganisationsSmtpServerIsInState(string state)
-        {
-            _context["organisationBaseUrl"] = state == "up" ? _settings.OrganisationApiBaseUrl : _settings.BrokenSmtpOrganisationApiBaseUrl;
-        }
-
         [Given(@"The Smtp Server is (up|down) for ISAPI")]
         public void GivenTheIdentitySmtpServerIsInState(string state)
         {

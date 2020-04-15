@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 {
-    [Authorize(Policy = Policy.CanAccessOrganisations)]
+    [Authorize(Policy = PolicyName.CanAccessOrganisations)]
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces("application/json")]
@@ -85,7 +86,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             });
         }
 
-        [Authorize(Policy = Policy.CanManageOrganisations)]
+        [Authorize(Policy = PolicyName.CanManageOrganisations)]
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid id, UpdateOrganisationViewModel viewModel)
@@ -108,7 +109,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             return NoContent();
         }
 
-        [Authorize(Policy = Policy.CanManageOrganisations)]
+        [Authorize(Policy = PolicyName.CanManageOrganisations)]
         [HttpPost]
         public async Task<ActionResult<CreateOrganisationResponseViewModel>> CreateOrganisationAsync(CreateOrganisationRequestViewModel viewModel)
         {
