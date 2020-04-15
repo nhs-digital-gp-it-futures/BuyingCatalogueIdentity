@@ -9,8 +9,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
+using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 using Serilog;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api
@@ -32,9 +34,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var connectionString = Configuration.GetConnectionString("CatalogueUsers");
             var authority = Configuration.GetValue<string>("authority");
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
-            var registrationSettings = Configuration.GetSection("Registration").Get<RegistrationSettings>();
-
-			var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
+            var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
+            var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
 
             var smtpSettings = Configuration.GetSection("SmtpServer").Get<SmtpSettings>();
             if (!smtpSettings.AllowInvalidCertificate.HasValue)
@@ -46,8 +47,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
-            
 			services.AddSingleton(odsSettings);
 
             services.RegisterHealthChecks(connectionString);

@@ -248,7 +248,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             const string password = "Pass123321";
 
             var expectedResult = new IdentityResult();
-            var user = new ApplicationUser();
+            var user = ApplicationUserBuilder.Create().Build();
             var mockUserManager = MockUserManager;
             mockUserManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
