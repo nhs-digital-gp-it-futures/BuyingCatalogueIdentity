@@ -75,12 +75,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var linkElements = element.FindElements(By.TagName("a"));
-            var linkElement = linkElements.FirstOrDefault(x => x.GetAttribute("href").EndsWith(link, StringComparison.OrdinalIgnoreCase));
+            var linkElement = linkElements.FirstOrDefault(x => x.GetAttribute("href").Split("?")[0].EndsWith(link, StringComparison.OrdinalIgnoreCase));
             linkElement.Should().NotBeNull($"an element with link {link} should be found");
             linkElement.Text.Should().Be(text);
         }
 
-        [Given(@"the user clicks element with Data ID ([^\s]+)")]
+        [When(@"the user clicks element with Data ID ([^\s]+)")]
         public void GivenTheUserClicksElementWithDataId(string dataId)
         {
             _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]")).Click();
@@ -90,7 +90,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public void ThenTheElementIsALinkTo(string dataId, string link)
         {
             var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
-            var attribute = element.GetAttribute("href");
+            var attribute = element.GetAttribute("href").Split("?")[0];
             attribute.Should().EndWithEquivalent(link);
         }
 

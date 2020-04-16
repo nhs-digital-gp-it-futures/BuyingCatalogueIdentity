@@ -309,7 +309,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             static async Task ForgotPassword()
             {
                 using var controller = new AccountControllerBuilder().Build();
-                await controller.ForgotPassword(null);
+                await controller.ForgotPassword((ForgotPasswordViewModel) null);
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(ForgotPassword);

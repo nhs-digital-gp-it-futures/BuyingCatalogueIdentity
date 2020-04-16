@@ -68,3 +68,26 @@ Scenario: 7. Logging in with a disabled user account
     Then the user is redirected to page identity/account/login
     And the page contains a validation summary with text There is a problem accessing your account.\n\nContact the account administrator at: exeter.helpdesk@nhs.net or call 0300 303 4034 
 
+@3540 
+Scenario: 8. Navigating to the forgot password page from login, then pressing the back button, still preserves the return url
+    When the user navigates to a restricted web page
+    Then the user is redirected to page identity/account/login
+    When the user clicks element with Data ID forgot-password-link
+    Then the user is redirected to page identity/account/forgotpassword
+    When the user clicks element with Data ID go-back-link
+    Then the user is redirected to page identity/account/login
+    When a login request is made with email address test@user.com and password testingtesting123
+    Then the user is redirected to page home/privacy
+    And the page contains element with ID sampleResourceResult with text Authorized With Sample Resource
+    
+@3540 
+Scenario: 9. Navigating to the registration page from login, then pressing the back button, still preserves the return url
+    When the user navigates to a restricted web page
+    Then the user is redirected to page identity/account/login
+    When the user clicks element with Data ID request-account-link
+    Then the user is redirected to page identity/account/registration
+    When the user clicks element with Data ID go-back-link
+    Then the user is redirected to page identity/account/login
+    When a login request is made with email address test@user.com and password testingtesting123
+    Then the user is redirected to page home/privacy
+    And the page contains element with ID sampleResourceResult with text Authorized With Sample Resource

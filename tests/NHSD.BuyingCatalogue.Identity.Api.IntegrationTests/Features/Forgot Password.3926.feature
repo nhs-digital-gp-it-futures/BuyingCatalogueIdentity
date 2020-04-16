@@ -6,7 +6,7 @@
 Background: 
     When the user navigates to a restricted web page
     Then the user is redirected to page identity/account/login
-    When the user clicks on the forgot password button
+    When the user clicks element with Data ID forgot-password-link
     Then the user is redirected to page identity/account/forgotpassword
 
 @3926

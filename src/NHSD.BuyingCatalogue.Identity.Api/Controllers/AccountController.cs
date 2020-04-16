@@ -116,14 +116,16 @@ Contact the account administrator at: {0} or call {1}";
         }
 
         [HttpGet]
-        public IActionResult Registration()
+        public IActionResult Registration(Uri returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpGet]
-        public IActionResult ForgotPassword()
+        public IActionResult ForgotPassword(Uri returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 

@@ -78,12 +78,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             ThenThePageVerifiesItCouldTalkToTheSampleResource("sampleResourceResult", "Authorized With Sample Resource");
         }
 
-        [When(@"the user clicks on the forgot password button")]
-        public void WhenUserClicksOnForgotPassword()
-        {
-            _seleniumContext.WebDriver.FindElement(By.CssSelector("[data-test-id=forgot-password-link]")).Click();
-        }
-
         [When(@"the user clicks on logout button")]
         public void WhenUserClicksOnLogout()
         {
