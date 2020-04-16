@@ -5,7 +5,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
-    internal class PasswordResetCallback : IPasswordResetCallback
+    internal sealed class PasswordResetCallback : IPasswordResetCallback
     {
         private readonly IHttpContextAccessor _accessor;
         private readonly LinkGenerator _generator;
