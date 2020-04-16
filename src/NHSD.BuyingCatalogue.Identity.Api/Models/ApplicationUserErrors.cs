@@ -1,5 +1,4 @@
-﻿using NHSD.BuyingCatalogue.Identity.Common.Messages;
-﻿using NHSD.BuyingCatalogue.Identity.Common.Models;
+﻿﻿using NHSD.BuyingCatalogue.Identity.Common.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Models
 {

@@ -8,7 +8,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.Validators;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NUnit.Framework;
 

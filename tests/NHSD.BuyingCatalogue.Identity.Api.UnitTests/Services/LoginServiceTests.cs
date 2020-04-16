@@ -62,7 +62,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             }
 
             using var loginService = new LoginServiceBuilder()
-                .WithFindUserResult(ApplicationUserBuilder.Create().WithUserName(username).Build())
+                .WithFindUserResult(ApplicationUserBuilder.Create().WithUsername(username).Build())
                 .WithEventServiceCallback<UserLoginFailureEvent>(EventCallback)
                 .WithAuthorizationContextResult(new AuthorizationRequest { ClientId = clientId })
                 .WithSignInResult(IdentitySignInResult.Failed)
@@ -92,7 +92,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             }
 
             using var loginService = new LoginServiceBuilder()
-                .WithFindUserResult(ApplicationUserBuilder.Create().WithUserName(username).Build())
+                .WithFindUserResult(ApplicationUserBuilder.Create().WithUsername(username).Build())
                 .WithEventServiceCallback<UserLoginFailureEvent>(EventCallback)
                 .WithSignInResult(IdentitySignInResult.Failed)
                 .Build();
@@ -226,34 +226,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             raisedEvent.Message.Should().BeNull();
             raisedEvent.SubjectId.Should().Be(userId);
             raisedEvent.Username.Should().Be(username);
-        }
-
-        [Test]
-        public async Task SignInAsync_UnSuccessfulSignInWithNullContext_RaisesLoginSuccessEvent()
-        {
-            int eventCount = 0;
-            UserLoginSuccessEvent raisedEvent = null;
-
-            void EventCallback(UserLoginSuccessEvent evt)
-            {
-                eventCount++;
-                raisedEvent = evt;
-            }
-
-            const string userId = "UserId";
-            const string username = "UncleBob@email.com";
-
-            using var loginService = new LoginServiceBuilder()
-                .WithEventServiceCallback<UserLoginSuccessEvent>(EventCallback)
-                .WithSignInResult(IdentitySignInResult.Success)
-                .WithFindUserResult(new ApplicationUser { Id = userId, UserName = username, Disabled = true})
-                .Build();
-
-            var result = await loginService.SignInAsync("user", "pass", new Uri("~/", UriKind.Relative));
-
-            result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().BeEquivalentTo(LoginUserErrors.UserIsDisabled());
-            result.Value.Should().BeNull();
         }
     }
 }

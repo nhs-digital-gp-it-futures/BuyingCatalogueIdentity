@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NUnit.Framework;
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Validators

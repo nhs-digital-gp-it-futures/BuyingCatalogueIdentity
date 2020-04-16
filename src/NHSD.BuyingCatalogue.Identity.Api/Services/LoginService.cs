@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
-using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {

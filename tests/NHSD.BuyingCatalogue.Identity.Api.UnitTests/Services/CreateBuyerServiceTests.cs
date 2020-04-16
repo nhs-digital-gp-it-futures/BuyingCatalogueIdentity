@@ -10,7 +10,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Comparers;
 using NHSD.BuyingCatalogue.Identity.Api.Validators;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NUnit.Framework;
 
@@ -144,7 +144,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var actual = await sut.CreateAsync(request);
 
-            var expected = Result.Failure(new List<ErrorDetails>());
+            var expected = Result.Failure<string>(new List<ErrorDetails>());
             actual.Should().Be(expected);
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Messages

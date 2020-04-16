@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Common.Results
 {
@@ -11,15 +11,15 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
     {
         public bool IsSuccess { get; }
 
-        public IReadOnlyCollection<ErrorMessage> Errors { get; }
+        public IReadOnlyCollection<ErrorDetails> Errors { get; }
 
         [MaybeNull]
         public T Value { get; }
 
-        internal Result(bool isSuccess, IEnumerable<ErrorMessage>? errors, T value)
+        internal Result(bool isSuccess, IEnumerable<ErrorDetails>? errors, T value)
         {
             IsSuccess = isSuccess;
-            Errors = new ReadOnlyCollection<ErrorMessage>(errors != null ? errors.ToList() : new List<ErrorMessage>());
+            Errors = new ReadOnlyCollection<ErrorDetails>(errors != null ? errors.ToList() : new List<ErrorDetails>());
             Value = value;
         }
 
@@ -31,7 +31,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
             return Result.Failure(Errors);
         }
 
-        private static bool AreErrorsEqual(IEnumerable<ErrorMessage> first, IEnumerable<ErrorMessage> second)
+        private static bool AreErrorsEqual(IEnumerable<ErrorDetails> first, IEnumerable<ErrorDetails> second)
         {
             if (first is null)
                 return second is null;

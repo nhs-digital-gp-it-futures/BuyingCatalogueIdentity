@@ -8,7 +8,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
-using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {

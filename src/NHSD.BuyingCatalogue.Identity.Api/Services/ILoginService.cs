@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {

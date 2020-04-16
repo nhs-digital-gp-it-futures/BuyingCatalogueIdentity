@@ -19,7 +19,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 using NHSD.BuyingCatalogue.Identity.Common.Models;
-using NHSD.BuyingCatalogue.Identity.Common.Models.Results;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers

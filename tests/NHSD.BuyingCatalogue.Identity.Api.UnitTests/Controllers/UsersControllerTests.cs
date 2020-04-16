@@ -11,7 +11,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Users;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
 using NUnit.Framework;
