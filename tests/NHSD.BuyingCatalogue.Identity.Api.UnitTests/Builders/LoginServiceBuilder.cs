@@ -83,7 +83,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 null,
                 null,
                 null);
-
             mockUserManager
                 .Setup(s => s.FindByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(findByNameResult);
@@ -103,7 +102,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 null);
 
             mockSignInManager
-                .Setup(s => s.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), false, true))
+                .Setup(s => s.CheckPasswordSignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), true))
                 .ReturnsAsync(signInResult);
 
             return mockSignInManager.Object;

@@ -8,7 +8,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.Validators;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NUnit.Framework;
 
@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorMessage(id, nameof(ApplicationUser.FirstName))));
+            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorDetails(id, nameof(ApplicationUser.FirstName))));
             actual.Should().Be(expected);
         }
 
@@ -63,7 +63,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorMessage(id, nameof(ApplicationUser.LastName))));
+            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorDetails(id, nameof(ApplicationUser.LastName))));
             actual.Should().Be(expected);
         }
 
@@ -80,7 +80,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorMessage(id, nameof(ApplicationUser.PhoneNumber))));
+            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorDetails(id, nameof(ApplicationUser.PhoneNumber))));
             actual.Should().Be(expected);
         }
 
@@ -97,7 +97,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorMessage(id, "EmailAddress")));
+            var expected = Result.Failure(errorMessageIds.Select(id => new ErrorDetails(id, "EmailAddress")));
             actual.Should().Be(expected);
         }
 
@@ -121,7 +121,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(new List<ErrorMessage> { new ErrorMessage("EmailAlreadyExists", "EmailAddress") });
+            var expected = Result.Failure(new List<ErrorDetails> { new ErrorDetails("EmailAlreadyExists", "EmailAddress") });
             actual.Should().Be(expected);
         }
 

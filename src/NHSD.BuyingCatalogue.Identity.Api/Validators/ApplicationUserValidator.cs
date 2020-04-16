@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Validators
@@ -31,7 +31,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Validators
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
 
-            List<ErrorMessage> errors = new List<ErrorMessage>();
+            List<ErrorDetails> errors = new List<ErrorDetails>();
 
             ValidateName(user.FirstName, user.LastName, errors);
             ValidatePhoneNumber(user.PhoneNumber, errors);
@@ -44,13 +44,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Validators
         private static void ValidateName( 
             string firstName, 
             string lastName,
-            List<ErrorMessage> errors)
+            List<ErrorDetails> errors)
         {
             ValidateFirstName(firstName, errors);
             ValidateLastName(lastName, errors);
         }
 
-        private static void ValidateFirstName(string firstName, List<ErrorMessage> errors)
+        private static void ValidateFirstName(string firstName, List<ErrorDetails> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -65,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Validators
                 errors.Add(ApplicationUserErrors.FirstNameTooLong());
         }
 
-        private static void ValidateLastName(string lastName, List<ErrorMessage> errors)
+        private static void ValidateLastName(string lastName, List<ErrorDetails> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -80,7 +80,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Validators
                 errors.Add(ApplicationUserErrors.LastNameTooLong());
         }
 
-        private static void ValidatePhoneNumber(string phoneNumber, List<ErrorMessage> errors)
+        private static void ValidatePhoneNumber(string phoneNumber, List<ErrorDetails> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));
@@ -95,7 +95,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Validators
                 errors.Add(ApplicationUserErrors.PhoneNumberTooLong());
         }
 
-        private async Task ValidateEmailAsync(string email, List<ErrorMessage> errors)
+        private async Task ValidateEmailAsync(string email, List<ErrorDetails> errors)
         {
             if (errors is null)
                 throw new ArgumentNullException(nameof(errors));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Common.Messages;
+using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NUnit.Framework;
 
@@ -38,14 +38,14 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Results
         [Test]
         public void FailureResult_EmptyErrors_IsSuccessIsFalse()
         {
-            var actual = Result.Failure(Array.Empty<ErrorMessage>());
+            var actual = Result.Failure(Array.Empty<ErrorDetails>());
             actual.IsSuccess.Should().BeFalse();
         }
 
         [Test]
         public void FailureResultT_EmptyErrors_IsSuccessIsFalse()
         {
-            var actual = Result.Failure<string>(Array.Empty<ErrorMessage>());
+            var actual = Result.Failure<string>(Array.Empty<ErrorDetails>());
             actual.IsSuccess.Should().BeFalse();
         }
 
@@ -68,7 +68,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Results
         [Test]
         public void FailureResult_OneError_Errors_ReturnsError()
         {
-            var expectedErrors = new List<ErrorMessage> { new ErrorMessage("Test") };
+            var expectedErrors = new List<ErrorDetails> { new ErrorDetails("Test") };
 
             var actual = Result.Failure(expectedErrors);
 
@@ -78,7 +78,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Results
         [Test]
         public void FailureResultT_OneError_Errors_ReturnsError()
         {
-            var expectedErrors = new List<ErrorMessage> { new ErrorMessage("Test") };
+            var expectedErrors = new List<ErrorDetails> { new ErrorDetails("Test") };
 
             var actual = Result.Failure<string>(expectedErrors);
 
@@ -89,7 +89,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Results
         public void TwoDifferenceResults_AreNotEqual()
         {
             var success = Result.Success();
-            var failure = Result.Failure(Array.Empty<ErrorMessage>());
+            var failure = Result.Failure(Array.Empty<ErrorDetails>());
 
             var actual = success.Equals(failure);
 
@@ -120,7 +120,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Results
         [Test]
         public void ToResult_ConvertFailureResultT_ReturnsFailureResult()
         {
-            List<ErrorMessage> expectedErrors = new List<ErrorMessage> { new ErrorMessage("TestErrorId") };
+            List<ErrorDetails> expectedErrors = new List<ErrorDetails> { new ErrorDetails("TestErrorId") };
             var sut = Result.Failure<string>(expectedErrors);
             
             var actual = sut.ToResult();
@@ -131,7 +131,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Results
         [Test]
         public void FailureResultT_ReturnsDefaultValue()
         {
-            var actual = Result.Failure<int>(Array.Empty<ErrorMessage>());
+            var actual = Result.Failure<int>(Array.Empty<ErrorDetails>());
             actual.Value.Should().Be(default);
         }
     }
