@@ -13,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
         {
             OdsSettings = new OdsSettings
             {
-                ApiBaseUrl = "https://fakeodsserver.net/ORD/2-0-0", 
+                ApiBaseUrl = "https://fakeodsserver.net", 
                 BuyerOrganisationRoleIds = new[] {"RO98", "RO213"}
             };
             OdsRepository = new OdsRepository(OdsSettings);

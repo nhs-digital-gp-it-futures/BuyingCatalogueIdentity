@@ -82,7 +82,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
-            httpTest.ShouldHaveCalled($"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}")
+            httpTest.ShouldHaveCalled($"{context.OdsSettings.ApiBaseUrl}/ORD/2-0-0/organisations/{OdsCode}")
                 .WithVerb(HttpMethod.Get)
                 .Times(1);
         }
