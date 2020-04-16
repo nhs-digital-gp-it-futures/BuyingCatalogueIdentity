@@ -3,14 +3,18 @@ using System.Threading.Tasks;
 using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     internal sealed class LoginService : ILoginService, IDisposable
     {
-        internal const string EventMessage = "Invalid credentials";
+        internal const string ValidateUserMessage = "Invalid credentials";
+        internal const string DisabledEventMessage = "User is disabled";
 
         private readonly IEventService _eventService;
         private readonly IIdentityServerInteractionService _interaction;
@@ -34,21 +38,50 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             _userManager?.Dispose();
         }
 
-        public async Task<SignInResult> SignInAsync(string username, string password, Uri returnUrl)
+        public async Task<Result<SignInResponse>> SignInAsync(string username, string password, Uri returnUrl)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                return new SignInResult(false);
+            {
+                return Result.Failure<SignInResponse>(LoginUserErrors.UserNameOrPasswordIncorrect());
+            }
+
+            var user = await _userManager.FindByNameAsync(username);
+            if (user is null)
+            {
+                return Result.Failure<SignInResponse>(LoginUserErrors.UserNameOrPasswordIncorrect());
+            }
 
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl?.ToString());
+            var isUserValidResult = await ValidateUserCredentialsAsync(user, password);
+            if (!isUserValidResult.IsSuccess)
+            {
+                await _eventService.RaiseAsync(new UserLoginFailureEvent(user.UserName, ValidateUserMessage, clientId: context?.ClientId));
 
-            var signedIn = await SignInAsync(username, password, context);
-            if (!signedIn)
-                return new SignInResult(false, loginHint: context?.LoginHint);
+                return Result.Failure<SignInResponse>(isUserValidResult.Errors);
+            }
+
+            var isUserDisabledResult = ValidateIfUserDisabled(user);
+
+            if (!isUserDisabledResult.IsSuccess)
+            {
+                await _eventService.RaiseAsync(new UserLoginFailureEvent(user.UserName, DisabledEventMessage, clientId: context?.ClientId));
+
+                return Result.Failure<SignInResponse>(isUserDisabledResult.Errors);
+            }
+
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = context?.RedirectUri,
+                AllowRefresh = true,
+                IsPersistent = false
+            };
+
+            await _signInManager.SignInAsync(user, props);
 
             await RaiseLoginSuccessAsync(username, context);
 
             // We can trust returnUrl if GetAuthorizationContextAsync returned non-null
-            return context == null ? new SignInResult(true) : new SignInResult(true, true);
+            return Result.Success(new SignInResponse(context is object));
         }
 
         private async Task RaiseLoginSuccessAsync(string username, AuthorizationRequest context)
@@ -57,15 +90,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
         }
 
-        private async Task<bool> SignInAsync(string username, string password, AuthorizationRequest context)
+        private async Task<Result> ValidateUserCredentialsAsync(ApplicationUser user, string password)
         {
-            var result = await _signInManager.PasswordSignInAsync(username, password, false, true);
-            if (result.Succeeded)
-                return true;
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, true);
+            return result.Succeeded ? Result.Success() : Result.Failure(LoginUserErrors.UserNameOrPasswordIncorrect());
+        }
 
-            await _eventService.RaiseAsync(new UserLoginFailureEvent(username, EventMessage, clientId: context?.ClientId));
-
-            return false;
+        private static Result ValidateIfUserDisabled(ApplicationUser user)
+        {
+            return !user.Disabled ? Result.Success() : Result.Failure(LoginUserErrors.UserIsDisabled());
         }
     }
 }

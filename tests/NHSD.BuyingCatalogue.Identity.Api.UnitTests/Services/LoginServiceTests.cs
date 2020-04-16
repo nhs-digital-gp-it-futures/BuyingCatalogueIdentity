@@ -24,9 +24,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var result = await loginService.SignInAsync("user", "pass", null);
 
             Assert.NotNull(result);
-            result.IsSuccessful.Should().BeFalse();
-            result.IsTrustedReturnUrl.Should().BeFalse();
-            result.LoginHint.Should().BeNull();
+            result.IsSuccess.Should().BeFalse();
+            result.Value.Should().BeNull();
         }
 
         [Test]
@@ -43,9 +42,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var result = await loginService.SignInAsync("user", "pass", null);
 
             Assert.NotNull(result);
-            result.IsSuccessful.Should().BeFalse();
-            result.IsTrustedReturnUrl.Should().BeFalse();
-            result.LoginHint.Should().Be(loginHint);
+            result.IsSuccess.Should().BeFalse();
+            result.Value.Should().BeNull();
         }
 
         [Test]
@@ -64,6 +62,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             }
 
             using var loginService = new LoginServiceBuilder()
+                .WithFindUserResult(ApplicationUserBuilder.Create().WithUsername(username).Build())
                 .WithEventServiceCallback<UserLoginFailureEvent>(EventCallback)
                 .WithAuthorizationContextResult(new AuthorizationRequest { ClientId = clientId })
                 .WithSignInResult(IdentitySignInResult.Failed)
@@ -74,7 +73,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             eventCount.Should().Be(1);
             Assert.NotNull(raisedEvent);
             raisedEvent.ClientId.Should().Be(clientId);
-            raisedEvent.Message.Should().Be(LoginService.EventMessage);
+            raisedEvent.Message.Should().Be(LoginService.ValidateUserMessage);
             raisedEvent.Username.Should().Be(username);
         }
 
@@ -93,6 +92,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             }
 
             using var loginService = new LoginServiceBuilder()
+                .WithFindUserResult(ApplicationUserBuilder.Create().WithUsername(username).Build())
                 .WithEventServiceCallback<UserLoginFailureEvent>(EventCallback)
                 .WithSignInResult(IdentitySignInResult.Failed)
                 .Build();
@@ -102,7 +102,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             eventCount.Should().Be(1);
             Assert.NotNull(raisedEvent);
             raisedEvent.ClientId.Should().BeNull();
-            raisedEvent.Message.Should().Be(LoginService.EventMessage);
+            raisedEvent.Message.Should().Be(LoginService.ValidateUserMessage);
             raisedEvent.Username.Should().Be(username);
         }
 
@@ -120,7 +120,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var result = await loginService.SignInAsync(username, password, null);
 
             Assert.NotNull(result);
-            result.IsSuccessful.Should().BeFalse();
+            result.IsSuccess.Should().BeFalse();
         }
 
         [Test]
@@ -133,9 +133,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var result = await loginService.SignInAsync("user", "pass", null);
 
             Assert.NotNull(result);
-            result.IsSuccessful.Should().BeTrue();
-            result.IsTrustedReturnUrl.Should().BeFalse();
-            result.LoginHint.Should().BeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.IsTrustedReturnUrl.Should().BeFalse();
+            result.Value.LoginHint.Should().BeNull();
         }
 
         [Test]
@@ -149,9 +149,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var result = await loginService.SignInAsync("user", "pass", null);
 
             Assert.NotNull(result);
-            result.IsSuccessful.Should().BeTrue();
-            result.IsTrustedReturnUrl.Should().BeTrue();
-            result.LoginHint.Should().BeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.IsTrustedReturnUrl.Should().BeTrue();
+            result.Value.LoginHint.Should().BeNull();
         }
 
         [Test]

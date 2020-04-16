@@ -21,6 +21,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
         [SummaryAnchor(Link = nameof(EmailAddress))]
         public string LoginError { get; set; }
 
+        public string DisabledError { get; set; }
+
         internal static class ErrorMessages
         {
             internal const string EmailAddressRequired = "Enter your email address";

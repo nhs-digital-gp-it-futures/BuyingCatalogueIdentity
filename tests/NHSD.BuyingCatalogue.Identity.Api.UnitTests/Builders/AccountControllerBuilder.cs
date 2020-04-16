@@ -7,7 +7,8 @@ using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
-using SignInResult = NHSD.BuyingCatalogue.Identity.Api.Services.SignInResult;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
@@ -19,6 +20,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private ILoginService _loginService;
         private ILogoutService _logoutService;
         private IUrlHelper _urlHelper;
+        private DisabledErrorMessageSettings _disabledErrorMessageSettings;
 
         internal AccountControllerBuilder()
         {
@@ -27,6 +29,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _logoutService = Mock.Of<ILogoutService>();
             _mockPasswordService = new Mock<IPasswordService>();
             _urlHelper = Mock.Of<IUrlHelper>();
+            _disabledErrorMessageSettings = new DisabledErrorMessageSettings
+            {
+                EmailAddress = "Email",
+                PhoneNumber = "Phone"
+            };
+        }
+
+        internal AccountControllerBuilder WithDisabledErrorMessageSetting(DisabledErrorMessageSettings settings)
+        {
+            _disabledErrorMessageSettings = settings;
+            return this;
         }
 
         internal AccountControllerBuilder WithLogoutService(ILogoutService logoutService)
@@ -64,7 +77,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal AccountControllerBuilder WithSignInResult(SignInResult result)
+        internal AccountControllerBuilder WithSignInResult(Result<SignInResponse> result)
         {
             var mockLoginService = new Mock<ILoginService>();
             mockLoginService.Setup(l => l.SignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>()))
@@ -110,7 +123,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         internal AccountController Build()
         {
-            return new AccountController(_loginService, _logoutService, _mockPasswordService.Object)
+            return new AccountController(_loginService, _logoutService, _mockPasswordService.Object, _disabledErrorMessageSettings)
             {
                 ControllerContext = _context,
                 Url = _urlHelper,
