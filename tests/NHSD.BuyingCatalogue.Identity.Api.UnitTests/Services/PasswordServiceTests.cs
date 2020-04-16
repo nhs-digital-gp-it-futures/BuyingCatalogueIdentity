@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
     internal sealed class PasswordServiceTests
     {
         private static Mock<IUserStore<ApplicationUser>> MockUserStore => new Mock<IUserStore<ApplicationUser>>();
+
         private static Mock<UserManager<ApplicationUser>> MockUserManager => new Mock<UserManager<ApplicationUser>>(
         MockUserStore.Object,
         null,
@@ -145,7 +145,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                     new PasswordResetSettings(),
                     MockUserManager.Object);
 
-                await service.SendResetEmailAsync(null, "callback");
+                await service.SendResetEmailAsync(null, new Uri("https://www.google.co.uk/"));
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(SendResetEmailAsync);
@@ -165,23 +165,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(SendResetEmailAsync);
-        }
-
-        [TestCase("")]
-        [TestCase("\t")]
-        public void SendResetEmailAsync_EmptyOrWhiteSpaceCallback_ThrowsException(string callback)
-        {
-            async Task SendResetEmailAsync()
-            {
-                var service = new PasswordService(
-                    Mock.Of<IEmailService>(),
-                    new PasswordResetSettings(),
-                    MockUserManager.Object);
-
-                await service.SendResetEmailAsync(ApplicationUserBuilder.Create().Build(), callback);
-            }
-
-            Assert.ThrowsAsync<ArgumentException>(SendResetEmailAsync);
         }
 
         [Test]
@@ -226,7 +209,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 settings,
                 MockUserManager.Object);
 
-            await service.SendResetEmailAsync(expectedUser, expectedCallback);
+            await service.SendResetEmailAsync(expectedUser, new Uri(expectedCallback));
 
             emailCount.Should().Be(1);
 

@@ -11,14 +11,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
     {
         private readonly IApplicationUserValidator _applicationUserValidator;
         private readonly IUsersRepository _usersRepository;
+        private readonly IPasswordService _passwordService;
         private readonly IRegistrationService _registrationService;
 
         public CreateBuyerService(
             IApplicationUserValidator applicationUserValidator,
             IUsersRepository usersRepository,
+            IPasswordService passwordService,
             IRegistrationService registrationService)
         {
             _applicationUserValidator = applicationUserValidator ?? throw new ArgumentNullException(nameof(applicationUserValidator));
+            _passwordService = passwordService ?? throw new ArgumentNullException(nameof(passwordService));
             _registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
             _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
@@ -36,19 +39,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
                 createBuyerRequest.LastName,
                 createBuyerRequest.PhoneNumber,
                 createBuyerRequest.EmailAddress,
-                createBuyerRequest.PrimaryOrganisationId
-            );
+                createBuyerRequest.PrimaryOrganisationId);
 
             var validationResult = await _applicationUserValidator.ValidateAsync(newApplicationUser);
             if (!validationResult.IsSuccess)
                 return Result.Failure<string>(validationResult.Errors);
-            
-            await _usersRepository.CreateUserAsync(newApplicationUser);
 
-            // TODO: discuss exception handling options 
+            await _usersRepository.CreateUserAsync(newApplicationUser);
+            var token = await _passwordService.GeneratePasswordResetTokenAsync(newApplicationUser.Email);
+
+            // TODO: discuss exception handling options
             // TODO: consider moving sending e-mail out of process
             // (the current in-process implementation has a significant impact on response time)
-            await _registrationService.SendInitialEmailAsync(newApplicationUser);
+            await _registrationService.SendInitialEmailAsync(token);
 
             return Result.Success(newApplicationUser.Id);
         }

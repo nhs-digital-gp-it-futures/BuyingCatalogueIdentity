@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
@@ -11,8 +10,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// <summary>
         /// Asynchronously sends the initial e-mail to a user following registration.
         /// </summary>
-        /// <param name="user">The user to send the e-mail to.</param>
+        /// <param name="token">The reset token details.</param>
         /// <returns>An asynchronous task context.</returns>
-        Task SendInitialEmailAsync(ApplicationUser user);
+        Task SendInitialEmailAsync(PasswordResetToken token);
     }
 }

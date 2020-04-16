@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -12,15 +12,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class EmailSteps
     {
-        private readonly ScenarioContext _context;
         private readonly EmailServerDriver _emailServerDriver;
-        private readonly Response _response;
+        private readonly Settings _settings;
 
-        public EmailSteps(ScenarioContext context, Response response, EmailServerDriver emailServerDriver)
+        public EmailSteps(EmailServerDriver emailServerDriver, Settings settings)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _response = response ?? throw new ArgumentNullException(nameof(response));
             _emailServerDriver = emailServerDriver ?? throw new ArgumentNullException(nameof(emailServerDriver));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         [Then(@"the email sent contains the following information")]
@@ -29,9 +27,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var expectedEmail = table.CreateInstance<EmailTable>();
             var actualEmail = (await _emailServerDriver.FindAllEmailsAsync()).First();
 
-            actualEmail.PlainTextBody.Should().Contain(expectedEmail.ResetPasswordLink);
-            actualEmail.HtmlBody.Should().Contain(expectedEmail.ResetPasswordLink);
-            actualEmail.Should().BeEquivalentTo(expectedEmail, options => options.Excluding(e => e.ResetPasswordLink));
+            actualEmail.PlainTextBody.Should().MatchRegex(PasswordResetUrlRegex(expectedEmail.To));
+            actualEmail.HtmlBody.Should().MatchRegex(PasswordResetUrlRegex(expectedEmail.To));
+            actualEmail.Should().BeEquivalentTo(expectedEmail);
         }
 
         [Then(@"no email is sent")]
@@ -48,6 +46,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actualCount.Should().Be(1);
         }
 
+        private string PasswordResetUrlRegex(string expectedEmailAddress) =>
+            $@"(?:\s|<a href=""){_settings.IdentityApiBaseUrl}/Account/ResetPassword\?Token=(?:\S+)&Email={expectedEmailAddress}(?:\s|"">)";
+
         private sealed class EmailTable
         {
             public string From { get; set; }
@@ -55,8 +56,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string To { get; set; }
 
             public string Subject { get; set; }
-
-            public string ResetPasswordLink { get; set; }
         }
     }
 }

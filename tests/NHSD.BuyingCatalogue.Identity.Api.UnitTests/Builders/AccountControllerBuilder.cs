@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
@@ -14,11 +13,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
     internal sealed class AccountControllerBuilder
     {
         private readonly Mock<IPasswordService> _mockPasswordService;
+        private readonly Mock<IPasswordResetCallback> _mockPasswordResetCallback;
 
         private ControllerContext _context;
         private ILoginService _loginService;
         private ILogoutService _logoutService;
-        private IUrlHelper _urlHelper;
 
         internal AccountControllerBuilder()
         {
@@ -26,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             _loginService = Mock.Of<ILoginService>();
             _logoutService = Mock.Of<ILogoutService>();
             _mockPasswordService = new Mock<IPasswordService>();
-            _urlHelper = Mock.Of<IUrlHelper>();
+            _mockPasswordResetCallback = new Mock<IPasswordResetCallback>();
         }
 
         internal AccountControllerBuilder WithLogoutService(ILogoutService logoutService)
@@ -35,9 +34,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal AccountControllerBuilder WithResetEmailCallback(Action<ApplicationUser, string> emailCallback)
+        internal AccountControllerBuilder WithResetEmailCallback(Action<ApplicationUser, Uri> emailCallback)
         {
-            _mockPasswordService.Setup(p => p.SendResetEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+            _mockPasswordService.Setup(p => p.SendResetEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<Uri>()))
                 .Callback(emailCallback);
 
             return this;
@@ -75,13 +74,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal AccountControllerBuilder WithUrlAction(string action)
+        internal AccountControllerBuilder WithResetCallbackUrl(string url)
         {
-            var mockUrlHelper = new Mock<IUrlHelper>();
-            mockUrlHelper.Setup(h => h.Action(It.IsNotNull<UrlActionContext>()))
-                .Returns(action);
-
-            _urlHelper = mockUrlHelper.Object;
+            _mockPasswordResetCallback.Setup(c => c.GetPasswordResetCallback(It.IsAny<PasswordResetToken>()))
+                .Returns(new Uri(url));
 
             return this;
         }
@@ -97,23 +93,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal AccountControllerBuilder WithUrlActionCallback(Action<UrlActionContext> actionCallback)
-        {
-            var mockUrlHelper = new Mock<IUrlHelper>();
-            mockUrlHelper.Setup(h => h.Action(It.IsNotNull<UrlActionContext>()))
-                .Callback(actionCallback);
-
-            _urlHelper = mockUrlHelper.Object;
-
-            return this;
-        }
-
         internal AccountController Build()
         {
-            return new AccountController(_loginService, _logoutService, _mockPasswordService.Object)
+            return new AccountController(
+                _loginService,
+                _logoutService,
+                _mockPasswordResetCallback.Object,
+                _mockPasswordService.Object)
             {
                 ControllerContext = _context,
-                Url = _urlHelper,
             };
         }
     }

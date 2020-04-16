@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
@@ -16,15 +15,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
+        private readonly IPasswordResetCallback _passwordResetCallback;
         private readonly IPasswordService _passwordService;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
+            IPasswordResetCallback passwordResetCallback,
             IPasswordService passwordService)
         {
             _loginService = loginService;
             _logoutService = logoutService;
+            _passwordResetCallback = passwordResetCallback;
             _passwordService = passwordService;
         }
 
@@ -67,9 +69,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             var returnUrl = viewModel.ReturnUrl.ToString();
 
             if (signInResult.IsTrustedReturnUrl)
-
+            {
                 // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
                 return Redirect(returnUrl);
+            }
 
             return LocalRedirect(returnUrl);
         }
@@ -116,15 +119,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (resetToken == null)
                 return RedirectToAction(nameof(ForgotPasswordLinkSent));
 
-            var callback = Url.Action(
-                new UrlActionContext
-                {
-                    Action = nameof(ResetPassword),
-                    Protocol = Request.Scheme,
-                    Values = new { resetToken.Token, Email = viewModel.EmailAddress }
-                });
-
-            await _passwordService.SendResetEmailAsync(resetToken.User, callback);
+            await _passwordService.SendResetEmailAsync(
+                resetToken.User,
+                _passwordResetCallback.GetPasswordResetCallback(resetToken));
 
             return RedirectToAction(nameof(ForgotPasswordLinkSent));
         }

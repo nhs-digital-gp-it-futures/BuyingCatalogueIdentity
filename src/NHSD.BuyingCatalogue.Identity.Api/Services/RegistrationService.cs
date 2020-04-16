@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Common.Email;
 
@@ -12,6 +11,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     internal sealed class RegistrationService : IRegistrationService
     {
         private readonly IEmailService _emailService;
+        private readonly IPasswordResetCallback _passwordResetCallback;
         private readonly RegistrationSettings _settings;
 
         /// <summary>
@@ -19,28 +19,32 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// the provided <paramref name="emailService"/> and <paramref name="settings"/>.
         /// </summary>
         /// <param name="emailService">The service to use to send e-mails.</param>
+        /// <param name="passwordResetCallback">The instance that will supply the reset callback URL.</param>
         /// <param name="settings">The configured registration settings.</param>
         /// <exception cref="ArgumentNullException"><paramref name="emailService"/> is <see langref="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="passwordResetCallback"/> is <see langref="null"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="settings"/> is <see langref="null"/>.</exception>
-        public RegistrationService(IEmailService emailService, RegistrationSettings settings)
+        public RegistrationService(IEmailService emailService, IPasswordResetCallback passwordResetCallback, RegistrationSettings settings)
         {
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _passwordResetCallback = passwordResetCallback ?? throw new ArgumentNullException(nameof(passwordResetCallback));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         /// <summary>
-        /// Asynchronously sends the initial e-mail to the specified <paramref name="user"/>.
+        /// Asynchronously sends the initial e-mail using the provided <paramref name="token"/> details.
         /// </summary>
-        /// <param name="user">The user to send the e-mail to.</param>
+        /// <param name="token">The reset token information.</param>
         /// <returns>An asynchronous task context.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="user"/> is <see langref="null"/>.</exception>
-        public async Task SendInitialEmailAsync(ApplicationUser user)
+        /// <exception cref="ArgumentNullException"><paramref name="token"/> is <see langref="null"/>.</exception>
+        public async Task SendInitialEmailAsync(PasswordResetToken token)
         {
-            if (user is null)
-                throw new ArgumentNullException(nameof(user));
+            if (token is null)
+                throw new ArgumentNullException(nameof(token));
 
-            // TODO: replace hard-coded Uri with reset password endpoint once available
-            var message = new EmailMessage(_settings.EmailMessage, new Uri("https://www.google.co.uk/"))
+            var user = token.User;
+
+            var message = new EmailMessage(_settings.EmailMessage, _passwordResetCallback.GetPasswordResetCallback(token))
             {
                 Recipient = new EmailAddress(user.DisplayName, user.Email),
             };

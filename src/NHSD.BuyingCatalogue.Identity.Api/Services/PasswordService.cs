@@ -57,7 +57,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentException($"{nameof(emailAddress)} must be provided", nameof(emailAddress));
 
             var user = await _userManager.FindByEmailAsync(emailAddress);
-            
+
             return user == null
                 ? null
                 : new PasswordResetToken(await _userManager.GeneratePasswordResetTokenAsync(user), user);
@@ -67,13 +67,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// Sends a password reset e-mail to the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user to send the e-mail to.</param>
-        /// <param name="callback">The callback URL to handle
-        /// the password reset.</param>
+        /// <param name="callback">The callback URL to handle the password reset.</param>
         /// <returns>An asynchronous task context.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="user"/> is <see langref="null"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langref="null"/>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="callback"/> is empty or white space.</exception>
-        public async Task SendResetEmailAsync(ApplicationUser user, string callback)
+        public async Task SendResetEmailAsync(ApplicationUser user, Uri callback)
         {
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
@@ -81,10 +79,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (callback is null)
                 throw new ArgumentNullException(nameof(callback));
 
-            if (string.IsNullOrWhiteSpace(callback))
-                throw new ArgumentException($"{nameof(callback)} must be provided", nameof(callback));
-
-            var message = new EmailMessage(_settings.EmailMessage, new Uri(callback))
+            var message = new EmailMessage(_settings.EmailMessage, callback)
             {
                 Recipient = new EmailAddress(user.DisplayName, user.Email),
             };
