@@ -1,15 +1,12 @@
 ﻿namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
-    public sealed class SignInResult
+    public sealed class SignInResponse
     {
-        internal SignInResult(bool isSuccessful, bool isTrustedReturnUrl = false, string loginHint = null)
+        internal SignInResponse(bool isTrustedReturnUrl = false, string loginHint = null)
         {
             IsTrustedReturnUrl = isTrustedReturnUrl;
-            IsSuccessful = isSuccessful;
             LoginHint = loginHint;
         }
-
-        internal bool IsSuccessful { get; }
 
         internal bool IsTrustedReturnUrl { get; }
 

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
@@ -13,21 +16,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
     {
         internal const string SignInErrorMessage = "Enter a valid email address and password";
 
+        internal const string UserDisabledErrorMessageTemplate = @"There is a problem accessing your account.
+
+Contact the account administrator at: {0} or call {1}";
+
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
         private readonly IPasswordResetCallback _passwordResetCallback;
         private readonly IPasswordService _passwordService;
+        private readonly DisabledErrorMessageSettings _disabledErrorMessageSettings;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
             IPasswordResetCallback passwordResetCallback,
-            IPasswordService passwordService)
+            IPasswordService passwordService,
+            DisabledErrorMessageSettings disabledErrorMessageSettings)
         {
             _loginService = loginService;
             _logoutService = logoutService;
             _passwordResetCallback = passwordResetCallback;
             _passwordService = passwordService;
+            _disabledErrorMessageSettings = disabledErrorMessageSettings;
         }
 
         [HttpGet]
@@ -55,24 +65,39 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, viewModel.ReturnUrl);
 
             LoginViewModel NewLoginViewModel() =>
-                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.LoginHint };
+                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.Value?.LoginHint };
 
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
 
-            if (!signInResult.IsSuccessful)
+            if (!signInResult.IsSuccess)
             {
-                ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
+                var signInErrors = signInResult.Errors;
+
+                if (signInErrors.Contains(LoginUserErrors.UserNameOrPasswordIncorrect()))
+                {
+                    ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
+                }
+
+                if (signInErrors.Contains(LoginUserErrors.UserIsDisabled()))
+                {
+                    var disabledErrorFormat = string.Format(
+                        CultureInfo.CurrentCulture,
+                        UserDisabledErrorMessageTemplate,
+                        _disabledErrorMessageSettings.EmailAddress,
+                        _disabledErrorMessageSettings.PhoneNumber);
+
+                    ModelState.AddModelError(nameof(LoginViewModel.DisabledError), disabledErrorFormat);
+                }
+
                 return View(NewLoginViewModel());
             }
 
             var returnUrl = viewModel.ReturnUrl.ToString();
 
-            if (signInResult.IsTrustedReturnUrl)
-            {
-                // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+            // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
+            if (signInResult.Value.IsTrustedReturnUrl)
                 return Redirect(returnUrl);
-            }
 
             return LocalRedirect(returnUrl);
         }

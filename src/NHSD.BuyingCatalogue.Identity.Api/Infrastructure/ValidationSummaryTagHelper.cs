@@ -96,6 +96,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             var listItemBuilder = new TagBuilder(TagHelperConstants.ListItem);
             var linkBuilder = new TagBuilder(TagHelperConstants.Anchor);
             linkBuilder.Attributes.Add(TagHelperConstants.Link, $"#{linkElement}");
+            linkBuilder.AddCssClass("bc-c-login-page-error-box-padding");
             linkBuilder.InnerHtml.Append(errorMessage);
             listItemBuilder.InnerHtml.AppendHtml(linkBuilder);
 

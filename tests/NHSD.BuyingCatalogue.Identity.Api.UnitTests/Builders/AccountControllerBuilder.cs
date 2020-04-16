@@ -6,7 +6,8 @@ using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
-using SignInResult = NHSD.BuyingCatalogue.Identity.Api.Services.SignInResult;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
@@ -18,14 +19,26 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private ControllerContext _context;
         private ILoginService _loginService;
         private ILogoutService _logoutService;
+        private DisabledErrorMessageSettings _disabledErrorMessageSettings;
 
         internal AccountControllerBuilder()
         {
             _context = Mock.Of<ControllerContext>();
             _loginService = Mock.Of<ILoginService>();
             _logoutService = Mock.Of<ILogoutService>();
-            _mockPasswordService = new Mock<IPasswordService>();
             _mockPasswordResetCallback = new Mock<IPasswordResetCallback>();
+            _mockPasswordService = new Mock<IPasswordService>();
+            _disabledErrorMessageSettings = new DisabledErrorMessageSettings
+            {
+                EmailAddress = "Email",
+                PhoneNumber = "Phone"
+            };
+        }
+
+        internal AccountControllerBuilder WithDisabledErrorMessageSetting(DisabledErrorMessageSettings settings)
+        {
+            _disabledErrorMessageSettings = settings;
+            return this;
         }
 
         internal AccountControllerBuilder WithLogoutService(ILogoutService logoutService)
@@ -63,7 +76,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal AccountControllerBuilder WithSignInResult(SignInResult result)
+        internal AccountControllerBuilder WithSignInResult(Result<SignInResponse> result)
         {
             var mockLoginService = new Mock<ILoginService>();
             mockLoginService.Setup(l => l.SignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>()))
@@ -99,7 +112,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 _loginService,
                 _logoutService,
                 _mockPasswordResetCallback.Object,
-                _mockPasswordService.Object)
+                _mockPasswordService.Object,
+                _disabledErrorMessageSettings)
             {
                 ControllerContext = _context,
             };
