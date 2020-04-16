@@ -13,8 +13,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     public sealed class OdsApiSteps
     {
-        private readonly ScenarioContext _context;
-            private readonly Settings _settings;
+        private readonly ScenarioContext _context; 
+        private readonly Settings _settings;
 
         public OdsApiSteps(ScenarioContext context, Settings settings)
         {

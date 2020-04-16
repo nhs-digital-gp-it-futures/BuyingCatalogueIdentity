@@ -1,7 +1,7 @@
-﻿Feature: Display an Ods Organisation by its Ods Code
-  As an Authority User
-  I want to view information for a single organisation
-  So that I can manage access to the Buying Catalogue
+﻿Feature: Display an Ods Organisation by its code
+    As an Authority User
+    I want to view information for a single organisation
+    So that I can manage access to the Buying Catalogue
 
 Background:
 	Given Ods Organisations exist
@@ -12,7 +12,7 @@ Background:
 		| Ods Organisation 4 | N0G     | 153XP         | Active    | 15      | Sun Ave         | End of the Road | Suburb      | York     | North Yorkshire | YO11 4LO | England |
 	And Organisations exist
 		| Name           | OdsCode |
-		| Organisation 1 | Ods 1   |
+		| Organisation 1 | B1G     |
 	And Users exist
 		| Id     | OrganisationName | FirstName | LastName | Email                | PhoneNumber | Disabled | Password        | OrganisationFunction |
 		| 012345 | Organisation 1   | Penny     | Lane     | PennyLane@email.com  | 01234567890 | false    | S0mePa$$w0rd    | Buyer                |
