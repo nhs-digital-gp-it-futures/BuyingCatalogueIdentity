@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
                 .AllowHttpStatus("3xx,4xx")
                 .GetJsonAsync<OdsResponse>();
 
-            var odsOrganisation = response.Organisation;
+            var odsOrganisation = response?.Organisation;
 
             return odsOrganisation is null ? null : new OdsOrganisation
             {

@@ -5,5 +5,6 @@
         public const string AccessToken = "AccessToken";
         public const string OrganisationMapDictionary = "OrganisationMapDictionary";
         public const string EmailSent = "EmailSent";
+        public const string MappingAdded = "MappingAdded";
     }
 }
