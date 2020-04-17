@@ -29,12 +29,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
             RegisterCustomValueRetrievers();
 
             await ResetDatabaseAsync();
-
-            await DeleteAllOdsEndpointMappings();
         }
 
         [AfterScenario]
-        public async Task CleanUpAsync() => await DeleteAllSentEmailsAsync();
+        public async Task CleanUpAsync()
+        {
+            await DeleteAllOdsEndpointMappings();
+            await DeleteAllSentEmailsAsync();
+        }
 
         public void RegisterTestConfiguration()
         {

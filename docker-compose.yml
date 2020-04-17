@@ -80,7 +80,7 @@ services:
         - AUTHORITY=http://host.docker.internal:8070/identity
         - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
         - AllowInvalidCertificate=True
-        - ODS__APIBASEURL=http://nhsd.ods.api.wiremock
+        - ODS__APIBASEURL=http://nhsd.ods.api.wiremock/ORD/2-0-0
         - ODS__BUYERORGANISATIONROLEIDS__0=Buyer
         - ODS__BUYERORGANISATIONROLEIDS__1=AlsoBuyer
     depends_on:

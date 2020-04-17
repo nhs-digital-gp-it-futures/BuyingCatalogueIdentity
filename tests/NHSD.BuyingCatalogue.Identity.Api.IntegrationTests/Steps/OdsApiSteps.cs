@@ -26,16 +26,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public async Task CallToTheOdsApiWillFail()
         {
             await ClearMappings();
-            var model = CreateMappingModel("/ORD/2-0-0/organisations/*", 500);
 
-            await AddMapping(model);
+            await AddMapping(CreateMappingModel("/ORD/2-0-0/organisations/*", 500));
         }
 
-        public async Task SetUpGETEndpoint(string odsCode, string responseBody)
+        internal async Task SetUpGETEndpoint(string odsCode, string responseBody)
         {
-            var model = CreateMappingModel($"/ORD/2-0-0/organisations/{odsCode}", 200, responseBody);
+            await AddMapping(CreateMappingModel($"/ORD/2-0-0/organisations/{odsCode}", 200, responseBody));
+        }
 
-            await AddMapping(model);
+        internal async Task ClearMappings()
+        {
+            if (_context.Get(ScenarioContextKeys.MappingAdded, false))
+            {
+                var api = RestClient.For<IWireMockAdminApi>(new Uri(_settings.OdsApiWireMockBaseUrl));
+                await api.DeleteMappingsAsync();
+                _context[ScenarioContextKeys.MappingAdded] = false;
+            }
         }
 
         private static MappingModel CreateMappingModel(string path, int responseStatusCode, string responseBody = null)
@@ -64,21 +71,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
         private async Task AddMapping(MappingModel model)
         {
-            model.Priority = 10;
             var api = RestClient.For<IWireMockAdminApi>(new Uri(_settings.OdsApiWireMockBaseUrl));
             var result = await api.PostMappingAsync(model);
             result.Status.Should().Be("Mapping added");
             _context[ScenarioContextKeys.MappingAdded] = true;
-        }
-
-        public async Task ClearMappings()
-        {
-            if (_context.Get(ScenarioContextKeys.MappingAdded, false))
-            {
-                var api = RestClient.For<IWireMockAdminApi>(new Uri(_settings.OdsApiWireMockBaseUrl));
-                await api.DeleteMappingsAsync();
-                _context[ScenarioContextKeys.MappingAdded] = false;
-            }
         }
     }
 }

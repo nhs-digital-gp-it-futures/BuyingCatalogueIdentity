@@ -21,7 +21,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
         public async Task<OdsOrganisation> GetBuyerOrganisationByOdsCodeAsync(string odsCode)
         {
             var response = await _settings.ApiBaseUrl
-                .AppendPathSegments("ORD/2-0-0/organisations")
+                .AppendPathSegment("organisations")
                 .AppendPathSegment(odsCode)
                 .AllowHttpStatus("3xx,4xx")
                 .GetJsonAsync<OdsResponse>();
