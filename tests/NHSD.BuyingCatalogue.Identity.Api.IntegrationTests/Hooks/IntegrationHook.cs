@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BoDi;
 using Microsoft.Extensions.Configuration;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Support;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
@@ -31,7 +32,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
         }
 
         [AfterScenario]
-        public async Task CleanUpAsync() => await DeleteAllSentEmailsAsync();
+        public async Task CleanUpAsync()
+        {
+            await DeleteAllOdsEndpointMappings();
+            await DeleteAllSentEmailsAsync();
+        }
 
         public void RegisterTestConfiguration()
         {
@@ -58,6 +63,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
         {
             var emailServerDriver = _objectContainer.Resolve<EmailServerDriver>();
             await emailServerDriver.ClearAllEmailsAsync();
+        }
+
+        private async Task DeleteAllOdsEndpointMappings()
+        {
+            var odsApi = _objectContainer.Resolve<OdsApiSteps>();
+            await odsApi.ClearMappings();
         }
     }
 }

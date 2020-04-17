@@ -80,6 +80,9 @@ services:
         - AUTHORITY=http://host.docker.internal:8070/identity
         - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
         - AllowInvalidCertificate=True
+        - ODS__APIBASEURL=http://nhsd.ods.api.wiremock/ORD/2-0-0
+        - ODS__BUYERORGANISATIONROLEIDS__0=Buyer
+        - ODS__BUYERORGANISATIONROLEIDS__1=AlsoBuyer
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
     entrypoint: 
@@ -90,6 +93,16 @@ services:
         - nhsd_bcnetwork
     ports:
         - "8075:80"
+
+  nhsd.ods.api.wiremock:
+    container_name: ods_api_wiremock
+    image: ${REGISTRY:-nhsd}/buying-catalogue/ods-api-wiremock:${TAG:-latest}
+    build: 
+      context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/WireMock   
+    networks:
+        - nhsd_bcnetwork   
+    ports:
+        - "8080:80"
 
   nhsd.buyingcatalogue.identity.api.sampleresource:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-sampleresource:${TAG:-latest}
