@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
@@ -23,17 +22,20 @@ Contact the account administrator at: {0} or call {1}";
 
         private readonly ILoginService _loginService;
         private readonly ILogoutService _logoutService;
+        private readonly IPasswordResetCallback _passwordResetCallback;
         private readonly IPasswordService _passwordService;
         private readonly DisabledErrorMessageSettings _disabledErrorMessageSettings;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
+            IPasswordResetCallback passwordResetCallback,
             IPasswordService passwordService,
             DisabledErrorMessageSettings disabledErrorMessageSettings)
         {
             _loginService = loginService;
             _logoutService = logoutService;
+            _passwordResetCallback = passwordResetCallback;
             _passwordService = passwordService;
             _disabledErrorMessageSettings = disabledErrorMessageSettings;
         }
@@ -80,8 +82,8 @@ Contact the account administrator at: {0} or call {1}";
                 if (signInErrors.Contains(LoginUserErrors.UserIsDisabled()))
                 {
                     var disabledErrorFormat = string.Format(
-                        CultureInfo.CurrentCulture, 
-                        UserDisabledErrorMessageTemplate, 
+                        CultureInfo.CurrentCulture,
+                        UserDisabledErrorMessageTemplate,
                         _disabledErrorMessageSettings.EmailAddress,
                         _disabledErrorMessageSettings.PhoneNumber);
 
@@ -144,15 +146,9 @@ Contact the account administrator at: {0} or call {1}";
             if (resetToken == null)
                 return RedirectToAction(nameof(ForgotPasswordLinkSent));
 
-            var callback = Url.Action(
-                new UrlActionContext
-                {
-                    Action = nameof(ResetPassword),
-                    Protocol = Request.Scheme,
-                    Values = new { resetToken.Token, Email = viewModel.EmailAddress }
-                });
-
-            await _passwordService.SendResetEmailAsync(resetToken.User, callback);
+            await _passwordService.SendResetEmailAsync(
+                resetToken.User,
+                _passwordResetCallback.GetPasswordResetCallback(resetToken));
 
             return RedirectToAction(nameof(ForgotPasswordLinkSent));
         }

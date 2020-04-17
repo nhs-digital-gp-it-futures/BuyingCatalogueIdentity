@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -26,7 +27,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             static void Test()
             {
                 var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(null, context.UsersRepositoryMock.Object, context.RegistrationServiceMock.Object);
+                var sut = new CreateBuyerService(
+                    null,
+                    context.UsersRepositoryMock.Object,
+                    context.PasswordServiceMock.Object,
+                    context.RegistrationServiceMock.Object);
             }
 
             Assert.Throws<ArgumentNullException>(Test);
@@ -38,7 +43,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             static void Test()
             {
                 var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(context.ApplicationUserValidatorMock.Object, null, context.RegistrationServiceMock.Object);
+                var sut = new CreateBuyerService(
+                    context.ApplicationUserValidatorMock.Object,
+                    null,
+                    context.PasswordServiceMock.Object,
+                    context.RegistrationServiceMock.Object);
+            }
+
+            Assert.Throws<ArgumentNullException>(Test);
+        }
+
+        [Test]
+        public void Constructor_NullPasswordService_ThrowsException()
+        {
+            static void Test()
+            {
+                var context = CreateBuyerServiceTestContext.Setup();
+                var service = new CreateBuyerService(
+                    context.ApplicationUserValidatorMock.Object,
+                    context.UsersRepositoryMock.Object,
+                    null,
+                    context.RegistrationServiceMock.Object);
             }
 
             Assert.Throws<ArgumentNullException>(Test);
@@ -50,7 +75,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             static void Test()
             {
                 var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(context.ApplicationUserValidatorMock.Object, context.UsersRepositoryMock.Object, null);
+                var sut = new CreateBuyerService(
+                    context.ApplicationUserValidatorMock.Object,
+                    context.UsersRepositoryMock.Object,
+                    context.PasswordServiceMock.Object,
+                    null);
             }
 
             Assert.Throws<ArgumentNullException>(Test);
@@ -103,7 +132,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
                 .Build();
 
-            context.ApplicationUserValidatorMock.Verify(x => 
+            context.ApplicationUserValidatorMock.Verify(x =>
                 x.ValidateAsync(It.Is<ApplicationUser>(
                     actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
         }
@@ -127,7 +156,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
                 .Build();
 
-            context.UsersRepositoryMock.Verify(x => 
+            context.UsersRepositoryMock.Verify(x =>
                 x.CreateUserAsync(It.Is<ApplicationUser>(
                     actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
         }
@@ -151,15 +180,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [Test]
         public async Task CreateBuyerAsync_NewApplicationUser_SendsEmail()
         {
+            const string expectedToken = "TokenMcToken";
+
             var context = CreateBuyerServiceTestContext.Setup();
-
-            var sut = context.CreateBuyerService;
-
             var request = CreateBuyerRequestBuilder.Create().Build();
-
-            await sut.CreateAsync(request);
-
-            var expected = ApplicationUserBuilder
+            var expectedUser = ApplicationUserBuilder
                 .Create()
                 .WithFirstName(request.FirstName)
                 .WithLastName(request.LastName)
@@ -168,9 +193,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
                 .Build();
 
-            context.RegistrationServiceMock.Verify(x => 
-                x.SendInitialEmailAsync(It.Is<ApplicationUser>(
-                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
+            context.PasswordServiceMock.Setup(
+                p => p.GeneratePasswordResetTokenAsync(It.Is<string>(e => e == request.EmailAddress)))
+                .ReturnsAsync(new PasswordResetToken(expectedToken, expectedUser));
+
+            var sut = context.CreateBuyerService;
+            await sut.CreateAsync(request);
+
+            Expression<Func<PasswordResetToken, bool>> expected = t =>
+                t.Token.Equals(expectedToken, StringComparison.Ordinal)
+                && ApplicationUserEditableInformationComparer.Instance.Equals(expectedUser, t.User);
+
+            context.RegistrationServiceMock.Verify(x => x.SendInitialEmailAsync(It.Is(expected)), Times.Once);
         }
     }
 
@@ -185,9 +219,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             UsersRepositoryMock = new Mock<IUsersRepository>();
             UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
 
+            PasswordServiceMock = new Mock<IPasswordService>();
             RegistrationServiceMock = new Mock<IRegistrationService>();
 
-            CreateBuyerService = new CreateBuyerService(ApplicationUserValidatorMock.Object, UsersRepositoryMock.Object, RegistrationServiceMock.Object);
+            CreateBuyerService = new CreateBuyerService(
+                ApplicationUserValidatorMock.Object,
+                UsersRepositoryMock.Object,
+                PasswordServiceMock.Object,
+                RegistrationServiceMock.Object);
         }
 
         internal Mock<IApplicationUserValidator> ApplicationUserValidatorMock { get; set; }
@@ -197,6 +236,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         internal Mock<IUsersRepository> UsersRepositoryMock { get; set; }
 
         internal CreateBuyerService CreateBuyerService { get; }
+
+        internal Mock<IPasswordService> PasswordServiceMock { get; set; }
 
         internal Mock<IRegistrationService> RegistrationServiceMock { get; set; }
 

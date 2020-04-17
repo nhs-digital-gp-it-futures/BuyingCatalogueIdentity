@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net.Http;
 using MailKit;
 using MailKit.Net.Smtp;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -86,7 +85,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddTransient<IEmailService, MailKitEmailService>()
                 .AddScoped<ILoginService, LoginService>()
                 .AddScoped<ILogoutService, LogoutService>()
-                .AddScoped<IPasswordService, PasswordService>();
+                .AddScoped<IPasswordService, PasswordService>()
+                .AddScoped<IPasswordResetCallback, PasswordResetCallback>();
 
             services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
 

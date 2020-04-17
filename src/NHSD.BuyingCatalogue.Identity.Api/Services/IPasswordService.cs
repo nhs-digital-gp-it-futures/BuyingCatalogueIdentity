@@ -26,13 +26,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// Sends a password reset e-mail to the specified <paramref name="user"/>.
         /// </summary>
         /// <param name="user">The user to send the e-mail to.</param>
-        /// <param name="callback">The callback URL to handle
-        /// the password reset.</param>
+        /// <param name="callback">The callback URL to handle the password reset.</param>
         /// <returns>An asynchronous task context.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="user"/> is <see langref="null"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langref="null"/>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="callback"/> is empty or white space.</exception>
-        Task SendResetEmailAsync(ApplicationUser user, string callback);
+        Task SendResetEmailAsync(ApplicationUser user, Uri callback);
 
         /// <summary>
         /// Resets the password of the user with the specified <paramref name="emailAddress"/>

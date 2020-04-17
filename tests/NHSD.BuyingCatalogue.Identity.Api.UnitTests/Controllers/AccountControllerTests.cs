@@ -350,9 +350,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             var callbackCount = 0;
             ApplicationUser actualUser = null;
-            string actualCallback = null;
+            Uri actualCallback = null;
 
-            void EmailCallback(ApplicationUser user, string callback)
+            void EmailCallback(ApplicationUser user, Uri callback)
             {
                 callbackCount++;
                 actualUser = user;
@@ -366,7 +366,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .WithResetEmailCallback(EmailCallback)
                 .WithResetToken(new PasswordResetToken("token", expectedUser))
                 .WithScheme(HttpScheme.Https.ToString())
-                .WithUrlAction(expectedCallback)
+                .WithResetCallbackUrl(expectedCallback)
                 .Build();
 
             await controller.ForgotPassword(new ForgotPasswordViewModel { EmailAddress = "a@b.com" });
@@ -382,7 +382,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             using var controller = new AccountControllerBuilder()
                 .WithResetToken(new PasswordResetToken("token", ApplicationUserBuilder.Create().Build()))
                 .WithScheme(HttpScheme.Https.ToString())
-                .WithUrlAction("https://identity/account/action")
+                .WithResetCallbackUrl("https://identity/account/action")
                 .Build();
 
             var result = await controller.ForgotPassword(
@@ -415,7 +415,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             const string email = "a@b.test";
             const string expectedToken = "TokenMcToken";
-            var viewModel = new ResetPasswordViewModel {Email = email, Token = expectedToken};
+            var viewModel = new ResetPasswordViewModel { Email = email, Token = expectedToken };
             var identityResult = IdentityResult.Failed(new IdentityError
             {
                 Code = PasswordValidator.InvalidPasswordCode,
