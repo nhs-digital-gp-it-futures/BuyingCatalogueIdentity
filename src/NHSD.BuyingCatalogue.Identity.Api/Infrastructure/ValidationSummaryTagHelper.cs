@@ -46,6 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             builder.AddCssClass(TagHelperConstants.NhsValidationSummary);
             builder.Attributes[TagHelperConstants.Role] = TagHelperConstants.RoleAlert;
             builder.Attributes[TagHelperConstants.LabelledBy] = TagHelperConstants.ErrorSummaryTitle;
+            builder.Attributes[TagHelperConstants.Tabindex] = "-1";
 
             return builder;
         }
