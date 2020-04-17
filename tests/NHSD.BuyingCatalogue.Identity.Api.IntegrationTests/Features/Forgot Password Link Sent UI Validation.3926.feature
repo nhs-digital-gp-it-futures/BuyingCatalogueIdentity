@@ -6,7 +6,7 @@
     Background: 
     When the user navigates to a restricted web page
     Then the user is redirected to page identity/account/login
-    When the user clicks on the forgot password button
+    When the user clicks element with Data ID forgot-password-link
     Then the user is redirected to page identity/account/forgotpassword
     When element with Data ID input-email-address is populated with test@email.com
     And element with Data ID submit-button is clicked
