@@ -20,8 +20,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="@ViewData["PageDescription"]">
-
-    <title>@ViewData["PageTitle"]</title>
+    
+    @if (@ViewData.ModelState.IsValid)
+    {
+        <title>@ViewData["PageTitle"]</title>
+    }
+    else
+    {
+        <title>Error: @ViewData["PageTitle"]</title>
+    }
 
     <link href=@PrefixReference("css/main.min.css") rel="stylesheet">
 

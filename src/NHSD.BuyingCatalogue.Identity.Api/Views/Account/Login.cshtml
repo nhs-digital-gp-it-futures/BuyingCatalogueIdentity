@@ -1,46 +1,38 @@
 ﻿@model NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account.LoginViewModel
-
 @{
     ViewData["PageTitle"] = "Buying Catalogue log in";
     ViewData["PageDescription"] = "Enter your details to access the full functionality of this website.";
 }
-
 <div class="nhsuk-width-container">
     <main class="nhsuk-main-wrapper">
         <div data-test-id="login-page">
             <div class="nhsuk-grid-row">
                 <div class="nhsuk-grid-column-two-thirds">
+                    <div data-test-id="error-summary" nhs-validation-summary title="There is a problem"></div>
                     <h1 data-test-id="page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
                     <h2 data-test-id="page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
-                </div>
-            </div>
-            <div class="nhsuk-grid-row">
-                <div class="nhsuk-grid-column-one-half">
-                    <div data-test-id="error-summary" nhs-validation-summary title="There is a problem"></div>
-                    <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-                        
-                        <span data-test-id="login-error-message" asp-validation-for="LoginError" class="nhsuk-error-message"></span>
 
-                        <input type="hidden" asp-for="ReturnUrl" />
-                        <div nhs-validation-input asp-for="EmailAddress" label-data-test-id="label-email-address" input-data-test-id="input-email-address" error-data-test-id="error-email-address" field-data-test-id="field-email-address"></div>
-                        <div nhs-validation-input asp-for="Password" label-data-test-id="label-password" input-data-test-id="input-password" error-data-test-id="error-password" field-data-test-id="field-password" class="bc-c-login-form-password-field"></div>
-
-                        <div>
-                            <a data-test-id="forgot-password-link" asp-controller="Account" asp-action="ForgotPassword" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-                                Forgot password?
-                            </a>
-                        </div>
-
-                        <button class="nhsuk-button nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="submit" data-test-id="login-submit-button">
-                            Log in
-                        </button>
-
-                        <div>
-                            <a data-test-id="request-account-link" asp-action="Registration" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-                                Don&#39;t have an account? Request one now
-                            </a>
-                        </div>
-                    </form>
+                    <div class="nhsuk-grid-row">
+                        <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                            <span data-test-id="login-error-message" asp-validation-for="LoginError" class="nhsuk-error-message"></span>
+                            <input type="hidden" asp-for="ReturnUrl" />
+                            <div nhs-validation-input asp-for="EmailAddress" label-data-test-id="label-email-address" input-data-test-id="input-email-address" error-data-test-id="error-email-address" field-data-test-id="field-email-address"></div>
+                            <div nhs-validation-input asp-for="Password" label-data-test-id="label-password" input-data-test-id="input-password" error-data-test-id="error-password" field-data-test-id="field-password" class="bc-c-login-form-password-field"></div>
+                            <div>
+                                <a data-test-id="forgot-password-link" asp-controller="Account" asp-action="ForgotPassword" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                                    Forgot password?
+                                </a>
+                            </div>
+                            <button class="nhsuk-button nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="submit" data-test-id="login-submit-button">
+                                Log in
+                            </button>
+                            <div>
+                                <a data-test-id="request-account-link" asp-action="Registration" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                                    Don&#39;t have an account? Request one now
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

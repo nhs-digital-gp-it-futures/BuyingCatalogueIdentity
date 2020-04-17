@@ -19,6 +19,7 @@
         public const string Role = "role";
         public const string RoleAlert = "alert";
         public const string Type = "type";
+        public const string Tabindex = "tabindex";
 
         // classes
         public const string ErrorSummaryTitle = "error-summary-title";
