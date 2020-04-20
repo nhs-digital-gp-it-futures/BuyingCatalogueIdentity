@@ -12,7 +12,6 @@
                     <h1 data-test-id="page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
                     <h2 data-test-id="page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
 
-                    <div class="nhsuk-grid-row">
                         <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
                             <span data-test-id="login-error-message" asp-validation-for="LoginError" class="nhsuk-error-message"></span>
                             <input type="hidden" asp-for="ReturnUrl" />
@@ -33,7 +32,6 @@
                             </div>
                         </form>
                     </div>
-                </div>
             </div>
         </div>
     </main>
