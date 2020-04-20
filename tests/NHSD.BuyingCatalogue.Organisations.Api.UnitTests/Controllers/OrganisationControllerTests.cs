@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
+using NHSD.BuyingCatalogue.Organisations.Api.Controllers;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 using NUnit.Framework;
@@ -18,6 +21,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
     public sealed class OrganisationControllerTests
     {
         private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();
+
+        [Test]
+        public void Constructor_Null_Repository_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var _ = new OrganisationsController(null, Mock.Of<ICreateOrganisationService>());
+            });
+        }
+
+        [Test]
+        public void Constructor_Null_Service_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var _ = new OrganisationsController(Mock.Of<IOrganisationRepository>(), null);
+            });
+        }
 
         [Test]
         public async Task GetAllAsync_NoOrganisationsExist_EmptyResultIsReturned()
@@ -263,11 +284,62 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public void UpdateOrganisationByIdAsync_NullUpdateViewModel_ThrowsException()
+        public void UpdateOrganisationByIdAsync_NullUpdateViewModel_Throws()
         {
-            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
+                await controller.UpdateOrganisationByIdAsync(Guid.Empty, null);
+            });
+        }
 
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await controller.UpdateOrganisationByIdAsync(Guid.Empty, null));
+
+        [Test]
+        public async Task CreateOrganisationAsync_ServiceReturnsSuccess_Returns_Created()
+        {
+            var organisationId = Guid.NewGuid();
+            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisation().WithCreateOrganisationService(true, organisationId.ToString()).Build();
+
+            var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
+
+            response.Should().BeOfType<ActionResult<CreateOrganisationResponseViewModel>>();
+
+            var expected = new CreatedResult(new Uri($"/{organisationId}", UriKind.Relative),
+                new CreateOrganisationResponseViewModel { OrganisationId = organisationId.ToString() });
+
+            var actual = response.Result;
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public async Task CreateOrganisationAsync_ServiceReturnsFailure_Returns_BadRequest()
+        {
+            const string errorMessage = "Some Error Message Id";
+            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisation().WithCreateOrganisationService(false, errorMessage).Build();
+
+            var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
+
+            response.Should().BeOfType<ActionResult<CreateOrganisationResponseViewModel>>();
+
+            var expected = new BadRequestObjectResult(new CreateOrganisationResponseViewModel
+            {
+                Errors = new [] { new ErrorMessageViewModel(errorMessage) }
+            });
+
+            var actual = response.Result;
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void CreateOrganisationAsync_NullCreateOrganisationRequestViewModel_Throws()
+        {
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisation().Build();
+                await controller.CreateOrganisationAsync(null);
+            });
         }
     }
 }

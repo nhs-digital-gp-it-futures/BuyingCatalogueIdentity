@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
+using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
@@ -18,10 +20,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     public sealed class OrganisationsController : Controller
     {
         private readonly IOrganisationRepository _organisationRepository;
+        private readonly ICreateOrganisationService _createOrganisationService;
 
-        public OrganisationsController(IOrganisationRepository organisationRepository)
+        public OrganisationsController(IOrganisationRepository organisationRepository, ICreateOrganisationService createOrganisationService)
         {
-            _organisationRepository = organisationRepository;
+            _organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
+            _createOrganisationService = createOrganisationService ?? throw new ArgumentNullException(nameof(createOrganisationService));
         }
 
         [HttpGet]
@@ -114,22 +118,36 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         public async Task<ActionResult<CreateOrganisationResponseViewModel>> CreateOrganisationAsync(CreateOrganisationRequestViewModel viewModel)
         {
             if (viewModel is null)
-            {
                 throw new ArgumentNullException(nameof(viewModel));
+
+            var result = await _createOrganisationService.CreateAsync(new CreateOrganisationRequest(
+                viewModel.OrganisationName,
+                viewModel.OdsCode,
+                viewModel.PrimaryRoleId,
+                viewModel.CatalogueAgreementSigned,
+                viewModel.Address is null ? null : new Address()
+                {
+                    Line1 = viewModel.Address.Line1,
+                    Line2 = viewModel.Address.Line2,
+                    Line3 = viewModel.Address.Line3,
+                    Line4 = viewModel.Address.Line4,
+                    Town = viewModel.Address.Town,
+                    County = viewModel.Address.County,
+                    Postcode = viewModel.Address.Postcode,
+                    Country = viewModel.Address.Country
+                }
+            ));
+
+            var response = new CreateOrganisationResponseViewModel();
+
+            if (!result.IsSuccess)
+            {
+                response.Errors = result.Errors.Select(x => new ErrorMessageViewModel(x.Id, x.Field));
+                return BadRequest(response);
             }
 
-            //TODO: Task #6168
-
-            // Canned data
-            var firstOrganisation = (await _organisationRepository.ListOrganisationsAsync()).First();
-
-            var response = new CreateOrganisationResponseViewModel
-            {
-                Errors = null,
-                OrganisationId = firstOrganisation.OrganisationId.ToString()
-            };
-
-            return Created(new Uri($"/{response.OrganisationId}", UriKind.Relative), response);
+            response.OrganisationId = result.Value;
+            return Created(new Uri($"/{result.Value}", UriKind.Relative), response);
         }
     }
 }
