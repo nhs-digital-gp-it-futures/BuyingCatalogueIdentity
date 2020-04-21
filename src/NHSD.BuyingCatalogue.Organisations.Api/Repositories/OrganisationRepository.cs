@@ -29,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         public async Task<Organisation> GetByNameAsync(string name)
         {
-            return await _context.Organisations.FirstOrDefaultAsync(org => org.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return await _context.Organisations.FirstOrDefaultAsync(org => org.Name == name);
         }
 
         public async Task CreateOrganisationAsync(Organisation organisation)

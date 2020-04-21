@@ -159,24 +159,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             userInDb.Should().BeEquivalentTo(expected, options => options.Excluding(user => user.PrimaryOrganisationId));
         }
 
-        [Then(@"the response contains the following errors")]
-        public async Task ThenTheResponseContainsTheFollowingErrors(Table table)
-        {
-            var expected = table.CreateSet<UserErrorsTable>();
-
-            var response = await _response.ReadBodyAsJsonAsync();
-
-            var actual = response
-                .SelectToken("errors")
-                .Select(t => new UserErrorsTable
-                {
-                    ErrorMessageId = t.SelectToken("id").ToString(),
-                    FieldName = t.SelectToken("field").ToString()
-                });
-
-            actual.Should().BeEquivalentTo(expected);
-        }
-
         [Then(@"the response returns a user id")]
         public async Task ThenTheResponseContainsAUserId()
         {
@@ -316,13 +298,5 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             public Guid PrimaryOrganisationId { get; set; }
         }
-
-        private sealed class UserErrorsTable
-        {
-            public string ErrorMessageId { get; set; }
-
-            public string FieldName { get; set; }
-        }
-
     }
 }
