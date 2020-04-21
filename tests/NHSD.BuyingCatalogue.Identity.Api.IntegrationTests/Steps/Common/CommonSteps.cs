@@ -26,13 +26,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
         [Then(@"the response contains the following errors")]
         public async Task ThenTheResponseContainsTheFollowingErrors(Table table)
         {
-            var expected = table.CreateSet<UserErrorsTable>();
+            var expected = table.CreateSet<ResponseErrorsTable>();
 
             var response = await _response.ReadBodyAsJsonAsync();
 
             var actual = response
                 .SelectToken("errors")
-                .Select(t => new UserErrorsTable
+                .Select(t => new ResponseErrorsTable
                 {
                     ErrorMessageId = t.Value<string>("id"),
                     FieldName = t.Value<string>("field")
@@ -41,7 +41,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
             actual.Should().BeEquivalentTo(expected);
         }
 
-        private sealed class UserErrorsTable
+        private sealed class ResponseErrorsTable
         {
             public string ErrorMessageId { get; set; }
 

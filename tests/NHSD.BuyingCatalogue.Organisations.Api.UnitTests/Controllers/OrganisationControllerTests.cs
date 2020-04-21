@@ -293,7 +293,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             });
         }
 
-
         [Test]
         public async Task CreateOrganisationAsync_ServiceReturnsSuccess_Returns_Created()
         {
