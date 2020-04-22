@@ -6,7 +6,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent
 {
     public sealed class ConsentViewModel
     {
-        // TODO: confirm correct error message
+        // TODO: 6329 – confirm correct error message
         [Required]
         [RegularExpression(
             "(?:True|true)",
