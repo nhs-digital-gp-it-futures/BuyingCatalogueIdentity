@@ -292,15 +292,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public void Logout_WhenInvalidLogoutId_ShouldThrowArgumentNullException(string logoutId)
+        public async Task Logout_WhenInvalidLogoutId_ShouldGoBackToBasUrl(string logoutId)
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                using var sut = new AccountControllerBuilder()
-                    .Build();
+            var expectedLogoutRequest = LogoutRequestBuilder
+                .Create()
+                .Build();
 
-                await sut.Logout(logoutId);
-            });
+            var logoutServiceMock = new Mock<ILogoutService>();
+            logoutServiceMock.Setup(x => x.GetLogoutRequestAsync(logoutId))
+                .ReturnsAsync(expectedLogoutRequest);
+
+            using var sut = new AccountControllerBuilder()
+                .WithLogoutService(logoutServiceMock.Object)
+                .Build();
+
+            var actual = await sut.Logout(logoutId);
+
+            actual.Should().BeEquivalentTo(new RedirectResult(expectedLogoutRequest.PostLogoutRedirectUri));
         }
 
         [Test]
@@ -309,7 +317,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             static async Task ForgotPassword()
             {
                 using var controller = new AccountControllerBuilder().Build();
-                await controller.ForgotPassword((ForgotPasswordViewModel) null);
+                await controller.ForgotPassword((ForgotPasswordViewModel)null);
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(ForgotPassword);
