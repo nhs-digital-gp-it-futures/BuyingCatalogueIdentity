@@ -19,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
         public async Task StoreUserConsentAsync(Consent consent)
         {
-            if (consent == null)
+            if (consent is null)
                 throw new ArgumentNullException(nameof(consent));
 
             var user = await _userRepository.GetByIdAsync(consent.SubjectId);

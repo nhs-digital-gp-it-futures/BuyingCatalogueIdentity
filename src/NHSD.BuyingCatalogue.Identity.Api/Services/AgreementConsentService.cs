@@ -38,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentNullException(nameof(returnUrl));
 
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl.ToString());
-            if (context == null)
+            if (context is null)
                 return Result.Failure<Uri>();
 
             var consent = new ConsentResponse
