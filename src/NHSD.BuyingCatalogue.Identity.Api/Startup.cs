@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
+using IdentityServer4.Stores;
 using MailKit;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Builder;
@@ -50,8 +51,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
             var apiResources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
 
-           var disabledErrorMessage = _configuration.GetSection("disabledErrorMessage").Get<DisabledErrorMessageSettings>(); 
-           var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
+            var disabledErrorMessage = _configuration.GetSection("disabledErrorMessage").Get<DisabledErrorMessageSettings>();
+            var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
             var passwordResetSettings = _configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
 
@@ -76,6 +77,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(cookieExpiration);
             services.AddSingleton(disabledErrorMessage);
             services.AddSingleton(registrationSettings);
+            services.AddSingleton<IScopeRepository>(new ScopeRepository(apiResources, identityResources));
 
             services.AddTransient<IUsersRepository, UsersRepository>();
 
@@ -83,6 +85,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddTransient<IRegistrationService, RegistrationService>()
                 .AddTransient<ICreateBuyerService, CreateBuyerService>()
                 .AddTransient<IEmailService, MailKitEmailService>()
+                .AddScoped<IAgreementConsentService, AgreementConsentService>()
                 .AddScoped<ILoginService, LoginService>()
                 .AddScoped<ILogoutService, LogoutService>()
                 .AddScoped<IPasswordService, PasswordService>()
@@ -123,6 +126,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<ProfileService>()
                 .AddCustomSigningCredential(certificateSettings, Log.Logger);
+
+            services.AddTransient<IUserConsentStore, CatalogueAgreementConsentStore>();
 
             services.ConfigureApplicationCookie(options =>
             {

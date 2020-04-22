@@ -24,6 +24,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public string Id { get; set; }
 
+        public bool CatalogueAgreementSigned { get; set; }
+
         protected override string InsertSql => @"
             INSERT INTO dbo.AspNetUsers
                 (Id, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed,
@@ -35,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                 (@id, @email, UPPER(@email), @email, UPPER(@email), 1,
 	            @passwordHash, @securityStamp, NEWID(), @phoneNumber, 1,
 	            0, 0, 0,
-	            @organisationId, @organisationFunction, @disabled, 0,
+	            @organisationId, @organisationFunction, @disabled, @catalogueAgreementSigned,
 	            @firstName, @lastName);";
 
         protected override string GetSql => @"

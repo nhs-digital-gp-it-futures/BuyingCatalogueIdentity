@@ -54,7 +54,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     Id = user.Id,
                     OrganisationId = organisationId,
                     OrganisationFunction = user.OrganisationFunction,
-                    SecurityStamp = "TestUser"
+                    SecurityStamp = "TestUser",
+                    CatalogueAgreementSigned = user.CatalogueAgreementSigned,
                 };
 
                 await userEntity.InsertAsync(_settings.ConnectionString);
@@ -300,6 +301,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             public string OrganisationName { get; set; }
 
             public string OrganisationFunction { get; set; } = "Authority";
+
+            public bool CatalogueAgreementSigned { get; set; } = true;
         }
 
         private sealed class ExpectedGetUserTable
