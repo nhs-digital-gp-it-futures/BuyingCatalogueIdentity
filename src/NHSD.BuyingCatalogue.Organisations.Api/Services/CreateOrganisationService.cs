@@ -18,7 +18,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
             _organisationValidator = organisationValidator ?? throw new ArgumentNullException(nameof(organisationValidator));
         }
 
-        public async Task<Result<Guid>> CreateAsync(CreateOrganisationRequest request)
+        public async Task<Result<Guid?>> CreateAsync(CreateOrganisationRequest request)
         {
             if (request is null)
                 throw new ArgumentNullException(nameof(request));
@@ -37,11 +37,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
             var validationResult = await _organisationValidator.ValidateAsync(organisation);
 
             if (!validationResult.IsSuccess)
-                return Result.Failure<Guid>(validationResult.Errors);
+                return Result.Failure<Guid?>(validationResult.Errors);
 
             await _organisationRepository.CreateOrganisationAsync(organisation);
 
-            return Result.Success(organisation.OrganisationId);
+            return Result.Success((Guid?)organisation.OrganisationId);
         }
     }
 }

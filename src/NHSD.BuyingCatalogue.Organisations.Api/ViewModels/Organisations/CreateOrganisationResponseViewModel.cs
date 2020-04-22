@@ -6,7 +6,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 {
     public sealed class CreateOrganisationResponseViewModel
     {
-        public Guid OrganisationId { get; set; }
+        public Guid? OrganisationId { get; set; }
 
         public IEnumerable<ErrorMessageViewModel> Errors { get; set; }
     }

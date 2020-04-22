@@ -59,17 +59,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
-        internal OrganisationControllerBuilder WithCreateOrganisationServiceReturningSuccess(Guid result)
+        internal OrganisationControllerBuilder WithCreateOrganisationServiceReturningSuccess(Guid? result)
         {
             return WithCreateOrganisationServiceReturningResult(Result.Success(result));
         }
 
         internal OrganisationControllerBuilder WithCreateOrganisationServiceReturningFailure(string result)
         {
-            return WithCreateOrganisationServiceReturningResult(Result.Failure<Guid>(new ErrorDetails(result)));
+            return WithCreateOrganisationServiceReturningResult(Result.Failure<Guid?>(new ErrorDetails(result)));
         }
 
-        internal OrganisationControllerBuilder WithCreateOrganisationServiceReturningResult(Result<Guid> result)
+        internal OrganisationControllerBuilder WithCreateOrganisationServiceReturningResult(Result<Guid?> result)
         {
             WithCreateOrganisation();
             var createOrganisationService = new Mock<ICreateOrganisationService>();

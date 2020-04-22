@@ -6,6 +6,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 {
     public interface ICreateOrganisationService
     {
-        Task<Result<Guid>> CreateAsync(CreateOrganisationRequest request);
+        Task<Result<Guid?>> CreateAsync(CreateOrganisationRequest request);
     }
 }

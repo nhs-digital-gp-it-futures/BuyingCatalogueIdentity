@@ -63,8 +63,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             var result = await service.CreateAsync(SetUpRequest());
 
             result.IsSuccess.Should().BeFalse();
-            result.Value.Should().BeEmpty();
-            result.Should().BeEquivalentTo(Result.Failure<Guid>(new List<ErrorDetails>()));
+            result.Value.Should().BeNull();
+            result.Should().BeEquivalentTo(Result.Failure<Guid?>(new List<ErrorDetails>()));
         }
 
         [Test]
