@@ -105,16 +105,18 @@ Contact the account administrator at: {0} or call {1}";
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
-            if (string.IsNullOrWhiteSpace(logoutId))
-            {
-                throw new ArgumentNullException(nameof(logoutId));
-            }
-
             LogoutRequest logoutRequest = await _logoutService.GetLogoutRequestAsync(logoutId);
 
             await _logoutService.SignOutAsync(logoutRequest);
 
-            return Redirect(logoutRequest?.PostLogoutRedirectUri);
+            var redirectUrl = logoutRequest?.PostLogoutRedirectUri;
+
+            if (string.IsNullOrWhiteSpace(redirectUrl))
+            {
+                redirectUrl = "/";
+            }
+
+            return Redirect(redirectUrl);
         }
 
         [HttpGet]
