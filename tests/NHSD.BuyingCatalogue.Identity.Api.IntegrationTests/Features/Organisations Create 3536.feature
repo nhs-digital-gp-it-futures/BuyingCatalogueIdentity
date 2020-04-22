@@ -5,8 +5,8 @@
 
 Background:
 	Given Organisations exist
-		| Name           |
-		| Organisation 1 |
+		| Name           | OdsCode |
+		| Organisation 1 | Ods 1   |
 	And Users exist
 		| Id  | OrganisationName | FirstName | LastName | Email             | PhoneNumber | Disabled | Password       | OrganisationFunction |
 		| 123 | Organisation 1   | John      | Doe      | authority@doe.com | 01234567890 | false    | Str0nkP4s5w0rd | Authority            |

@@ -27,9 +27,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             return await _context.Organisations.FirstOrDefaultAsync(org => org.OrganisationId == id);
         }
 
-        public async Task<Organisation> GetByNameAsync(string name)
+        public async Task<Organisation> GetByOdsCodeAsync(string odsCode)
         {
-            return await _context.Organisations.FirstOrDefaultAsync(org => org.Name == name);
+            return await _context.Organisations.FirstOrDefaultAsync(org => org.OdsCode == odsCode);
         }
 
         public async Task CreateOrganisationAsync(Organisation organisation)

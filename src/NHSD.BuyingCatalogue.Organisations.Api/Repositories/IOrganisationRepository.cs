@@ -11,7 +11,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         Task<Organisation> GetByIdAsync(Guid id);
 
-        Task<Organisation> GetByNameAsync(string name);
+        Task<Organisation> GetByOdsCodeAsync(string odsCode);
 
         Task CreateOrganisationAsync(Organisation organisation);
 

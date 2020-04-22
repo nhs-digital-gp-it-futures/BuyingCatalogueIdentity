@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             if (organisation is null)
                 throw new ArgumentNullException(nameof(organisation));
 
-            var persistedOrganisation = await _organisationRepository.GetByNameAsync(organisation.Name);
+            var persistedOrganisation = await _organisationRepository.GetByOdsCodeAsync(organisation.OdsCode);
 
             return persistedOrganisation is null
                 ? Result.Success()

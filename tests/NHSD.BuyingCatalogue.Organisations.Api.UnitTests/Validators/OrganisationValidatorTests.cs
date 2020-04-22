@@ -29,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
         {
             var newOrganisation = OrganisationBuilder.Create(1).Build();
 
-            var mockOrganisationRepository = SetUpGetByNameAsync(null);
+            var mockOrganisationRepository = SetUpGetByOdsCodeAsync(null);
 
             var validator = new OrganisationValidator(mockOrganisationRepository);
 
@@ -44,7 +44,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
         {
             var existingOrganisation = OrganisationBuilder.Create(1).Build();
 
-            var mockOrganisationRepository = SetUpGetByNameAsync(existingOrganisation);
+            var mockOrganisationRepository = SetUpGetByOdsCodeAsync(existingOrganisation);
 
             var validator = new OrganisationValidator(mockOrganisationRepository);
 
@@ -61,29 +61,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
             var newOrganisation = OrganisationBuilder.Create(1).Build();
 
             var mockOrganisationRepository = new Mock<IOrganisationRepository>();
-            mockOrganisationRepository.Setup(r => r.GetByNameAsync(It.IsAny<string>())).ReturnsAsync(newOrganisation);
+            mockOrganisationRepository.Setup(r => r.GetByOdsCodeAsync(It.IsAny<string>())).ReturnsAsync(newOrganisation);
 
             var validator = new OrganisationValidator(mockOrganisationRepository.Object);
 
             await validator.ValidateAsync(newOrganisation);
 
-            mockOrganisationRepository.Verify(r => r.GetByNameAsync(newOrganisation.Name), Times.Once);
+            mockOrganisationRepository.Verify(r => r.GetByOdsCodeAsync(newOrganisation.OdsCode), Times.Once);
         }
 
         [Test]
         public void Validate_NullOrganisation_Throws()
         {
-            var mockOrganisationRepository = SetUpGetByNameAsync(null);
+            var mockOrganisationRepository = SetUpGetByOdsCodeAsync(null);
 
             var validator = new OrganisationValidator(mockOrganisationRepository);
 
             Assert.ThrowsAsync<ArgumentNullException>(async () => await validator.ValidateAsync(null));
         }
 
-        private static IOrganisationRepository SetUpGetByNameAsync(Organisation organisationToReturn)
+        private static IOrganisationRepository SetUpGetByOdsCodeAsync(Organisation organisationToReturn)
         {
             var mockOrganisationRepository = new Mock<IOrganisationRepository>();
-            mockOrganisationRepository.Setup(r => r.GetByNameAsync(It.IsAny<string>())).ReturnsAsync(organisationToReturn);
+            mockOrganisationRepository.Setup(r => r.GetByOdsCodeAsync(It.IsAny<string>())).ReturnsAsync(organisationToReturn);
 
             return mockOrganisationRepository.Object;
         }
