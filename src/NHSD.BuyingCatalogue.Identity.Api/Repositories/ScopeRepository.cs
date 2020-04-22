@@ -24,6 +24,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
                 _scopes.AddRange(identityResources.Select(r => r.ResourceType.ToLowerInvariant()));
         }
 
-        public IEnumerable<string> Scopes => _scopes;
+        public IReadOnlyCollection<string> Scopes => _scopes;
     }
 }
