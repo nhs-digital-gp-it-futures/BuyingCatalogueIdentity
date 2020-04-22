@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
@@ -33,10 +33,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 
             var validator = new OrganisationValidator(mockOrganisationRepository);
 
-            var result = await validator.ValidateAsync(newOrganisation);
+            var expected = Result.Success();
+            var actual = await validator.ValidateAsync(newOrganisation);
 
-            result.IsSuccess.Should().BeTrue();
-            result.Errors.Should().BeNullOrEmpty();
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -48,11 +48,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 
             var validator = new OrganisationValidator(mockOrganisationRepository);
 
-            var result = await validator.ValidateAsync(existingOrganisation);
+            var expected = Result.Failure(OrganisationErrors.OrganisationAlreadyExists());
+            var actual = await validator.ValidateAsync(existingOrganisation);
 
-            result.IsSuccess.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.FirstOrDefault()?.Id.Should().BeEquivalentTo("OrganisationAlreadyExists");
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Test]

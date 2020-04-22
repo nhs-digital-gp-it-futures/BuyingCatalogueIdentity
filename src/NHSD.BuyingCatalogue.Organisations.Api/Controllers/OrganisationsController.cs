@@ -120,21 +120,22 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (viewModel is null)
                 throw new ArgumentNullException(nameof(viewModel));
 
+            var address = viewModel.Address;
             var result = await _createOrganisationService.CreateAsync(new CreateOrganisationRequest(
                 viewModel.OrganisationName,
                 viewModel.OdsCode,
                 viewModel.PrimaryRoleId,
                 viewModel.CatalogueAgreementSigned,
-                viewModel.Address is null ? null : new Address
+                address is null ? null : new Address
                 {
-                    Line1 = viewModel.Address.Line1,
-                    Line2 = viewModel.Address.Line2,
-                    Line3 = viewModel.Address.Line3,
-                    Line4 = viewModel.Address.Line4,
-                    Town = viewModel.Address.Town,
-                    County = viewModel.Address.County,
-                    Postcode = viewModel.Address.Postcode,
-                    Country = viewModel.Address.Country
+                    Line1 = address.Line1,
+                    Line2 = address.Line2,
+                    Line3 = address.Line3,
+                    Line4 = address.Line4,
+                    Town = address.Town,
+                    County = address.County,
+                    Postcode = address.Postcode,
+                    Country = address.Country
                 }
             ));
 

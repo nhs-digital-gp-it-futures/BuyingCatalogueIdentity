@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
 
             return persistedOrganisation is null
                 ? Result.Success()
-                : Result.Failure(new List<ErrorDetails> {new ErrorDetails("OrganisationAlreadyExists")});
+                : Result.Failure(new List<ErrorDetails> { OrganisationErrors.OrganisationAlreadyExists() });
         }
     }
 }
