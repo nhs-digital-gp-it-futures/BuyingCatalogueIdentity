@@ -8,7 +8,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
-    public sealed class OrganisationRepository : IOrganisationRepository
+    internal sealed class OrganisationRepository : IOrganisationRepository
     {
         private readonly ApplicationDbContext _context;
 

@@ -18,7 +18,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class OrganisationControllerTests
+    internal sealed class OrganisationControllerTests
     {
         private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();
 
@@ -297,7 +297,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public async Task CreateOrganisationAsync_ServiceReturnsSuccess_Returns_Created()
         {
             var organisationId = Guid.NewGuid();
-            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningResult(true, organisationId.ToString()).Build();
+            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningSuccess(organisationId).Build();
 
             var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
 
@@ -315,7 +315,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public async Task CreateOrganisationAsync_ServiceReturnsFailure_Returns_BadRequest()
         {
             const string errorMessage = "Some Error Message Id";
-            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningResult(false, errorMessage).Build();
+            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningFailure(errorMessage).Build();
 
             var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
 
