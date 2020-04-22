@@ -292,7 +292,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public async Task Logout_WhenInvalidLogoutId_ShouldGoBackToBasUrl(string logoutId)
+        public async Task Logout_WhenInvalidLogoutId_ShouldGoBackToBaseUrl(string logoutId)
         {
             var expectedLogoutRequest = LogoutRequestBuilder
                 .Create()
