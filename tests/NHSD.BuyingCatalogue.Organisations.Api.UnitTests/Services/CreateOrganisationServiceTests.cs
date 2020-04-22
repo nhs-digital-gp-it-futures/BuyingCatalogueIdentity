@@ -16,10 +16,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class CreateOrganisationServiceTests
+    internal sealed class CreateOrganisationServiceTests
     {
         [Test]
-        public void Constructor_Null_Repository_Throws()
+        public void Constructor_NullRepository_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -28,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
-        public void Constructor_Null_Validator_Throws()
+        public void Constructor_NullValidator_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -37,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
-        public void CreateAsync_Null_Request_Throws()
+        public void CreateAsync_NullRequest_Throws()
         {
             var service = new CreateOrganisationService(Mock.Of<IOrganisationRepository>(), Mock.Of<IOrganisationValidator>());
 
@@ -52,8 +52,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             var result = await service.CreateAsync(SetUpRequest());
 
             result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeNull();
-            result.Value.Should().BeOfType<string>();
+            result.Value.Should().NotBeEmpty();
         }
 
         [Test]
@@ -64,8 +63,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             var result = await service.CreateAsync(SetUpRequest());
 
             result.IsSuccess.Should().BeFalse();
-            result.Value.Should().BeNull();
-            result.Should().BeEquivalentTo(Result.Failure<string>(new List<ErrorDetails>()));
+            result.Value.Should().BeEmpty();
+            result.Should().BeEquivalentTo(Result.Failure<Guid>(new List<ErrorDetails>()));
         }
 
         [Test]
@@ -120,12 +119,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             calledBack.Should().BeTrue();
         }
 
-        public static IOrganisationRepository SetUpRepository()
+        private static IOrganisationRepository SetUpRepository()
         {
             return SetUpRepositoryMock().Object;
         }
 
-        public static Mock<IOrganisationRepository> SetUpRepositoryMock()
+        private static Mock<IOrganisationRepository> SetUpRepositoryMock()
         {
             var mockOrganisationRepository = new Mock<IOrganisationRepository>();
             mockOrganisationRepository.Setup(r => r.CreateOrganisationAsync(It.IsAny<Organisation>()));

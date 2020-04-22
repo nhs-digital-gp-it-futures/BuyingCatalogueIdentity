@@ -23,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();
 
         [Test]
-        public void Constructor_Null_Repository_Throws()
+        public void Constructor_NullRepository_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -32,7 +32,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public void Constructor_Null_Service_Throws()
+        public void Constructor_NullService_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -297,14 +297,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public async Task CreateOrganisationAsync_ServiceReturnsSuccess_Returns_Created()
         {
             var organisationId = Guid.NewGuid();
-            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisation().WithCreateOrganisationService(true, organisationId.ToString()).Build();
+            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningResult(true, organisationId.ToString()).Build();
 
             var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
 
             response.Should().BeOfType<ActionResult<CreateOrganisationResponseViewModel>>();
 
             var expected = new CreatedResult(new Uri($"/{organisationId}", UriKind.Relative),
-                new CreateOrganisationResponseViewModel { OrganisationId = organisationId.ToString() });
+                new CreateOrganisationResponseViewModel { OrganisationId = organisationId });
 
             var actual = response.Result;
 
@@ -315,7 +315,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public async Task CreateOrganisationAsync_ServiceReturnsFailure_Returns_BadRequest()
         {
             const string errorMessage = "Some Error Message Id";
-            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisation().WithCreateOrganisationService(false, errorMessage).Build();
+            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningResult(false, errorMessage).Build();
 
             var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
 
@@ -336,7 +336,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisation().Build();
+                using var controller = OrganisationControllerBuilder.Create().Build();
                 await controller.CreateOrganisationAsync(null);
             });
         }

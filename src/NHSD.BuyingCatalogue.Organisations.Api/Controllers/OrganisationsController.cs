@@ -125,7 +125,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 viewModel.OdsCode,
                 viewModel.PrimaryRoleId,
                 viewModel.CatalogueAgreementSigned,
-                viewModel.Address is null ? null : new Address()
+                viewModel.Address is null ? null : new Address
                 {
                     Line1 = viewModel.Address.Line1,
                     Line2 = viewModel.Address.Line2,

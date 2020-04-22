@@ -53,27 +53,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
-        internal OrganisationControllerBuilder WithCreateOrganisation()
-        {
-            var repositoryMock = new Mock<IOrganisationRepository>();
-            repositoryMock.Setup(x => x.CreateOrganisationAsync(It.IsAny<Organisation>()));
-            _organisationRepository = repositoryMock.Object;
-            return this;
-        }
-
         public OrganisationControllerBuilder WithOrganisationRepository(IOrganisationRepository organisationRepository)
         {
             _organisationRepository = organisationRepository;
             return this;
         }
 
-        public OrganisationControllerBuilder WithCreateOrganisationService(bool isSuccess, string resultValue)
+        public OrganisationControllerBuilder WithCreateOrganisationServiceReturningResult(bool isSuccess, string resultValue)
         {
+            WithCreateOrganisation();
             var createOrganisationService = new Mock<ICreateOrganisationService>();
             createOrganisationService.Setup(s => s.CreateAsync(It.IsAny<CreateOrganisationRequest>()))
-                .ReturnsAsync(isSuccess ? Result.Success(resultValue) : Result.Failure<string>(new ErrorDetails(resultValue)));
+                .ReturnsAsync(isSuccess ? Result.Success(Guid.Parse(resultValue)) : Result.Failure<Guid>(new ErrorDetails(resultValue)));
             _createOrganisationService = createOrganisationService.Object;
             return this;
+        }
+
+        private void WithCreateOrganisation()
+        {
+            var repositoryMock = new Mock<IOrganisationRepository>();
+            repositoryMock.Setup(x => x.CreateOrganisationAsync(It.IsAny<Organisation>()));
+            _organisationRepository = repositoryMock.Object;
         }
 
         internal OrganisationsController Build()

@@ -13,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class OrganisationValidatorTests
+    internal sealed class OrganisationValidatorTests
     {
         [Test]
         public void Constructor_NullRepository_Throws()
@@ -71,7 +71,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
         }
 
         [Test]
-        public void Validate_Null_Organisation_Throws()
+        public void Validate_NullOrganisation_Throws()
         {
             var mockOrganisationRepository = SetUpGetByNameAsync(null);
 
