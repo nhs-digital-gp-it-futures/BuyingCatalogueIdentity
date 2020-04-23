@@ -78,7 +78,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             {
                 foreach (var error in model.Value.Errors)
                 {
-
                     var listItem = GetListItemBuilder(model.Key, error.ErrorMessage);
                     builder.InnerHtml.AppendHtml(listItem);
                 }
