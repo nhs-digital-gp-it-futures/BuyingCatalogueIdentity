@@ -76,7 +76,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 return builder;
             }
 
-            if(modelState[For.Name].Errors.Any())
+            if (modelState[For.Name].Errors.Any())
             {
                 builder.AddCssClass(TagHelperConstants.NhsFormGroupError);
             }
@@ -141,6 +141,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             }
 
             builder.AddCssClass(TagHelperConstants.NhsInput);
+
+            var modelStateErrors = ViewContext.ViewData.ModelState[For.Name]?.Errors;
+            if (modelStateErrors != null && modelStateErrors.Any())
+            {
+                builder.AddCssClass(TagHelperConstants.NhsValidationInputError);
+            }
+
             builder.Attributes[TagHelperConstants.DataTestId] = InputDataTestId ?? $"{For.Name}-input";
 
             return builder;
