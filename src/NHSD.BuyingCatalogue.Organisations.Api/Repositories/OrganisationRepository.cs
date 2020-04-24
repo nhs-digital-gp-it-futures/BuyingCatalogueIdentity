@@ -8,7 +8,7 @@ using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
-    public sealed class OrganisationRepository : IOrganisationRepository
+    internal sealed class OrganisationRepository : IOrganisationRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -25,6 +25,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
         public async Task<Organisation> GetByIdAsync(Guid id)
         {
             return await _context.Organisations.FirstOrDefaultAsync(org => org.OrganisationId == id);
+        }
+
+        public async Task<Organisation> GetByOdsCodeAsync(string odsCode)
+        {
+            return await _context.Organisations.FirstOrDefaultAsync(org => org.OdsCode == odsCode);
+        }
+
+        public async Task CreateOrganisationAsync(Organisation organisation)
+        {
+            if (organisation is null)
+                throw new ArgumentNullException(nameof(organisation));
+
+            _context.Organisations.Add(organisation);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Organisation organisation)
