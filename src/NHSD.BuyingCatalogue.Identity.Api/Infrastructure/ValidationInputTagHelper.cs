@@ -16,8 +16,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         public const string LabelDataTestIdName = "label-data-test-id";
         public const string ErrorDataTestIdName = "error-data-test-id";
 
-        private bool isError;
-
         private readonly IHtmlGenerator _htmlGenerator;
 
         public ValidationInputTagHelper(IHtmlGenerator htmlGenerator)
@@ -78,9 +76,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 return builder;
             }
 
-            if (modelState[For.Name].Errors.Any())
+            if (CheckIfModelStateHasErrors())
             {
-                isError = true;
                 builder.AddCssClass(TagHelperConstants.NhsFormGroupError);
             }
 
@@ -145,7 +142,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
             builder.AddCssClass(TagHelperConstants.NhsInput);
 
-            if (isError)
+            if (CheckIfModelStateHasErrors())
             {
                 builder.AddCssClass(TagHelperConstants.NhsValidationInputError);
             }
@@ -153,6 +150,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             builder.Attributes[TagHelperConstants.DataTestId] = InputDataTestId ?? $"{For.Name}-input";
 
             return builder;
+        }
+
+        private bool CheckIfModelStateHasErrors()
+        {
+            var modelState = ViewContext.ViewData?.ModelState;
+            return !(modelState?[For.Name] is null) && modelState[For.Name].Errors.Any();
         }
     }
 }
