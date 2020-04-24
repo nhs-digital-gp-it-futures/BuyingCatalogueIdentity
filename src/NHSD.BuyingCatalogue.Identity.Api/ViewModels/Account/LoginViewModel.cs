@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 {
@@ -17,9 +16,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
         public string Password { get; set; }
 
         public Uri ReturnUrl { get; set; }
-
-        [SummaryAnchor(Link = nameof(EmailAddress))]
-        public string LoginError { get; set; }
 
         public string DisabledError { get; set; }
 

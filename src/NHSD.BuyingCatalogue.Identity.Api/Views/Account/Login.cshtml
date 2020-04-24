@@ -13,7 +13,6 @@
                     <h2 data-test-id="page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
 
                         <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-                            <span data-test-id="login-error-message" asp-validation-for="LoginError" class="nhsuk-error-message"></span>
                             <input type="hidden" asp-for="ReturnUrl" />
                             <div nhs-validation-input asp-for="EmailAddress" label-data-test-id="label-email-address" input-data-test-id="input-email-address" error-data-test-id="error-email-address" field-data-test-id="field-email-address"></div>
                             <div nhs-validation-input asp-for="Password" label-data-test-id="label-password" input-data-test-id="input-password" error-data-test-id="error-password" field-data-test-id="field-password" class="bc-c-login-form-password-field"></div>

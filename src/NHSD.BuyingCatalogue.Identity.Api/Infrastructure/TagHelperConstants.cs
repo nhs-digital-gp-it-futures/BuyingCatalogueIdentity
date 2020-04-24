@@ -32,5 +32,6 @@
         public const string NhsValidationSummary = "nhsuk-error-summary";
         public const string NhsValidationSummaryTitle = "nhsuk-error-summary__title";
         public const string NhsValidationSummaryList = "nhsuk-error-summary__list";
+        public const string NhsValidationInputError = "nhsuk-input--error";
     }
 }
