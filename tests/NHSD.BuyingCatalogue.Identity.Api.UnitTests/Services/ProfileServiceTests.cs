@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
     public sealed class ProfileServiceTests
     {
         [Test]
-        public async Task GetProfileDataAsync_GivenAnApplicationUserExists_ReturnsExpectedClaimList()
+        public async Task GetProfileDataAsync_GivenAnApplicationUserExistsWithOrganisationFunctionAuthority_ReturnsExpectedClaimList()
         {
             var expectedApplicationUser = ApplicationUserBuilder
                 .Create()
@@ -61,11 +61,62 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 (ApplicationClaimTypes.PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
                 (ApplicationClaimTypes.OrganisationFunction, expectedApplicationUser.OrganisationFunction.DisplayName),
                 (ApplicationClaimTypes.Organisation, Manage),
-                (ApplicationClaimTypes.Account, Manage)
+                (ApplicationClaimTypes.Account, Manage),
             };
 
             var actual = profileDataRequestContext.IssuedClaims.Select(item => (item.Type, item.Value));
             actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public async Task
+            GetProfileDataAsync_GivenAnApplicationUserExistsWithOrganisationFunctionBuyer_ReturnsExpectedClaimList()
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithEmailAddress("TestUser@Email.com")
+                .WithFirstName("Bob")
+                .WithLastName("Smith")
+                .WithOrganisationFunction(OrganisationFunction.Buyer)
+                .Build();
+
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var expected = new List<(string, string)>
+            {
+                (Subject, expectedApplicationUser.Id),
+                (PreferredUserName, expectedApplicationUser.UserName),
+                (JwtRegisteredClaimNames.UniqueName, expectedApplicationUser.UserName),
+                (GivenName, expectedApplicationUser.FirstName),
+                (FamilyName, expectedApplicationUser.LastName),
+                (Name, $"{expectedApplicationUser.FirstName} {expectedApplicationUser.LastName}"),
+                (Email, expectedApplicationUser.Email),
+                (EmailVerified,
+                    expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
+                (ApplicationClaimTypes.PrimaryOrganisationId,
+                    expectedApplicationUser.PrimaryOrganisationId.ToString()),
+                (ApplicationClaimTypes.OrganisationFunction,
+                    expectedApplicationUser.OrganisationFunction.DisplayName),
+                (ApplicationClaimTypes.Ordering, Manage)
+            };
+
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => (item.Type, item.Value));
+            actual.Should().BeEquivalentTo(expected);
+
         }
 
         [TestCase("SomeId", "SomeUserName", Subject, PreferredUserName, JwtRegisteredClaimNames.UniqueName, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
@@ -81,6 +132,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithUsername(expectedUserName)
                 .WithFirstName(string.Empty)
                 .WithLastName(string.Empty)
+                .WithOrganisationFunction(OrganisationFunction.Buyer)
                 .WithEmailAddress(string.Empty)
                 .Build();
 
@@ -115,6 +167,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithUsername(string.Empty)
                 .WithFirstName(string.Empty)
                 .WithLastName(string.Empty)
+                .WithOrganisationFunction(OrganisationFunction.Buyer)
                 .WithEmailAddress(expectedEmail)
                 .Build();
 
