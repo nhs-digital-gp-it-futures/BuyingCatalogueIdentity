@@ -48,4 +48,3 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Extensions
         }
     }
 }
-
