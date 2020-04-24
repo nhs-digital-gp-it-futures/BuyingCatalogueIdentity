@@ -11,6 +11,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Users;
+using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
@@ -94,7 +95,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             response.Should().BeOfType<ActionResult<CreateBuyerResponseViewModel>>();
             var actual = response.Result;
 
-            var expectation = new CreatedResult(new Uri($"/{newUserId}", UriKind.Relative),
+            var expectation = new CreatedAtActionResult(
+                nameof(controller.GetUserByIdAsync).TrimAsync(),
+                null,
+                new { id = newUserId },
                 new CreateBuyerResponseViewModel { UserId = newUserId });
 
             actual.Should().BeEquivalentTo(expectation);
