@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,6 +124,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response.Result = await client.PutAsync(new Uri($"{_organisationUrl}/{organisationId}"), content);
         }
 
+        [When(@"a POST request is made to update an organisation with values")]
+        public async Task WhenAPOSTRequestIsMadeForAnOrganisationWithValues(Table table)
+        {
+            var data = table.CreateInstance<OrganisationTable>();
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
+
+            var payload = JsonConvert.SerializeObject(TransformOrganisationIntoPayload(data));
+            using var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            _response.Result = await client.PostAsync(new Uri($"{_organisationUrl}"), content);
+
+            if (_response.Result.StatusCode == HttpStatusCode.Created)
+                await UpdateOrganisationMappingFromResponseBody(data.Name);
+        }
+
         [Given(@"an Organisation with name (.*) does not exist")]
         public async Task GivenAnOrganisationWithNameOrganisationDoesNotExist(string organisationName)
         {
@@ -153,6 +170,47 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
             return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
+        }
+
+        private static object TransformOrganisationIntoPayload(OrganisationTable data)
+        {
+            return new
+            {
+                OrganisationName = data.Name,
+                data.OdsCode,
+                data.PrimaryRoleId,
+                data.CatalogueAgreementSigned,
+                Address = new
+                {
+                    data.Line1,
+                    data.Line2,
+                    data.Line3,
+                    data.Line4,
+                    data.Town,
+                    data.County,
+                    data.Postcode,
+                    data.Country
+                }
+            };
+        }
+
+        private async Task UpdateOrganisationMappingFromResponseBody(string organisationName)
+        {
+            var guidAsString = await GetValueFromResponseBody<string>("organisationId");
+            Guid.TryParse(guidAsString, out Guid organisationId);
+            UpdateOrganisationMapping(organisationName, organisationId);
+        }
+
+        private async Task<T> GetValueFromResponseBody<T>(string fieldName)
+        {
+            var response = await _response.ReadBodyAsJsonAsync();
+            return response.Value<T>(fieldName);
+        }
+
+        private void UpdateOrganisationMapping(string organisationName, Guid organisationId)
+        {
+            _context.Get(ScenarioContextKeys.OrganisationMapDictionary, new Dictionary<string, Guid>())
+                .Add(organisationName, organisationId);
         }
 
         private class UpdateOrganisationPayload
