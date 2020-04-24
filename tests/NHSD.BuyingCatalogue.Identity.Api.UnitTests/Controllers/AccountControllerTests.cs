@@ -193,7 +193,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public void Login_Uri_NullReturnUrl_ReturnsViewResultWithRootUrl()
         {
-            var expectedUri = new Uri("~/", UriKind.Relative);
+            var expectedUri = new Uri("/", UriKind.Relative);
 
             using var controller = new AccountControllerBuilder().Build();
 
