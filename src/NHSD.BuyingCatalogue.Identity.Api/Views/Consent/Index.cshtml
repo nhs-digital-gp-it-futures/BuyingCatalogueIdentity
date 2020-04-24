@@ -1,8 +1,8 @@
 ﻿@model NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent.ConsentViewModel
 
 @{
-    ViewData["PageTitle"] = "User agreement";
-    ViewData["PageDescription"] = "PLEASE READ THESE TERMS CAREFULLY BEFORE USING THE CATALOGUE";
+    ViewData["PageTitle"] = "Buying Catalogue End User Agreement";
+    ViewData["PageDescription"] = "Please read this agreement carefully before using the NHS Digital Buying Catalogue";
 }
 
 <style>
@@ -21,57 +21,60 @@
     .upper-alpha-list {
         list-style-type: upper-alpha
     }
+    li {
+        margin: 16px 0;
+    }
 </style>
 
 <div class="nhsuk-width-container">
     <main class="nhsuk-main-wrapper">
         <div data-test-id="login-page">
             <div class="nhsuk-grid-row">
-                <div class="nhsuk-grid-column-two-thirds">
+                <div class="nhsuk-grid-column-full">
                     <div data-test-id="error-summary" nhs-validation-summary title="There is a problem"></div>
-                    <h1 data-test-id="page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
-                    <h2 data-test-id="page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
+                    <h1 data-test-id="page-title" class="nhsuk-u-margin-bottom-3">@ViewData["PageTitle"]</h1>
+                    <h2 data-test-id="page-description" class="nhsuk-u-font-size-22 nhsuk-u-margin-bottom-9">@ViewData["PageDescription"]</h2>
 
-                    <ol class="decimal-list">
-                        <li>
+                    <ol class="nhsuk-list nhsuk-u-margin-left-3 decimal-list">
+                        <li class="nhsuk-u-font-weight-bold">
                             Background
-                            <ol class="lower-alpha-list">
+                            <ol class="nhsuk-list nhsuk-u-font-weight-normal nhsuk-u-margin-left-3 lower-alpha-list">
                                 <li>
-                                    https://buyingcatalogue.digital.nhs.uk, known as the <b>"Catalogue"</b>, is a website that is:
-                                    <ol class="lower-roman-list">
+                                    <a href="https://buyingcatalogue.digital.nhs.uk">https://buyingcatalogue.digital.nhs.uk</a>, known as the "Buying Catalogue", is a website that is:
+                                    <ol class="nhsuk-list nhsuk-u-margin-left-5 lower-roman-list">
                                         <li>used by suppliers to undergo compliance processes and market, and sell, digital services; and</li>
                                         <li>used by potential buyers of those services, such as Clinical Commissioning Groups, to inform their purchasing decisions for various digital services.</li>
                                     </ol>
                                 </li>
-                                <li>The Catalogue is operated by NHS Digital (<b>"we", "us", "our"</b>).</li>
-                                <li>You are an individual named/authorised to use the Catalogue via a login and password by a company or organisation which has signed a contract with us as a Supplier or a Buyer (the <b>"Catalogue Buyers' Terms of Use"</b> for buyers of products and services from the Catalogue, and <b>"Catalogue Agreement"</b> for suppliers of the products and services on the Catalogue.</li>
+                                <li>The Buying Catalogue is operated by NHS Digital (“we”, “us”, “our”).</li>
+                                <li>You are an individual named/authorised to use the Buying Catalogue via a login and password by a company or organisation which has signed a contract with us as a Supplier or a Buyer (the “Catalogue Buyers' Terms of Use” for buyers of products and services from the Buying Catalogue, and “Catalogue Agreement” for suppliers of the products and services on the Buying Catalogue. </li>
                                 <li>You will also be bound by the terms of your company's/organisation’s agreement with us and any instructions laid down by the company/organisation you represent.</li>
-                                <li>You must keep passwords for access to the Catalogue private and confidential.</li>
-                                <li>These Catalogue General Terms of Use set out the standards that apply when you access the Catalogue, add content to the Catalogue, make contact with other users on our Catalogue, link to our Catalogue, or interact with our Catalogue in any other way.</li>
+                                <li>You must keep passwords for access to the Buying Catalogue private and confidential.</li>
+                                <li>These Catalogue General Terms of Use set out the standards that apply when you access the Catalogue, add content to the Catalogue, make contact with other users on our Buying Catalogue, link to our Buying Catalogue, or interact with our Buying Catalogue in any other way.</li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
                             Acceptance of these terms
-                            <ol class="lower-alpha-list">
-                                <li>By registering an account and accepting these terms and then using the Catalogue, you confirm on a continuing basis that you accept and will comply with these Catalogue General Terms of Use.</li>
-                                <li>If you do not agree to these Catalogue General Terms of Use, you must not use the Catalogue, and if you are a Registered User your organisation will be in breach of the Catalogue Agreement if you continue to use the Catalogue in those circumstances.</li>
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
+                                <li>By registering an account and accepting these terms and then using the Buying Catalogue, you confirm on a continuing basis that you accept and will comply with these Buying Catalogue General Terms of Use.</li>
+                                <li>If you do not agree to these Catalogue General Terms of Use, you must not use the Buying Catalogue, and if you are a Registered User your organisation will be in breach of the Catalogue Agreement if you continue to use the Buying Catalogue in those circumstances.</li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
                             How we make changes to the terms
-                            <ol class="lower-alpha-list">
-                                <li>We may amend these Catalogue General Terms of Use from time to time and will maintain and publish version control details.</li>
-                                <li>Each time you wish to use our Catalogue, please check the Catalogue General Terms of Use to ensure you understand the terms that apply at that time.</li>
-                                <li>Each time you access the Catalogue, by continuing your use you will be accepting the current version of these Catalogue General Terms of Use.</li>
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
+                                <li>We may amend these Catalogue General Terms of Use from time to time and will maintain and publish version control details. </li>
+                                <li>Each time you wish to use our Buying Catalogue, please check the Catalogue General Terms of Use to ensure you understand the terms that apply at that time.</li>
+                                <li>Each time you access the Buying Catalogue, by continuing your use you will be accepting the current version of these Catalogue General Terms of Use.</li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
                             Scope of use
-                            <ol class="lower-alpha-list">
-                                <li>We grant a non-exclusive, non-transferable, royalty free licence to you to connect to the Catalogue to view authorised parts of the Catalogue.</li>
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
+                                <li>We grant a non-exclusive, non-transferable, royalty free licence to you to connect to the Buying Catalogue to view authorised parts of the Buying Catalogue.</li>
                                 <li>
-                                    You may use our Catalogue only for lawful purposes. You may not use our Catalogue:
-                                    <ol class="lower-alpha-list">
+                                    You may use our Buying Catalogue only for lawful purposes. You may not use our Catalogue:
+                                    <ol class="nhsuk-list nhsuk-u-margin-left-5 lower-roman-list">
                                         <li>in any way that breaches any applicable local, national or international law or regulation;</li>
                                         <li>in any way that is unlawful or fraudulent, or has any unlawful or fraudulent purpose or effect;</li>
                                         <li>for the purpose of harming or attempting to harm minors in any way;</li>
@@ -82,56 +85,56 @@
                                 </li>
                                 <li>
                                     You also agree that you shall not:
-                                    <ol class="lower-alpha-list">
-                                        <li>reproduce, duplicate, copy or re-sell any part of our Catalogue;</li>
+                                    <ol class="nhsuk-list nhsuk-u-margin-left-5 lower-roman-list">
+                                        <li>reproduce, duplicate, copy or re-sell any part of our Buying Catalogue; </li>
                                         <li>
-                                            attempt to:
-                                            <ol class="upper-alpha-list">
-                                                <li>copy, adapt, duplicate, modify, create derivative works from or distribute all or any portion of any application program interface technology you access through the Catalogue; or</li>
-                                                <li>reverse compile, decompile, disassemble, reverse engineer or otherwise reduce to human-perceivable form all or any part of the Catalogue; or</li>
-                                                <li>make changes or error corrections to the Catalogue in whole or in part;</li>
+                                            attempt to: 
+                                            <ol class="nhsuk-list nhsuk-u-margin-left-5 upper-alpha-list">
+                                                <li>copy, adapt, duplicate, modify, create derivative works from or distribute all or any portion of any application program interface technology you access through the Buying Catalogue; or </li>
+                                                <li>reverse compile, decompile, disassemble, reverse engineer or otherwise reduce to human-perceivable form all or any part of the Buying Catalogue; or </li>
+                                                <li>make changes or error corrections to the Buying Catalogue in whole or in part;</li>
                                             </ol>
                                         </li>
                                         <li>
                                             access without authority, interfere with, damage or disrupt:
-                                            <ol class="upper-alpha-list">
-                                                <li>any part of our Catalogue;</li>
-                                                <li>any equipment or network on which our Catalogue is stored;</li>
-                                                <li>any software used in the provision of our Catalogue; or</li>
+                                            <ol class="nhsuk-list nhsuk-u-margin-left-5 upper-alpha-list">
+                                                <li>any part of our Buying Catalogue;</li>
+                                                <li>any equipment or network on which our Buying Catalogue is stored;</li>
+                                                <li>any software used in the provision of our Buying Catalogue; or</li>
                                                 <li>any equipment or network or software owned or used by any third party.</li>
                                             </ol>
                                         </li>
                                     </ol>
                                 </li>
-                                <li>You accept that all intellectual property rights created and developed by us which subsist or are used in, or in connection with, the Catalogue and the specification of the functional capabilities and the associated standards mapped to the functional capabilities will be our absolute property and will vest and remain vested in us.</li>
+                                <li>You accept that all intellectual property rights created and developed by us which subsist or are used in, or in connection with, the Buying Catalogue and the specification of the functional capabilities and the associated standards mapped to the functional capabilities will be our absolute property and will vest and remain vested in us.</li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
                             Interactive services
-                            <ol class="lower-alpha-list">
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
                                 <li>
                                     We may from time to time provide interactive services to Registered Users, including, without limitation:
-                                    <ol class="lower-roman-list">
-                                        <li>sharing reviews of the digital products and services on the Catalogue by customers;</li>
+                                    <ol class="nhsuk-list nhsuk-u-margin-left-5 lower-roman-list">
+                                        <li>sharing reviews of the digital products and services on the Buying Catalogue by customers;</li>
                                         <li>chat rooms; and</li>
                                         <li>bulletin boards,</li>
                                     </ol>
-                                    (the <b>"Interactive Services"</b>).
+                                    (the "Interactive Services").
                                 </li>
                                 <li>Where we do provide any Interactive Service, we will provide clear information to you about the kind of service offered, if it is moderated and what form of moderation is used (including whether it is human or technical).</li>
-                                <li>We will do our best to assess any possible risks for users from third parties when they use any Interactive Service provided on our Catalogue, and we will decide in each case whether it is appropriate to use moderation of the relevant service (including what kind of moderation to use) in the light of those risks. However, we are under no obligation to oversee, monitor or moderate any Interactive Service we provide on our Catalogue, and we expressly exclude our liability for any loss or damage arising from the use of any interactive service by a user in contravention of our content standards, whether the service is moderated or not.</li>
+                                <li>We will do our best to assess any possible risks for users from third parties when they use any Interactive Service provided on our Buying Catalogue, and we will decide in each case whether it is appropriate to use moderation of the relevant service (including what kind of moderation to use) in the light of those risks. However, we are under no obligation to oversee, monitor or moderate any Interactive Service we provide on our Buying Catalogue, and we expressly exclude our liability for any loss or damage arising from the use of any interactive service by a user in contravention of our content standards, whether the service is moderated or not. </li>
                                 <li>Where we do moderate an Interactive Service, we will normally provide you with a means of contacting the moderator, should a concern or difficulty arise.</li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
                             Content standards
-                            <ol class="lower-alpha-list">
-                                <li>These content standards apply to any and all material which you contribute to our Catalogue, including any information it provides in relation to an Interactive Service (<b>"Contribution"</b>).</li>
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
+                                <li>These content standards apply to any and all material which you contribute to our Buying Catalogue, including any information it provides in relation to an Interactive Service (“Contribution”).</li>
                                 <li>The content standards must be complied with in spirit as well as to the letter. The standards apply to each part of any Contribution as well as to its whole.</li>
                                 <li>We will determine, in its discretion and acting reasonably, whether a Contribution breaches the content standards.</li>
                                 <li>
                                     A Contribution must:
-                                    <ol class="lower-roman-list">
+                                    <ol class="nhsuk-list nhsuk-u-margin-left-5 lower-roman-list">
                                         <li>be accurate (where it states facts);</li>
                                         <li>be genuinely held (where it states opinions); and</li>
                                         <li>comply with the law applicable in England and Wales and in any country from which it is posted.</li>
@@ -139,7 +142,7 @@
                                 </li>
                                 <li>
                                     A Contribution must not:
-                                    <ol class="lower-roman-list">
+                                    <ol class="nhsuk-list nhsuk-u-margin-left-5 lower-roman-list">
                                         <li>be false or misleading;</li>
                                         <li>be defamatory of any person;</li>
                                         <li>be obscene, offensive, hateful or inflammatory;</li>
@@ -161,35 +164,44 @@
                                 </li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
                             Data
-                            <ol class="lower-alpha-list">
-                                <li>In relation to how data from activity on the Catalogue is collected and used, please review the privacy policy for Registered Users of the Catalogue : [ ]</li>
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
+                                <li>In relation to how data from activity on the Buying Catalogue is collected and used, <a href="https://digital.nhs.uk/about-nhs-digital/privacy-and-cookies">please review the privacy policy for Registered Users of the Buying Catalogue.</a></li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
+                            Breach of these terms
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
+                                <li>When a breach of these Catalogue General Terms of Use has occurred, we may take such action as we deem appropriate, including suspending or blocking your access to the Buying Catalogue.</li>
+                                <li>We exclude our liability for all action we may take in response to breaches of these Catalogue General Terms of Use. </li>
+                            </ol>
+                        </li>
+                        <li class="nhsuk-u-font-weight-bold">
                             Disclaimers / Liability
-                            <ol class="lower-alpha-list">
-                                <li>You use the Catalogue entirely at your own risk and, to the extent permitted under the laws of England and Wales, we assume no duty of care or other legal liability or responsibility to you, or for any loss or damage suffered by you as a result of such use and shall not be liable to contribute to or otherwise share in any liability to compensate any third party harmed as a result of the usage of the Catalogue.</li>
-                                <li>The Catalogue is provided on an “as is” basis without (to the extent permitted by law) any warranty or representation of any kind either express or implied (including the implied warranties of merchantability and fitness for a particular purpose).</li>
-                                <li>We will have no liability for unavailability of the Catalogue. From time to time, the Catalogue will be unavailable due to maintenance or other technical issues.</li>
+                            <ol class="nhsuk-u-font-weight-normal nhsuk-list nhsuk-u-margin-left-5 lower-alpha-list">
+                                <li>You use the Buying Catalogue entirely at your own risk and, to the extent permitted under the laws of England and Wales, we assume no duty of care or other legal liability or responsibility to you, or for any loss or damage suffered by you as a result of such use and shall not be liable to contribute to or otherwise share in any liability to compensate any third party harmed as a result of the usage of the Buying Catalogue.</li>
+                                <li>The Buying Catalogue is provided on an “as is” basis without (to the extent permitted by law) any warranty or representation of any kind either express or implied (including the implied warranties of merchantability and fitness for a particular purpose).</li>
+                                <li>We will have no liability for unavailability of the Buying Catalogue. From time to time, the Buying Catalogue will be unavailable due to maintenance or other technical issues.</li>
                                 <li>We have not verified the information available in the Catalogue Solution listing and will not be held responsible for errors.</li>
                                 <li>To the extent permissible by the laws of England and Wales, we shall not be liable for any direct, special, indirect or consequential losses and/or damages nor for any loss (whether direct or indirect) of use, data, business or profits arising out of or in connection with these Catalogue General Terms of Use, whether such liability arises from any claim based upon contract, warranty, tort (including negligence), strict liability or otherwise, and whether or not we have been advised of the possibility of such loss or damage.</li>
                                 <li>Our financial liability in connection with these Catalogue General Terms of Use to you shall be limited to £50.</li>
                             </ol>
                         </li>
-                        <li>
+                        <li class="nhsuk-u-font-weight-bold">
                             Which country's laws apply to any disputes?
-                            <p>These Catalogue General Terms of Use, the subject matter and the formation (and any non-contractual disputes or claims), are governed by the laws of England and Wales and subject to the jurisdiction of the courts of England.</p>
+                            <p class="nhsuk-u-font-weight-normal">These Catalogue General Terms of Use, the subject matter and the formation (and any non-contractual disputes or claims), are governed by the laws of England and Wales and subject to the jurisdiction of the courts of England.</p>
                         </li>
                     </ol>
                     <form asp-controller="Consent" asp-action="Index" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
                         <input type="hidden" asp-for="ReturnUrl" />
 
                         <span data-test-id="agreement-error-message" asp-validation-for="AgreeWithTerms" class="nhsuk-error-message"></span>
-                        <input type="checkbox" asp-for="AgreeWithTerms" />
-                        <label asp-for="AgreeWithTerms"></label>
-                        <button class="nhsuk-button nhsuk-u-margin-top-5 nhsuk-u-margin-bottom-3" type="submit" data-test-id="agreement-submit-button">Continue</button>
+                        <div class="nhsuk-checkboxes__item nhsuk-u-margin-top-9">
+                            <input class="nhsuk-checkboxes__input" type="checkbox" asp-for="AgreeWithTerms" />
+                            <label class="nhsuk-label nhsuk-checkboxes__label" asp-for="AgreeWithTerms">Accept End User Agreement</label>
+                        </div>
+                        <button class="nhsuk-button nhsuk-u-padding-left-6 nhsuk-u-padding-right-6 nhsuk-u-margin-top-9 nhsuk-u-margin-bottom-3" type="submit" data-test-id="agreement-submit-button">Continue</button>
                     </form>
                 </div>
             </div>
