@@ -28,9 +28,12 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Email
 
             var message = new MimeMessage
             {
-                Subject = $"{emailSubjectPrefix} {emailMessage.Subject}" ?? string.Empty,
                 Body = bodyBuilder.ToMessageBody(),
             };
+
+            message.Subject = string.IsNullOrWhiteSpace(emailSubjectPrefix) && emailMessage.Subject != null
+                ? emailMessage.Subject
+                : $"{emailSubjectPrefix} {emailMessage.Subject}";
 
             message.From.Add(emailMessage.Sender?.AsMailboxAddress());
             message.To.Add(emailMessage.Recipient?.AsMailboxAddress());
