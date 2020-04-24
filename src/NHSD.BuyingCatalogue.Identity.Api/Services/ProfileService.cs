@@ -28,6 +28,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                         new Claim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage),
                         new Claim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage)
                     }
+                },
+                {
+                    OrganisationFunction.Buyer,  new List<Claim>
+                    {
+                        new Claim(ApplicationClaimTypes.Ordering,ApplicationPermissions.Manage)
+                    }
                 }
             };
 
