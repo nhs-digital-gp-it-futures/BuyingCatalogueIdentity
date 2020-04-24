@@ -22,8 +22,8 @@ Scenario: 1. User receives email after their account is created
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com | Organisation 1   |
 	Then a response with status code 201 is returned
 	And the email sent contains the following information
-		| From                           | To                       | Subject                                             |
-		| noreply@buyingcatalogue.nhs.uk | bob.bobkovitch@email.com | INTEGRATION_TEST: Set password for Buying Catalogue |
+		| From                           | To                       | Subject                                            |
+		| noreply@buyingcatalogue.nhs.uk | bob.bobkovitch@email.com | INTEGRATION_TEST Set password for Buying Catalogue |
 	And only one email is sent
 
 @3540
