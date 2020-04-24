@@ -54,8 +54,8 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Email
                 var authentication = _settings.Authentication;
                 if (authentication.IsRequired)
                     await _client.AuthenticateAsync(authentication.UserName, authentication.Password);
-
-                await _client.SendAsync(emailMessage.AsMimeMessage());
+                
+                await _client.SendAsync(emailMessage.AsMimeMessage(_settings.EmailSubjectPrefix));
             }
             finally
             {

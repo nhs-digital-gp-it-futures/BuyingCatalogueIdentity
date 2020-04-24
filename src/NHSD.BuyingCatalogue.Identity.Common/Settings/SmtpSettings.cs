@@ -26,5 +26,7 @@
         /// </summary>
         /// <remarks>This should only be enabled in test environments.</remarks>
         public bool? AllowInvalidCertificate { get; set; }
+
+        public string? EmailSubjectPrefix { get; set; }
     }
 }
