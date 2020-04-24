@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
-using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
@@ -149,8 +148,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             }
 
             response.OrganisationId = result.Value;
-            var uri = new Uri(Url.ActionLink(nameof(GetByIdAsync).TrimAsync(), values: new { id = result.Value }));
-            return Created(uri, response);
+            return Created(new Uri($"/{result.Value}", UriKind.Relative), response);
         }
     }
 }
