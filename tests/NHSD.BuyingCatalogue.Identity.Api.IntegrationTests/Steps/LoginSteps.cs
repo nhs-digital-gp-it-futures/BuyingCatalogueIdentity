@@ -60,12 +60,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebDriver.FindElement(By.Id(id)).Text.Should().Be(text);
         }
 
-        [Then(@"the page contains a validation summary with text (.*)")]
-        public void ThenThePageContainsValidationSummaryWithText(string value)
+        [Then(@"the page contains a validation summary with text (.*) at position (.*)")]
+        public void ThenThePageContainsValidationSummaryWithText(string value, int position)
         {
             var errorElements = _seleniumContext.WebDriver.FindElements(By.CssSelector("[data-test-id=error-summary] li"));
-            errorElements.Should().HaveCount(1);
-            errorElements.First().Text.Should().Be(value);
+            errorElements[position].Text.Should().Be(value);
         }
 
         [Given(@"a user has successfully logged in with email address (.*) and password (.*)")]

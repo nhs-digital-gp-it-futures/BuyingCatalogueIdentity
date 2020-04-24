@@ -26,7 +26,8 @@ Scenario: 2. Logging in with an existing client with invalid username
     Then the user is redirected to page identity/account/login
     When a login request is made with email address NonExistent@email.com and password testingtesting123
     Then the user is redirected to page identity/account/login
-    And the page contains a validation summary with text Enter a valid email address and password
+    And the page contains a validation summary with text Enter a valid email address and password at position 0
+    And the page contains a validation summary with text Enter a valid email address and password at position 1
 
 @3540
 Scenario: 3. Logging in with an existing client with invalid password
@@ -34,7 +35,8 @@ Scenario: 3. Logging in with an existing client with invalid password
     Then the user is redirected to page identity/account/login
     When a login request is made with email address test@user.com and password Invalid
     Then the user is redirected to page identity/account/login
-    And the page contains a validation summary with text Enter a valid email address and password
+    And the page contains a validation summary with text Enter a valid email address and password at position 0
+    And the page contains a validation summary with text Enter a valid email address and password at position 1
 
 @3540
 Scenario: 4. Logging in with an existing client with empty username
@@ -66,7 +68,7 @@ Scenario: 7. Logging in with a disabled user account
     Then the user is redirected to page identity/account/login
     When a login request is made with email address test2@user.com and password testingtesting321
     Then the user is redirected to page identity/account/login
-    And the page contains a validation summary with text There is a problem accessing your account.\n\nContact the account administrator at: exeter.helpdesk@nhs.net or call 0300 303 4034 
+    And the page contains a validation summary with text There is a problem accessing your account.\n\nContact the account administrator at: exeter.helpdesk@nhs.net or call 0300 303 4034 at position 0
 
 @3540 
 Scenario: 8. Navigating to the forgot password page from login, then pressing the back button, preserves the return url

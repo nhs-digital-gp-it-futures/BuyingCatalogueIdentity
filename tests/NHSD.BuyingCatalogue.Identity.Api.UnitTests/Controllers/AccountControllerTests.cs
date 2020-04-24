@@ -40,12 +40,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             var modelState = controller.ModelState;
 
             modelState.IsValid.Should().BeFalse();
-            modelState.Count.Should().Be(1);
+            modelState.Count.Should().Be(2);
 
-            (string key, ModelStateEntry entry) = modelState.First();
-            key.Should().Be(nameof(LoginViewModel.LoginError));
-            entry.Errors.Count.Should().Be(1);
-            entry.Errors.First().ErrorMessage.Should().Be(AccountController.SignInErrorMessage);
+            foreach ((string key, ModelStateEntry entry) in modelState)
+            {
+                entry.Errors.Count.Should().Be(1);
+                entry.Errors.First().ErrorMessage.Should().Be(AccountController.SignInErrorMessage);
+            }
         }
 
         [Test]
@@ -192,7 +193,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public void Login_Uri_NullReturnUrl_ReturnsViewResultWithRootUrl()
         {
-            var expectedUri = new Uri("~/", UriKind.Relative);
+            var expectedUri = new Uri("/", UriKind.Relative);
 
             using var controller = new AccountControllerBuilder().Build();
 

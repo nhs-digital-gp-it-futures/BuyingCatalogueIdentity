@@ -44,7 +44,7 @@ Contact the account administrator at: {0} or call {1}";
         public IActionResult Login(Uri returnUrl)
         {
             if (returnUrl == null)
-                returnUrl = new Uri("~/", UriKind.Relative);
+                returnUrl = new Uri("/", UriKind.Relative);
 
             LoginViewModel loginViewModel = new LoginViewModel
             {
@@ -76,7 +76,8 @@ Contact the account administrator at: {0} or call {1}";
 
                 if (signInErrors.Contains(LoginUserErrors.UserNameOrPasswordIncorrect()))
                 {
-                    ModelState.AddModelError(nameof(LoginViewModel.LoginError), SignInErrorMessage);
+                    ModelState.AddModelError(nameof(LoginViewModel.EmailAddress), SignInErrorMessage);
+                    ModelState.AddModelError(nameof(LoginViewModel.Password), SignInErrorMessage);
                 }
 
                 if (signInErrors.Contains(LoginUserErrors.UserIsDisabled()))

@@ -12,7 +12,9 @@ using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
+using NHSD.BuyingCatalogue.Organisations.Api.Validators;
 using Serilog;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api
@@ -43,6 +45,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
 			services.AddTransient<IOdsRepository, OdsRepository>();
+
+            services.AddTransient<ICreateOrganisationService, CreateOrganisationService>();
+
+            services.AddTransient<IOrganisationValidator, OrganisationValidator>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));

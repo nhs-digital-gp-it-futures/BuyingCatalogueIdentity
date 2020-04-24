@@ -171,6 +171,7 @@ services:
     environment:
       - HUB_HOST=selenium-hub
       - HUB_PORT=4444
+    shm_size: 2G
     entrypoint: 
       - /bin/sh
       - -c 
