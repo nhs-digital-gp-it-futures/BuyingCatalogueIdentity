@@ -10,8 +10,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent
         [Required]
         [RegularExpression(
             "(?:True|true)",
-            ErrorMessage = "You must agree to the terms and conditions before continuing.")]
-        [DisplayName("I agree with the terms")]
+            ErrorMessage = "Accept End User Agreement")]
+        [DisplayName("Accept End User Agreement")]
         public bool AgreeWithTerms { get; set; }
 
         public Uri ReturnUrl { get; set; }
