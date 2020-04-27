@@ -16,8 +16,9 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Email
         /// Returns the receiver as a <see cref="MimeMessage"/>.
         /// </summary>
         /// <param name="emailMessage">The receiving <see cref="EmailMessage"/> instance.</param>
+        /// <param name="emailSubjectPrefix"></param>
         /// <returns>the corresponding <see cref="MimeMessage"/>.</returns>
-        internal static MimeMessage AsMimeMessage(this EmailMessage emailMessage)
+        internal static MimeMessage AsMimeMessage(this EmailMessage emailMessage, string? emailSubjectPrefix)
         {
             var bodyBuilder = new BodyBuilder
             {
@@ -27,9 +28,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Email
 
             var message = new MimeMessage
             {
-                Subject = emailMessage.Subject ?? string.Empty,
                 Body = bodyBuilder.ToMessageBody(),
             };
+
+            message.Subject = ($"{emailSubjectPrefix} {emailMessage.Subject}").Trim();
 
             message.From.Add(emailMessage.Sender?.AsMailboxAddress());
             message.To.Add(emailMessage.Recipient?.AsMailboxAddress());
