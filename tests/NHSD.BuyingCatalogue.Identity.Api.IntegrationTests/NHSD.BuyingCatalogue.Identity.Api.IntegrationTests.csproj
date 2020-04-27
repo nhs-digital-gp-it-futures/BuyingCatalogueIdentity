@@ -44,4 +44,17 @@
     <ProjectReference Include="..\NHSD.BuyingCatalogue.Identity.Api.Testing.Data\NHSD.BuyingCatalogue.Identity.Api.Testing.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Features\Accept Agreement UI Validation.3924.feature.cs">
+      <DependentUpon>Accept Agreement UI Validation.3924.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\Accept Agreement UI Validation.3924.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+  </ItemGroup>
+
 </Project>
