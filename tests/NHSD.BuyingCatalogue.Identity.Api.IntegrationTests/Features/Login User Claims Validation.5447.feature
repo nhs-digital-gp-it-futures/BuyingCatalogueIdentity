@@ -31,6 +31,7 @@ Scenario: 1. Null scope yields the expected claims
 		| email_verified       | true                |
 		| organisationFunction | Buyer               |
 		| scope                | profile             |
+        | ordering             | Manage              |
 
 @5447
 Scenario: 2. Unknown scope yields no access token
@@ -58,6 +59,7 @@ Scenario: 3. Get the claims of a buyer user
 		| email_verified       | true                |
 		| organisationFunction | Buyer               |
 		| scope                | profile             |
+        | ordering             | Manage              |
 
 @5447
 Scenario: 4. Get the claims of an authority user
@@ -79,3 +81,5 @@ Scenario: 4. Get the claims of an authority user
 		| email_verified       | true                 |
 		| organisationFunction | Authority            |
 		| scope                | Organisation         |
+		| organisation         | Manage               |
+		| account              | Manage               |
