@@ -35,7 +35,7 @@
                     <h1 data-test-id="page-title" class="nhsuk-u-margin-bottom-3">@ViewData["PageTitle"]</h1>
                     <h2 data-test-id="page-description" class="nhsuk-u-font-size-22 nhsuk-u-margin-bottom-9">@ViewData["PageDescription"]</h2>
 
-                    <ol class="nhsuk-list nhsuk-u-margin-left-3 decimal-list">
+                    <ol class="nhsuk-list nhsuk-u-margin-left-3 nhsuk-u-margin-bottom-9 decimal-list">
                         <li class="nhsuk-u-font-weight-bold">
                             Background
                             <ol class="nhsuk-list nhsuk-u-font-weight-normal nhsuk-u-margin-left-3 lower-alpha-list">
@@ -88,7 +88,7 @@
                                     <ol class="nhsuk-list nhsuk-u-margin-left-5 lower-roman-list">
                                         <li>reproduce, duplicate, copy or re-sell any part of our Buying Catalogue; </li>
                                         <li>
-                                            attempt to: 
+                                            attempt to:
                                             <ol class="nhsuk-list nhsuk-u-margin-left-5 upper-alpha-list">
                                                 <li>copy, adapt, duplicate, modify, create derivative works from or distribute all or any portion of any application program interface technology you access through the Buying Catalogue; or </li>
                                                 <li>reverse compile, decompile, disassemble, reverse engineer or otherwise reduce to human-perceivable form all or any part of the Buying Catalogue; or </li>
@@ -196,10 +196,20 @@
                     <form asp-controller="Consent" asp-action="Index" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
                         <input type="hidden" asp-for="ReturnUrl" />
 
-                        <span data-test-id="agreement-error-message" asp-validation-for="AgreeWithTerms" class="nhsuk-error-message"></span>
-                        <div class="nhsuk-checkboxes__item nhsuk-u-margin-top-9">
-                            <input class="nhsuk-checkboxes__input" type="checkbox" asp-for="AgreeWithTerms" />
-                            <label class="nhsuk-label nhsuk-checkboxes__label" asp-for="AgreeWithTerms">Accept End User Agreement</label>
+                        <div asp-validation-for="AgreeWithTerms" class="nhsuk-form-group @(@ViewData.ModelState.IsValid ? "" : "nhsuk-form-group--error")">
+                            <fieldset class="nhsuk-fieldset" aria-describedby="terms-hint">
+                                <legend class="nhsuk-fieldset__legend nhsuk-fieldset__legend--l">
+                                    <h1 class="nhsuk-fieldset__heading">Accept End User Agreement</h1>
+                                </legend>
+                                <span class="nhsuk-hint" id="terms-hint">Confirm you accept this agreement</span>
+                                <span data-test-id="agreement-error-message" asp-validation-for="AgreeWithTerms" class="nhsuk-error-message"></span>
+                                <div class="nhsuk-checkboxes">
+                                    <div class="nhsuk-checkboxes__item">
+                                        <input data-test-id="agree-terms-checkbox" class="nhsuk-checkboxes__input" type="checkbox" asp-for="AgreeWithTerms"/>
+                                        <label class="nhsuk-label nhsuk-checkboxes__label" asp-for="AgreeWithTerms"></label>
+                                    </div>
+                                </div>
+                            </fieldset>
                         </div>
                         <button class="nhsuk-button nhsuk-u-padding-left-6 nhsuk-u-padding-right-6 nhsuk-u-margin-top-9 nhsuk-u-margin-bottom-3" type="submit" data-test-id="agreement-submit-button">Continue</button>
                     </form>
