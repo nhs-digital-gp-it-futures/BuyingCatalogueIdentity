@@ -30,7 +30,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                     }
                 },
                 {
-                    OrganisationFunction.Buyer,  new List<Claim>
+                    OrganisationFunction.Buyer, 
+                    new List<Claim>
                     {
                         new Claim(ApplicationClaimTypes.Ordering,ApplicationPermissions.Manage)
                     }

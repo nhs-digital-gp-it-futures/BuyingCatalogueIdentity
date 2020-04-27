@@ -61,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 (ApplicationClaimTypes.PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
                 (ApplicationClaimTypes.OrganisationFunction, expectedApplicationUser.OrganisationFunction.DisplayName),
                 (ApplicationClaimTypes.Organisation, Manage),
-                (ApplicationClaimTypes.Account, Manage),
+                (ApplicationClaimTypes.Account, Manage)
             };
 
             var actual = profileDataRequestContext.IssuedClaims.Select(item => (item.Type, item.Value));
@@ -116,7 +116,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var actual = profileDataRequestContext.IssuedClaims.Select(item => (item.Type, item.Value));
             actual.Should().BeEquivalentTo(expected);
-
         }
 
         [TestCase("SomeId", "SomeUserName", Subject, PreferredUserName, JwtRegisteredClaimNames.UniqueName, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
@@ -156,7 +155,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expectedClaimTypes);
         }
 
-        [TestCase("someone@email.com", Subject, Email, EmailVerified, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction,ApplicationClaimTypes.Ordering)]
+        [TestCase("someone@email.com", Subject, Email, EmailVerified, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
         [TestCase("", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithEmail_ReturnExpectedClaimList(
             string expectedEmail,
