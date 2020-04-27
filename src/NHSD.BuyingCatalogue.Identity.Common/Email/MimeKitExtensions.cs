@@ -31,9 +31,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Email
                 Body = bodyBuilder.ToMessageBody(),
             };
 
-            message.Subject = string.IsNullOrWhiteSpace(emailSubjectPrefix) && emailMessage.Subject != null
-                ? emailMessage.Subject
-                : $"{emailSubjectPrefix} {emailMessage.Subject}";
+            message.Subject = ($"{emailSubjectPrefix} {emailMessage.Subject}").Trim();
 
             message.From.Add(emailMessage.Sender?.AsMailboxAddress());
             message.To.Add(emailMessage.Recipient?.AsMailboxAddress());
