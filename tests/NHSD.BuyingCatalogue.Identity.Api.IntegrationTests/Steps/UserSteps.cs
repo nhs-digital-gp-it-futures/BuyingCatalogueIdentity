@@ -56,9 +56,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     SecurityStamp = "TestUser",
                     CatalogueAgreementSigned = user.CatalogueAgreementSigned,
                 };
-
                 userEntity.PasswordHash = new PasswordHasher<UserEntity>().HashPassword(userEntity, user.Password);
-
                 await userEntity.InsertAsync(_settings.ConnectionString);
             }
         }
