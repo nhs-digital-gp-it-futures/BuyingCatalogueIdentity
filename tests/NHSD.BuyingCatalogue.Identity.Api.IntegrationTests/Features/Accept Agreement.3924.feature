@@ -1,4 +1,4 @@
-﻿Feature: User needs to sign the Catalogue Agreement page
+﻿Feature: User needs to sign the Accept Agreement page
 	As a Authority User
 	I want to be able to read & accept the terms and conditions
 	So that I can then proceed to the application
@@ -12,7 +12,7 @@ Background:
 		| 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 | false                    |
 
 @3924
-Scenario: 1. User has not signed the catalogue agreement, validation is valid
+Scenario: 1. User has not signed the accept agreement, validation is valid
 	When the user navigates to a restricted web page
 	Then the user is redirected to page identity/account/login
 	When a login request is made with email address test@user.com and password testingtesting123
@@ -23,7 +23,7 @@ Scenario: 1. User has not signed the catalogue agreement, validation is valid
 	And the page contains element with ID sampleResourceResult with text Authorized With Sample Resource
 
 @3924
-Scenario: 2. User has not signed the catalogue agreement, validation is invalid
+Scenario: 2. User has not signed the accept agreement, validation is invalid
 	When the user navigates to a restricted web page
 	Then the user is redirected to page identity/account/login
 	When a login request is made with email address test@user.com and password testingtesting123
