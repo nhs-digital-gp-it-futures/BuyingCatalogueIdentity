@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
@@ -42,10 +43,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             foreach (var user in users)
             {
                 var organisationId = GetOrganisationIdFromName(user.OrganisationName);
-
                 var userEntity = new UserEntity
                 {
-                    PasswordHash = GenerateHash(user.Password),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
@@ -57,6 +56,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                     SecurityStamp = "TestUser",
                     CatalogueAgreementSigned = user.CatalogueAgreementSigned,
                 };
+
+                userEntity.PasswordHash = new PasswordHasher<UserEntity>().HashPassword(userEntity, user.Password);
 
                 await userEntity.InsertAsync(_settings.ConnectionString);
             }
@@ -168,55 +169,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var actual = response.SelectToken("userId").Value<string>();
 
             actual.Should().NotBeNull();
-        }
-
-        private static string GenerateHash(string password)
-        {
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                return password;
-            }
-
-            const int identityVersion = 1; // 1 = Identity V3
-            const int iterationCount = 10000;
-            const int passwordHashLength = 32;
-            const KeyDerivationPrf hashAlgorithm = KeyDerivationPrf.HMACSHA256;
-            const int saltLength = 16;
-
-            using var rng = RandomNumberGenerator.Create();
-            var salt = new byte[saltLength];
-            rng.GetBytes(salt);
-
-            var pbkdf2Hash = KeyDerivation.Pbkdf2(
-                password,
-                salt,
-                hashAlgorithm,
-                iterationCount,
-                passwordHashLength);
-
-            var identityVersionData = new byte[] { identityVersion };
-            var prfData = BitConverter.GetBytes((uint)hashAlgorithm).Reverse().ToArray();
-            var iterationCountData = BitConverter.GetBytes((uint)iterationCount).Reverse().ToArray();
-            var saltSizeData = BitConverter.GetBytes((uint)saltLength).Reverse().ToArray();
-
-            var hashElements = new[]
-            {
-                identityVersionData,
-                prfData,
-                iterationCountData,
-                saltSizeData,
-                salt,
-                pbkdf2Hash
-            };
-
-            var identityV3Hash = new List<byte>();
-            foreach (var data in hashElements)
-            {
-                identityV3Hash.AddRange(data);
-            }
-
-            identityV3Hash.Count.Should().Be(61);
-            return Convert.ToBase64String(identityV3Hash.ToArray());
         }
 
         private Guid GetOrganisationIdFromName(string organisationName)
