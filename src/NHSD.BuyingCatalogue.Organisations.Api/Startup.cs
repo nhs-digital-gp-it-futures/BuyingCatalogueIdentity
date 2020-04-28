@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
-using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
@@ -39,12 +38,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
 
-            var smtpSettings = Configuration.GetSection("SmtpServer").Get<SmtpSettings>();
-            if (!smtpSettings.AllowInvalidCertificate.HasValue)
-                smtpSettings.AllowInvalidCertificate = allowInvalidCertificate;
-
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
-			services.AddTransient<IOdsRepository, OdsRepository>();
+            services.AddTransient<IOdsRepository, OdsRepository>();
 
             services.AddTransient<ICreateOrganisationService, CreateOrganisationService>();
 
@@ -53,7 +48,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-			services.AddSingleton(odsSettings);
+            services.AddSingleton(odsSettings);
 
             services.RegisterHealthChecks(connectionString);
 
@@ -80,9 +75,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(PolicyName.CanAccessOrganisations, policy => policy.RequireClaim(ApplicationClaimTypes.Organisation));
-                options.AddPolicy(PolicyName.CanManageOrganisations, policy => 
+                options.AddPolicy(PolicyName.CanManageOrganisations, policy =>
                     policy.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage));
-        
+
                 options.AddPolicy(PolicyName.CanAccessOrganisationUsers, policyBuilder =>
                 {
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);
