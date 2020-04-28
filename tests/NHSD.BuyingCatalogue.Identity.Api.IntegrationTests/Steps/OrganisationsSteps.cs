@@ -147,6 +147,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             organisations.Should().BeNull();
         }
 
+        [Then(@"the response contains a location header pointing at a location containing the following organisation")]
+        public async Task ResponseContainsLocationHeaderPointingAtResourceContainingOrganisation(Table data)
+        {
+            var uri = _response.Result.Headers.Location;
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
+            _response.Result = await client.GetAsync(uri);
+
+            var json = await _response.ReadBodyAsJsonAsync();
+            var actual = CreateOrganisation(json);
+
+            var expected = data.CreateInstance<OrganisationTable>();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
         private static object CreateOrganisation(JToken token)
         {
             return new

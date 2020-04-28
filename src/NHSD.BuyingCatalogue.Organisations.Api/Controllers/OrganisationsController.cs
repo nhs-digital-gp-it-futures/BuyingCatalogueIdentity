@@ -150,7 +150,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             response.OrganisationId = result.Value;
 
-            return CreatedAtAction(nameof(GetByIdAsync).TrimAsync(), routeValues: new { id = result.Value }, response);
+            return CreatedAtAction(nameof(GetByIdAsync).TrimAsync(), null,  new { id = result.Value }, response);
         }
     }
 }

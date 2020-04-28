@@ -22,11 +22,9 @@ Scenario: 1. A authority user can create a user
 		| FirstName | LastName   | PhoneNumber | EmailAddress             |
 		| Bob       | Bobkovitch | 0123456789  | bob.bobkovitch@email.com |
 	Then a response with status code 201 is returned
-	When a GET request is made for an organisation's users with name Organisation 2
-	Then a response with status code 200 is returned
-	And the Users list is returned with the following values excluding ID
-		| FirstName | LastName   | EmailAddress             | PhoneNumber | IsDisabled |
-		| Bob       | Bobkovitch | bob.bobkovitch@email.com | 0123456789  | False      |
+	And the response contains a location header pointing at a location containing the following user
+		| Name           | EmailAddress             | PhoneNumber | IsDisabled |
+		| Bob Bobkovitch | bob.bobkovitch@email.com | 0123456789  | False      |
 
 @3538
 Scenario: 2. Create a new user yields the ID of the new user

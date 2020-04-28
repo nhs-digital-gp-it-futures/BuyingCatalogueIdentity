@@ -98,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             var expectation = new CreatedAtActionResult(
                 nameof(controller.GetUserByIdAsync).TrimAsync(),
                 null,
-                new { id = newUserId },
+                new { userId = newUserId },
                 new CreateBuyerResponseViewModel { UserId = newUserId });
 
             actual.Should().BeEquivalentTo(expectation);

@@ -98,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (result.IsSuccess)
             {
                 response.UserId = result.Value;
-                return CreatedAtAction(nameof(GetUserByIdAsync).TrimAsync(), routeValues: new { id = result.Value }, response);
+                return CreatedAtAction(nameof(GetUserByIdAsync).TrimAsync(), null, new { userId = result.Value }, response);
             }
 
             response.Errors = result.Errors.Select(x => new ErrorMessageViewModel(x.Id, x.Field));

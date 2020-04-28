@@ -117,7 +117,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"a user is returned with the following values")]
         public async Task ThenAUserIsReturnedWithTheFollowingValues(Table table)
         {
-            var expected = table.CreateSet<ExpectedGetUserTable>().First();
+            var expected = table.CreateInstance<ExpectedGetUserTable>();
 
             var organisationId = GetOrganisationIdFromName(expected.OrganisationName);
 
@@ -148,7 +148,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the database has user with id (.*)")]
         public async Task ThenTheDatabaseIsUpdatedWithTheUsersNewValues(string userId, Table table)
         {
-            var expected = table.CreateSet<ExpectedGetUserTable>().First();
+            var expected = table.CreateInstance<ExpectedGetUserTable>();
 
             var userEntity = new UserEntity
             {
@@ -168,6 +168,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var actual = response.SelectToken("userId").Value<string>();
 
             actual.Should().NotBeNull();
+        }
+
+        [Then(@"the response contains a location header pointing at a location containing the following user")]
+        public async Task ResponseContainsLocationHeaderPointingAtResourceContainingUser(Table data)
+        {
+            var uri = _response.Result.Headers.Location;
+
+            using var client = new HttpClient();
+            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
+            _response.Result = await client.GetAsync(uri);
+
+            var actual = await CreateExpectedGetUserFromResponse();
+
+            var expected = data.CreateInstance<ExpectedGetUserTable>();
+
+            actual.Should().BeEquivalentTo(expected);
         }
 
         private static string GenerateHash(string password)
@@ -236,6 +252,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 PhoneNumber = x.SelectToken("phoneNumber").ToString(),
                 IsDisabled = x.SelectToken("isDisabled").ToString()
             });
+        }
+
+        private async Task<ExpectedGetUserTable> CreateExpectedGetUserFromResponse()
+        {
+            var json = await _response.ReadBodyAsJsonAsync();
+            return new ExpectedGetUserTable
+            {
+                Name = json.Value<string>("name"),
+                EmailAddress = json.Value<string>("emailAddress"),
+                PhoneNumber = json.Value<string>("phoneNumber"),
+                Disabled = json.Value<bool>("disabled"),
+            };
         }
 
         private sealed class CreateUserPostPayload
