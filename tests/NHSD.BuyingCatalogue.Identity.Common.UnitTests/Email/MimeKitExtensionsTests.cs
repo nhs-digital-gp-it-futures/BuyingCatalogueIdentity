@@ -25,8 +25,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
             mailboxAddress.Address.Should().Be(address);
         }
 
-        [Test]
-        public void AsMimeMessage_ReturnsExpectedValues()
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase(" ")]
+        public void AsMimeMessage_ReturnsExpectedValues_WithNoSubjectPrefix(string emailSubjectPrefix)
         {
             const string recipient = "recipient@somedomain.uk";
             const string sender = "sender@somedomain.nhs.uk";
@@ -43,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                 TextBody = "Text",
             };
 
-            var mimeMessage = emailMessage.AsMimeMessage();
+            var mimeMessage = emailMessage.AsMimeMessage(emailSubjectPrefix);
 
             mimeMessage.Should().BeOfType<MimeMessage>();
 
@@ -61,15 +63,51 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
         }
 
         [Test]
+        public void AsMimeMessage_ReturnsExpectedValuesWithPrefix()
+        {
+            const string recipient = "recipient@somedomain.uk";
+            const string sender = "sender@somedomain.nhs.uk";
+            const string subject = "Subject";
+            const string htmlBody = "HTML";
+            const string textBody = "Text";
+            const string emailSubjectPrefix = "Prefix";
+
+            var emailMessage = new EmailMessage
+            {
+                Sender = new EmailAddress { Address = sender },
+                Recipient = new EmailAddress { Address = recipient },
+                Subject = subject,
+                HtmlBody = "HTML",
+                TextBody = "Text",
+            };
+
+            var mimeMessage = emailMessage.AsMimeMessage(emailSubjectPrefix);
+
+            mimeMessage.Should().BeOfType<MimeMessage>();
+
+            IEnumerable<InternetAddress> from = mimeMessage.From;
+            from.Should().HaveCount(1);
+            from.First().As<MailboxAddress>().Address.Should().Be(sender);
+
+            IEnumerable<InternetAddress> to = mimeMessage.To;
+            to.Should().HaveCount(1);
+            to.First().As<MailboxAddress>().Address.Should().Be(recipient);
+
+            mimeMessage.Subject.Should().Be($"{emailSubjectPrefix} {subject}");
+            mimeMessage.HtmlBody.Should().Be(htmlBody);
+            mimeMessage.TextBody.Should().Be(textBody);
+        }
+
+        [Test]
         public void AsMimeMessage_NullSubject_SetsSubjectToEmptyString()
         {
             var emailMessage = new EmailMessage
             {
                 Sender = new EmailAddress { Address = "a@b.uk" },
-                Recipient = new EmailAddress { Address = "a@b.uk" },
+                Recipient = new EmailAddress { Address = "a@b.uk" }
             };
 
-            var mimeMessage = emailMessage.AsMimeMessage();
+            var mimeMessage = emailMessage.AsMimeMessage(string.Empty);
 
             mimeMessage.Should().BeOfType<MimeMessage>();
             mimeMessage.Subject.Should().Be(string.Empty);

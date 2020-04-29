@@ -41,7 +41,8 @@ services:
       - ISSUERURL=http://host.docker.internal:8070/identity
       - SmtpServer__Host=nhsd.buyingcatalogue.email
       - SmtpServer__Port=587
-      - AllowInvalidCertificate=True
+      - SmtpServer__emailSubjectPrefix=INTEGRATION_TEST
+      - AllowInvalidCertificate=True   
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email

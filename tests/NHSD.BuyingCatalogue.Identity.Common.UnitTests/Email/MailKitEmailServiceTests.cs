@@ -232,7 +232,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
         [Test]
         public async Task SendEmailAsync_SendsExpectedMessage()
         {
-            var settings = new SmtpSettings { Authentication = new SmtpAuthenticationSettings() };
+            var settings = new SmtpSettings { Authentication = new SmtpAuthenticationSettings()};
             var mockTransport = new Mock<IMailTransport>();
             var service = new MailKitEmailService(mockTransport.Object, settings);
 
