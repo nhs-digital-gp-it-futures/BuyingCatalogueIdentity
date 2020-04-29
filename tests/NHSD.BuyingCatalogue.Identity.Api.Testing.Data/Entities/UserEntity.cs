@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 {
@@ -47,5 +49,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
               INNER JOIN dbo.Organisations
               ON dbo.AspNetUsers.PrimaryOrganisationId = dbo.Organisations.OrganisationId
               WHERE Id = @id";
+
+        private static string GetIdByEmailSql => @"
+              SELECT Id 
+              FROM dbo.AspNetUsers
+              WHERE Email = @Email";
+
+        public async Task<string> GetIdByEmail(string connectionString) =>
+            await SqlRunner.FetchSingleResultAsync<string>(connectionString, GetIdByEmailSql, this);
     }
 }

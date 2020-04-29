@@ -10,7 +10,7 @@ Background:
 @3926
 Scenario: 1. The NHS Header is displayed correctly
     Then the page contains element with Data ID header-banner
-    And element with Data ID header-banner contains a link to https://digital.nhs.uk/
+    And element with Data ID header-banner contains a link to /
     And element with Data ID header-banner contains element with Data ID nhs-digital-logo
 
 @3926

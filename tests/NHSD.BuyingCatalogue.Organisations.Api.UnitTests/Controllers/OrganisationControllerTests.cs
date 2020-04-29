@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
 using NHSD.BuyingCatalogue.Organisations.Api.Controllers;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
@@ -294,7 +295,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task CreateOrganisationAsync_ServiceReturnsSuccess_Returns_Created()
+        public async Task CreateOrganisationAsync_ServiceReturnsSuccess_Returns_CreatedAtAction()
         {
             var organisationId = Guid.NewGuid();
             using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningSuccess(organisationId).Build();
@@ -303,7 +304,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             response.Should().BeOfType<ActionResult<CreateOrganisationResponseViewModel>>();
 
-            var expected = new CreatedResult(new Uri($"/{organisationId}", UriKind.Relative),
+            var expected = new CreatedAtActionResult(
+                nameof(controller.GetByIdAsync).TrimAsync(),
+                null, 
+                new { id = organisationId },
                 new CreateOrganisationResponseViewModel { OrganisationId = organisationId });
 
             var actual = response.Result;
@@ -323,7 +327,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var expected = new BadRequestObjectResult(new CreateOrganisationResponseViewModel
             {
-                Errors = new [] { new ErrorMessageViewModel(errorMessage) }
+                Errors = new[] { new ErrorMessageViewModel(errorMessage) }
             });
 
             var actual = response.Result;

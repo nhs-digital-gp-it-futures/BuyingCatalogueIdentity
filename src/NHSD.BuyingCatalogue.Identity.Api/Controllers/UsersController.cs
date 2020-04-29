@@ -9,6 +9,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Users;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
+using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
@@ -97,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (result.IsSuccess)
             {
                 response.UserId = result.Value;
-                return Created(new Uri($"/{response.UserId}", UriKind.Relative), response);
+                return CreatedAtAction(nameof(GetUserByIdAsync).TrimAsync(), null, new { userId = result.Value }, response);
             }
 
             response.Errors = result.Errors.Select(x => new ErrorMessageViewModel(x.Id, x.Field));

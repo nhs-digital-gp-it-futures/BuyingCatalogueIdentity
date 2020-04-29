@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
+using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
@@ -25,21 +26,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             var action = _generator.GetUriByAction(
                 context,
-                nameof(AccountController.ResetPassword),
-                Controller(nameof(AccountController)),
+                nameof(AccountController.ResetPassword), 
+                nameof(AccountController).TrimController(),
                 new { token.Token, token.User.Email },
                 context.Request.Scheme);
 
             return new Uri(action);
-        }
-
-        private static string Controller(string name)
-        {
-            const string controllerSuffix = "Controller";
-
-            return name.EndsWith(controllerSuffix, StringComparison.Ordinal)
-                ? name.Substring(0, name.Length - controllerSuffix.Length)
-                : name;
         }
     }
 }
