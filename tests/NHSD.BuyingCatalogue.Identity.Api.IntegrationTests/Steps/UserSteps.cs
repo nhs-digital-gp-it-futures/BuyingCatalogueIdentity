@@ -19,7 +19,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private readonly string _identityOrganisationsUrl;
         private readonly string _identityUsersUrl;
 
-
         private readonly ScenarioContext _context;
         private readonly Response _response;
         private readonly Request _request;
