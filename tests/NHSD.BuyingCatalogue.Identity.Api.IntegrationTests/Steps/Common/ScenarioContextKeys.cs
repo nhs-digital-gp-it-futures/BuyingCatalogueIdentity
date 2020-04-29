@@ -2,9 +2,10 @@
 {
     internal static class ScenarioContextKeys
     {
-        public const string AccessToken = "AccessToken";
-        public const string OrganisationMapDictionary = "OrganisationMapDictionary";
-        public const string EmailSent = "EmailSent";
-        public const string MappingAdded = "MappingAdded";
+        internal const string AccessToken = "AccessToken";
+        internal const string OrganisationMapDictionary = "OrganisationMapDictionary";
+        internal const string EmailSent = "EmailSent";
+        internal const string MappingAdded = "MappingAdded";
+        internal const string PasswordResetToken = nameof(PasswordResetToken);
     }
 }

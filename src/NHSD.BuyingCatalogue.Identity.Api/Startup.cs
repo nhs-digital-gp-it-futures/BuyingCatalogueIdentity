@@ -5,6 +5,7 @@ using IdentityServer4.Stores;
 using MailKit;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -55,6 +56,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
             var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
             var passwordResetSettings = _configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
+            var dataProtectionAppName = _configuration.GetValue<string>("dataProtection:applicationName");
 
             var allowInvalidCertificate = _configuration.GetValue<bool>("AllowInvalidCertificate");
 
@@ -71,6 +73,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
             Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
+            Log.Logger.Information("Data protection app name is: {dataProtectionAppName}", dataProtectionAppName);
 
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
@@ -172,6 +175,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
 
             services.AddControllersWithViews();
+
+            if (!string.IsNullOrWhiteSpace(dataProtectionAppName))
+            {
+                services.AddDataProtection()
+                    .SetApplicationName(dataProtectionAppName)
+                    .PersistKeysToDbContext<ApplicationDbContext>();
+            }
         }
 
         public void Configure(IApplicationBuilder app)

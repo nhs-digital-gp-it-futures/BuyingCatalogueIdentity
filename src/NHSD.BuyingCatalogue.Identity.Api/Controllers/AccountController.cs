@@ -163,9 +163,11 @@ Contact the account administrator at: {0} or call {1}";
         }
 
         [HttpGet]
-        public IActionResult ResetPassword(string email, string token)
+        public async Task<IActionResult> ResetPassword(string email, string token)
         {
-            return View(new ResetPasswordViewModel { Email = email, Token = token });
+            return await _passwordService.IsValidPasswordResetTokenAsync(email, token)
+                ? View(new ResetPasswordViewModel { Email = email, Token = token })
+                : View(nameof(ResetPasswordExpired));
         }
 
         [HttpPost]

@@ -15,5 +15,7 @@
         public bool Disabled { get; set; }
 
         public string OrganisationName { get; set; }
+
+        public string SecurityStamp { get; set; }
     }
 }
