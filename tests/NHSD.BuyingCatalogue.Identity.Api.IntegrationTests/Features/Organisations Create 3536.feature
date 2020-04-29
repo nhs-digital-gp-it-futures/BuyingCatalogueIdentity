@@ -17,7 +17,7 @@ Scenario: 1. An authority user can create a new organisation
 	Given a user is logged in
 		| Username          | Password       | Scope        |
 		| authority@doe.com | Str0nkP4s5w0rd | Organisation |
-	When a POST request is made to update an organisation with values
+	When a POST request is made to create an organisation with values
 		| Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
 		| Organisation 2 | Ods 2   | ID 1          | false                    | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
 	Then a response with status code 201 is returned
@@ -33,7 +33,7 @@ Scenario: 2. An authority user tries to create an existing organisation
 	Given a user is logged in
 		| Username          | Password       | Scope        |
 		| authority@doe.com | Str0nkP4s5w0rd | Organisation |
-	When a POST request is made to update an organisation with values
+	When a POST request is made to create an organisation with values
 		| Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
 		| Organisation 1 | Ods 1   | ID 1          | false                    | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
 	Then a response with status code 400 is returned
@@ -46,14 +46,14 @@ Scenario: 3. A non-authority user can not create a new organisation
 	Given a user is logged in
 		| Username      | Password     | Scope        |
 		| buyer@doe.com | W3AkP4s5w0rd | Organisation |
-	When a POST request is made to update an organisation with values
+	When a POST request is made to create an organisation with values
 		| Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
 		| Organisation 2 | Ods 2   | ID 1          | false                    | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
 	Then a response with status code 403 is returned
 
 @3536
 Scenario: 4. A user that is not logged in can not update organisations
-	When a POST request is made to update an organisation with values
+	When a POST request is made to create an organisation with values
 		| Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
 		| Organisation 2 | Ods 2   | ID 1          | false                    | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
 	Then a response with status code 401 is returned
@@ -64,7 +64,7 @@ Scenario: 5. Service Failure
 		| Username          | Password       | Scope        |
 		| authority@doe.com | Str0nkP4s5w0rd | Organisation |
 	And the call to the database will fail
-	When a POST request is made to update an organisation with values
+	When a POST request is made to create an organisation with values
 		| Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
 		| Organisation 2 | Ods 2   | ID 1          | false                    | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
 	Then a response with status code 500 is returned

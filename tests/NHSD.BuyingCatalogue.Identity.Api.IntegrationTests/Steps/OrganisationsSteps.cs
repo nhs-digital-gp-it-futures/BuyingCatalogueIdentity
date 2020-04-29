@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityModel.Client;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -23,14 +19,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly ScenarioContext _context;
         private readonly Response _response;
+        private readonly Request _request;
         private readonly Settings _settings;
 
         private readonly string _organisationUrl;
 
-        public OrganisationsSteps(ScenarioContext context, Response response, Settings settings)
+        public OrganisationsSteps(ScenarioContext context, Response response, Request request, Settings settings)
         {
             _context = context;
             _response = response;
+            _request = request;
             _settings = settings;
 
             _organisationUrl = _settings.OrganisationApiBaseUrl + "/api/v1/Organisations";
@@ -71,12 +69,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for the Organisations section")]
         public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
         {
-            string bearerToken = _context.Get(ScenarioContextKeys.AccessToken, "");
-
-            using var client = new HttpClient();
-            client.SetBearerToken(bearerToken);
-
-            _response.Result = await client.GetAsync(new Uri(_organisationUrl));
+            await _request.GetAsync(_organisationUrl);
         }
 
         [Then(@"the Organisations list is returned with the following values")]
@@ -106,9 +99,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var organisationId = GetOrganisationIdFromName(organisationName);
 
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}"));
+            await _request.GetAsync(_organisationUrl, organisationId);
         }
 
         [When(@"a PUT request is made to update an organisation with name (.*)")]
@@ -117,24 +108,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var data = table.CreateInstance<UpdateOrganisationPayload>();
             var organisationId = GetOrganisationIdFromName(organisationName);
 
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-            var payload = JsonConvert.SerializeObject(data);
-            using var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            _response.Result = await client.PutAsync(new Uri($"{_organisationUrl}/{organisationId}"), content);
+            await _request.PutJsonAsync(_organisationUrl, data, organisationId);
         }
 
-        [When(@"a POST request is made to update an organisation with values")]
+        [When(@"a POST request is made to create an organisation with values")]
         public async Task WhenAPOSTRequestIsMadeForAnOrganisationWithValues(Table table)
         {
             var data = table.CreateInstance<OrganisationTable>();
 
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-
-            var payload = JsonConvert.SerializeObject(TransformOrganisationIntoPayload(data));
-            using var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            _response.Result = await client.PostAsync(new Uri($"{_organisationUrl}"), content);
+            await _request.PostJsonAsync(_organisationUrl, TransformOrganisationIntoPayload(data));
 
             if (_response.Result.StatusCode == HttpStatusCode.Created)
                 await UpdateOrganisationMappingFromResponseBody(data.Name);
@@ -148,12 +130,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         }
 
         [Then(@"the response contains a valid location header for organisation with name (.*)")]
-
         public async Task ThenTheResponseContainsValidLocationHeaderForUser(string organisationName)
-        {
-            const string apiVersionPrefix = "api/v1";
+        { 
             var persistedOrganisation = await GetOrganisationEntityByName(organisationName);
-            var expected = new Uri($"{_settings.OrganisationApiBaseUrl}/{apiVersionPrefix}/Organisations/{persistedOrganisation.OrganisationId}");
+            var expected = new Uri($"{_organisationUrl}/{persistedOrganisation.OrganisationId}");
             var actual = _response.Result.Headers.Location;
             actual.Should().BeEquivalentTo(expected);
         }

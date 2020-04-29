@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -20,18 +16,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class UserSteps
     {
-        private readonly string _organisationUrl;
+        private readonly string _identityOrganisationsUrl;
+        private readonly string _identityUsersUrl;
+
 
         private readonly ScenarioContext _context;
         private readonly Response _response;
+        private readonly Request _request;
         private readonly Settings _settings;
 
-        public UserSteps(ScenarioContext context, Response response, Settings settings)
+        public UserSteps(ScenarioContext context, Response response, Request request, Settings settings)
         {
             _context = context;
             _response = response;
+            _request = request;
             _settings = settings;
-            _organisationUrl = settings.IdentityApiBaseUrl + "/api/v1/Organisations";
+            _identityOrganisationsUrl = settings.IdentityApiBaseUrl + "/api/v1/Organisations";
+            _identityUsersUrl = settings.IdentityApiBaseUrl + "/api/v1/users";
         }
 
         [Given(@"Users exist")]
@@ -81,10 +82,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public async Task WhenAGETRequestIsMadeForOrganisationUsersWithName(string organisationName)
         {
             var organisationId = GetOrganisationIdFromName(organisationName);
-
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{organisationId}/users"));
+            await _request.GetAsync(_identityOrganisationsUrl, organisationId, "users");
         }
 
         [When(@"a POST request is made to create a user for organisation (.*)")]
@@ -93,12 +91,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var data = table.CreateInstance<CreateUserPostPayload>();
             var organisationId = GetOrganisationIdFromName(organisationName);
 
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-
-            var payload = JsonConvert.SerializeObject(data);
-            using var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            _response.Result = await client.PostAsync(new Uri($"{_organisationUrl}/{organisationId}/users"), content);
+            await _request.PostJsonAsync(_identityOrganisationsUrl, data, organisationId, "users");
 
             _context[ScenarioContextKeys.EmailSent] = true;
         }
@@ -106,9 +99,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for a user with id (.*)")]
         public async Task WhenAGETRequestIsMadeForAUserWithId(string userId)
         {
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
-            _response.Result = await client.GetAsync(new Uri($"{_settings.IdentityApiBaseUrl}/api/v1/users/{userId}"));
+            await _request.GetAsync(_identityUsersUrl, userId);
         }
 
         [Then(@"a user is returned with the following values")]
@@ -137,9 +128,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a POST request is made to (disable|enable) user with id (.*)")]
         public async Task WhenAPOSTRequestIsMadeToChangeTheUsersState(string request, string userId)
         {
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
-            _response.Result = await client.PostAsync(new Uri($"{_settings.IdentityApiBaseUrl}/api/v1/users/{userId}/{request}"), null);
+            await _request.PostJsonAsync(_identityUsersUrl, null, userId, request);
         }
 
         [Then(@"the database has user with id (.*)")]
@@ -170,9 +159,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the response contains a valid location header for user with email (.*)")]
         public async Task ThenTheResponseContainsValidLocationHeaderForUser(string email)
         {
-            const string apiVersionPrefix = "api/v1";
             var persistedUserId = await GetUserIdByEmail(email);
-            var expected = new Uri($"{_settings.IdentityApiBaseUrl}/{apiVersionPrefix}/users/{persistedUserId}");
+            var expected = new Uri($"{_identityUsersUrl}/{persistedUserId}");
             var actual = _response.Result.Headers.Location;
             actual.Should().BeEquivalentTo(expected);
         }
@@ -195,6 +183,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 IsDisabled = x.SelectToken("isDisabled").ToString()
             });
         }
+
         private async Task<string> GetUserIdByEmail(string email)
         {
             var userEntity = new UserEntity { Email = email };

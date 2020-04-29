@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityModel.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
@@ -16,16 +14,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     public sealed class OdsOrganisationSteps
     {
-        private readonly ScenarioContext _context;
         private readonly Response _response;
+        private readonly Request _request;
         private readonly OdsApiSteps _api;
 
         private readonly string _organisationUrl;
 
-        public OdsOrganisationSteps(Response response, ScenarioContext context, Settings settings, OdsApiSteps api)
+        public OdsOrganisationSteps(Response response, Request request, Settings settings, OdsApiSteps api)
         {
             _response = response;
-            _context = context;
+            _request = request;
             _api = api;
             _organisationUrl = settings.OrganisationApiBaseUrl + "/api/v1/ods";
         }
@@ -46,9 +44,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"a GET request is made for an Ods organisation with code (.*)")]
         public async Task WhenAGETRequestIsMadeForAnOdsOrganisationWithOdsCode(string odsCode)
         {
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
-            _response.Result = await client.GetAsync(new Uri($"{_organisationUrl}/{odsCode}"));
+            await _request.GetAsync(_organisationUrl, odsCode);
         }
 
         [Then(@"the Ods Organisation is returned with the following values")]
