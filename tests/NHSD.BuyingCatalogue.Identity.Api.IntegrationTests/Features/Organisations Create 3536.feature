@@ -21,7 +21,10 @@ Scenario: 1. An authority user can create a new organisation
 		| Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
 		| Organisation 2 | Ods 2   | ID 1          | false                    | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
 	Then a response with status code 201 is returned
-	And the response contains a location header pointing at a location containing the following organisation
+    And the response contains a valid location header for organisation with name Organisation 2
+	When a GET request is made for an organisation with name Organisation 2
+	Then a response with status code 200 is returned
+	And the Organisation is returned with the following values
 		| Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
 		| Organisation 2 | Ods 2   | ID 1          | false                    | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
 

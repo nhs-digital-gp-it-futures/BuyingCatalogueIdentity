@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Models;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -170,19 +171,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actual.Should().NotBeNull();
         }
 
-        [Then(@"the response contains a location header pointing at a location containing the following user")]
-        public async Task ResponseContainsLocationHeaderPointingAtResourceContainingUser(Table data)
+        [Then(@"the response contains a valid location header for user with email (.*)")]
+        public async Task ThenTheResponseContainsValidLocationHeaderForUser(string email)
         {
-            var uri = _response.Result.Headers.Location;
-
-            using var client = new HttpClient();
-            client.SetBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
-            _response.Result = await client.GetAsync(uri);
-
-            var actual = await CreateExpectedGetUserFromResponse();
-
-            var expected = data.CreateInstance<ExpectedGetUserTable>();
-
+            const string apiVersionPrefix = "api/v1";
+            var persistedUserId = await GetUserIdByEmail(email);
+            var expected = new Uri($"{_settings.IdentityApiBaseUrl}/{apiVersionPrefix}/users/{persistedUserId}");
+            var actual = _response.Result.Headers.Location;
             actual.Should().BeEquivalentTo(expected);
         }
 
@@ -253,17 +248,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 IsDisabled = x.SelectToken("isDisabled").ToString()
             });
         }
-
-        private async Task<ExpectedGetUserTable> CreateExpectedGetUserFromResponse()
+        private async Task<string> GetUserIdByEmail(string email)
         {
-            var json = await _response.ReadBodyAsJsonAsync();
-            return new ExpectedGetUserTable
-            {
-                Name = json.Value<string>("name"),
-                EmailAddress = json.Value<string>("emailAddress"),
-                PhoneNumber = json.Value<string>("phoneNumber"),
-                Disabled = json.Value<bool>("disabled"),
-            };
+            var userEntity = new UserEntity { Email = email };
+            return await userEntity.GetIdByEmail(_settings.ConnectionString);
         }
 
         private sealed class CreateUserPostPayload
