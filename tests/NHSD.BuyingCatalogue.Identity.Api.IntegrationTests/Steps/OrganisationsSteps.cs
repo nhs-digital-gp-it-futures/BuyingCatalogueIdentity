@@ -143,8 +143,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Given(@"an Organisation with name (.*) does not exist")]
         public async Task GivenAnOrganisationWithNameOrganisationDoesNotExist(string organisationName)
         {
-            var organisations = await OrganisationEntity.GetByNameAsync(_settings.ConnectionString, organisationName);
-            organisations.Should().BeNull();
+            var organisation = await GetOrganisationEntityByName(organisationName);
+            organisation.Should().BeNull();
+        }
+
+        [Then(@"the response contains a valid location header for organisation with name (.*)")]
+
+        public async Task ThenTheResponseContainsValidLocationHeaderForUser(string organisationName)
+        {
+            const string apiVersionPrefix = "api/v1";
+            var persistedOrganisation = await GetOrganisationEntityByName(organisationName);
+            var expected = new Uri($"{_settings.OrganisationApiBaseUrl}/{apiVersionPrefix}/Organisations/{persistedOrganisation.OrganisationId}");
+            var actual = _response.Result.Headers.Location;
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        private async Task<OrganisationEntity> GetOrganisationEntityByName(string name)
+        {
+            return await OrganisationEntity.GetByNameAsync(_settings.ConnectionString, name);
         }
 
         private static object CreateOrganisation(JToken token)

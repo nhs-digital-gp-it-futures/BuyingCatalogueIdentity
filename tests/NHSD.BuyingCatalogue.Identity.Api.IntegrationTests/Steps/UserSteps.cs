@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -116,7 +114,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"a user is returned with the following values")]
         public async Task ThenAUserIsReturnedWithTheFollowingValues(Table table)
         {
-            var expected = table.CreateSet<ExpectedGetUserTable>().First();
+            var expected = table.CreateInstance<ExpectedGetUserTable>();
 
             var organisationId = GetOrganisationIdFromName(expected.OrganisationName);
 
@@ -147,7 +145,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the database has user with id (.*)")]
         public async Task ThenTheDatabaseIsUpdatedWithTheUsersNewValues(string userId, Table table)
         {
-            var expected = table.CreateSet<ExpectedGetUserTable>().First();
+            var expected = table.CreateInstance<ExpectedGetUserTable>();
 
             var userEntity = new UserEntity
             {
@@ -169,6 +167,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             actual.Should().NotBeNull();
         }
 
+        [Then(@"the response contains a valid location header for user with email (.*)")]
+        public async Task ThenTheResponseContainsValidLocationHeaderForUser(string email)
+        {
+            const string apiVersionPrefix = "api/v1";
+            var persistedUserId = await GetUserIdByEmail(email);
+            var expected = new Uri($"{_settings.IdentityApiBaseUrl}/{apiVersionPrefix}/users/{persistedUserId}");
+            var actual = _response.Result.Headers.Location;
+            actual.Should().BeEquivalentTo(expected);
+        }
+
         private Guid GetOrganisationIdFromName(string organisationName)
         {
             var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
@@ -186,6 +194,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 PhoneNumber = x.SelectToken("phoneNumber").ToString(),
                 IsDisabled = x.SelectToken("isDisabled").ToString()
             });
+        }
+        private async Task<string> GetUserIdByEmail(string email)
+        {
+            var userEntity = new UserEntity { Email = email };
+            return await userEntity.GetIdByEmail(_settings.ConnectionString);
         }
 
         private sealed class CreateUserPostPayload
