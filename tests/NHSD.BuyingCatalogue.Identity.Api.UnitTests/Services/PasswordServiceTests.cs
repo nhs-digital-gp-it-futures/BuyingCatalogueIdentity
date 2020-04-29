@@ -14,6 +14,7 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     internal sealed class PasswordServiceTests
     {
         private static Mock<IUserStore<ApplicationUser>> MockUserStore => new Mock<IUserStore<ApplicationUser>>();
