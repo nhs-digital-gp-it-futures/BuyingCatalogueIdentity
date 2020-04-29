@@ -30,9 +30,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _settings = settings;
 
             _keyRepository = new FileSystemXmlRepository(_keysDirectory, NullLoggerFactory.Instance);
-
-            var appName = settings.DataProtectionAppName;
-            var provider = DataProtectionProvider.Create(_keysDirectory, b => b.SetApplicationName(appName));
+            var provider = DataProtectionProvider.Create(
+                _keysDirectory,
+                b => b.SetApplicationName(settings.DataProtectionAppName));
 
             _dataProtectionProvider = new DataProtectorTokenProvider<IdentityUser>(
                 provider,
@@ -71,8 +71,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             userManager.RegisterTokenProvider(TokenOptions.DefaultProvider, _dataProtectionProvider);
 
-            var token = await userManager.GeneratePasswordResetTokenAsync(identityUser);
-            _context[ScenarioContextKeys.PasswordResetToken] = token;
+            _context[ScenarioContextKeys.IdentityUser] = identityUser;
+            _context[ScenarioContextKeys.PasswordResetToken] = await userManager.GeneratePasswordResetTokenAsync(identityUser);
 
             await DataProtectionKeys.SaveToDb(_settings.ConnectionString, Keys);
         }

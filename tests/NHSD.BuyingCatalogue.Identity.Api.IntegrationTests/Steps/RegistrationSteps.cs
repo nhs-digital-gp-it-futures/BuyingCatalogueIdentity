@@ -1,4 +1,5 @@
 ﻿using System.Web;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -23,17 +24,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext = seleniumContext;
         }
 
-        [When(@"the user navigates to identity url (.*)")]
+        [When(@"the user navigates to identity url (\S*)$")]
         public void WhenTheUserNavigatesToUrl(string url)
         {
             _seleniumContext.WebDriver.Navigate().GoToUrl($"{_discovery}/{url}");
         }
 
-        [When(@"the user with e-mail address (.*) navigates to identity url (.*) with a valid password reset token")]
-        public void WhenTheUserNavigatesToUrlWithValidPasswordResetToken(string emailAddress, string url)
+        [When(@"the user navigates to identity url (\S*) with a valid password reset token")]
+        public void WhenTheUserNavigatesToUrlWithValidPasswordResetToken(string url)
         {
-            var token = HttpUtility.UrlEncode((string)_context[ScenarioContextKeys.PasswordResetToken]);
-            _seleniumContext.WebDriver.Navigate().GoToUrl($"{_discovery}/{url}?email={emailAddress}&token={token}");
+            var user = (IdentityUser)_context[ScenarioContextKeys.IdentityUser];
+            var encodedToken = HttpUtility.UrlEncode((string)_context[ScenarioContextKeys.PasswordResetToken]);
+
+            _seleniumContext.WebDriver.Navigate().GoToUrl($"{_discovery}/{url}?email={user.Email}&token={encodedToken}");
         }
     }
 }
