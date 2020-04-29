@@ -15,7 +15,7 @@ using TechTalk.SpecFlow.Assist;
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class OrganisationsSteps
+    internal sealed class OrganisationsSteps
     {
         private readonly ScenarioContext _context;
         private readonly Response _response;

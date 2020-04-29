@@ -12,7 +12,7 @@ using TechTalk.SpecFlow.Assist;
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class OdsOrganisationSteps
+    internal sealed class OdsOrganisationSteps
     {
         private readonly Response _response;
         private readonly Request _request;

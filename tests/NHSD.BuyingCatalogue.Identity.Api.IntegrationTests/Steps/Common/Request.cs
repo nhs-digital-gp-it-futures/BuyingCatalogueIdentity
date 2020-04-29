@@ -5,7 +5,7 @@ using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
 {
-    public sealed class Request
+    internal sealed class Request
     {
         private readonly Response _response;
         private readonly ScenarioContext _context;
