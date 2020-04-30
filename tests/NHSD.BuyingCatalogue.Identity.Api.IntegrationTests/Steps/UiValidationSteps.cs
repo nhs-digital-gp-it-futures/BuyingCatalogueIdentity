@@ -37,6 +37,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             element.Text.Should().Be(text);
         }
 
+        [Then(@"element with Data ID ([^\s]+) has an empty value")]
+        public void ThenElementHasEmptyValue(string id)
+        {
+            var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={id}]"));
+            element.GetAttribute("value").Should().BeEmpty();
+        }
+
         [Then(@"element with Data ID ([^\s]+) has tag ([^\s]+)")]
         public void ThenTheElementHasTag(string id, string tag)
         {
