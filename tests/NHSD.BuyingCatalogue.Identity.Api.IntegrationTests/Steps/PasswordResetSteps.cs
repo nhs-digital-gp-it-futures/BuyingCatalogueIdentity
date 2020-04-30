@@ -71,7 +71,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             userManager.RegisterTokenProvider(TokenOptions.DefaultProvider, _dataProtectionProvider);
 
-            _context[ScenarioContextKeys.IdentityUser] = identityUser;
+            _context.Set(identityUser);
             _context[ScenarioContextKeys.PasswordResetToken] = await userManager.GeneratePasswordResetTokenAsync(identityUser);
 
             await DataProtectionKeys.SaveToDb(_settings.ConnectionString, Keys);

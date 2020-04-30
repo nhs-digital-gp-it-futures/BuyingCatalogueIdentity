@@ -33,8 +33,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"the user navigates to identity url (\S*) with a valid password reset token")]
         public void WhenTheUserNavigatesToUrlWithValidPasswordResetToken(string url)
         {
-            var user = (IdentityUser)_context[ScenarioContextKeys.IdentityUser];
-            var encodedToken = HttpUtility.UrlEncode((string)_context[ScenarioContextKeys.PasswordResetToken]);
+            var user = _context.Get<IdentityUser>();
+            var encodedToken = HttpUtility.UrlEncode(_context.Get<string>(ScenarioContextKeys.PasswordResetToken));
 
             _seleniumContext.WebDriver.Navigate().GoToUrl($"{_discovery}/{url}?email={user.Email}&token={encodedToken}");
         }

@@ -6,7 +6,6 @@
         internal const string OrganisationMapDictionary = nameof(OrganisationMapDictionary);
         internal const string EmailSent = nameof(EmailSent);
         internal const string MappingAdded = nameof(MappingAdded);
-        internal const string IdentityUser = nameof(IdentityUser);
         internal const string PasswordResetToken = nameof(PasswordResetToken);
     }
 }
