@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Dapper;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 {
     public static class DataProtectionKeys
     {
-        public static async Task<IReadOnlyList<DataProtectionKey>> GetFromDbAsync(string connectionString)
+        public static async Task<IReadOnlyCollection<DataProtectionKey>> GetFromDbAsync(string connectionString)
         {
             const string sql = "SELECT FriendlyName, Xml FROM dbo.DataProtectionKeys;";
 
-            await using var databaseConnection = new SqlConnection(connectionString);
-            var keys = await databaseConnection.QueryAsync(sql);
+            IEnumerable<dynamic> keys = await SqlRunner.QueryAsync(connectionString, sql);
 
             return keys.Select(k => new DataProtectionKey((string)k.Xml)).ToList();
         }
@@ -25,8 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
             var existingDbKeys = await GetFromDbAsync(connectionString);
             var newKeys = keys.Except(existingDbKeys);
 
-            await using var databaseConnection = new SqlConnection(connectionString);
-            await databaseConnection.ExecuteAsync(sql, newKeys);
+            await SqlRunner.ExecuteAsync(connectionString, sql, newKeys);
         }
     }
 }
