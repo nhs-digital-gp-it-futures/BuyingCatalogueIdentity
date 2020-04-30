@@ -7,3 +7,4 @@
 :r ../Tables/AspNetRoleClaims.sql
 :r ../Tables/AspNetUserRoles.sql
 :r ../Tables/Organisations.sql
+:r ../Tables/DataProtectionKeys.sql

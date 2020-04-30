@@ -80,6 +80,7 @@
     <Build Include="Security\Logins\NHSD.sql" />
     <Build Include="Security\Users\NHSD.sql" />
     <Build Include="Tables\Organisations.sql" />
+    <Build Include="Tables\DataProtectionKeys.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="CREATE_EA_USER">
@@ -125,6 +126,5 @@
     <None Include="Deployment\CreateClinicalCommissioningGroups.sql" />
     <None Include="Deployment\CreateExecutiveAgency.sql" />
     <None Include="Deployment\CreateExecutiveAgencyUser.sql" />
-    <None Include="Deployment\CreateDataProtectionKeysTable.sql" />
   </ItemGroup>
 </Project>
