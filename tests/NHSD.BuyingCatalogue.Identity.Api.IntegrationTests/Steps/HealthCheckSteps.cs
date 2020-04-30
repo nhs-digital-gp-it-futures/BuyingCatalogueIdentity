@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -11,12 +10,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     internal sealed class HealthChecksSteps
     {
         private readonly Response _response;
+        private readonly Request _request;
         private readonly ScenarioContext _context;
         private readonly Settings _settings;
 
-        public HealthChecksSteps(Response response, ScenarioContext context, Settings settings)
+        public HealthChecksSteps(Response response, Request request, ScenarioContext context, Settings settings)
         {
             _response = response;
+            _request = request;
             _context = context;
             _settings = settings;
             _context["organisationBaseUrl"] = _settings.OrganisationApiBaseUrl;
@@ -32,9 +33,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"the dependency health-check endpoint is hit for (ISAPI|OAPI)")]
         public async Task WhenTheHealthCheckEndpointIsHit(string service)
         {
-            var baseUrl = service == "ISAPI" ? _context["identityBaseUrl"] : _context["organisationBaseUrl"];
-            using var client = new HttpClient();
-            _response.Result = await client.GetAsync($"{baseUrl}/health/ready");
+            var baseUrl = service == "ISAPI"
+                ? _context.Get("identityBaseUrl", string.Empty)
+                : _context.Get("organisationBaseUrl", string.Empty);
+
+            await _request.GetAsync(baseUrl, "health", "ready");
         }
 
         [Then(@"the response will be (Healthy|Degraded|Unhealthy)")]

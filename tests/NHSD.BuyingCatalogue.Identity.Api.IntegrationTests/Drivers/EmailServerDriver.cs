@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
+using Flurl;
+using Flurl.Http;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
@@ -15,14 +16,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers
     {
         private readonly ScenarioContext _context;
         private readonly Settings _settings;
-        private readonly Uri _listAllEmailsUri;
 
         public EmailServerDriver(ScenarioContext context, Settings settings)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-
-            _listAllEmailsUri = new Uri($"{_settings.SmtpServerApiBaseUrl}/email");
         }
 
         internal async Task<int> GetEmailCountAsync()
@@ -33,20 +31,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers
 
         internal async Task<IEnumerable<Email>> FindAllEmailsAsync()
         {
-            Response response = new Response();
+            var responseBody = await _settings.SmtpServerApiBaseUrl
+                .AppendPathSegment("email")
+                .GetJsonListAsync();
 
-            using var client = new HttpClient();
-            response.Result = await client.GetAsync(_listAllEmailsUri);
-
-            var responseContent = await response.ReadBodyAsJsonAsync();
-
-            return responseContent.Select(x => new Email
+            return responseBody.Select(x => new Email
             {
-                PlainTextBody = x.SelectToken("text").ToString().Trim(),
-                HtmlBody = x.SelectToken("html").ToString().Trim(),
-                Subject = x.SelectToken("subject").ToString(),
-                From = x.SelectToken("from").First().SelectToken("address").ToString(),
-                To = x.SelectToken("to").First().SelectToken("address").ToString(),
+                PlainTextBody = x.text,
+                HtmlBody = x.html,
+                Subject = x.subject,
+                From = x.from[0].address,
+                To = x.to[0].address
             });
         }
 
@@ -54,8 +49,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers
         {
             if (_context.TryGetValue(ScenarioContextKeys.EmailSent, out bool _))
             {
-                using var client = new HttpClient();
-                await client.DeleteAsync(new Uri($"{_settings.SmtpServerApiBaseUrl}/email/all"));
+                await _settings.SmtpServerApiBaseUrl
+                    .AppendPathSegments("email", "all")
+                    .DeleteAsync();
             }
         }
     }
