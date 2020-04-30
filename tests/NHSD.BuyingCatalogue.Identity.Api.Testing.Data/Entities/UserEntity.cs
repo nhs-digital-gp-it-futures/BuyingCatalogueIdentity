@@ -43,7 +43,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 	            @firstName, @lastName);";
 
         protected override string GetSql => @"
-              SELECT FirstName, LastName, PhoneNumber, Email AS EmailAddress, Disabled, dbo.Organisations.Name AS OrganisationName
+              SELECT FirstName, LastName, PhoneNumber, Email AS EmailAddress, Disabled, dbo.Organisations.Name AS OrganisationName,
+                SecurityStamp
               FROM dbo.AspNetUsers
               INNER JOIN dbo.Organisations
               ON dbo.AspNetUsers.PrimaryOrganisationId = dbo.Organisations.OrganisationId

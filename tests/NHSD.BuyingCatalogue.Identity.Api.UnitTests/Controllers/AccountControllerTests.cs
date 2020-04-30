@@ -402,14 +402,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public void ResetPassword_String_String_ReturnsExpectedView()
+        public async Task ResetPassword_String_String_ValidToken_ReturnsExpectedView()
         {
             const string email = "a@b.test";
             const string expectedToken = "TokenMcToken";
 
-            using var controller = new AccountControllerBuilder().Build();
+            using var controller = new AccountControllerBuilder()
+                .WithIsValidPasswordResetTokenResult()
+                .Build();
 
-            var result = controller.ResetPassword(email, expectedToken) as ViewResult;
+            var result = await controller.ResetPassword(email, expectedToken) as ViewResult;
             Assert.NotNull(result);
 
             var model = result.Model as ResetPasswordViewModel;
@@ -417,6 +419,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             model.Email.Should().Be(email);
             model.Token.Should().Be(expectedToken);
+        }
+
+        [Test]
+        public async Task ResetPassword_String_String_InvalidToken_ReturnsExpectedView()
+        {
+            const string email = "a@b.test";
+            const string expectedToken = "TokenMcToken";
+
+            using var controller = new AccountControllerBuilder()
+                .Build();
+
+            var result = await controller.ResetPassword(email, expectedToken) as ViewResult;
+            Assert.NotNull(result);
+
+            result.ViewName.Should().Be(nameof(AccountController.ResetPasswordExpired));
         }
 
         [Test]

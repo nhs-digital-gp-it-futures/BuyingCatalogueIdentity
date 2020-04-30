@@ -106,6 +106,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
+        internal AccountControllerBuilder WithIsValidPasswordResetTokenResult()
+        {
+            _mockPasswordService.Setup(p => p.IsValidPasswordResetTokenAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            return this;
+        }
+
         internal AccountController Build()
         {
             return new AccountController(

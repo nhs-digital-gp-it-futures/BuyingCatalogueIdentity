@@ -50,7 +50,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             return false;
         }
 
-        public static LogEventLevel ExcludeHealthChecks(HttpContext httpContext, double elapsedMs, Exception exception) =>
+        public static LogEventLevel ExcludeHealthChecks(HttpContext httpContext, double _, Exception exception) =>
             exception != null
                 ? LogEventLevel.Error
                 : httpContext == null || httpContext.Response.StatusCode > 499

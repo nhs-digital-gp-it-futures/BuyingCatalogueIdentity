@@ -40,5 +40,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// <param name="newPassword">The value of the new password</param>
         /// <returns>The result of the password reset operation</returns>
         public Task<IdentityResult> ResetPasswordAsync(string emailAddress, string token, string newPassword);
+
+        /// <summary>
+        /// Returns true if the <paramref name="token"/> is valid.
+        /// </summary>
+        /// <param name="emailAddress">The e-mail address of the user.</param>
+        /// <param name="token">The password reset token.</param>
+        /// <returns><see langref="true"/> if the token is valid; otherwise <see langref="false"/>.</returns>
+        Task<bool> IsValidPasswordResetTokenAsync(string emailAddress, string token);
     }
 }

@@ -80,6 +80,7 @@
     <Build Include="Security\Logins\NHSD.sql" />
     <Build Include="Security\Users\NHSD.sql" />
     <Build Include="Tables\Organisations.sql" />
+    <Build Include="Tables\DataProtectionKeys.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="CREATE_EA_USER">

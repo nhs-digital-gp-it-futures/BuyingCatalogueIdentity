@@ -14,6 +14,7 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     internal sealed class PasswordServiceTests
     {
         private static Mock<IUserStore<ApplicationUser>> MockUserStore => new Mock<IUserStore<ApplicationUser>>();
@@ -244,6 +245,53 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var result = await service.ResetPasswordAsync(email, token, password);
             result.Should().Be(expectedResult);
+        }
+
+        [TestCase(null, "ValidToken")]
+        [TestCase("", "ValidToken")]
+        [TestCase("\t", "ValidToken")]
+        [TestCase("valid@email.address.test", null)]
+        [TestCase("valid@email.address.test", "")]
+        [TestCase("valid@email.address.test", "\t")]
+        [TestCase("invalid@email.address.test", "ValidToken")]
+        public async Task IsValidPasswordResetToken_BadInput_ReturnsFalse(string emailAddress, string token)
+        {
+            var service = new PasswordService(
+                Mock.Of<IEmailService>(),
+                new PasswordResetSettings(),
+                MockUserManager.Object);
+
+            var isValid = await service.IsValidPasswordResetTokenAsync(emailAddress, token);
+
+            isValid.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task IsValidPasswordResetToken_InvokesVerifyUserTokenAsync()
+        {
+            const string emailAddress = "invalid@email.address.test";
+            const string token = "Token";
+
+            var expectedUser = ApplicationUserBuilder.Create().Build();
+
+            var mockUserManager = MockUserManager;
+            mockUserManager.Setup(
+                    u => u.FindByEmailAsync(It.Is<string>(e => e.Equals(emailAddress, StringComparison.Ordinal))))
+                .ReturnsAsync(expectedUser);
+
+            var service = new PasswordService(
+                Mock.Of<IEmailService>(),
+                new PasswordResetSettings(),
+                mockUserManager.Object);
+
+            await service.IsValidPasswordResetTokenAsync(emailAddress, token);
+
+            mockUserManager.Verify(m => m.VerifyUserTokenAsync(
+                It.Is<ApplicationUser>(u => u == expectedUser),
+                It.Is<string>(p => p.Equals(new IdentityOptions().Tokens.PasswordResetTokenProvider, StringComparison.Ordinal)),
+                It.Is<string>(p => p.Equals(UserManager<ApplicationUser>.ResetPasswordTokenPurpose, StringComparison.Ordinal)),
+                It.Is<string>(t => t.Equals(token, StringComparison.Ordinal))),
+                Times.Once());
         }
     }
 }

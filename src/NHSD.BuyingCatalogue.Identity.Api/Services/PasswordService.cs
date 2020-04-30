@@ -15,6 +15,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         internal const string InvalidTokenCode = "InvalidToken";
 
         private readonly IEmailService _emailService;
+        private readonly IdentityOptions _identityOptions = new IdentityOptions();
         private readonly PasswordResetSettings _settings;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -85,6 +86,31 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             };
 
             await _emailService.SendEmailAsync(message);
+        }
+
+        /// <summary>
+        /// Returns true if the <paramref name="token"/> is valid.
+        /// </summary>
+        /// <param name="emailAddress">The e-mail address of the user.</param>
+        /// <param name="token">The password reset token.</param>
+        /// <returns><see langref="true"/> if the token is valid; otherwise <see langref="false"/>.</returns>
+        public async Task<bool> IsValidPasswordResetTokenAsync(string emailAddress, string token)
+        {
+            if (string.IsNullOrWhiteSpace(emailAddress))
+                return false;
+
+            if (string.IsNullOrWhiteSpace(token))
+                return false;
+
+            var user = await _userManager.FindByEmailAsync(emailAddress);
+            if (user is null)
+                return false;
+
+            return await _userManager.VerifyUserTokenAsync(
+                user,
+                _identityOptions.Tokens.PasswordResetTokenProvider,
+                UserManager<IdentityUser>.ResetPasswordTokenPurpose,
+                token);
         }
 
         /// <summary>
