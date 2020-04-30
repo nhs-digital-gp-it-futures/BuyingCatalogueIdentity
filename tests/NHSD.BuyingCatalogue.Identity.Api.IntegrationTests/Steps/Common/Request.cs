@@ -17,30 +17,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
         }
 
         public async Task GetAsync(string url, params object[] pathSegments)
-        {
-            _response.Result = await url
-                .AppendPathSegments(pathSegments)
-                .WithOAuthBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty))
-                .AllowAnyHttpStatus()
-                .GetAsync();
-        }
+            => _response.Result = await CreateCommonRequest(url, pathSegments).GetAsync();
 
         public async Task PostJsonAsync(string url, object payload, params object[] pathSegments)
-        {
-            _response.Result = await url
-                .AppendPathSegments(pathSegments)
-                .WithOAuthBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty))
-                .AllowAnyHttpStatus()
-                .PostJsonAsync(payload);
-        }
+            => _response.Result = await CreateCommonRequest(url, pathSegments).PostJsonAsync(payload);
 
         public async Task PutJsonAsync(string url, object payload, params object[] pathSegments)
+            => _response.Result = await CreateCommonRequest(url, pathSegments).PutJsonAsync(payload);
+
+        private IFlurlRequest CreateCommonRequest(string url, params object[] pathSegments)
         {
-            _response.Result = await url
+            return url
                 .AppendPathSegments(pathSegments)
                 .WithOAuthBearerToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty))
-                .AllowAnyHttpStatus()
-                .PutJsonAsync(payload);
+                .AllowAnyHttpStatus();
         }
     }
 }
