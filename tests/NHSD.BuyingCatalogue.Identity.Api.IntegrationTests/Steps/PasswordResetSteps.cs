@@ -21,8 +21,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private readonly ScenarioContext _context;
         private readonly DataProtectorTokenProvider<IdentityUser> _dataProtectionProvider;
         private readonly DirectoryInfo _keysDirectory = new DirectoryInfo("DP_Keys");
-        private readonly Settings _settings;
         private readonly IXmlRepository _keyRepository;
+        private readonly Settings _settings;
 
         public PasswordResetSteps(ScenarioContext context, Settings settings)
         {
@@ -43,10 +43,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private IEnumerable<DataProtectionKey> Keys =>
             _keyRepository.GetAllElements().Select(e => new DataProtectionKey(e));
 
-        [When(@"the user with ID (.*) has a valid password reset token")]
-        public async Task WhenTheUserWithIdHasValidPasswordResetToken(string userId)
+        [When(@"the user with ID (\S*) has a valid password reset token")]
+        public async Task WhenTheUserWithIdHasValidPasswordResetTokenAsync(string userId)
         {
-            await SaveDbKeysToRepository();
+            await SaveDbKeysToRepositoryAsync();
 
             var userEntity = new UserEntity { Id = userId };
             var userInDb = await userEntity.GetAsync(_settings.ConnectionString);
@@ -74,15 +74,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _context.Set(identityUser);
             _context[ScenarioContextKeys.PasswordResetToken] = await userManager.GeneratePasswordResetTokenAsync(identityUser);
 
-            await DataProtectionKeys.SaveToDb(_settings.ConnectionString, Keys);
+            await DataProtectionKeys.SaveToDbAsync(_settings.ConnectionString, Keys);
         }
 
-        private async Task SaveDbKeysToRepository()
+        private async Task SaveDbKeysToRepositoryAsync()
         {
-            var dbKeys = await DataProtectionKeys.GetFromDb(_settings.ConnectionString);
-            var uniqueKeys = dbKeys.Except(Keys);
+            var dbKeys = await DataProtectionKeys.GetFromDbAsync(_settings.ConnectionString);
+            var newKeys = dbKeys.Except(Keys);
 
-            foreach (var key in uniqueKeys)
+            foreach (var key in newKeys)
                 _keyRepository.StoreElement(key.Element, key.FriendlyName);
         }
     }
