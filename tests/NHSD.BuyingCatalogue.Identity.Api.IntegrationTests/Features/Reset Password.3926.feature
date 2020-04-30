@@ -38,3 +38,9 @@ Scenario: 4. Not adhering to the password policy & entering mismatched passwords
     Then the user is redirected to page account/resetpassword
     And the element with Data ID field-reset-password has validation error with text The password you’ve entered does not meet the criteria
     And the element with Data ID field-confirm-reset-password has validation error with text Passwords do not match
+
+@3926
+Scenario: 5. Pressing submit without entering a password gives the user a relevant error message
+    When element with Data ID reset-password-button is clicked
+    Then the user is redirected to page account/resetpassword
+    And the element with Data ID field-reset-password has validation error with text Enter a password

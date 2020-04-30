@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 {
     public sealed class ResetPasswordViewModel
     {
+        [Required(ErrorMessage = ErrorMessages.PasswordRequired)]
         [DataType(DataType.Password)]
         [DisplayName("Enter a password")]
         public string Password { get; set; }
@@ -23,6 +21,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 
         private static class ErrorMessages
         {
+            internal const string PasswordRequired = "Enter a password";
             internal const string PasswordMismatch = "Passwords do not match";
         }
     }
