@@ -5,6 +5,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 {
     public sealed class ResetPasswordViewModel
     {
+        [Required(ErrorMessage = ErrorMessages.PasswordRequired)]
         [DataType(DataType.Password)]
         [DisplayName("Enter a password")]
         public string Password { get; set; }
@@ -20,6 +21,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
 
         private static class ErrorMessages
         {
+            internal const string PasswordRequired = "Enter a password";
             internal const string PasswordMismatch = "Passwords do not match";
         }
     }
