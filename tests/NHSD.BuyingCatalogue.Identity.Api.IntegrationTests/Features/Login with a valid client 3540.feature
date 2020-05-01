@@ -37,6 +37,7 @@ Scenario: 3. Logging in with an existing client with invalid password
     Then the user is redirected to page identity/account/login
     And the page contains a validation summary with text Enter a valid email address and password at position 0
     And the page contains a validation summary with text Enter a valid email address and password at position 1
+    And element with Data ID input-password has an empty value
 
 @3540
 Scenario: 4. Logging in with an existing client with empty username

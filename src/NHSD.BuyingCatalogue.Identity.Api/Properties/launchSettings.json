@@ -1,13 +1,13 @@
 {
   "profiles": {
-    "NHSD.BuyingCatalogue.Identity.Api": {
+    "NHSD.BuyingCatalogue.Identity.Api Dev": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://host.docker.internal:5102"
     },
-    "NHSD.BuyingCatalogue.Identity.Api DockerDb": {
+    "NHSD.BuyingCatalogue.Identity.Api Integration": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
