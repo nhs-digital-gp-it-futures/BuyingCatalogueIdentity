@@ -18,3 +18,8 @@ Scenario: 1. User logs out and is unable to access protected resources without l
     Then the user is logged out
     When the user navigates to a restricted web page
     Then the user is redirected to page identity/account/login
+
+Scenario: 2. Navigating directly to the logout page, should redirect the user to the public browse homepage
+    Given a user has successfully logged in with email address a@b.com and password yolo
+    When the user navigates directly to the logout page
+    Then the user is redirected to the public browse homepage

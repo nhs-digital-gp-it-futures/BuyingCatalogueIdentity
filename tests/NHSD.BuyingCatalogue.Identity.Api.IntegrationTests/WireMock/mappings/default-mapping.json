@@ -1,0 +1,24 @@
+[
+  {
+    "Guid": "db9e853a-73f0-4605-ad83-240c8e634460",
+    "Priority": 10000,
+    "Request": {
+      "Path": {
+        "Matchers": [
+          {
+            "Name": "WildcardMatcher",
+            "Pattern": "/publicbrowse",
+            "IgnoreCase": false
+          }
+        ]
+      },
+      "Methods": [
+        "GET"
+      ]
+    },
+    "Response": {
+      "Body": "Welcome to the fake public browse",
+      "Headers": {}
+    }
+  }
+]

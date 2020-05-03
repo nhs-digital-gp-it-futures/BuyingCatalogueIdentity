@@ -20,8 +20,6 @@
 @3540
 Scenario: 1. The NHS Header is displayed
     Then the page contains element with Data ID header-banner
-    And element with Data ID header-banner contains a link to /
-    And element with Data ID header-banner contains element with Data ID nhs-digital-logo
     
 @3540
 Scenario: 2. The Title of the page is displayed

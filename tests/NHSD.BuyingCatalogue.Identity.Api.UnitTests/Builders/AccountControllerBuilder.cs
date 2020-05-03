@@ -20,8 +20,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private ILoginService _loginService;
         private ILogoutService _logoutService;
         private DisabledErrorMessageSettings _disabledErrorMessageSettings;
+        private IPublicBrowseSettings _publicBrowseSettings;
 
-        internal AccountControllerBuilder()
+        private AccountControllerBuilder()
         {
             _context = Mock.Of<ControllerContext>();
             _loginService = Mock.Of<ILoginService>();
@@ -33,6 +34,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 EmailAddress = "Email",
                 PhoneNumber = "Phone"
             };
+
+            _publicBrowseSettings = Mock.Of<IPublicBrowseSettings>();
+        }
+
+        internal static AccountControllerBuilder Create()
+        {
+            return new AccountControllerBuilder();
         }
 
         internal AccountControllerBuilder WithDisabledErrorMessageSetting(DisabledErrorMessageSettings settings)
@@ -114,6 +122,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
+        internal AccountControllerBuilder WithPublicBrowseSettings(IPublicBrowseSettings publicBrowseSettings)
+        {
+            _publicBrowseSettings = publicBrowseSettings;
+            return this;
+        }
+
         internal AccountController Build()
         {
             return new AccountController(
@@ -121,7 +135,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 _logoutService,
                 _mockPasswordResetCallback.Object,
                 _mockPasswordService.Object,
-                _disabledErrorMessageSettings)
+                _disabledErrorMessageSettings,
+                _publicBrowseSettings)
             {
                 ControllerContext = _context,
             };

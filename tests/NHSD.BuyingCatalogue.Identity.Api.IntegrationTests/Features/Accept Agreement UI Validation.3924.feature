@@ -18,8 +18,6 @@ Background:
 @3924
 Scenario: 1. The NHS Header is displayed correctly
     Then the page contains element with Data ID header-banner
-    And element with Data ID header-banner contains a link to /
-    And element with Data ID header-banner contains element with Data ID nhs-digital-logo
 
 @3924
 Scenario: 2. The back to log in link is displayed correctly

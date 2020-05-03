@@ -31,7 +31,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task Login_LoginViewModel_FailedSignIn_AddsUsernameOrPasswordValidationError()
         {
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails> { LoginUserErrors.UserNameOrPasswordIncorrect() }))
                 .Build();
 
@@ -61,7 +62,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 PhoneNumber = phoneNumber
             };
 
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails> { LoginUserErrors.UserIsDisabled() }))
                 .WithDisabledErrorMessageSetting(disabledSetting)
                 .Build();
@@ -84,7 +86,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task Login_LoginViewModel_FailedSignIn_ReturnsExpectedView()
         {
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails>()))
                 .Build();
 
@@ -99,7 +102,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task Login_LoginViewModel_InvalidViewModelWithoutAnyValues_ReturnsExpectedView()
         {
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails>()))
                 .Build();
 
@@ -130,7 +134,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 EmailAddress = "NotLoginHint",
             };
 
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithSignInResult(new Result<SignInResponse>(false, null, new SignInResponse(false, loginHint: loginHint)))
                 .Build();
 
@@ -151,7 +156,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             static async Task Login()
             {
-                using var controller = new AccountControllerBuilder().Build();
+                using var controller = AccountControllerBuilder
+                    .Create()
+                    .Build();
+
                 await controller.Login((LoginViewModel)null);
             }
 
@@ -163,7 +171,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             const string goodUrl = "https://www.realclient.co.uk/";
 
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithSignInResult(new Result<SignInResponse>(true, null, new SignInResponse(true)))
                 .Build();
 
@@ -179,7 +188,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             const string rootUrl = "~/";
 
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithSignInResult(new Result<SignInResponse>(true, null, new SignInResponse()))
                 .Build();
 
@@ -193,9 +203,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public void Login_Uri_NullReturnUrl_ReturnsViewResultWithRootUrl()
         {
-            var expectedUri = new Uri("/", UriKind.Relative);
+            var expectedUri = new Uri("/login", UriKind.Relative);
 
-            using var controller = new AccountControllerBuilder().Build();
+            Mock<IPublicBrowseSettings> mockPublicBrowseSettings = new Mock<IPublicBrowseSettings>();
+            mockPublicBrowseSettings.SetupGet(x => x.LoginAddress).Returns(expectedUri.ToString());
+
+            using var controller = AccountControllerBuilder
+                .Create()
+                .WithPublicBrowseSettings(mockPublicBrowseSettings.Object)
+                .Build();
 
             var result = controller.Login((Uri)null) as ViewResult;
 
@@ -212,7 +228,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             var uri = new Uri("http://www.foobar.com/");
 
-            using var controller = new AccountControllerBuilder().Build();
+            using var controller = AccountControllerBuilder
+                .Create()
+                .Build();
 
             var result = controller.Login(uri) as ViewResult;
 
@@ -235,7 +253,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             logoutServiceMock.Setup(x => x.GetLogoutRequestAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedLogoutRequest);
 
-            using var sut = new AccountControllerBuilder()
+            using var sut = AccountControllerBuilder
+                .Create()
                 .WithLogoutService(logoutServiceMock.Object)
                 .Build();
 
@@ -258,7 +277,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             logoutServiceMock.Setup(x => x.GetLogoutRequestAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedLogoutRequest);
 
-            using var sut = new AccountControllerBuilder()
+            using var sut = AccountControllerBuilder
+                .Create()
                 .WithLogoutService(logoutServiceMock.Object)
                 .Build();
 
@@ -279,7 +299,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             logoutServiceMock.Setup(x => x.GetLogoutRequestAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedLogoutRequest);
 
-            using var sut = new AccountControllerBuilder()
+            using var sut = AccountControllerBuilder
+                .Create()
                 .WithLogoutService(logoutServiceMock.Object)
                 .Build();
 
@@ -303,7 +324,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             logoutServiceMock.Setup(x => x.GetLogoutRequestAsync(logoutId))
                 .ReturnsAsync(expectedLogoutRequest);
 
-            using var sut = new AccountControllerBuilder()
+            using var sut = AccountControllerBuilder
+                .Create()
                 .WithLogoutService(logoutServiceMock.Object)
                 .Build();
 
@@ -317,7 +339,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             static async Task ForgotPassword()
             {
-                using var controller = new AccountControllerBuilder().Build();
+                using var controller = AccountControllerBuilder
+                    .Create()
+                    .Build();
                 await controller.ForgotPassword((ForgotPasswordViewModel)null);
             }
 
@@ -327,7 +351,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task ForgotPassword_ForgotPasswordViewModel_InvalidViewModel_ReturnsExpectedView()
         {
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .Build();
 
             controller.ModelState.AddModelError(string.Empty, "Fake error!");
@@ -343,7 +368,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task ForgotPassword_ForgotPasswordViewModel_NullResetToken_RedirectedToExpectedAction()
         {
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithResetToken(null)
                 .Build();
 
@@ -371,7 +397,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             const string expectedCallback = "https://identity/account/resetPassword?token=1234&emailAddress=a@b.com";
             var expectedUser = ApplicationUserBuilder.Create().Build();
 
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithResetEmailCallback(EmailCallback)
                 .WithResetToken(new PasswordResetToken("token", expectedUser))
                 .WithScheme(HttpScheme.Https.ToString())
@@ -388,7 +415,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public async Task ForgotPassword_ForgotPasswordViewModel_WithResetToken_RedirectedToExpectedAction()
         {
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithResetToken(new PasswordResetToken("token", ApplicationUserBuilder.Create().Build()))
                 .WithScheme(HttpScheme.Https.ToString())
                 .WithResetCallbackUrl("https://identity/account/action")
@@ -407,7 +435,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             const string email = "a@b.test";
             const string expectedToken = "TokenMcToken";
 
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .WithIsValidPasswordResetTokenResult()
                 .Build();
 
@@ -427,7 +456,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             const string email = "a@b.test";
             const string expectedToken = "TokenMcToken";
 
-            using var controller = new AccountControllerBuilder()
+            using var controller = AccountControllerBuilder
+                .Create()
                 .Build();
 
             var result = await controller.ResetPassword(email, expectedToken) as ViewResult;
@@ -448,7 +478,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 Description = PasswordValidator.PasswordConditionsNotMet
             });
 
-            using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
+            using var controller = AccountControllerBuilder
+                .Create()
+                .WithPasswordResetResult(identityResult)
+                .Build();
 
             var result = (await controller.ResetPassword(viewModel)) as ViewResult;
             Assert.NotNull(result);
@@ -470,7 +503,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             {
                 Code = PasswordService.InvalidTokenCode
             });
-            using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
+            using var controller = AccountControllerBuilder
+                .Create()
+                .WithPasswordResetResult(identityResult)
+                .Build();
 
             var result = await controller.ResetPassword(viewModel) as RedirectToActionResult;
 
@@ -492,7 +528,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                     Code = "SomethingWeirdHappened"
                 });
 
-                using var controller = new AccountControllerBuilder().WithPasswordResetResult(identityResult).Build();
+                using var controller = AccountControllerBuilder
+                    .Create()
+                    .WithPasswordResetResult(identityResult)
+                    .Build();
+
                 await controller.ResetPassword(viewModel);
             }
             Assert.ThrowsAsync<InvalidOperationException>(ForgotPassword);

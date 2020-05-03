@@ -25,30 +25,33 @@ Contact the account administrator at: {0} or call {1}";
         private readonly IPasswordResetCallback _passwordResetCallback;
         private readonly IPasswordService _passwordService;
         private readonly DisabledErrorMessageSettings _disabledErrorMessageSettings;
+        private readonly IPublicBrowseSettings _publicBrowseSettings;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
             IPasswordResetCallback passwordResetCallback,
             IPasswordService passwordService,
-            DisabledErrorMessageSettings disabledErrorMessageSettings)
+            DisabledErrorMessageSettings disabledErrorMessageSettings,
+            IPublicBrowseSettings publicBrowseSettings)
         {
             _loginService = loginService;
             _logoutService = logoutService;
             _passwordResetCallback = passwordResetCallback;
             _passwordService = passwordService;
             _disabledErrorMessageSettings = disabledErrorMessageSettings;
+            _publicBrowseSettings = publicBrowseSettings;
         }
 
         [HttpGet]
         public IActionResult Login(Uri returnUrl)
         {
             if (returnUrl == null)
-                returnUrl = new Uri("/", UriKind.Relative);
+                returnUrl = new Uri(_publicBrowseSettings.LoginAddress, UriKind.RelativeOrAbsolute);
 
             LoginViewModel loginViewModel = new LoginViewModel
             {
-                ReturnUrl = returnUrl,
+                ReturnUrl = returnUrl
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -115,7 +118,7 @@ Contact the account administrator at: {0} or call {1}";
 
             if (string.IsNullOrWhiteSpace(redirectUrl))
             {
-                redirectUrl = "/";
+                redirectUrl = _publicBrowseSettings.BaseAddress;
             }
 
             return Redirect(redirectUrl);

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using IdentityServer4.Stores;
@@ -8,11 +9,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
@@ -68,12 +71,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             var issuerUrl = _configuration.GetValue<string>("issuerUrl");
 
+            var publicBrowseSettings = _configuration.GetSection("PublicBrowse").Get<PublicBrowseSettings>();
+
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", apiResources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
             Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
             Log.Logger.Information("Data protection app name is: {dataProtectionAppName}", dataProtectionAppName);
+			Log.Logger.Information("Public Browse settings: {@publicBrowseSettings}", publicBrowseSettings);
 
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
@@ -81,6 +87,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(disabledErrorMessage);
             services.AddSingleton(registrationSettings);
             services.AddSingleton<IScopeRepository>(new ScopeRepository(apiResources, identityResources));
+            services.AddSingleton<IPublicBrowseSettings>(publicBrowseSettings);
 
             services.AddTransient<IUsersRepository, UsersRepository>();
 
@@ -184,29 +191,42 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             }
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
+            var logger = loggerFactory.CreateLogger<Startup>();
+
             var pathBase = _configuration.GetValue<string>("pathBase");
 
             if (string.IsNullOrWhiteSpace(pathBase))
             {
-                ConfigureApp(app);
+                ConfigureApp(app, logger);
             }
             else
             {
-                app.Map($"/{pathBase}", mappedApp =>
+                app.Map($"/{pathBase}", builder =>
                 {
-                    ConfigureApp(mappedApp);
+                    ConfigureApp(builder, logger);
                 });
             }
         }
 
-        public void ConfigureApp(IApplicationBuilder app)
+        public void ConfigureApp(IApplicationBuilder app, ILogger<Startup> logger)
         {
             app.UseSerilogRequestLogging(opts =>
             {
                 opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
                 opts.GetLevel = LogHelper.ExcludeHealthChecks;
+            });
+
+            app.Use( async (context, next) =>
+            {
+                PathString requestPath = context.Request.Path;
+                if (!requestPath.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase))
+                {
+                    logger.LogError("--- Request : '{request}' ---", requestPath);
+                }
+
+                await next();
             });
 
             if (_environment.IsDevelopment())

@@ -43,9 +43,12 @@ services:
       - SmtpServer__Port=587
       - SmtpServer__emailSubjectPrefix=INTEGRATION_TEST
       - AllowInvalidCertificate=True   
+      - PublicBrowse__BaseAddress=http://localhost:8080/publicbrowse
+      - PublicBrowse__LoginAddress=/login
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email
+      - nhsd.ods.api.wiremock
     entrypoint: 
       - /bin/sh
       - -c 
@@ -86,6 +89,7 @@ services:
         - ODS__BUYERORGANISATIONROLEIDS__1=AlsoBuyer
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
+      - nhsd.ods.api.wiremock
     entrypoint: 
       - /bin/sh
       - -c 
@@ -99,7 +103,8 @@ services:
     container_name: ods_api_wiremock
     image: ${REGISTRY:-nhsd}/buying-catalogue/ods-api-wiremock:${TAG:-latest}
     build: 
-      context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/WireMock   
+      context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/WireMock/
+      dockerfile: Dockerfile    
     networks:
         - nhsd_bcnetwork   
     ports:

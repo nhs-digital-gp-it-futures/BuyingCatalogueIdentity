@@ -31,7 +31,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 _eventService,
                 _identityServerInteractionService,
                 _signInManager,
-                _userManager);
+                _userManager,
+                null);
         }
 
         internal LoginServiceBuilder WithAuthorizationContextResult(
