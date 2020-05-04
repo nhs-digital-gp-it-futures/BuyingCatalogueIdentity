@@ -12,9 +12,11 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Certificates\certificate.pfx" />
+    <EmbeddedResource Include="Certificates\tempkey.key" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.11.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">

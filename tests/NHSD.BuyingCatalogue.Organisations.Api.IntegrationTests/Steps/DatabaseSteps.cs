@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
+namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 {
     [Binding]
     internal sealed class DatabaseSteps

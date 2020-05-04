@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
+namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
 {
     internal sealed class Request
     {

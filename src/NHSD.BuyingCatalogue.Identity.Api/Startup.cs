@@ -54,11 +54,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             var disabledErrorMessage = _configuration.GetSection("disabledErrorMessage").Get<DisabledErrorMessageSettings>();
             var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
-            var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
             var passwordResetSettings = _configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
             var dataProtectionAppName = _configuration.GetValue<string>("dataProtection:applicationName");
 
             var allowInvalidCertificate = _configuration.GetValue<bool>("AllowInvalidCertificate");
+            var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
+            var certificate = new Certificate(certificateSettings, Log.Logger);
 
             var smtpSettings = _configuration.GetSection("SmtpServer").Get<SmtpSettings>();
             if (!smtpSettings.AllowInvalidCertificate.HasValue)
@@ -132,7 +133,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddInMemoryClients(clients.Select(x => x.ToClient()))
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<ProfileService>()
-                .AddCustomSigningCredential(certificateSettings, Log.Logger);
+                .AddCustomSigningCredential(certificate, Log.Logger);
 
             services.AddTransient<IUserConsentStore, CatalogueAgreementConsentStore>();
 
@@ -180,14 +181,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddControllersWithViews();
 
-            if (!string.IsNullOrWhiteSpace(dataProtectionAppName))
-            {
-                services.AddDataProtection()
-                    .SetApplicationName(dataProtectionAppName)
-                    .PersistKeysToDbContext<ApplicationDbContext>();
-            }
-
-            IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
+            services.AddDataProtection(dataProtectionAppName, certificate);
+            
+			IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
         }
 
         public void Configure(IApplicationBuilder app)

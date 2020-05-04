@@ -176,11 +176,12 @@ services:
     container_name: selenium-hub
     ports:
       - "4444:4444"
+
   chrome:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/chrome-node:${TAG:-latest}
     build: 
         context: .
-        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Selenium/Dockerfile
+        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Common.IntegrationTests/Tools/Selenium/Dockerfile
     volumes:
       - /dev/shm:/dev/shm
     depends_on:
