@@ -17,6 +17,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.DependencyInjection;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
+using NHSD.BuyingCatalogue.Identity.Api.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
@@ -28,7 +29,6 @@ using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using Serilog;
-using LogHelper = NHSD.BuyingCatalogue.Identity.Api.Infrastructure.LogHelper;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
@@ -201,8 +201,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
         {
             app.UseSerilogRequestLogging(opts =>
             {
-                opts.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
-                opts.GetLevel = LogHelper.ExcludeHealthChecks;
+                opts.EnrichDiagnosticContext = SerilogRequestLoggingOptions.EnrichFromRequest;
+                opts.GetLevel = SerilogRequestLoggingOptions.GetLevel;
             });
 
             if (_environment.IsDevelopment())

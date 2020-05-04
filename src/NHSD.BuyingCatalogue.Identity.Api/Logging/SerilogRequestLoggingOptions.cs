@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
+using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using Serilog;
 using Serilog.Events;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
+namespace NHSD.BuyingCatalogue.Identity.Api.Logging
 {
-    public static class LogHelper
+    public static class SerilogRequestLoggingOptions
     {
+        internal const string HealthCheckEndpointDisplayName = "Health checks";
+
         public static void EnrichFromRequest(IDiagnosticContext diagnosticContext, HttpContext httpContext)
         {
             var request = httpContext.ThrowIfNull().Request;
@@ -35,28 +38,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             }
         }
 
-        private static bool IsHealthCheckEndpoint(HttpContext httpContext)
+        private static bool IsHealthCheck(HttpContext httpContext)
         {
             var endpoint = httpContext.GetEndpoint();
-            if (endpoint != null)
-            {
-                return string.Equals(
-                    endpoint.DisplayName,
-                    "Health checks",
-                    StringComparison.Ordinal);
-            }
 
-            // No endpoint, so not a health check endpoint
-            return false;
+            return endpoint != null && string.Equals(
+                endpoint.DisplayName,
+                HealthCheckEndpointDisplayName,
+                StringComparison.OrdinalIgnoreCase);
         }
 
-        public static LogEventLevel ExcludeHealthChecks(HttpContext httpContext, double _, Exception exception) =>
-            exception != null
-                ? LogEventLevel.Error
-                : httpContext == null || httpContext.Response.StatusCode > 499
-                    ? LogEventLevel.Error
-                    : IsHealthCheckEndpoint(httpContext) // Not an error, check if it was a health check
-                        ? LogEventLevel.Verbose // Was a health check, use Verbose
-                        : LogEventLevel.Information;
+        public static LogEventLevel GetLevel(HttpContext httpContext, double _, Exception exception)
+        {
+            if (exception != null)
+                return LogEventLevel.Error;
+
+            if (httpContext == null || httpContext.Response.StatusCode > 499)
+                return LogEventLevel.Error;
+
+            return IsHealthCheck(httpContext)
+                ? LogEventLevel.Verbose
+                : LogEventLevel.Information;
+        }
     }
 }
