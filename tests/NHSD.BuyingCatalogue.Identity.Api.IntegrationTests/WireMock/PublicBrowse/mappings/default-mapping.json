@@ -17,7 +17,7 @@
       ]
     },
     "Response": {
-      "Body": "Welcome to the fake public browse",
+      "Body": "Welcome to the fake public browse homepage",
       "Headers": {}
     }
   }

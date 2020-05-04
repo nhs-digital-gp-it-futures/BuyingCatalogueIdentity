@@ -5,7 +5,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Errors;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
@@ -21,20 +20,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         private readonly IIdentityServerInteractionService _interaction;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<LoginService> _logger;
 
         public LoginService(
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager,
-            ILoggerFactory loggerFactory)
+            UserManager<ApplicationUser> userManager)
         {
             _eventService = eventService;
             _interaction = interaction;
             _signInManager = signInManager;
             _userManager = userManager;
-            _logger = loggerFactory.CreateLogger<LoginService>();
         }
 
         public void Dispose()
@@ -48,8 +44,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             {
                 return Result.Failure<SignInResponse>(LoginUserErrors.UserNameOrPasswordIncorrect());
             }
-
-            _logger.LogInformation("---- Start Signin ----");
 
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
@@ -72,8 +66,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             {
                 await _eventService.RaiseAsync(new UserLoginFailureEvent(user.UserName, DisabledEventMessage, clientId: context?.ClientId));
 
-                _logger.LogInformation("---- Finish Signin 1 ----");
-
                 return Result.Failure<SignInResponse>(isUserDisabledResult.Errors);
             }
 
@@ -87,8 +79,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             await _signInManager.SignInAsync(user, props);
 
             await RaiseLoginSuccessAsync(username, context);
-
-            _logger.LogInformation("---- Finish Signin 2 ----");
 
             // We can trust returnUrl if GetAuthorizationContextAsync returned non-null
             return Result.Success(new SignInResponse(context is object));

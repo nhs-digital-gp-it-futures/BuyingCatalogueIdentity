@@ -16,7 +16,7 @@ Scenario: 2. The NHS Header contains the NHS Header logo
 
 @3926
 Scenario: 3. The NHS Header logo should link to the public browse homepage
-	Then element with Data ID header-banner contains a link to http://localhost:8080/publicbrowse
+	Then the NHS header logo should link to the public browse homepage
 
 @3926
 Scenario: 4. The NHS Header logo should contain an accessibility label

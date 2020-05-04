@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using IdentityServer4.Stores;
@@ -9,13 +8,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
@@ -189,28 +186,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     .SetApplicationName(dataProtectionAppName)
                     .PersistKeysToDbContext<ApplicationDbContext>();
             }
+
+            IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
-            var logger = loggerFactory.CreateLogger<Startup>();
-
             var pathBase = _configuration.GetValue<string>("pathBase");
 
             if (string.IsNullOrWhiteSpace(pathBase))
             {
-                ConfigureApp(app, logger);
+                ConfigureApp(app);
             }
             else
             {
-                app.Map($"/{pathBase}", builder =>
-                {
-                    ConfigureApp(builder, logger);
-                });
+                app.Map($"/{pathBase}", ConfigureApp);
             }
         }
 
-        public void ConfigureApp(IApplicationBuilder app, ILogger<Startup> logger)
+        public void ConfigureApp(IApplicationBuilder app)
         {
             app.UseSerilogRequestLogging(opts =>
             {
@@ -218,20 +212,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 opts.GetLevel = LogHelper.ExcludeHealthChecks;
             });
 
-            app.Use( async (context, next) =>
-            {
-                PathString requestPath = context.Request.Path;
-                if (!requestPath.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase))
-                {
-                    logger.LogError("--- Request : '{request}' ---", requestPath);
-                }
-
-                await next();
-            });
-
             if (_environment.IsDevelopment())
             {
-                IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
