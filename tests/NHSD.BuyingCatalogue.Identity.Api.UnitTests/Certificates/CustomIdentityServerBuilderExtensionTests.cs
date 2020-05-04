@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
+using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
-using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
-using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NUnit.Framework;
 using Serilog;
 
@@ -19,90 +21,122 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
     [Parallelizable(ParallelScope.None)]
     internal sealed class CustomIdentityServerBuilderExtensionTests
     {
-        private static void SetupEmbeddedCertificateFile()
+        private const string DeveloperKeyFileName = "tempkey.rsa";
+
+        [Test]
+        public void AddCustomSigningCredential_NullCertificate_ThrowsException()
         {
-            using var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream(typeof(CustomIdentityServerBuilderExtensionTests).Namespace + ".certificate.pfx").ThrowIfNull();
-            using var outputStream = File.Create("certificate.pfx");
+            var builder = Mock.Of<IIdentityServerBuilder>();
+
+            Assert.Throws<ArgumentNullException>(
+                () => builder.AddCustomSigningCredential(null, Mock.Of<ILogger>()));
+        }
+
+        [Test]
+        public void AddCustomSigningCredential_NullLogger_ThrowsException()
+        {
+            var builder = Mock.Of<IIdentityServerBuilder>();
+
+            Assert.Throws<ArgumentNullException>(
+                () => builder.AddCustomSigningCredential(Mock.Of<ICertificate>(), null));
+        }
+
+        [Test]
+        public async Task AddCustomSigningCredential_WithCertificate_SetsSigningCredentials()
+        {
+            using var x509 = CreateValidCertificate();
+
+            var mockCertificate = new Mock<ICertificate>();
+            mockCertificate.Setup(c => c.Instance).Returns(x509);
+            mockCertificate.Setup(c => c.IsAvailable).Returns(true);
+
+            var services = new ServiceCollection();
+            var builder = new IdentityServerBuilder(services);
+
+            builder.AddCustomSigningCredential(mockCertificate.Object, Mock.Of<ILogger>());
+
+            var provider = services.BuildServiceProvider();
+            var signingCredentialStore = provider.GetService<ISigningCredentialStore>();
+            var validationKeysStore = provider.GetService<IValidationKeysStore>();
+
+            signingCredentialStore.Should().NotBeNull();
+            validationKeysStore.Should().NotBeNull();
+
+            var signingCredentials = await signingCredentialStore.GetSigningCredentialsAsync();
+            var validationKeys = (await validationKeysStore.GetValidationKeysAsync()).ToList();
+
+            signingCredentials.Should().NotBeNull();
+            signingCredentials.Kid.Should().Be(x509.Thumbprint);
+
+            validationKeys.Should().NotBeNull();
+            validationKeys.Should().HaveCount(1);
+
+            var securityKey = validationKeys.First();
+            securityKey.Key.KeyId.Should().Be(x509.Thumbprint);
+        }
+
+        [Test]
+        public async Task AddCustomSigningCredential_WithoutCertificate_SetsDeveloperCredentials()
+        {
+            const string expectedKeyId = "xEB-cwCvL4brqLxCMzkw3Q";
+
+            WriteEmbeddedDeveloperCertificateToDisk();
+
+            var services = new ServiceCollection();
+            var builder = new IdentityServerBuilder(services);
+
+            builder.AddCustomSigningCredential(Mock.Of<ICertificate>(), Mock.Of<ILogger>());
+
+            var provider = services.BuildServiceProvider();
+            var signingCredentialStore = provider.GetService<ISigningCredentialStore>();
+            var validationKeysStore = provider.GetService<IValidationKeysStore>();
+
+            signingCredentialStore.Should().NotBeNull();
+            validationKeysStore.Should().NotBeNull();
+
+            var signingCredentials = await signingCredentialStore.GetSigningCredentialsAsync();
+            var validationKeys = (await validationKeysStore.GetValidationKeysAsync()).ToList();
+
+            signingCredentials.Should().NotBeNull();
+            signingCredentials.Kid.Should().Be(expectedKeyId);
+
+            validationKeys.Should().NotBeNull();
+            validationKeys.Should().HaveCount(1);
+
+            var securityKey = validationKeys.First();
+            securityKey.Key.KeyId.Should().Be(expectedKeyId);
+
+            DeleteDeveloperCertificate();
+        }
+
+        private static X509Certificate2 CreateValidCertificate()
+        {
+            var fixture = new Fixture();
+            var subject = fixture.Create<string>();
+
+            using var ecdsa = ECDsa.Create();
+            var req = new CertificateRequest($"cn={subject}", ecdsa, HashAlgorithmName.SHA256);
+
+            return req.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddHours(1));
+        }
+
+        private static void DeleteDeveloperCertificate()
+        {
+            File.Delete(DeveloperKeyFileName);
+        }
+
+        private static void WriteEmbeddedDeveloperCertificateToDisk()
+        {
+            const string embeddedDeveloperKeyFileName = "tempkey.key";
+
+            using var stream = Assembly
+                .GetExecutingAssembly()
+                .GetManifestResourceStream($"{typeof(CustomIdentityServerBuilderExtensionTests).Namespace}.{embeddedDeveloperKeyFileName}");
+
+            Assert.NotNull(stream, $"Could not find the embedded resource {embeddedDeveloperKeyFileName}");
+
+            using var outputStream = File.Create(DeveloperKeyFileName);
             stream.CopyTo(outputStream);
-        }
-
-        private static void RemoveCertificateFile()
-        {
-            File.Delete("certificate.pfx");
-        }
-
-        [Test]
-        public void UseDeveloperCredentials_Sets_DeveloperCredentials()
-        {
-            var settings = new CertificateSettings
-            {
-                UseDeveloperCredentials = true, CertificatePath = "", CertificatePassword = ""
-            };
-
-            var loggerMock = Mock.Of<ILogger>();
-            var serviceCollectionMock = new Mock<IServiceCollection>();
-            var builderMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
-
-            builderMock.AddCustomSigningCredential(settings, loggerMock);
-
-            serviceCollectionMock.Verify(
-                c => c.Add(It.Is<ServiceDescriptor>(s => s.ServiceType == typeof(ISigningCredentialStore))),
-                Times.Exactly(1));
-            serviceCollectionMock.Verify(
-                c => c.Add(It.Is<ServiceDescriptor>(s => s.ServiceType == typeof(IValidationKeysStore))),
-                Times.Exactly(1));
-        }
-
-        [Test]
-        public void UseInvalidPath_ThrowsCertificateSettingsException()
-        {
-            var settings = new CertificateSettings
-            {
-                UseDeveloperCredentials = false, CertificatePath = "bad path", CertificatePassword = "NHSD"
-            };
-
-            var loggerMock = Mock.Of<ILogger>();
-            var serviceCollectionMock = new Mock<IServiceCollection>();
-            var builderMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
-            Assert.Throws<CertificateSettingsException>(() =>
-                builderMock.AddCustomSigningCredential(settings, loggerMock));
-        }
-
-        [Test]
-        public async Task UseValidPath_Sets_Certificate()
-        {
-            SetupEmbeddedCertificateFile();
-
-            var settings = new CertificateSettings
-            {
-                UseDeveloperCredentials = false, CertificatePath = "certificate.pfx", CertificatePassword = "NHSD"
-            };
-
-            var serviceDescriptorList = new List<ServiceDescriptor>();
-            var loggerMock = Mock.Of<ILogger>();
-            var serviceCollectionMock = new Mock<IServiceCollection>();
-            serviceCollectionMock.Setup(s => s.Add(It.IsAny<ServiceDescriptor>()))
-                .Callback<ServiceDescriptor>(sd => serviceDescriptorList.Add(sd));
-            var builderMock = Mock.Of<IIdentityServerBuilder>(i => i.Services == serviceCollectionMock.Object);
-
-            builderMock.AddCustomSigningCredential(settings, loggerMock);
-
-            serviceCollectionMock.Verify(
-                c => c.Add(It.Is<ServiceDescriptor>(s => s.ServiceType == typeof(ISigningCredentialStore))),
-                Times.Exactly(1));
-            serviceCollectionMock.Verify(
-                c => c.Add(It.Is<ServiceDescriptor>(s => s.ServiceType == typeof(IValidationKeysStore))),
-                Times.Exactly(1));
-
-            if (serviceDescriptorList.First(x => x.ServiceType == typeof(ISigningCredentialStore))
-                .ImplementationInstance is ISigningCredentialStore signingCredentialStore)
-            {
-                var signingCredential = await signingCredentialStore.GetSigningCredentialsAsync();
-                signingCredential.Key.KeyId.Should().Be("FD1F4371008CF3CACB6DE23D4AB2EC9623557DD4");
-            }
-
-            RemoveCertificateFile();
         }
     }
 }
