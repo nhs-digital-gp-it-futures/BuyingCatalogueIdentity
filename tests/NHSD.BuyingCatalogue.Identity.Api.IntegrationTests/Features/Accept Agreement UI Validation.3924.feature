@@ -1,19 +1,19 @@
 ﻿Feature: Accept Agreement page UI
-	As a User
-	I want to be able to view the Accept Agreement page
-	So that I can read and accept the terms and conditions
+    As a User
+    I want to be able to view the Accept Agreement page
+    So that I can read and accept the terms and conditions
 
 Background:
-	Given Organisations exist
-		| Name           | OdsCode |
-		| Organisation 1 | Ods 1   |
-	And Users exist
-		| Id  | OrganisationName | FirstName | LastName | Email         | PhoneNumber | Disabled | Password          | CatalogueAgreementSigned |
-		| 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 | false                    |
+    Given Organisations exist
+        | Name           | OdsCode |
+        | Organisation 1 | Ods 1   |
+    And Users exist
+        | Id  | OrganisationName | FirstName | LastName | Email         | PhoneNumber | Disabled | Password          | CatalogueAgreementSigned |
+        | 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 | false                    |
     When the user navigates to a restricted web page
     Then the user is redirected to page identity/account/login
     When a login request is made with email address test@user.com and password testingtesting123
-	Then the user is redirected to page identity/Consent
+    Then the user is redirected to page identity/Consent
 
 @3924
 Scenario: 1. The NHS Header is displayed correctly

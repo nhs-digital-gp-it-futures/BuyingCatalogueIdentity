@@ -1,4 +1,5 @@
-﻿using System.Text.Encodings.Web;
+﻿using System;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -12,24 +13,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         public const string TagHelperName = "nhs-back-link";
         public const string BackLinkLabel = "back-link-label";
 
-        public BackLinkTagHelper(IHtmlGenerator generator) : base(generator)
+        public BackLinkTagHelper(IHtmlGenerator generator) 
+            : base(generator)
         {
         }
 
         [HtmlAttributeName(BackLinkLabel)]
         public string Label { get; set; }
-        
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            output.ThrowIfNull();
+            if (output is null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
             output.Attributes.SetAttribute(TagHelperConstants.DataTestId, "go-back-link");
             output.AddClass(TagHelperConstants.NhsBackLinkLink, HtmlEncoder.Default);
             output.Content.AppendHtml(Label);
-            
+
             var svg = GetSvgBuilder();
             var path = GetPathBuilder();
-            
+
             svg.InnerHtml.AppendHtml(path);
             output.TagMode = TagMode.StartTagAndEndTag;
             output.Content.AppendHtml(svg);
@@ -38,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         private static TagBuilder GetSvgBuilder()
         {
             var builder = new TagBuilder(TagHelperConstants.Svg);
-            
+
             builder.AddCssClass(TagHelperConstants.NhsIcon);
             builder.AddCssClass(TagHelperConstants.NhsIconChevronLeft);
             builder.Attributes.Add(TagHelperConstants.Xmlns, "http://www.w3.org/2000/svg");

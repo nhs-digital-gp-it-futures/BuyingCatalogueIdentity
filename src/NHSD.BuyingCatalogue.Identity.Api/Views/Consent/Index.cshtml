@@ -32,7 +32,7 @@
         <div data-test-id="login-page">
             <div class="nhsuk-grid-row">
                 <div class="nhsuk-grid-column-full">
-                    <div data-test-id="go-back-section" class="nhsuk-back-link">
+                    <div class="nhsuk-back-link">
                         <a nhs-back-link href="/" back-link-label="Back to homepage"></a>
                     </div>
                     <div data-test-id="error-summary" nhs-validation-summary title="There is a problem"></div>
@@ -198,7 +198,7 @@
                         </li>
                     </ol>
                     <form asp-controller="Consent" asp-action="Index" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-                        <input type="hidden" asp-for="ReturnUrl"/>
+                        <input type="hidden" asp-for="ReturnUrl" />
 
                         <div asp-validation-for="AgreeWithTerms" class="nhsuk-form-group @(@ViewData.ModelState.IsValid ? "" : "nhsuk-form-group--error")">
                             <fieldset class="nhsuk-fieldset" aria-describedby="terms-hint">
@@ -209,7 +209,7 @@
                                 <span data-test-id="agreement-error-message" asp-validation-for="AgreeWithTerms" class="nhsuk-error-message"></span>
                                 <div class="nhsuk-checkboxes">
                                     <div class="nhsuk-checkboxes__item">
-                                        <input data-test-id="agree-terms-checkbox" class="nhsuk-checkboxes__input" type="checkbox" asp-for="AgreeWithTerms"/>
+                                        <input data-test-id="agree-terms-checkbox" class="nhsuk-checkboxes__input" type="checkbox" asp-for="AgreeWithTerms" />
                                         <label data-test-id="agree-terms-checkbox-label" class="nhsuk-label nhsuk-checkboxes__label" asp-for="AgreeWithTerms"></label>
                                     </div>
                                 </div>
