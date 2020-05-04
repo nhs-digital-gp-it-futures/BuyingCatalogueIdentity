@@ -1,6 +1,6 @@
 ﻿using TechTalk.SpecFlow;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
+namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support
 {
     internal static class ScenarioContextExtensions
     {

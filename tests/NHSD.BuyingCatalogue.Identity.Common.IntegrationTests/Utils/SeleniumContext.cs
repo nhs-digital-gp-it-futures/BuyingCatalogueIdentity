@@ -5,17 +5,16 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
+namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
 {
     public sealed class SeleniumContext : IDisposable
     {
         public IWebDriver WebDriver { get; }
-        public WebDriverWait WebWaiter{ get; }
+        public WebDriverWait WebWaiter { get; }
 
         public SeleniumContext()
         {
-            ChromeOptions options = new ChromeOptions();
-            options.Proxy = null;
+            ChromeOptions options = new ChromeOptions { Proxy = null };
             options.AddArguments("window-size=1920,1080", "no-sandbox", "disable-dev-shm-usage");
             if (!Debugger.IsAttached)
             {
