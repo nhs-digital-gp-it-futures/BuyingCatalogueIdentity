@@ -1,19 +1,19 @@
 ﻿Feature: Accept Agreement page UI
-	As a User
-	I want to be able to view the Accept Agreement page
-	So that I can read and accept the terms and conditions
+    As a User
+    I want to be able to view the Accept Agreement page
+    So that I can read and accept the terms and conditions
 
 Background:
-	Given Organisations exist
-		| Name           | OdsCode |
-		| Organisation 1 | Ods 1   |
-	And Users exist
-		| Id  | OrganisationName | FirstName | LastName | Email         | PhoneNumber | Disabled | Password          | CatalogueAgreementSigned |
-		| 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 | false                    |
+    Given Organisations exist
+        | Name           | OdsCode |
+        | Organisation 1 | Ods 1   |
+    And Users exist
+        | Id  | OrganisationName | FirstName | LastName | Email         | PhoneNumber | Disabled | Password          | CatalogueAgreementSigned |
+        | 123 | Organisation 1   | John      | Doe      | test@user.com | 01234567890 | false    | testingtesting123 | false                    |
     When the user navigates to a restricted web page
     Then the user is redirected to page identity/account/login
     When a login request is made with email address test@user.com and password testingtesting123
-	Then the user is redirected to page identity/Consent
+    Then the user is redirected to page identity/Consent
 
 @3924
 Scenario: 1. The NHS Header is displayed correctly
@@ -24,7 +24,7 @@ Scenario: 1. The NHS Header is displayed correctly
 @3924
 Scenario: 2. The back to log in link is displayed correctly
     Then the page contains element with Data ID go-back-link
-    And element with Data ID go-back-section contains a link to / with text Back to homepage
+    And element with Data ID go-back-link contains a link to / with text Back to homepage
 
 @3924
 Scenario: 3. The Accept Agreement page title is displayed correctly
