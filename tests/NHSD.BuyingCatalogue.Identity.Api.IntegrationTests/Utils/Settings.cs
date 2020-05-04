@@ -25,6 +25,5 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
         public string BrokenSmtpIdentityApiBaseUrl { get; }
 
         public string SmtpServerApiBaseUrl { get; }
-
     }
 }

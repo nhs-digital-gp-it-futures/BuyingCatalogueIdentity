@@ -4,7 +4,7 @@ using TechTalk.SpecFlow.Assist;
 
 namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support
 {
-    public class NullStringValueRetriever : IValueRetriever
+    public sealed class NullStringValueRetriever : IValueRetriever
     {
         private const string NullString = "NULL";
 

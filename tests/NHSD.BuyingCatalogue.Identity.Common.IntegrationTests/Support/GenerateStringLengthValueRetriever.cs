@@ -6,7 +6,7 @@ using TechTalk.SpecFlow.Assist;
 
 namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support
 {
-    public class GenerateStringLengthValueRetriever : IValueRetriever
+    public sealed class GenerateStringLengthValueRetriever : IValueRetriever
     {
         private const string PatternMatchGroupKey = "StringLength";
 
