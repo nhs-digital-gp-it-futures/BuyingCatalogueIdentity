@@ -1,5 +1,6 @@
 ﻿using System;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps

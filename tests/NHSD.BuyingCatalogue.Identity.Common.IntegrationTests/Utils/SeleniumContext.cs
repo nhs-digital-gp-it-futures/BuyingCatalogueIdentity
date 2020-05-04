@@ -5,7 +5,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
+namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
 {
     public sealed class SeleniumContext : IDisposable
     {
