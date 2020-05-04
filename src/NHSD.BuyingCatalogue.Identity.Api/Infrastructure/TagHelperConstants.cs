@@ -10,6 +10,8 @@
         public const string SubHeader = "h2";
         public const string Span = "span";
         public const string UnorderedList = "ul";
+        public const string Svg = "svg";
+        public const string Path = "path";
 
         // attributes
         public const string DataTestId = "data-test-id";
@@ -20,6 +22,9 @@
         public const string RoleAlert = "alert";
         public const string Type = "type";
         public const string Tabindex = "tabindex";
+        public const string Xmlns = "xmlns";
+        public const string ViewBox = "viewBox";
+        public const string AriaHidden = "aria-hidden";
 
         // classes
         public const string ErrorSummaryTitle = "error-summary-title";
@@ -33,5 +38,8 @@
         public const string NhsValidationSummaryTitle = "nhsuk-error-summary__title";
         public const string NhsValidationSummaryList = "nhsuk-error-summary__list";
         public const string NhsValidationInputError = "nhsuk-input--error";
+        public const string NhsBackLinkLink = "nhsuk-back-link__link";
+        public const string NhsIcon = "nhsuk-icon";
+        public const string NhsIconChevronLeft = "nhsuk-icon__chevron-left";
     }
 }

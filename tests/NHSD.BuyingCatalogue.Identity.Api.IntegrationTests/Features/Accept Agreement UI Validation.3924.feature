@@ -24,7 +24,7 @@ Scenario: 1. The NHS Header is displayed correctly
 @3924
 Scenario: 2. The back to log in link is displayed correctly
     Then the page contains element with Data ID go-back-link
-    And element with Data ID go-back-section contains a link to / with text Back to homepage
+    And element with Data ID go-back-link contains a link to / with text Back to homepage
 
 @3924
 Scenario: 3. The Accept Agreement page title is displayed correctly
