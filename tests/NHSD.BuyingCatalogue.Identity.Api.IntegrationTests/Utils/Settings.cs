@@ -11,9 +11,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             DataProtectionAppName = config.GetValue<string>("DataProtectionAppName");
             IdentityApiBaseUrl = config.GetValue<string>("IdentityApiBaseUrl");
             BrokenSmtpIdentityApiBaseUrl = config.GetValue<string>("BrokenSmtpIdentityApiBaseUrl");
-            OrganisationApiBaseUrl = config.GetValue<string>("OrganisationApiBaseUrl");
             SmtpServerApiBaseUrl = config.GetValue<string>("SmtpServerApiBaseUrl");
-            OdsApiWireMockBaseUrl = config.GetValue<string>("OdsApiWireMockBaseUrl");
         }
 
         public string AdminConnectionString { get; }
@@ -26,10 +24,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 
         public string BrokenSmtpIdentityApiBaseUrl { get; }
 
-        public string OrganisationApiBaseUrl { get; }
-
         public string SmtpServerApiBaseUrl { get; }
 
-        public string OdsApiWireMockBaseUrl { get; }
     }
 }

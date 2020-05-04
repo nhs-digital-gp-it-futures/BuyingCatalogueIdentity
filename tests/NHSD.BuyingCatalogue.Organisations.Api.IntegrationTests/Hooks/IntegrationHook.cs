@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using BoDi;
 using Microsoft.Extensions.Configuration;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
+namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Hooks
 {
     [Binding]
     public sealed class IntegrationHook
@@ -33,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
         [AfterScenario]
         public async Task CleanUpAsync()
         {
-            await DeleteAllSentEmailsAsync();
+            await DeleteAllOdsEndpointMappings();
         }
 
         public void RegisterTestConfiguration()
@@ -57,10 +57,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Hooks
         private async Task ResetDatabaseAsync() =>
             await IntegrationDatabase.ResetAsync(_objectContainer.Resolve<IConfiguration>());
 
-        private async Task DeleteAllSentEmailsAsync()
+        private async Task DeleteAllOdsEndpointMappings()
         {
-            var emailServerDriver = _objectContainer.Resolve<EmailServerDriver>();
-            await emailServerDriver.ClearAllEmailsAsync();
+            var odsApi = _objectContainer.Resolve<OdsApiSteps>();
+            await odsApi.ClearMappings();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using TechTalk.SpecFlow.Assist;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Support
+namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support
 {
     public class GenerateStringLengthValueRetriever : IValueRetriever
     {

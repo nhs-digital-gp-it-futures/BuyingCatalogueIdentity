@@ -10,7 +10,7 @@ using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
+namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 {
     [Binding]
     internal sealed class AuthorisedSteps

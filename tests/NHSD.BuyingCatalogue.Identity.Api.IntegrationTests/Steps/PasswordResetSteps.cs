@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps

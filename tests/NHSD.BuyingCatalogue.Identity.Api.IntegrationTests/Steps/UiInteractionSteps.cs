@@ -1,4 +1,4 @@
-﻿using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+﻿using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 
@@ -8,7 +8,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     internal sealed class UiInteractionSteps
     {
         private readonly SeleniumContext _seleniumContext;
-        
+
         public UiInteractionSteps(SeleniumContext seleniumContext)
         {
             _seleniumContext = seleniumContext;
