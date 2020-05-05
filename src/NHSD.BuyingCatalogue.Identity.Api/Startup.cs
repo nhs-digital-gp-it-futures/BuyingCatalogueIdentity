@@ -182,8 +182,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddControllersWithViews();
 
             services.AddDataProtection(dataProtectionAppName, certificate);
-
-            IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -210,6 +208,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             if (_environment.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
