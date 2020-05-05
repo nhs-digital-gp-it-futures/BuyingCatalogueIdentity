@@ -20,7 +20,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private ILoginService _loginService;
         private ILogoutService _logoutService;
         private DisabledErrorMessageSettings _disabledErrorMessageSettings;
-        private IPublicBrowseSettings _publicBrowseSettings;
+        private PublicBrowseSettings _publicBrowseSettings;
 
         private AccountControllerBuilder()
         {
@@ -35,7 +35,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 PhoneNumber = "Phone"
             };
 
-            _publicBrowseSettings = Mock.Of<IPublicBrowseSettings>();
+            _publicBrowseSettings = new PublicBrowseSettings();
         }
 
         internal static AccountControllerBuilder Create()
@@ -122,7 +122,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal AccountControllerBuilder WithPublicBrowseSettings(IPublicBrowseSettings publicBrowseSettings)
+        internal AccountControllerBuilder WithPublicBrowseSettings(PublicBrowseSettings publicBrowseSettings)
         {
             _publicBrowseSettings = publicBrowseSettings;
             return this;

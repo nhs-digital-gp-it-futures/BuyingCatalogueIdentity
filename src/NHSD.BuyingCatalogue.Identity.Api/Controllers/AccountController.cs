@@ -25,7 +25,7 @@ Contact the account administrator at: {0} or call {1}";
         private readonly IPasswordResetCallback _passwordResetCallback;
         private readonly IPasswordService _passwordService;
         private readonly DisabledErrorMessageSettings _disabledErrorMessageSettings;
-        private readonly IPublicBrowseSettings _publicBrowseSettings;
+        private readonly PublicBrowseSettings _publicBrowseSettings;
 
         public AccountController(
             ILoginService loginService,
@@ -33,7 +33,7 @@ Contact the account administrator at: {0} or call {1}";
             IPasswordResetCallback passwordResetCallback,
             IPasswordService passwordService,
             DisabledErrorMessageSettings disabledErrorMessageSettings,
-            IPublicBrowseSettings publicBrowseSettings)
+            PublicBrowseSettings publicBrowseSettings)
         {
             _loginService = loginService;
             _logoutService = logoutService;

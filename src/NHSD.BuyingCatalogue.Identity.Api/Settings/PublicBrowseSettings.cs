@@ -1,6 +1,6 @@
 ﻿namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
-    internal sealed class PublicBrowseSettings : IPublicBrowseSettings
+    public sealed class PublicBrowseSettings
     {
         public string BaseAddress { get; set; }
 

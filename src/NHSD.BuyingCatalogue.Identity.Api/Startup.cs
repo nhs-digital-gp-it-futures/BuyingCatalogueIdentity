@@ -85,7 +85,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(disabledErrorMessage);
             services.AddSingleton(registrationSettings);
             services.AddSingleton<IScopeRepository>(new ScopeRepository(apiResources, identityResources));
-            services.AddSingleton<IPublicBrowseSettings>(publicBrowseSettings);
+            services.AddSingleton(publicBrowseSettings);
 
             services.AddTransient<IUsersRepository, UsersRepository>();
 
