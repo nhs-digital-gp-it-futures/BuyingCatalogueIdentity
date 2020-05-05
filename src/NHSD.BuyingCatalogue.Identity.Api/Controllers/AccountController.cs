@@ -63,7 +63,10 @@ Contact the account administrator at: {0} or call {1}";
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
-            viewModel.ThrowIfNull(nameof(viewModel));
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
             var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, viewModel.ReturnUrl);
 
@@ -142,7 +145,10 @@ Contact the account administrator at: {0} or call {1}";
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
         {
-            viewModel.ThrowIfNull(nameof(viewModel));
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
             if (!ModelState.IsValid)
             {
@@ -178,7 +184,10 @@ Contact the account administrator at: {0} or call {1}";
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
         {
-            viewModel.ThrowIfNull(nameof(viewModel));
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
             if (!ModelState.IsValid)
             {

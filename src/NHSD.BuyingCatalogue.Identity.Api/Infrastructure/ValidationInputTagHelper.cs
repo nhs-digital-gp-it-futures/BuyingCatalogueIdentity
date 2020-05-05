@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -44,7 +45,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            output.ThrowIfNull();
+            if (output is null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
             output.Content.Clear();
 
