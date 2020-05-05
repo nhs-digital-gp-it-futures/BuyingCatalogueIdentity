@@ -99,4 +99,4 @@ Scenario: 9. Navigating to the registration page from login, then pressing the b
 Scenario: 10. Navigating directly to the login page, should return the user to the public browse page
     Given the user navigates directly to the login page
     When a login request is made with email address test@user.com and password testingtesting123
-    Then the user is redirected to page /login
+    Then the user is redirected to page /back-from-admin

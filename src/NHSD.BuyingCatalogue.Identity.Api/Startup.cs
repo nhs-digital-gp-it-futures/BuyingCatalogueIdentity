@@ -77,7 +77,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
             Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
             Log.Logger.Information("Data protection app name is: {dataProtectionAppName}", dataProtectionAppName);
-			Log.Logger.Information("Public Browse settings: {@publicBrowseSettings}", publicBrowseSettings);
+            Log.Logger.Information("Public Browse settings: {@publicBrowseSettings}", publicBrowseSettings);
 
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
@@ -182,8 +182,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddControllersWithViews();
 
             services.AddDataProtection(dataProtectionAppName, certificate);
-            
-			IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
+
+            IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
         }
 
         public void Configure(IApplicationBuilder app)
