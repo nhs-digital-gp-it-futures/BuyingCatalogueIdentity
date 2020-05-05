@@ -69,7 +69,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             var issuerUrl = _configuration.GetValue<string>("issuerUrl");
 
-            var publicBrowseSettings = _configuration.GetSection("PublicBrowse").Get<PublicBrowseSettings>();
+            var publicBrowseSettings = _configuration.GetSection("publicBrowse").Get<PublicBrowseSettings>();
 
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", apiResources);
