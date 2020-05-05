@@ -4,6 +4,6 @@
     {
         public string BaseAddress { get; set; }
 
-        public string LoginAddress { get; set; }
+        public string LoginPath { get; set; }
     }
 }

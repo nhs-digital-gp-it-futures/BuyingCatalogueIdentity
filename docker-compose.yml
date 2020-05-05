@@ -44,7 +44,7 @@ services:
       - SmtpServer__emailSubjectPrefix=INTEGRATION_TEST
       - AllowInvalidCertificate=True   
       - PublicBrowse__BaseAddress=http://localhost:8076/publicbrowse
-      - PublicBrowse__LoginAddress=/back-from-admin
+      - PublicBrowse__LoginPath=/back-from-admin
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email

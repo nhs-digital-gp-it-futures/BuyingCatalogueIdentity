@@ -206,7 +206,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             var expectedUri = new Uri("/login", UriKind.Relative);
 
             Mock<IPublicBrowseSettings> mockPublicBrowseSettings = new Mock<IPublicBrowseSettings>();
-            mockPublicBrowseSettings.SetupGet(x => x.LoginAddress).Returns(expectedUri.ToString());
+            mockPublicBrowseSettings.SetupGet(x => x.LoginPath).Returns(expectedUri.ToString());
 
             using var controller = AccountControllerBuilder
                 .Create()

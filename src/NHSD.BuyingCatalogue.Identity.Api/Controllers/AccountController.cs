@@ -47,7 +47,7 @@ Contact the account administrator at: {0} or call {1}";
         public IActionResult Login(Uri returnUrl)
         {
             if (returnUrl == null)
-                returnUrl = new Uri(_publicBrowseSettings.LoginAddress, UriKind.RelativeOrAbsolute);
+                returnUrl = new Uri(_publicBrowseSettings.LoginPath, UriKind.RelativeOrAbsolute);
 
             LoginViewModel loginViewModel = new LoginViewModel
             {
