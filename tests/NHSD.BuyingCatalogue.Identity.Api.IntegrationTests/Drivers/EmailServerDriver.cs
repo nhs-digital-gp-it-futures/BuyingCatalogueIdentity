@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers

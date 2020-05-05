@@ -37,7 +37,7 @@ Scenario: 3. A non authority user cannot access the organisations
 	Given a user is logged in
 		| Username      | Password     | Scope        |
 		| buyer@doe.com | W3AkP4s5w0rd | Organisation |
-	When a GET request is made for an organisation's users with name Organisation 1
+	When a GET request is made for the Organisations section
 	Then a response with status code 403 is returned
 
 @5146

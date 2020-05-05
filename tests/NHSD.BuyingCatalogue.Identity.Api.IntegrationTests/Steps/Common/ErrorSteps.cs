@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 

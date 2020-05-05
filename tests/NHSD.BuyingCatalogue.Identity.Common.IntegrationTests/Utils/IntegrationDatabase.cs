@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
+namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
 {
-    public static class IntegrationDatabase
+    internal static class IntegrationDatabase
     {
         public static async Task ResetAsync(IConfiguration config)
         {
@@ -34,7 +34,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
         {
             using IDbConnection databaseConnection = new SqlConnection(connectionString);
             await databaseConnection.ExecuteAsync("DENY CONNECT TO NHSD;");
-         
         }
     }
 }
