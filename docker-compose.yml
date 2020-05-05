@@ -43,9 +43,12 @@ services:
       - SmtpServer__Port=587
       - SmtpServer__emailSubjectPrefix=INTEGRATION_TEST
       - AllowInvalidCertificate=True   
+      - PublicBrowse__BaseAddress=http://localhost:8076/publicbrowse
+      - PublicBrowse__LoginPath=/back-from-admin
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email
+      - nhsd.pb.wiremock
     entrypoint: 
       - /bin/sh
       - -c 
@@ -54,6 +57,17 @@ services:
       - nhsd_bcnetwork
     ports:
       - "8070:80"
+
+  nhsd.pb.wiremock:
+    container_name: pb_wiremock
+    image: ${REGISTRY:-nhsd}/buying-catalogue/pb-wiremock:${TAG:-latest}
+    build: 
+      context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/WireMock/PublicBrowse
+      dockerfile: Dockerfile
+    networks:
+        - nhsd_bcnetwork   
+    ports:
+        - "8076:80"
 
   nhsd.buyingcatalogue.identity.api.broken.smtp:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
@@ -86,6 +100,7 @@ services:
         - ODS__BUYERORGANISATIONROLEIDS__1=AlsoBuyer
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
+      - nhsd.ods.api.wiremock
     entrypoint: 
       - /bin/sh
       - -c 
@@ -99,7 +114,8 @@ services:
     container_name: ods_api_wiremock
     image: ${REGISTRY:-nhsd}/buying-catalogue/ods-api-wiremock:${TAG:-latest}
     build: 
-      context: tests/NHSD.BuyingCatalogue.Identity.Common.IntegrationTests/Tools/WireMock   
+      context: tests/NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests/WireMock/Ods
+      dockerfile: Dockerfile    
     networks:
         - nhsd_bcnetwork   
     ports:
@@ -165,7 +181,7 @@ services:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/chrome-node:${TAG:-latest}
     build: 
         context: .
-        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Common.IntegrationTests/Tools/Selenium/Dockerfile
+        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/Selenium/Dockerfile
     volumes:
       - /dev/shm:/dev/shm
     depends_on:

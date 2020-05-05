@@ -1,4 +1,7 @@
-﻿@model NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent.ConsentViewModel
+﻿@using NHSD.BuyingCatalogue.Identity.Api.Settings
+@inject PublicBrowseSettings PublicBrowseSettings
+
+@model NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent.ConsentViewModel
 
 @{
     ViewData["PageTitle"] = "Buying Catalogue End User Agreement";
@@ -33,7 +36,7 @@
             <div class="nhsuk-grid-row">
                 <div class="nhsuk-grid-column-full">
                     <div class="nhsuk-back-link">
-                        <a nhs-back-link href="/" back-link-label="Back to homepage"></a>
+                        <a nhs-back-link href="@PublicBrowseSettings.BaseAddress" back-link-label="Back to homepage"></a>
                     </div>
                     <div data-test-id="error-summary" nhs-validation-summary title="There is a problem"></div>
                     <h1 data-test-id="page-title" class="nhsuk-u-margin-bottom-3">@ViewData["PageTitle"]</h1>

@@ -94,3 +94,9 @@ Scenario: 9. Navigating to the registration page from login, then pressing the b
     When a login request is made with email address test@user.com and password testingtesting123
     Then the user is redirected to page home/privacy
     And the page contains element with ID sampleResourceResult with text Authorized With Sample Resource
+
+@3926
+Scenario: 10. Navigating directly to the login page, should return the user to the public browse page
+    Given the user navigates directly to the login page
+    When a login request is made with email address test@user.com and password testingtesting123
+    Then the user is redirected to page /back-from-admin

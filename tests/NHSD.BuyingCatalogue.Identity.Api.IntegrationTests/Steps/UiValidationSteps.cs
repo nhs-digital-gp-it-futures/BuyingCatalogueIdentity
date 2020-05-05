@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 
@@ -108,6 +108,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var attribute = element.GetAttribute("href");
             attribute.Should().StartWithEquivalent($"mailto:{emailAddress}");
+        }
+
+        [Then(@"element with Data ID ([^\s]+) has the accessibility text (.*)")]
+        public void ThenElementHasTheAccessibilityText(string id, string text)
+        {
+            var element = _seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={id}]"));
+            element.GetAttribute("aria-label").Should().Be(text);
         }
     }
 }
