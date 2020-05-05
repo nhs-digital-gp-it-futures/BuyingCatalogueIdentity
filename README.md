@@ -67,7 +67,7 @@ This server is [maildev](https://github.com/maildev/maildev) server with [stunne
 | outside the docker network | localhost                  | 1025  |  X  |
 | outside the docker network | localhost                  | 1587  | 1.2 |
 
-Navigate yourself to [localhost:1080](http://localhost:1080/) to view the mailbox UI
+Navigate yourself to [localhost:1180/email](http://localhost:1180/email) to view the mailbox UI
 
 ## Running the Application
 
