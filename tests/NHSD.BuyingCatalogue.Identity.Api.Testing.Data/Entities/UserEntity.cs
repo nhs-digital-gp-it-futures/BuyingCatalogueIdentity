@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 {

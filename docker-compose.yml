@@ -60,9 +60,9 @@ services:
 
   nhsd.pb.wiremock:
     container_name: pb_wiremock
-    image: ${REGISTRY:-nhsd}/buying-catalogue/ods-api-wiremock:${TAG:-latest}
+    image: ${REGISTRY:-nhsd}/buying-catalogue/pb-wiremock:${TAG:-latest}
     build: 
-      context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/WireMock/PublicBrowse
+      context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/WireMock/PublicBrowse
       dockerfile: Dockerfile
     networks:
         - nhsd_bcnetwork   
@@ -114,7 +114,7 @@ services:
     container_name: ods_api_wiremock
     image: ${REGISTRY:-nhsd}/buying-catalogue/ods-api-wiremock:${TAG:-latest}
     build: 
-      context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/WireMock/Ods
+      context: tests/NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests/WireMock/Ods
       dockerfile: Dockerfile    
     networks:
         - nhsd_bcnetwork   
@@ -181,7 +181,7 @@ services:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/chrome-node:${TAG:-latest}
     build: 
         context: .
-        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Common.IntegrationTests/Tools/Selenium/Dockerfile
+        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/Selenium/Dockerfile
     volumes:
       - /dev/shm:/dev/shm
     depends_on:

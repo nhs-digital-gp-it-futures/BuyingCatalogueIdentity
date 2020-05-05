@@ -4,9 +4,11 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
+using TechTalk.SpecFlow;
 
-namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
+namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
 {
+    [Binding]
     public sealed class SeleniumContext : IDisposable
     {
         public IWebDriver WebDriver { get; }
