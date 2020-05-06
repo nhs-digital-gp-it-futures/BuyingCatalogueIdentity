@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models
             Field = field;
         }
 
-        public bool Equals(ErrorDetails other)
+        public bool Equals(ErrorDetails? other)
         {
             if (other is null)
                 return false;
@@ -29,9 +29,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models
 
         public override bool Equals(object? obj)
         {
-#pragma warning disable CS8604 // Possible null reference argument.
             return Equals(obj as ErrorDetails);
-#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         public override int GetHashCode() => HashCode.Combine(Id, Field);

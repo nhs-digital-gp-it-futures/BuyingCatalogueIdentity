@@ -69,7 +69,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
             return first.SequenceEqual(second);
         }
 
-        public bool Equals(Result other)
+        public bool Equals(Result? other)
         {
             if (other is null)
                 return false;
@@ -84,9 +84,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
 
         public override bool Equals(object? obj)
         {
-#pragma warning disable CS8604 // Possible null reference argument.
             return Equals(obj as Result);
-#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         public override int GetHashCode() => HashCode.Combine(IsSuccess, Errors);
