@@ -36,7 +36,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails> { LoginUserErrors.UserNameOrPasswordIncorrect() }))
                 .Build();
 
-            await controller.Login(new LoginViewModel());
+            await controller.Login(LoginViewModelBuilder.Create().Build());
 
             var modelState = controller.ModelState;
 
@@ -68,7 +68,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .WithDisabledErrorMessageSetting(disabledSetting)
                 .Build();
 
-            await controller.Login(new LoginViewModel());
+            await controller.Login(LoginViewModelBuilder.Create().Build());
 
             var modelState = controller.ModelState;
 
@@ -91,7 +91,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .WithSignInResult(Result.Failure<SignInResponse>(new List<ErrorDetails>()))
                 .Build();
 
-            var result = await controller.Login(new LoginViewModel()) as ViewResult;
+            var result = await controller.Login(LoginViewModelBuilder.Create().Build()) as ViewResult;
 
             Assert.NotNull(result);
 
@@ -100,7 +100,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Login_LoginViewModel_InvalidViewModelWithoutAnyValues_ReturnsExpectedView()
+        public async Task Login_LoginViewModel_InvalidViewModel_WithoutEmailAddressAndPassword__ReturnsExpectedView()
         {
             using var controller = AccountControllerBuilder
                 .Create()
@@ -109,13 +109,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             controller.ModelState.AddModelError(string.Empty, "Fake error!");
 
-            var result = await controller.Login(new LoginViewModel()) as ViewResult;
+            var inputModel = LoginViewModelBuilder
+                .Create()
+                .Build();
+
+            var result = await controller.Login(inputModel) as ViewResult;
 
             Assert.NotNull(result);
 
             var viewModel = result.Model as LoginViewModel;
             Assert.NotNull(viewModel);
-            viewModel.ReturnUrl.Should().BeNull();
+            viewModel.ReturnUrl.Should().Be(inputModel.ReturnUrl);
             viewModel.Password.Should().BeNull();
             viewModel.EmailAddress.Should().BeNull();
         }
@@ -127,12 +131,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             var uri = new Uri("http://www.foobar.com/");
 
-            var inputModel = new LoginViewModel
-            {
-                Password = "Password",
-                ReturnUrl = uri,
-                EmailAddress = "NotLoginHint",
-            };
+            var inputModel = LoginViewModelBuilder
+                .Create()
+                .WithEmailAddress("NotLoginHint")
+                .WithReturnUrl(uri)
+                .WithPassword("Password")
+                .Build();
 
             using var controller = AccountControllerBuilder
                 .Create()
@@ -176,8 +180,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .WithSignInResult(new Result<SignInResponse>(true, null, new SignInResponse(true)))
                 .Build();
 
-            var result = await controller.Login(
-                new LoginViewModel { ReturnUrl = new Uri(goodUrl) }) as RedirectResult;
+            var inputModel = LoginViewModelBuilder
+                .Create()
+                .WithReturnUrl(new Uri(goodUrl))
+                .Build();
+
+            var result = await controller.Login(inputModel) as RedirectResult;
 
             Assert.NotNull(result);
             result.Url.Should().Be(goodUrl);
@@ -193,31 +201,35 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .WithSignInResult(new Result<SignInResponse>(true, null, new SignInResponse()))
                 .Build();
 
-            var result = await controller.Login(
-                new LoginViewModel { ReturnUrl = new Uri(rootUrl, UriKind.Relative) }) as LocalRedirectResult;
+            LoginViewModel inputModel = LoginViewModelBuilder
+                .Create()
+                .WithReturnUrl(new Uri(rootUrl, UriKind.Relative))
+                .Build();
+
+            var result = await controller.Login(inputModel) as LocalRedirectResult;
 
             Assert.NotNull(result);
             result.Url.Should().Be(rootUrl);
         }
 
         [Test]
-        public void Login_Uri_NullReturnUrl_ReturnsViewResultWithRootUrl()
+        public void Login_Uri_NullReturnUrl_ReturnsRedirectResult()
         {
-            var expectedUri = new Uri("/login", UriKind.Relative);
+            var publicBrowseSettings = new PublicBrowseSettings
+            {
+                BaseAddress = "https://public-prowse",
+                LoginPath = "/some-login-path"
+            };
 
             using var controller = AccountControllerBuilder
                 .Create()
-                .WithPublicBrowseSettings(new PublicBrowseSettings { LoginPath = expectedUri.ToString() })
+                .WithPublicBrowseSettings(publicBrowseSettings)
                 .Build();
 
-            var result = controller.Login((Uri)null) as ViewResult;
+            var result = controller.Login((Uri)null) as RedirectResult;
 
             Assert.NotNull(result);
-            result.ViewData["ReturnUrl"].Should().BeEquivalentTo(expectedUri);
-
-            var viewModel = result.Model as LoginViewModel;
-            Assert.NotNull(viewModel);
-            viewModel.ReturnUrl.Should().BeEquivalentTo(expectedUri);
+            result.Url.Should().Be(publicBrowseSettings.LoginAddress.ToString());
         }
 
         [Test]

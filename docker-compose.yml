@@ -43,8 +43,8 @@ services:
       - SmtpServer__Port=587
       - SmtpServer__emailSubjectPrefix=INTEGRATION_TEST
       - AllowInvalidCertificate=True   
-      - PublicBrowse__BaseAddress=http://localhost:8076/publicbrowse
-      - PublicBrowse__LoginPath=/back-from-admin
+      - PUBLICBROWSE__BASEADDRESS=http://localhost:8076/publicbrowse
+      - PUBLICBROWSE__LOGINPATH=/re-login
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email
