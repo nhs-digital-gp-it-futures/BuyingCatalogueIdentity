@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class AuthorisedSteps
+    internal sealed class AuthorisedSteps
     {
         private readonly ScenarioContext _context;
         private IConfiguration _configuration { get; }
@@ -23,7 +23,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _configuration = configuration;
             _context = context;
         }
-        
 
         [Given(@"a user is logged in")]
         public async Task GivenAnUserIsLoggedInWithUsernameAndPassword(Table table)
@@ -71,7 +70,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var expectedClaims = table.Rows.Select(x => (ClaimType: x["ClaimType"], ClaimValue: x["ClaimValue"]));
             var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(_context.Get(ScenarioContextKeys.AccessToken, ""));
+            var token = handler.ReadJwtToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
             var claims = token.Claims.Select(x => (ClaimType: x.Type, ClaimValue: x.Value));
             claims.Should().Contain(expectedClaims);
         }
@@ -79,7 +78,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the access token should be empty")]
         public void ThenTheAccessTokenShouldBeEmpty()
         {
-            _context.Get(ScenarioContextKeys.AccessToken, "").Should().BeEmpty();
+            _context.Get(ScenarioContextKeys.AccessToken, string.Empty).Should().BeEmpty();
         }
 
         private sealed class UserTable

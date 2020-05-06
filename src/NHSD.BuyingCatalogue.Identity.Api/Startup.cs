@@ -69,12 +69,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             var issuerUrl = _configuration.GetValue<string>("issuerUrl");
 
+            var publicBrowseSettings = _configuration.GetSection("publicBrowse").Get<PublicBrowseSettings>();
+
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", apiResources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
             Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
             Log.Logger.Information("Data protection app name is: {dataProtectionAppName}", dataProtectionAppName);
+            Log.Logger.Information("Public Browse settings: {@publicBrowseSettings}", publicBrowseSettings);
 
             services.AddSingleton(passwordResetSettings);
             services.AddSingleton(smtpSettings);
@@ -82,6 +85,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(disabledErrorMessage);
             services.AddSingleton(registrationSettings);
             services.AddSingleton<IScopeRepository>(new ScopeRepository(apiResources, identityResources));
+            services.AddSingleton(publicBrowseSettings);
 
             services.AddTransient<IUsersRepository, UsersRepository>();
 
@@ -190,10 +194,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             }
             else
             {
-                app.Map($"/{pathBase}", mappedApp =>
-                {
-                    ConfigureApp(mappedApp);
-                });
+                app.Map($"/{pathBase}", ConfigureApp);
             }
         }
 

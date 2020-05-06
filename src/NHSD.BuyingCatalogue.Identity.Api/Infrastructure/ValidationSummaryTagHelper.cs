@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -20,7 +21,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            output.ThrowIfNull();
+            if (output is null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
             if (ViewContext.ViewData.ModelState.IsValid)
             {
                 output.Content.Clear();
@@ -65,9 +70,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             var builder = new TagBuilder(TagHelperConstants.UnorderedList);
             builder.AddCssClass(TagHelperConstants.NhsList);
             builder.AddCssClass(TagHelperConstants.NhsValidationSummaryList);
-
+            
             var viewType = ViewContext.ViewData.Model.GetType();
-            viewType.ThrowIfNull();
+
+            if (viewType is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var propertyNames = viewType.GetProperties().Select(x => x.Name).ToList();
             var orderedStates = ViewContext.ViewData.ModelState

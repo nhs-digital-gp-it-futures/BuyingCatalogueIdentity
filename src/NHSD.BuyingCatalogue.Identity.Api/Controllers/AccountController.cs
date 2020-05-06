@@ -25,30 +25,33 @@ Contact the account administrator at: {0} or call {1}";
         private readonly IPasswordResetCallback _passwordResetCallback;
         private readonly IPasswordService _passwordService;
         private readonly DisabledErrorMessageSettings _disabledErrorMessageSettings;
+        private readonly PublicBrowseSettings _publicBrowseSettings;
 
         public AccountController(
             ILoginService loginService,
             ILogoutService logoutService,
             IPasswordResetCallback passwordResetCallback,
             IPasswordService passwordService,
-            DisabledErrorMessageSettings disabledErrorMessageSettings)
+            DisabledErrorMessageSettings disabledErrorMessageSettings,
+            PublicBrowseSettings publicBrowseSettings)
         {
             _loginService = loginService;
             _logoutService = logoutService;
             _passwordResetCallback = passwordResetCallback;
             _passwordService = passwordService;
             _disabledErrorMessageSettings = disabledErrorMessageSettings;
+            _publicBrowseSettings = publicBrowseSettings;
         }
 
         [HttpGet]
         public IActionResult Login(Uri returnUrl)
         {
             if (returnUrl == null)
-                returnUrl = new Uri("/", UriKind.Relative);
+                returnUrl = new Uri(_publicBrowseSettings.LoginPath, UriKind.RelativeOrAbsolute);
 
             LoginViewModel loginViewModel = new LoginViewModel
             {
-                ReturnUrl = returnUrl,
+                ReturnUrl = returnUrl
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -60,7 +63,10 @@ Contact the account administrator at: {0} or call {1}";
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
-            viewModel.ThrowIfNull(nameof(viewModel));
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
             var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, viewModel.ReturnUrl);
 
@@ -115,7 +121,7 @@ Contact the account administrator at: {0} or call {1}";
 
             if (string.IsNullOrWhiteSpace(redirectUrl))
             {
-                redirectUrl = "/";
+                redirectUrl = _publicBrowseSettings.BaseAddress;
             }
 
             return Redirect(redirectUrl);
@@ -139,7 +145,10 @@ Contact the account administrator at: {0} or call {1}";
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
         {
-            viewModel.ThrowIfNull(nameof(viewModel));
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
             if (!ModelState.IsValid)
             {
@@ -175,7 +184,10 @@ Contact the account administrator at: {0} or call {1}";
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
         {
-            viewModel.ThrowIfNull(nameof(viewModel));
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
 
             if (!ModelState.IsValid)
             {

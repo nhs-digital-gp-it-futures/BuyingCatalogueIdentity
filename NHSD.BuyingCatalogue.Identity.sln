@@ -45,7 +45,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Common", "src\NHSD.BuyingCatalogue.Identity.Common\NHSD.BuyingCatalogue.Identity.Common.csproj", "{FC020EEB-60F3-456C-B206-0FB8B357790A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Common.UnitTests", "tests\NHSD.BuyingCatalogue.Identity.Common.UnitTests\NHSD.BuyingCatalogue.Identity.Common.UnitTests.csproj", "{C7801439-A853-47A4-81A2-71016B443982}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Common.UnitTests", "tests\NHSD.BuyingCatalogue.Identity.Common.UnitTests\NHSD.BuyingCatalogue.Identity.Common.UnitTests.csproj", "{C7801439-A853-47A4-81A2-71016B443982}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests\NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.csproj", "{F569F73A-2430-4E50-B73D-B098B2D5994F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Common.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.csproj", "{0BA3AF01-6D61-43CD-AE57-D9501C92B327}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +107,14 @@ Global
 		{C7801439-A853-47A4-81A2-71016B443982}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7801439-A853-47A4-81A2-71016B443982}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7801439-A853-47A4-81A2-71016B443982}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F569F73A-2430-4E50-B73D-B098B2D5994F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F569F73A-2430-4E50-B73D-B098B2D5994F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F569F73A-2430-4E50-B73D-B098B2D5994F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F569F73A-2430-4E50-B73D-B098B2D5994F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BA3AF01-6D61-43CD-AE57-D9501C92B327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BA3AF01-6D61-43CD-AE57-D9501C92B327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BA3AF01-6D61-43CD-AE57-D9501C92B327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BA3AF01-6D61-43CD-AE57-D9501C92B327}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +132,8 @@ Global
 		{3EE9F379-F890-4E7E-93F1-D0FCF11BEA57} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
 		{FC020EEB-60F3-456C-B206-0FB8B357790A} = {33728341-9F25-493F-942A-8766990C2F9A}
 		{C7801439-A853-47A4-81A2-71016B443982} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
+		{F569F73A-2430-4E50-B73D-B098B2D5994F} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
+		{0BA3AF01-6D61-43CD-AE57-D9501C92B327} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A081915E-3D8B-4509-9F67-1971797275B2}

@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class DatabaseSteps
+    internal sealed class DatabaseSteps
     {
         private readonly Settings _settings;
 

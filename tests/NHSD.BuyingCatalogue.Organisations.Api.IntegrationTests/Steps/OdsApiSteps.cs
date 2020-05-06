@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
+using NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Utils;
 using RestEase;
 using TechTalk.SpecFlow;
 using WireMock.Admin.Mappings;
 using WireMock.Client;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
+namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class OdsApiSteps
+    internal sealed class OdsApiSteps
     {
-        private readonly ScenarioContext _context; 
+        private readonly ScenarioContext _context;
         private readonly Settings _settings;
 
         public OdsApiSteps(ScenarioContext context, Settings settings)

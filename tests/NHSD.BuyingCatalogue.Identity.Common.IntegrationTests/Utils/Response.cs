@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
+namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
 {
-    public sealed class Response
+    internal sealed class Response
     {
         public HttpResponseMessage Result { get; set; }
 

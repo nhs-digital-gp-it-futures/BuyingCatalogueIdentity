@@ -69,8 +69,14 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
             return first.SequenceEqual(second);
         }
 
-        public bool Equals(Result other)
+        public bool Equals(Result? other)
         {
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
             return other is object
                 && IsSuccess == other.IsSuccess
                 && AreErrorsEqual(Errors, other.Errors);
@@ -78,12 +84,9 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
 
         public override bool Equals(object? obj)
         {
-            return ReferenceEquals(this, obj) || obj is Result other && Equals(other);
+            return Equals(obj as Result);
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(IsSuccess, Errors);
-        }
+        public override int GetHashCode() => HashCode.Combine(IsSuccess, Errors);
     }
 }

@@ -46,7 +46,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            context.ThrowIfNull(nameof(context));
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             ApplicationUser user = await GetApplicationUserAsync(context.Subject);
             if (user is object)
@@ -57,7 +60,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
         public async Task IsActiveAsync(IsActiveContext context)
         {
-            context.ThrowIfNull(nameof(context));
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             ApplicationUser user = await GetApplicationUserAsync(context.Subject);
 
@@ -66,7 +72,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
         private async Task<ApplicationUser> GetApplicationUserAsync(ClaimsPrincipal subject)
         {
-            subject.ThrowIfNull(nameof(subject));
+            if (subject is null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
 
             string subjectId = subject.GetSubjectId();
             return await _applicationUserRepository.GetByIdAsync(subjectId);

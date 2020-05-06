@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
 {
     [Binding]
-    public sealed class CommonSteps
+    internal sealed class CommonSteps
     {
         private readonly Response _response;
 

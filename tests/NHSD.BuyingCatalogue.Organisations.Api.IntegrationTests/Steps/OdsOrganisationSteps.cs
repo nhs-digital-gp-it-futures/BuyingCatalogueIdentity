@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common;
-using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
-namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
+namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 {
     [Binding]
     internal sealed class OdsOrganisationSteps
@@ -25,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response = response;
             _request = request;
             _api = api;
-            _organisationUrl = settings.OrganisationApiBaseUrl + "/api/v1/ods";
+            _organisationUrl = settings.OrganisationsApiBaseUrl + "/api/v1/ods";
         }
 
         [Given(@"Ods Organisations exist")]
