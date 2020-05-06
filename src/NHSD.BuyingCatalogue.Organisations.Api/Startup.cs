@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
+using NHSD.BuyingCatalogue.Organisations.Api.Logging;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
@@ -94,7 +95,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            app.UseSerilogRequestLogging();
+            app.UseSerilogRequestLogging(opts =>
+            {
+                opts.GetLevel = SerilogRequestLoggingOptions.GetLevel;
+            });
 
             if (env.IsDevelopment())
             {
