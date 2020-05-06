@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Models
 {
-    public sealed class OrganisationFunction
+    public sealed class OrganisationFunction : IEquatable<OrganisationFunction>
     {
         public static readonly OrganisationFunction Authority = new OrganisationFunction(1, nameof(Authority));
         public static readonly OrganisationFunction Buyer = new OrganisationFunction(2, nameof(Buyer));
@@ -31,19 +31,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
             return _values.SingleOrDefault(x => string.Equals(x.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
         }
 
-        private bool Equals(OrganisationFunction other)
-        {
-            return Equals(Value, other.Value);
-        }
-
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) || obj is OrganisationFunction other && Equals(other);
+            return Equals(obj as OrganisationFunction);
         }
 
-        public override int GetHashCode()
+        public bool Equals(OrganisationFunction other)
         {
-            return Value.GetHashCode();
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return Value == other.Value;
         }
+
+        public override int GetHashCode() => HashCode.Combine(Value);
     }
 }

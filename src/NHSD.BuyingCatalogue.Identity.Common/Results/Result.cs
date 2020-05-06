@@ -71,6 +71,12 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
 
         public bool Equals(Result other)
         {
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
             return other is object
                 && IsSuccess == other.IsSuccess
                 && AreErrorsEqual(Errors, other.Errors);
@@ -78,12 +84,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
 
         public override bool Equals(object? obj)
         {
-            return ReferenceEquals(this, obj) || obj is Result other && Equals(other);
+#pragma warning disable CS8604 // Possible null reference argument.
+            return Equals(obj as Result);
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(IsSuccess, Errors);
-        }
+        public override int GetHashCode() => HashCode.Combine(IsSuccess, Errors);
     }
 }

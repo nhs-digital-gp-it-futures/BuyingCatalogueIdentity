@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Identity.Common.Models
 {
-    public sealed class ErrorDetails
+    public sealed class ErrorDetails : IEquatable<ErrorDetails>
     {
         public string Id { get; }
 
@@ -14,20 +14,27 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models
             Field = field;
         }
 
-        private bool Equals(ErrorDetails other)
+        public bool Equals(ErrorDetails other)
         {
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
             return string.Equals(Id, other.Id, StringComparison.Ordinal)
                 && string.Equals(Field, other.Field, StringComparison.Ordinal);
         }
 
+
         public override bool Equals(object? obj)
         {
-            return ReferenceEquals(this, obj) || obj is ErrorDetails other && Equals(other);
+#pragma warning disable CS8604 // Possible null reference argument.
+            return Equals(obj as ErrorDetails);
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Id, Field);
-        }
+        public override int GetHashCode() => HashCode.Combine(Id, Field);
+        
     }
 }

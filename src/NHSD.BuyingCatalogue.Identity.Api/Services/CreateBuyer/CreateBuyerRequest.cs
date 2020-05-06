@@ -25,6 +25,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
 
         public bool Equals(CreateBuyerRequest other)
         {
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
             return other is object 
                    && PrimaryOrganisationId.Equals(other.PrimaryOrganisationId) 
                    && string.Equals(FirstName, other.FirstName, StringComparison.Ordinal)
@@ -35,12 +41,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) || obj is CreateBuyerRequest other && Equals(other);
+            return Equals(obj as CreateBuyerRequest);
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(PrimaryOrganisationId, FirstName, LastName, PhoneNumber, EmailAddress);
-        }
+        public override int GetHashCode() => HashCode.Combine(PrimaryOrganisationId, FirstName, LastName, PhoneNumber, EmailAddress);
+        
     }
 }
