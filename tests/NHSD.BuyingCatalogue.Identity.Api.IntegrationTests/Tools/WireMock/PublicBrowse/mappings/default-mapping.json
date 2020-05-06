@@ -20,5 +20,27 @@
       "Body": "Welcome to the fake public browse homepage",
       "Headers": {}
     }
+  },
+  {
+    "Guid": "19c89118-87b8-49c4-a15f-9a661360c0c0",
+    "Priority": 5000,
+    "Request": {
+      "Path": {
+        "Matchers": [
+          {
+            "Name": "WildcardMatcher",
+            "Pattern": "/publicbrowse/back-from-admin",
+            "IgnoreCase": false
+          }
+        ]
+      },
+      "Methods": [
+        "GET"
+      ]
+    },
+    "Response": {
+      "Body": "Welcome to the fake public browse login page",
+      "Headers": {}
+    }
   }
 ]

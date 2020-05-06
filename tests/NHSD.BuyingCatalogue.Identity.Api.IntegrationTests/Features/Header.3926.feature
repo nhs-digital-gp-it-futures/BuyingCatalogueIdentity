@@ -3,7 +3,7 @@
     I want to see the contents of the page header
 
 Background:
-	Given the user navigates directly to the login page
+	When the user navigates to a restricted web page
 
 @3926
 Scenario: 1. The page contains a header

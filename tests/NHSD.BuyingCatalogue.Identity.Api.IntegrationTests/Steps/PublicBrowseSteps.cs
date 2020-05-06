@@ -11,17 +11,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly SeleniumContext _context;
         private readonly string _publicBrowseBaseUrl;
+        private readonly string _publicBrowseLoginUrl;
 
         public PublicBrowseSteps(SeleniumContext context, Settings settings)
         {
             _context = context;
             _publicBrowseBaseUrl = settings.PublicBrowseBaseUrl;
+            _publicBrowseLoginUrl = settings.PublicBrowseLoginUrl;
         }
 
         [Then(@"the user is redirected to the public browse homepage")]
         public void ThenTheUserIsRedirectedToThePublicBrowseHomepage()
         {
             _context.WebWaiter.Until(x => string.Equals(x.Url, _publicBrowseBaseUrl, StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Then(@"the user is redirected to the public browse login page")]
+        public void ThenTheUserIsRedirectedToThePublicBrowseLoginPage()
+        {
+            _context.WebWaiter.Until(x => string.Equals(x.Url, _publicBrowseLoginUrl, StringComparison.OrdinalIgnoreCase));
         }
 
         [Then(@"the NHS header logo should link to the public browse homepage")]

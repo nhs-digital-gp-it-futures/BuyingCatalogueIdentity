@@ -47,7 +47,7 @@ Contact the account administrator at: {0} or call {1}";
         public IActionResult Login(Uri returnUrl)
         {
             if (returnUrl == null)
-                returnUrl = new Uri(_publicBrowseSettings.LoginPath, UriKind.RelativeOrAbsolute);
+                return RedirectToPublicBrowseLogin();
 
             LoginViewModel loginViewModel = new LoginViewModel
             {
@@ -68,7 +68,12 @@ Contact the account administrator at: {0} or call {1}";
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, viewModel.ReturnUrl);
+            var returnUri = viewModel.ReturnUrl;
+
+            if (returnUri == null)
+                return RedirectToPublicBrowseLogin();
+
+            var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, returnUri);
 
             LoginViewModel NewLoginViewModel() =>
                 new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.Value?.LoginHint };
@@ -101,7 +106,7 @@ Contact the account administrator at: {0} or call {1}";
                 return View(NewLoginViewModel());
             }
 
-            var returnUrl = viewModel.ReturnUrl.ToString();
+            var returnUrl = returnUri.ToString();
 
             // We can trust viewModel.ReturnUrl since GetAuthorizationContextAsync returned non-null
             if (signInResult.Value.IsTrustedReturnUrl)
@@ -227,6 +232,11 @@ Contact the account administrator at: {0} or call {1}";
         public IActionResult ResetPasswordExpired()
         {
             return View();
+        }
+
+        private RedirectResult RedirectToPublicBrowseLogin()
+        {
+            return Redirect(_publicBrowseSettings.LoginAddress.ToString());
         }
     }
 }
