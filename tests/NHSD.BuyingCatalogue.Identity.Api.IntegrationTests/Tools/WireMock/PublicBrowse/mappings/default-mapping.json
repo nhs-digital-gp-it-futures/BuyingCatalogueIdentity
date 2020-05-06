@@ -29,7 +29,7 @@
         "Matchers": [
           {
             "Name": "WildcardMatcher",
-            "Pattern": "/publicbrowse/back-from-admin",
+            "Pattern": "/publicbrowse/re-login",
             "IgnoreCase": false
           }
         ]
