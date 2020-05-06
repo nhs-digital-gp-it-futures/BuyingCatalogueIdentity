@@ -215,13 +215,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         [Test]
         public void Login_Uri_NullReturnUrl_ReturnsRedirectResult()
         {
-            const string expectedBaseAddress = "https://public-prowse";
-            const string expectedLoginPath = "/login";
-
             var publicBrowseSettings = new PublicBrowseSettings
             {
-                BaseAddress = expectedBaseAddress,
-                LoginPath = expectedLoginPath
+                BaseAddress = "https://public-prowse",
+                LoginPath = "/some-login-path"
             };
 
             using var controller = AccountControllerBuilder
