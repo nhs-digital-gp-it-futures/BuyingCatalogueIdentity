@@ -20,20 +20,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
         public void Constructor_IHttpContextAccessor_LinkGenerator_NullAccessor_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(null, Mock.Of<LinkGenerator>()));
+            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(null, Mock.Of<LinkGenerator>(), new Api.Settings.IssuerSettings()));
         }
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
         public void Constructor_IHttpContextAccessor_LinkGenerator_NullGenerator_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(Mock.Of<IHttpContextAccessor>(), null));
+            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(Mock.Of<IHttpContextAccessor>(), null,new Api.Settings.IssuerSettings()));
         }
 
         [Test]
         public void GetPasswordResetCallback_NullToken_ThrowsException()
         {
-            var callback = new PasswordResetCallback(Mock.Of<IHttpContextAccessor>(), Mock.Of<LinkGenerator>());
+            var callback = new PasswordResetCallback(Mock.Of<IHttpContextAccessor>(), Mock.Of<LinkGenerator>(), new Api.Settings.IssuerSettings());
 
             Assert.Throws<ArgumentNullException>(() => callback.GetPasswordResetCallback(null));
         }
@@ -111,7 +111,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             }
 
             internal PasswordResetCallback Callback => new PasswordResetCallback(
-                _mockAccessor.Object, _mockGenerator.Object);
+                _mockAccessor.Object, _mockGenerator.Object, new Api.Settings.IssuerSettings { IssuerUrl = new Uri("http://www.google.com") });
 
             internal RouteValueDictionary RouteValues { get; private set; }
 
