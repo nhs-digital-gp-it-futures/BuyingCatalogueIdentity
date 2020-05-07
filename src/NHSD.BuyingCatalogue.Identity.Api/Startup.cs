@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using IdentityServer4.Stores;
@@ -69,6 +70,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             var issuerUrl = _configuration.GetValue<string>("issuerUrl");
 
+            var issuerSettings = new IssuerSettings { IssuerUrl = new Uri(issuerUrl) };
+
             var publicBrowseSettings = _configuration.GetSection("publicBrowse").Get<PublicBrowseSettings>();
 
             Log.Logger.Information("Clients: {@clients}", clients);
@@ -84,6 +87,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(cookieExpiration);
             services.AddSingleton(disabledErrorMessage);
             services.AddSingleton(registrationSettings);
+            services.AddSingleton(issuerSettings);
             services.AddSingleton<IScopeRepository>(new ScopeRepository(apiResources, identityResources));
             services.AddSingleton(publicBrowseSettings);
 
