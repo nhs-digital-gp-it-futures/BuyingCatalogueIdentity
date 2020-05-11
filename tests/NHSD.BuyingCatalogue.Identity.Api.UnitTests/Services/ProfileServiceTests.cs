@@ -335,6 +335,48 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expectedClaimTypes);
         }
 
+        [TestCase("Authority", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Organisation, ApplicationClaimTypes.Account)]
+        [TestCase("Buyer", Subject, ApplicationClaimTypes.PrimaryOrganisationId,  ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
+        public async Task GetProfileDataAsync_GivenApplicationUserWithInvalidPrimaryOrganisationId_ReturnDoesNotIncludePrimaryOrganisationName(
+            string organisationFunctionDisplayName,
+            params string[] expectedClaimTypes)
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithUsername(string.Empty)
+                .WithFirstName(string.Empty)
+                .WithLastName(string.Empty)
+                .WithEmailAddress(string.Empty)
+                .WithOrganisationFunction(OrganisationFunction.FromDisplayName(organisationFunctionDisplayName))
+                .Build();
+
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
+            organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(null as Organisation);
+
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .WithOrganisationRepository(organisationRespositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => item.Type);
+            actual.Should().BeEquivalentTo(expectedClaimTypes);
+        }
+
+
         [Test]
         public async Task GetProfileDataAsync_GivenNoApplicationUserExists_ReturnsEmptyClaimList()
         {
