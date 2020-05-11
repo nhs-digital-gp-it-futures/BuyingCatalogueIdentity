@@ -26,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentNullException(nameof(token));
 
             var context = _accessor.HttpContext;
-            var hostString = new HostString(_issuerSettings.IssuerUrl.Host);
+            var hostString = new HostString(_issuerSettings.IssuerUrl.Authority);
             
             var action = _generator.GetUriByAction(
                 context,
