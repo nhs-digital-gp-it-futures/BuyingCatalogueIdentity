@@ -1,7 +1,6 @@
 variables:
   dockerVersion: '19.03.5'
   dotnetVersion: '3.x'
-  MSBUILDSINGLELOADCONTEXT: '1'
 
 trigger:
 - master
