@@ -1,6 +1,7 @@
 variables:
   dockerVersion: '19.03.5'
-  dotnetVersion: '3.1.101'
+  dotnetVersion: '3.x'
+  MSBUILDSINGLELOADCONTEXT: '1'
 
 trigger:
 - master
@@ -15,7 +16,7 @@ pool:
 
 jobs:
 - job: build
-  displayName: Build app and run tests
+  displayName: Build database project & publish dacpac
 
   steps:
   - task: VSBuild@1
@@ -46,7 +47,7 @@ jobs:
     enabled: false
 
 - job: dockerBuildAndPush
-  displayName: Build and push docker containers to the acr
+  displayName: Run Unit & Integration tests and build & push docker containers to the acr
 
   pool:
     vmImage: 'ubuntu-latest'
@@ -54,7 +55,7 @@ jobs:
   steps:
 
   - task: UseDotNet@2
-    displayName: 'Use DotNet Core 3.1'
+    displayName: 'Use DotNet Core $(dotnetVersion)'
     inputs:
       version: $(dotnetVersion)
       includePreviewVersions: false
@@ -91,6 +92,7 @@ jobs:
 
   - task: DockerCompose@0
     displayName: 'Build: Dev'
+    condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'))
     inputs:
       containerregistrytype: 'Azure Container Registry'
       azureSubscription: 'NHSAPP-BuyingCatalogue (Non-Prod)'
