@@ -26,14 +26,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentNullException(nameof(token));
 
             var context = _accessor.HttpContext;
+            var hostString = new HostString(_issuerSettings.IssuerUrl.Authority);
             
             var action = _generator.GetUriByAction(
                 context,
                 nameof(AccountController.ResetPassword), 
                 nameof(AccountController).TrimController(),
                 new { token.Token, token.User.Email },
-                context.Request.Scheme,
-                HostString.FromUriComponent(_issuerSettings.IssuerUrl)
+                _issuerSettings.IssuerUrl.Scheme,
+                hostString
                 );
 
             return new Uri(action);
