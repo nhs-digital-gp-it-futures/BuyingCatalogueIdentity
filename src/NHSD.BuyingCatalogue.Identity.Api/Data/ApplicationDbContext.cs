@@ -15,6 +15,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Data
 
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
+        public DbSet<Organisation> Organisations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder is null)

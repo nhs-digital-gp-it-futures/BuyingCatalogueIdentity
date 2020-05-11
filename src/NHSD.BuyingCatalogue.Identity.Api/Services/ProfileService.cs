@@ -18,6 +18,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     {
         private readonly IUsersRepository _applicationUserRepository;
 
+        private readonly IOrganisationRepository _organisationRepository;
+
         private static readonly IDictionary<OrganisationFunction, IEnumerable<Claim>> _organisationFunctionClaims =
             new Dictionary<OrganisationFunction, IEnumerable<Claim>>
             {
@@ -38,10 +40,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 }
             };
 
-        public ProfileService(IUsersRepository applicationUserRepository)
+        public ProfileService(IUsersRepository applicationUserRepository , IOrganisationRepository organisationRepository)
         {
             _applicationUserRepository = applicationUserRepository ??
-                throw new ArgumentNullException(nameof(applicationUserRepository));
+                                         throw new ArgumentNullException(nameof(applicationUserRepository));
+            _organisationRepository = organisationRepository ??
+                                      throw new ArgumentNullException(nameof(organisationRepository));
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -52,9 +56,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             }
 
             ApplicationUser user = await GetApplicationUserAsync(context.Subject);
+
             if (user is object)
             {
-                context.IssuedClaims = GetClaimsFromUser(user);
+                var primaryOrganisation = await _organisationRepository.GetByIdAsync(user.PrimaryOrganisationId);
+                context.IssuedClaims = GetClaimsFromUser(user, primaryOrganisation?.Name);
             }
         }
 
@@ -81,14 +87,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             return await _applicationUserRepository.GetByIdAsync(subjectId);
         }
 
-        private static List<Claim> GetClaimsFromUser(ApplicationUser user)
+        private static List<Claim> GetClaimsFromUser(ApplicationUser user, string primaryOrganisationName)
         {
             var claims = new List<Claim>();
 
             claims.AddRange(GetIdClaims(user));
             claims.AddRange(GetNameClaims(user));
             claims.AddRange(GetEmailClaims(user));
-            claims.AddRange(GetOrganisationClaims(user));
+            claims.AddRange(GetOrganisationClaims(user, primaryOrganisationName));
 
             return claims;
         }
@@ -135,9 +141,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 yield return new Claim(JwtClaimTypes.Name, name);
         }
 
-        private static IEnumerable<Claim> GetOrganisationClaims(ApplicationUser user)
+        private static IEnumerable<Claim> GetOrganisationClaims(ApplicationUser user, string primarOrganisationName)
         {
+            var temp = primarOrganisationName + "";
+            
             yield return new Claim(ApplicationClaimTypes.PrimaryOrganisationId, user.PrimaryOrganisationId.ToString());
+
+            if (!primarOrganisationName.IsNullOrEmpty())
+            {
+                yield return new Claim(ApplicationClaimTypes.PrimaryOrganisationName, primarOrganisationName);
+            }
 
             OrganisationFunction organisationFunction = user.OrganisationFunction;
 

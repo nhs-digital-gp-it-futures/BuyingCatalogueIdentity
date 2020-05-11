@@ -32,14 +32,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithOrganisationFunction(OrganisationFunction.Authority)
                 .Build();
 
+            var expectedOrganisation = OrganisationBuilder
+                .Create()
+                .WithName("Primary Health Trust")
+                .Build();
+
             Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
             applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
+            Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
+            organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
             var sut = ProfileServiceBuilder
-                .Create()
-                .WithUserRepository(applicationUserRepositoryMock.Object)
-                .Build();
+                    .Create()
+                    .WithUserRepository(applicationUserRepositoryMock.Object)
+                    .WithOrganisationRepository(organisationRespositoryMock.Object)
+                    .Build();
 
             var profileDataRequestContext = ProfileDataRequestContextBuilder
                 .Create()
@@ -59,6 +69,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 (Email, expectedApplicationUser.Email),
                 (EmailVerified, expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
                 (ApplicationClaimTypes.PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
+                (ApplicationClaimTypes.PrimaryOrganisationName,expectedOrganisation.Name),
                 (ApplicationClaimTypes.OrganisationFunction, expectedApplicationUser.OrganisationFunction.DisplayName),
                 (ApplicationClaimTypes.Organisation, Manage),
                 (ApplicationClaimTypes.Account, Manage)
@@ -84,9 +95,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
+            var expectedOrganisation = OrganisationBuilder
+                .Create()
+                .WithName("Primary Health Trust")
+                .Build();
+
+            Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
+            organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
             var sut = ProfileServiceBuilder
                 .Create()
                 .WithUserRepository(applicationUserRepositoryMock.Object)
+                .WithOrganisationRepository(organisationRespositoryMock.Object)
                 .Build();
 
             var profileDataRequestContext = ProfileDataRequestContextBuilder
@@ -109,6 +130,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                     expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
                 (ApplicationClaimTypes.PrimaryOrganisationId,
                     expectedApplicationUser.PrimaryOrganisationId.ToString()),
+                (ApplicationClaimTypes.PrimaryOrganisationName,
+                    expectedOrganisation.Name),
                 (ApplicationClaimTypes.OrganisationFunction,
                     expectedApplicationUser.OrganisationFunction.DisplayName),
                 (ApplicationClaimTypes.Ordering, Manage)
@@ -118,8 +141,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestCase("SomeId", "SomeUserName", Subject, PreferredUserName, JwtRegisteredClaimNames.UniqueName, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
-        [TestCase("SomeId", "", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
+        [TestCase("SomeId", "SomeUserName", Subject, PreferredUserName, JwtRegisteredClaimNames.UniqueName, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
+        [TestCase("SomeId", "", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithId_ReturnExpectedClaimList(
             string expectedUserId,
             string expectedUserName,
@@ -139,9 +162,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
+            var expectedOrganisation = OrganisationBuilder
+                .Create()
+                .WithName("Primary Health Trust")
+                .Build();
+
+            Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
+            organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
             var sut = ProfileServiceBuilder
                 .Create()
                 .WithUserRepository(applicationUserRepositoryMock.Object)
+                .WithOrganisationRepository(organisationRespositoryMock.Object)
                 .Build();
 
             var profileDataRequestContext = ProfileDataRequestContextBuilder
@@ -155,8 +188,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expectedClaimTypes);
         }
 
-        [TestCase("someone@email.com", Subject, Email, EmailVerified, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
-        [TestCase("", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
+        [TestCase("someone@email.com", Subject, Email, EmailVerified, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
+        [TestCase("", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithEmail_ReturnExpectedClaimList(
             string expectedEmail,
             params string[] expectedClaimTypes)
@@ -174,9 +207,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
+            var expectedOrganisation = OrganisationBuilder
+                .Create()
+                .WithName("Primary Health Trust")
+                .Build();
+
+            Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
+            organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
+
             var sut = ProfileServiceBuilder
                 .Create()
                 .WithUserRepository(applicationUserRepositoryMock.Object)
+                .WithOrganisationRepository(organisationRespositoryMock.Object)
                 .Build();
 
             var profileDataRequestContext = ProfileDataRequestContextBuilder
@@ -210,9 +254,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
+            var expectedOrganisation = OrganisationBuilder
+                .Create()
+                .WithName("Primary Health Trust")
+                .Build();
+
+            Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
+            organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
+
             var sut = ProfileServiceBuilder
                 .Create()
                 .WithUserRepository(applicationUserRepositoryMock.Object)
+                .WithOrganisationRepository(organisationRespositoryMock.Object)
                 .Build();
 
             var profileDataRequestContext = ProfileDataRequestContextBuilder
@@ -234,8 +289,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestCase("Authority", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Organisation, ApplicationClaimTypes.Account)]
-        [TestCase("Buyer", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
+        [TestCase("Authority", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Organisation, ApplicationClaimTypes.Account)]
+        [TestCase("Buyer", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering)]
         public async Task GetProfileDataAsync_GivenApplicationUserWithOrganisationFunction_ReturnExpectedClaimList(
             string organisationFunctionDisplayName, 
             params string[] expectedClaimTypes)
@@ -253,9 +308,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             applicationUserRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(expectedApplicationUser);
 
+            var expectedOrganisation = OrganisationBuilder
+                .Create()
+                .WithName("Primary Health Trust")
+                .Build();
+
+            Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
+            organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
+
             var sut = ProfileServiceBuilder
                 .Create()
                 .WithUserRepository(applicationUserRepositoryMock.Object)
+                .WithOrganisationRepository(organisationRespositoryMock.Object)
                 .Build();
 
             var profileDataRequestContext = ProfileDataRequestContextBuilder
