@@ -92,6 +92,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddSingleton(publicBrowseSettings);
 
             services.AddTransient<IUsersRepository, UsersRepository>();
+            services.AddTransient<IOrganisationRepository, OrganisationRepository>();
 
             services
                 .AddTransient<IRegistrationService, RegistrationService>()

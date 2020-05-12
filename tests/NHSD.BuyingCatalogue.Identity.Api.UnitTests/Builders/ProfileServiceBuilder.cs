@@ -7,10 +7,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
     internal sealed class ProfileServiceBuilder
     {
         private IUsersRepository _userRepository;
+        private IOrganisationRepository _organisationRepository;
 
-        internal ProfileServiceBuilder()
+        private ProfileServiceBuilder()
         {
             _userRepository = Mock.Of<IUsersRepository>();
+            _organisationRepository = Mock.Of<IOrganisationRepository>();
         }
 
         internal static ProfileServiceBuilder Create() => new ProfileServiceBuilder();
@@ -21,6 +23,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             return this;
         }
 
-        internal ProfileService Build() => new ProfileService(_userRepository);
+        internal  ProfileServiceBuilder WithOrganisationRepository(IOrganisationRepository organisationRepository)
+        {
+            _organisationRepository = organisationRepository;
+            return this;
+        }
+
+        internal ProfileService Build() => new ProfileService(_userRepository, _organisationRepository);
     }
 }

@@ -7,7 +7,6 @@ using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
@@ -17,6 +16,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     public sealed class ProfileService : IProfileService
     {
         private readonly IUsersRepository _applicationUserRepository;
+
+        private readonly IOrganisationRepository _organisationRepository;
 
         private static readonly IDictionary<OrganisationFunction, IEnumerable<Claim>> _organisationFunctionClaims =
             new Dictionary<OrganisationFunction, IEnumerable<Claim>>
@@ -38,10 +39,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 }
             };
 
-        public ProfileService(IUsersRepository applicationUserRepository)
+        public ProfileService(IUsersRepository applicationUserRepository , IOrganisationRepository organisationRepository)
         {
             _applicationUserRepository = applicationUserRepository ??
-                throw new ArgumentNullException(nameof(applicationUserRepository));
+                                         throw new ArgumentNullException(nameof(applicationUserRepository));
+            _organisationRepository = organisationRepository ??
+                                      throw new ArgumentNullException(nameof(organisationRepository));
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -52,10 +55,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             }
 
             ApplicationUser user = await GetApplicationUserAsync(context.Subject);
+
             if (user is object)
             {
-                context.IssuedClaims = GetClaimsFromUser(user);
+                var claims =  GetClaimsFromUser(user);
+                var primamryName = await GetPrimaryOrganisationName(user.PrimaryOrganisationId);
+                if (primamryName != null)
+                {
+                    claims.Add(primamryName);
+                }
+                context.IssuedClaims = claims;
             }
+        }
+
+        public async Task<Claim> GetPrimaryOrganisationName(Guid primaryOrganisationId)
+        {
+            Claim claim = null;
+            var organisationName = (await _organisationRepository.GetByIdAsync(primaryOrganisationId))?.Name;
+            if (!organisationName.IsNullOrEmpty())
+            {
+                claim = new Claim(ApplicationClaimTypes.PrimaryOrganisationName, organisationName);
+            }
+            return claim;
         }
 
         public async Task IsActiveAsync(IsActiveContext context)

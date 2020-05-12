@@ -11,7 +11,10 @@ BEGIN
     DECLARE @executiveAgencyRoleId AS nchar(5) = 'RO116';
 
     DECLARE @aliceOrganisationId AS uniqueidentifier = (SELECT TOP (1) OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId ORDER BY OdsCode);
+    DECLARE @aliceOrganisationName AS nvarchar(255) =  (SELECT TOP (1) Name FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId ORDER BY OdsCode);
+
     DECLARE @bobOrganisationId AS uniqueidentifier = (SELECT OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @executiveAgencyRoleId);
+    DECLARE @bobOrganisationName AS nvarchar(255) =  (SELECT TOP (1) Name FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId ORDER BY OdsCode);
 
 	DECLARE @address AS nchar(108) = N'{ "street_address": "One Hacker Way", "locality": "Heidelberg", "postal_code": 69118, "country": "Germany" }';
 
@@ -44,8 +47,10 @@ BEGIN
 	(N'email_verified', N'true', @aliceId),
 	(N'website', N'http://alice.com/', @aliceId),
 	(N'address', @address, @aliceId),
+    (N'PrimaryOrganisationName', @aliceOrganisation, @aliceId),
 	(N'email_verified', N'true', @bobId),
 	(N'location', N'somewhere', @bobId),
 	(N'website', N'http://bob.com/', @bobId),
-	(N'address', @address, @bobId);
+	(N'address', @address, @bobId),
+    (N'PrimaryOrganisationName', @bobOrganisation, @bobId);
 END;
