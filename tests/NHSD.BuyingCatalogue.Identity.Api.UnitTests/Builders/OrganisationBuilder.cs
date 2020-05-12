@@ -12,9 +12,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private Guid _organisationId;
         private string _name;
 
-        public OrganisationBuilder()
+        private OrganisationBuilder()
         {
-            _organisationId = new Guid();
+            _organisationId =  Guid.NewGuid();
             _name = "Primary HealthTrust";
         }
 

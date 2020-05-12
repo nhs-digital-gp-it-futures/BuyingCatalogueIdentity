@@ -18,7 +18,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
 
         public async Task<Organisation> GetByIdAsync(Guid id)
         {
-            return await _context.Organisations.FirstOrDefaultAsync(org => org.OrganisationId == id);
+            return await _context.Organisations.FindAsync(id);
         }
     }
 }

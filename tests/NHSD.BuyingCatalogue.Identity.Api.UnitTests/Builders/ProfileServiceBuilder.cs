@@ -9,7 +9,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private IUsersRepository _userRepository;
         private IOrganisationRepository _organisationRepository;
 
-        internal ProfileServiceBuilder()
+        private ProfileServiceBuilder()
         {
             _userRepository = Mock.Of<IUsersRepository>();
             _organisationRepository = Mock.Of<IOrganisationRepository>();

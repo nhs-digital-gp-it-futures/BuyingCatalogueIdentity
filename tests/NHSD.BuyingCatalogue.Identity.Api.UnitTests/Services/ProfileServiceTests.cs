@@ -34,7 +34,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var expectedOrganisation = OrganisationBuilder
                 .Create()
-                .WithName("Primary Health Trust")
                 .Build();
 
             Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
@@ -97,7 +96,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var expectedOrganisation = OrganisationBuilder
                 .Create()
-                .WithName("Primary Health Trust")
                 .Build();
 
             Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
@@ -164,7 +162,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var expectedOrganisation = OrganisationBuilder
                 .Create()
-                .WithName("Primary Health Trust")
                 .Build();
 
             Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
@@ -209,7 +206,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var expectedOrganisation = OrganisationBuilder
                 .Create()
-                .WithName("Primary Health Trust")
                 .Build();
 
             Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
@@ -256,7 +252,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var expectedOrganisation = OrganisationBuilder
                 .Create()
-                .WithName("Primary Health Trust")
                 .Build();
 
             Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
@@ -310,13 +305,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var expectedOrganisation = OrganisationBuilder
                 .Create()
-                .WithName("Primary Health Trust")
                 .Build();
 
             Mock<IOrganisationRepository> organisationRespositoryMock = new Mock<IOrganisationRepository>();
             organisationRespositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedOrganisation);
-
 
             var sut = ProfileServiceBuilder
                 .Create()

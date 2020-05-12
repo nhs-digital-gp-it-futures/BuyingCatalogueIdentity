@@ -7,7 +7,7 @@ Background:
 	Given Organisations exist
 		| Name           | OdsCode |
 		| Organisation 1 | Ods 1   |
-        | Organisation 2 | Ods 2   |
+		| Organisation 2 | Ods 2   |
 	And Users exist
 		| Id     | OrganisationName | FirstName | LastName | Email                  | PhoneNumber | Disabled | Password        | OrganisationFunction |
 		| 012345 |                  | Penny     | Lane     | PennyLane@email.com    | 01234567890 | false    | S0mePa$$w0rd    | Buyer                |

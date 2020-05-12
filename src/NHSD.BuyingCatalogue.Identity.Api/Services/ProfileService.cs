@@ -59,13 +59,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (user is object)
             {
                 var claims =  GetClaimsFromUser(user);
-                var organisationName = (await _organisationRepository.GetByIdAsync(user.PrimaryOrganisationId))?.Name;
-                if (!organisationName.IsNullOrEmpty())
+                var primamryName = await GetPrimaryOrganisationName(user.PrimaryOrganisationId);
+                if (primamryName != null)
                 {
-                    claims.Add(new Claim(ApplicationClaimTypes.PrimaryOrganisationName, organisationName));
+                    claims.Add(primamryName);
                 }
                 context.IssuedClaims = claims;
             }
+        }
+
+        public async Task<Claim> GetPrimaryOrganisationName(Guid primaryOrganisationId)
+        {
+            Claim claim = null;
+            var organisationName = (await _organisationRepository.GetByIdAsync(primaryOrganisationId))?.Name;
+            if (!organisationName.IsNullOrEmpty())
+            {
+                claim = new Claim(ApplicationClaimTypes.PrimaryOrganisationName, organisationName);
+            }
+            return claim;
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
