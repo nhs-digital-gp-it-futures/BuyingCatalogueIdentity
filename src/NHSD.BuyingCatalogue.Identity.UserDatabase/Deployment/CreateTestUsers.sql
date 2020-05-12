@@ -47,10 +47,10 @@ BEGIN
 	(N'email_verified', N'true', @aliceId),
 	(N'website', N'http://alice.com/', @aliceId),
 	(N'address', @address, @aliceId),
-    (N'PrimaryOrganisationName', @aliceOrganisation, @aliceId),
+    (N'primaryOrganisationName', @aliceOrganisationName, @aliceId),
 	(N'email_verified', N'true', @bobId),
 	(N'location', N'somewhere', @bobId),
 	(N'website', N'http://bob.com/', @bobId),
 	(N'address', @address, @bobId),
-    (N'PrimaryOrganisationName', @bobOrganisation, @bobId);
+    (N'primaryOrganisationName', @bobOrganisationName, @bobId);
 END;
