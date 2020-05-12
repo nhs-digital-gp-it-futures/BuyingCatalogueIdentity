@@ -4,7 +4,14 @@
     So that I can request a new reset password link
 
 Background: 
-    When the user navigates to identity url account/resetpasswordexpired
+    Given Organisations exist
+        | Name           | OdsCode |
+        | Organisation 1 | Ods 1   |
+    And Users exist
+        | Id  | OrganisationName | FirstName | LastName | Email          | PhoneNumber | Disabled | Password          |
+        | 123 | Organisation 1   | John      | Doe      | test@user.com  | 01234567890 | false    | testingtesting123 |
+    When the user with ID 123 has an expired password reset token
+    And the user navigates to identity url account/resetpassword with a password reset token
     Then the user is redirected to page account/resetpasswordexpired
 
 @3926

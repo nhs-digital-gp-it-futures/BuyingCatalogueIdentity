@@ -30,7 +30,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _seleniumContext.WebDriver.Navigate().GoToUrl($"{_discovery}/{url}");
         }
 
-        [When(@"the user navigates to identity url (\S*) with a valid password reset token")]
+        [When(@"the user navigates to identity url (\S*) with a password reset token")]
         public void WhenTheUserNavigatesToUrlWithValidPasswordResetToken(string url)
         {
             var user = _context.Get<IdentityUser>();

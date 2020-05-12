@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,6 +43,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
         private IEnumerable<DataProtectionKey> Keys =>
             _keyRepository.GetAllElements().Select(e => new DataProtectionKey(e));
+
+        [When(@"the user with ID (\S*) has an expired password reset token")]
+        public async Task WhenTheUserWithIdHasExpiredPasswordResetTokenAsync(string userId)
+        {
+            await WhenTheUserWithIdHasValidPasswordResetTokenAsync(userId);
+            var userEntity = new UserEntity {Id = userId, SecurityStamp = Guid.NewGuid().ToString()};
+            await userEntity.UpdateSecurityStamp(_settings.ConnectionString);
+        }
 
         [When(@"the user with ID (\S*) has a valid password reset token")]
         public async Task WhenTheUserWithIdHasValidPasswordResetTokenAsync(string userId)

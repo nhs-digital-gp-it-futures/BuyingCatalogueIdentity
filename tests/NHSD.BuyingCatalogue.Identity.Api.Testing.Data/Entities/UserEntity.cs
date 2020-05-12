@@ -54,7 +54,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
               FROM dbo.AspNetUsers
               WHERE Email = @Email";
 
+        private static string UpdateSecurityStampSql => @"
+              UPDATE dbo.AspNetUsers
+              SET SecurityStamp = '@stamp'
+              WHERE Id = @id";
+
         public async Task<string> GetIdByEmail(string connectionString) =>
             await SqlRunner.FetchSingleResultAsync<string>(connectionString, GetIdByEmailSql, this);
+
+        public async Task UpdateSecurityStamp(string connectionString) =>
+            await SqlRunner.ExecuteAsync(connectionString, UpdateSecurityStampSql, new { id = Id, securityStamp = SecurityStamp});
     }
 }
