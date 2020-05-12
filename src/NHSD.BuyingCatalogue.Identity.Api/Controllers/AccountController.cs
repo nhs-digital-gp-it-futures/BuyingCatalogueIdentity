@@ -180,9 +180,14 @@ Contact the account administrator at: {0} or call {1}";
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string email, string token)
         {
-            return await _passwordService.IsValidPasswordResetTokenAsync(email, token)
-                ? View(new ResetPasswordViewModel { Email = email, Token = token })
-                : View(nameof(ResetPasswordExpired));
+            var isValid = await _passwordService.IsValidPasswordResetTokenAsync(email, token);
+            
+            if(!isValid)
+            {
+                return RedirectToAction(nameof(ResetPasswordExpired));
+            }
+
+            return View(new ResetPasswordViewModel { Email = email, Token = token });
         }
 
         [HttpPost]

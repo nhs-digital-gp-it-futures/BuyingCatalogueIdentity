@@ -11,7 +11,7 @@ Background:
         | Id  | OrganisationName | FirstName | LastName | Email          | PhoneNumber | Disabled | Password          |
         | 123 | Organisation 1   | John      | Doe      | test@user.com  | 01234567890 | false    | testingtesting123 |
     When the user with ID 123 has a valid password reset token
-    And the user navigates to identity url account/resetpassword with a valid password reset token
+    And the user navigates to identity url account/resetpassword with a password reset token
     Then the user is redirected to page account/resetpassword
 
 @3926

@@ -460,7 +460,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ResetPassword_String_String_InvalidToken_ReturnsExpectedView()
+        public async Task ResetPassword_String_String_InvalidToken_ReturnsExpectedAction()
         {
             const string email = "a@b.test";
             const string expectedToken = "TokenMcToken";
@@ -469,10 +469,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .Create()
                 .Build();
 
-            var result = await controller.ResetPassword(email, expectedToken) as ViewResult;
+            var result = await controller.ResetPassword(email, expectedToken) as RedirectToActionResult;
             Assert.NotNull(result);
 
-            result.ViewName.Should().Be(nameof(AccountController.ResetPasswordExpired));
+            result.ActionName.Should().Be(nameof(AccountController.ResetPasswordExpired));
         }
 
         [Test]
