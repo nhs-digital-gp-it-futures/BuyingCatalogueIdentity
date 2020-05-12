@@ -7,6 +7,7 @@ using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Repositories;
@@ -59,8 +60,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             if (user is object)
             {
-                var primaryOrganisation = await _organisationRepository.GetByIdAsync(user.PrimaryOrganisationId);
-                context.IssuedClaims = GetClaimsFromUser(user, primaryOrganisation?.Name);
+                var claims =  GetClaimsFromUser(user);
+                var organisationName = (await _organisationRepository.GetByIdAsync(user.PrimaryOrganisationId))?.Name;
+                if (!organisationName.IsNullOrEmpty())
+                {
+                    claims.Add(new Claim(ApplicationClaimTypes.PrimaryOrganisationName, organisationName));
+                }
+                context.IssuedClaims = claims;
             }
         }
 
@@ -87,14 +93,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             return await _applicationUserRepository.GetByIdAsync(subjectId);
         }
 
-        private static List<Claim> GetClaimsFromUser(ApplicationUser user, string primaryOrganisationName)
+        private static List<Claim> GetClaimsFromUser(ApplicationUser user)
         {
             var claims = new List<Claim>();
 
             claims.AddRange(GetIdClaims(user));
             claims.AddRange(GetNameClaims(user));
             claims.AddRange(GetEmailClaims(user));
-            claims.AddRange(GetOrganisationClaims(user, primaryOrganisationName));
+            claims.AddRange(GetOrganisationClaims(user));
 
             return claims;
         }
@@ -141,16 +147,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 yield return new Claim(JwtClaimTypes.Name, name);
         }
 
-        private static IEnumerable<Claim> GetOrganisationClaims(ApplicationUser user, string primarOrganisationName)
+        private static IEnumerable<Claim> GetOrganisationClaims(ApplicationUser user)
         {
-            var temp = primarOrganisationName + "";
-            
             yield return new Claim(ApplicationClaimTypes.PrimaryOrganisationId, user.PrimaryOrganisationId.ToString());
-
-            if (!primarOrganisationName.IsNullOrEmpty())
-            {
-                yield return new Claim(ApplicationClaimTypes.PrimaryOrganisationName, primarOrganisationName);
-            }
 
             OrganisationFunction organisationFunction = user.OrganisationFunction;
 
