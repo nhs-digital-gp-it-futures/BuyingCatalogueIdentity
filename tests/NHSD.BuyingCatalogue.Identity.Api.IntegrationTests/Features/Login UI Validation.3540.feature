@@ -21,7 +21,7 @@ Scenario: 2. The Login page title is displayed correctly
 Scenario: 3. The Login page description is displayed correctly
 	Then the page contains element with Data ID page-description
 	And element with Data ID page-description has tag h2
-	And element with Data ID page-description has text Enter your details to access the full functionality of this website.
+	And element with Data ID page-description has text Enter your details to place a new order or complete an order you’ve already started.
 
 @3540
 Scenario: 4. The Email Address input element is displayed correctly
