@@ -36,7 +36,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         public async Task<ActionResult> GetUsersByOrganisationId(Guid organisationId)
         {
             var organisationUsers = await _usersRepository.FindByOrganisationIdAsync(organisationId);
-            var userViewModels = organisationUsers.Select(x => new OrganisationUserViewModel
+            var userViewModels = organisationUsers.Select(x => new OrganisationUserModel
             {
                 UserId = x.Id,
                 FirstName = x.FirstName,
@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 IsDisabled = x.Disabled
             });
 
-            return Ok(new GetAllOrganisationUsersViewModel
+            return Ok(new GetAllOrganisationUsersModel
             {
                 Users = userViewModels
             });
@@ -54,7 +54,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
         [Route("api/v1/users/{userId}")]
         [HttpGet]
-        public async Task<ActionResult<GetUser>> GetUserByIdAsync(string userId)
+        public async Task<ActionResult<GetUserModel>> GetUserByIdAsync(string userId)
         {
             var user = await _usersRepository.GetByIdAsync(userId);
 
@@ -63,7 +63,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return NotFound();
             }
 
-            var getUser = new GetUser
+            var getUser = new GetUserModel
             {
                 Name = user.DisplayName,
                 PhoneNumber = user.PhoneNumber,
@@ -78,14 +78,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [Route("api/v1/Organisations/{organisationId}/Users")]
         [HttpPost]
         [Authorize(Policy = PolicyName.CanManageOrganisationUsers)]
-        public async Task<ActionResult<CreateBuyerResponseViewModel>> CreateBuyerAsync(Guid organisationId, CreateBuyerRequestViewModel createBuyerRequest)
+        public async Task<ActionResult<CreateBuyerResponseModel>> CreateBuyerAsync(Guid organisationId, CreateBuyerRequestModel createBuyerRequest)
         {
             if (createBuyerRequest is null)
             {
                 throw new ArgumentNullException(nameof(createBuyerRequest));
             }
 
-            var response = new CreateBuyerResponseViewModel();
+            var response = new CreateBuyerResponseModel();
 
             var result = await _createBuyerService.CreateAsync(new CreateBuyerRequest(
                 organisationId,

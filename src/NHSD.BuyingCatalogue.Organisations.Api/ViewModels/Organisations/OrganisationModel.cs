@@ -2,7 +2,7 @@
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 {
-    public sealed class OrganisationViewModel
+    public sealed class OrganisationModel
     {
         public Guid OrganisationId { get; set; }
 
@@ -12,7 +12,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 
         public string PrimaryRoleId { get; set; }
 
-        public AddressViewModel Address { get; set; }
+        public AddressModel Address { get; set; }
 
         public bool CatalogueAgreementSigned { get; set; }
     }

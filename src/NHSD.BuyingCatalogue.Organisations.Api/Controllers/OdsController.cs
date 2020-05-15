@@ -40,12 +40,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (!(odsOrganisation.IsActive && odsOrganisation.IsBuyerOrganisation))
                 return new StatusCodeResult(StatusCodes.Status406NotAcceptable);
 
-            return Ok(new OdsOrganisationViewModel
+            return Ok(new OdsOrganisationModel
             {
                 OdsCode = odsOrganisation.OdsCode,
                 OrganisationName = odsOrganisation.OrganisationName,
                 PrimaryRoleId = odsOrganisation.PrimaryRoleId,
-                Address = odsOrganisation.Address is null ? null : new AddressViewModel
+                Address = odsOrganisation.Address is null ? null : new AddressModel
                 {
                     Line1 = odsOrganisation.Address.Line1,
                     Line2 = odsOrganisation.Address.Line2,
