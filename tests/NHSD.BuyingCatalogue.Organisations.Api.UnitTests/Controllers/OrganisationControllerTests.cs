@@ -55,9 +55,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             result.Should().NotBe(null);
 
             var objectResult = result as OkObjectResult;
-            objectResult.Value.Should().BeOfType<GetAllOrganisationsViewModel>();
+            objectResult.Value.Should().BeOfType<GetAllOrganisationsModel>();
 
-            var organisationResult = objectResult.Value as GetAllOrganisationsViewModel;
+            var organisationResult = objectResult.Value as GetAllOrganisationsModel;
 
             organisationResult.Organisations.Count().Should().Be(0);
         }
@@ -90,9 +90,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             result.Should().NotBe(null);
 
             var objectResult = result as OkObjectResult;
-            objectResult.Value.Should().BeOfType<GetAllOrganisationsViewModel>();
+            objectResult.Value.Should().BeOfType<GetAllOrganisationsModel>();
 
-            var organisationResult = objectResult.Value as GetAllOrganisationsViewModel;
+            var organisationResult = objectResult.Value as GetAllOrganisationsModel;
 
             organisationResult.Organisations.Count().Should().Be(1);
 
@@ -134,9 +134,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             result.Should().NotBe(null);
 
             var objectResult = result as OkObjectResult;
-            objectResult.Value.Should().BeOfType<GetAllOrganisationsViewModel>();
+            objectResult.Value.Should().BeOfType<GetAllOrganisationsModel>();
 
-            var organisationResult = objectResult.Value as GetAllOrganisationsViewModel;
+            var organisationResult = objectResult.Value as GetAllOrganisationsModel;
 
             organisationResult.Organisations.Count().Should().Be(3);
 
@@ -237,7 +237,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
 
-            var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationViewModel());
+            var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationModel());
 
             response.Should().BeOfType<NoContentResult>();
         }
@@ -247,7 +247,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(null).Build();
 
-            var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationViewModel());
+            var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationModel());
 
             response.Should().BeEquivalentTo(new NotFoundResult());
         }
@@ -259,7 +259,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(organisation).Build();
 
-            var response = await controller.UpdateOrganisationByIdAsync(organisation.OrganisationId, new UpdateOrganisationViewModel { CatalogueAgreementSigned = false });
+            var response = await controller.UpdateOrganisationByIdAsync(organisation.OrganisationId, new UpdateOrganisationModel { CatalogueAgreementSigned = false });
 
             response.Should().BeOfType<NoContentResult>();
 
@@ -275,7 +275,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             using var controller = OrganisationControllerBuilder.Create().WithOrganisationRepository(repositoryMock.Object).Build();
 
-            await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationViewModel());
+            await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationModel());
 
             repositoryMock.Verify(x => x.UpdateAsync(
                 It.IsAny<Organisation>()), Times.Once);
@@ -300,15 +300,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             var organisationId = Guid.NewGuid();
             using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningSuccess(organisationId).Build();
 
-            var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
+            var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestModel());
 
-            response.Should().BeOfType<ActionResult<CreateOrganisationResponseViewModel>>();
+            response.Should().BeOfType<ActionResult<CreateOrganisationResponseModel>>();
 
             var expected = new CreatedAtActionResult(
                 nameof(controller.GetByIdAsync).TrimAsync(),
                 null, 
                 new { id = organisationId },
-                new CreateOrganisationResponseViewModel { OrganisationId = organisationId });
+                new CreateOrganisationResponseModel { OrganisationId = organisationId });
 
             var actual = response.Result;
 
@@ -321,11 +321,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             const string errorMessage = "Some Error Message Id";
             using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningFailure(errorMessage).Build();
 
-            var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestViewModel());
+            var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestModel());
 
-            response.Should().BeOfType<ActionResult<CreateOrganisationResponseViewModel>>();
+            response.Should().BeOfType<ActionResult<CreateOrganisationResponseModel>>();
 
-            var expected = new BadRequestObjectResult(new CreateOrganisationResponseViewModel
+            var expected = new BadRequestObjectResult(new CreateOrganisationResponseModel
             {
                 Errors = new[] { new ErrorMessageViewModel(errorMessage) }
             });

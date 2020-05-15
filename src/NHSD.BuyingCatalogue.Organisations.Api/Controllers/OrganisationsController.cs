@@ -34,17 +34,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         {
             IEnumerable<Organisation> organisationsList = await _organisationRepository.ListOrganisationsAsync();
 
-            return Ok(new GetAllOrganisationsViewModel
+            return Ok(new GetAllOrganisationsModel
             {
                 Organisations = organisationsList?.Select(organisation =>
-                    new OrganisationViewModel
+                    new OrganisationModel
                     {
                         OrganisationId = organisation.OrganisationId,
                         Name = organisation.Name,
                         OdsCode = organisation.OdsCode,
                         PrimaryRoleId = organisation.PrimaryRoleId,
                         CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
-                        Address = organisation.Address is null ? null : new AddressViewModel
+                        Address = organisation.Address is null ? null : new AddressModel
                         {
                             Line1 = organisation.Address.Line1,
                             Line2 = organisation.Address.Line2,
@@ -70,14 +70,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            return Ok(new OrganisationViewModel
+            return Ok(new OrganisationModel
             {
                 OrganisationId = organisation.OrganisationId,
                 Name = organisation.Name,
                 OdsCode = organisation.OdsCode,
                 PrimaryRoleId = organisation.PrimaryRoleId,
                 CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
-                Address = organisation.Address is null ? null : new AddressViewModel
+                Address = organisation.Address is null ? null : new AddressModel
                 {
                     Line1 = organisation.Address.Line1,
                     Line2 = organisation.Address.Line2,
@@ -94,11 +94,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         [Authorize(Policy = PolicyName.CanManageOrganisations)]
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid id, UpdateOrganisationViewModel viewModel)
+        public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid id, UpdateOrganisationModel model)
         {
-            if (viewModel is null)
+            if (model is null)
             {
-                throw new ArgumentNullException(nameof(viewModel));
+                throw new ArgumentNullException(nameof(model));
             }
             var organisation = await _organisationRepository.GetByIdAsync(id);
 
@@ -107,7 +107,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            organisation.CatalogueAgreementSigned = viewModel.CatalogueAgreementSigned;
+            organisation.CatalogueAgreementSigned = model.CatalogueAgreementSigned;
 
             await _organisationRepository.UpdateAsync(organisation);
 
@@ -116,17 +116,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         [Authorize(Policy = PolicyName.CanManageOrganisations)]
         [HttpPost]
-        public async Task<ActionResult<CreateOrganisationResponseViewModel>> CreateOrganisationAsync(CreateOrganisationRequestViewModel viewModel)
+        public async Task<ActionResult<CreateOrganisationResponseModel>> CreateOrganisationAsync(CreateOrganisationRequestModel model)
         {
-            if (viewModel is null)
-                throw new ArgumentNullException(nameof(viewModel));
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
 
-            var address = viewModel.Address;
+            var address = model.Address;
             var result = await _createOrganisationService.CreateAsync(new CreateOrganisationRequest(
-                viewModel.OrganisationName,
-                viewModel.OdsCode,
-                viewModel.PrimaryRoleId,
-                viewModel.CatalogueAgreementSigned,
+                model.OrganisationName,
+                model.OdsCode,
+                model.PrimaryRoleId,
+                model.CatalogueAgreementSigned,
                 address is null ? null : new Address
                 {
                     Line1 = address.Line1,
@@ -140,7 +140,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 }
             ));
 
-            var response = new CreateOrganisationResponseViewModel();
+            var response = new CreateOrganisationResponseModel();
 
             if (!result.IsSuccess)
             {
