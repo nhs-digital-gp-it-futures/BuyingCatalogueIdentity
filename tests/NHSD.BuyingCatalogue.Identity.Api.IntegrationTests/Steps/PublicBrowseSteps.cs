@@ -12,12 +12,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         private readonly SeleniumContext _context;
         private readonly string _publicBrowseBaseUrl;
         private readonly string _publicBrowseLoginUrl;
+        private readonly string _publicBrowseLogoutUrl;
 
         public PublicBrowseSteps(SeleniumContext context, Settings settings)
         {
             _context = context;
             _publicBrowseBaseUrl = settings.PublicBrowseBaseUrl;
             _publicBrowseLoginUrl = settings.PublicBrowseLoginUrl;
+            _publicBrowseLogoutUrl = settings.PublicBrowseLogoutUrl;
         }
 
         [Then(@"the user is redirected to the public browse homepage")]
@@ -30,6 +32,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public void ThenTheUserIsRedirectedToThePublicBrowseLoginPage()
         {
             _context.WebWaiter.Until(x => string.Equals(x.Url, _publicBrowseLoginUrl, StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Then(@"the user is redirected to the public browse logout page")]
+        public void ThenTheUserIsRedirectedToThePublicBrowseLogoutPage()
+        {
+            _context.WebWaiter.Until(x => string.Equals(x.Url, _publicBrowseLogoutUrl, StringComparison.OrdinalIgnoreCase));
         }
 
         [Then(@"the NHS header logo should link to the public browse homepage")]
