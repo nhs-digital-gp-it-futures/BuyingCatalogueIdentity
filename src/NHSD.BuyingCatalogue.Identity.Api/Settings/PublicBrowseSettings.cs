@@ -9,11 +9,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 
         public PathString LoginPath { get; set; }
 
+        public PathString LogoutPath { get; set; }
+
         public Uri LoginAddress
         {
             get
             {
                 return new Uri(BaseAddress + LoginPath);
+            }
+        }
+
+        public Uri LogoutAddress
+        {
+            get
+            {
+                return new Uri(BaseAddress + LogoutPath);
             }
         }
     }
