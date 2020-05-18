@@ -22,4 +22,4 @@ Scenario: 1. User logs out and is unable to access protected resources without l
 Scenario: 2. Navigating directly to the logout page, should redirect the user to the public browse homepage
     Given a user has successfully logged in with email address a@b.com and password yolo
     When the user navigates directly to the logout page
-    Then the user is redirected to the public browse homepage
+    Then the user is redirected to the public browse logout page

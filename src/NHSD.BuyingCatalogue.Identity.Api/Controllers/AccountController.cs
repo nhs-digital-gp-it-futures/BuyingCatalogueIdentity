@@ -126,7 +126,7 @@ Contact the account administrator at: {0} or call {1}";
 
             if (string.IsNullOrWhiteSpace(redirectUrl))
             {
-                redirectUrl = _publicBrowseSettings.BaseAddress;
+                redirectUrl = _publicBrowseSettings.LogoutAddress.ToString();
             }
 
             return Redirect(redirectUrl);

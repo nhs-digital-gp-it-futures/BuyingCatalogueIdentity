@@ -45,6 +45,7 @@ services:
       - AllowInvalidCertificate=True   
       - PUBLICBROWSE__BASEADDRESS=http://localhost:8076/publicbrowse
       - PUBLICBROWSE__LOGINPATH=/re-login
+      - PUBLICBROWSE__LOGOUTPATH=/logout-callback
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email

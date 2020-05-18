@@ -13,6 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
             IdentityApiBaseUrl = config.GetValue<string>("IdentityApiBaseUrl");
             PublicBrowseBaseUrl = config.GetValue<string>("PublicBrowseBaseUrl");
             PublicBrowseLoginUrl = config.GetValue<string>("PublicBrowseLoginUrl");
+            PublicBrowseLogoutUrl = config.GetValue<string>("PublicBrowseLogoutUrl");
             SampleMvcClientBaseUrl = config.GetValue<string>("SampleMvcClientBaseUrl");
             SmtpServerApiBaseUrl = config.GetValue<string>("SmtpServerApiBaseUrl");
         }
@@ -30,6 +31,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
         public string PublicBrowseBaseUrl { get; }
 
         public string PublicBrowseLoginUrl { get; }
+
+        public string PublicBrowseLogoutUrl { get; }
 
         public string SampleMvcClientBaseUrl { get; }
 
