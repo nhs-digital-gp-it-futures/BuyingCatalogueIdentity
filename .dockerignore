@@ -1,0 +1,17 @@
+.git
+.vs
+.vscode
+.dockerignore
+.env
+.gitignore
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+
+**/bin
+**/obj
+*.*proj.user
+
+**/node_modules
+**/*.dbmdl
+**/*.jfm

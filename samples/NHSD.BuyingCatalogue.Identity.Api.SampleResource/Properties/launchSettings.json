@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "NHSD.BuyingCatalogue.Identity.Api.SampleResource": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:53042"
+    }
+  }
+}

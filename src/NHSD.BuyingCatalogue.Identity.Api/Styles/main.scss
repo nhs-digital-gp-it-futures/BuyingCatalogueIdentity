@@ -1,0 +1,12 @@
+﻿// NHS.UK frontend styles
+@import 'node_modules/nhsuk-frontend/packages/nhsuk';
+
+// Buying catalogue library styles
+@import 'node_modules/buying-catalogue-components/app/styles/main';
+
+// Buying catalogue login page styles
+@import 'login';
+
+.bc-t-bg--grey-4 {
+    background-color: $color_nhsuk-grey-4
+}

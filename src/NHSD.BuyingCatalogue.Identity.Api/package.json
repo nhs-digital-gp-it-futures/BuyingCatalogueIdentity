@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "name": "nhsd-buyingcatalogue-identity",
+  "private": true,
+  "dependencies": {
+    "buying-catalogue-components": "^1.1.51",
+    "nhsuk-frontend": "^3.0.2"
+  },
+  "devDependencies": {
+    "node-sass": "^4.13.1"
+  },
+  "scripts": {
+    "build": "npm run build:css",
+    "build:css": "node-sass Styles/main.scss wwwroot/css/main.min.css --output-style compressed"
+  }
+}

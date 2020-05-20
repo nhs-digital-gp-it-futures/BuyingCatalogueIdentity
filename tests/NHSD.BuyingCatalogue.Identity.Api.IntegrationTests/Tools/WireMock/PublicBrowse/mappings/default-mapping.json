@@ -1,0 +1,68 @@
+[
+  {
+    "Guid": "db9e853a-73f0-4605-ad83-240c8e634460",
+    "Priority": 10000,
+    "Request": {
+      "Path": {
+        "Matchers": [
+          {
+            "Name": "WildcardMatcher",
+            "Pattern": "/publicbrowse",
+            "IgnoreCase": false
+          }
+        ]
+      },
+      "Methods": [
+        "GET"
+      ]
+    },
+    "Response": {
+      "Body": "Welcome to the fake public browse homepage",
+      "Headers": {}
+    }
+  },
+  {
+    "Guid": "19c89118-87b8-49c4-a15f-9a661360c0c0",
+    "Priority": 5000,
+    "Request": {
+      "Path": {
+        "Matchers": [
+          {
+            "Name": "WildcardMatcher",
+            "Pattern": "/publicbrowse/re-login",
+            "IgnoreCase": false
+          }
+        ]
+      },
+      "Methods": [
+        "GET"
+      ]
+    },
+    "Response": {
+      "Body": "Welcome to the fake public browse login page",
+      "Headers": {}
+    }
+  },
+  {
+    "Guid": "475d4fae-d029-450f-8347-683b421c2a3e",
+    "Priority": 5000,
+    "Request": {
+      "Path": {
+        "Matchers": [
+          {
+            "Name": "WildcardMatcher",
+            "Pattern": "/publicbrowse/logout-callback",
+            "IgnoreCase": false
+          }
+        ]
+      },
+      "Methods": [
+        "GET"
+      ]
+    },
+    "Response": {
+      "Body": "Welcome to the fake public browse logout page",
+      "Headers": {}
+    }
+  }
+]
