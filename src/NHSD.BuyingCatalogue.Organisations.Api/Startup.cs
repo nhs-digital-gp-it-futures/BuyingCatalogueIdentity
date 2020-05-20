@@ -22,14 +22,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 {
     public class Startup
     {
-        private readonly IWebHostEnvironment _enviroment;
+        private readonly IWebHostEnvironment _environment;
 
         private const string BearerToken = "Bearer";
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment enviroment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
-            _enviroment = enviroment;
+            _environment = environment;
         }
 
         public IConfiguration Configuration { get; }
@@ -43,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
 
-            IdentityModelEventSource.ShowPII = _enviroment.IsDevelopment();
+            IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IOdsRepository, OdsRepository>();
