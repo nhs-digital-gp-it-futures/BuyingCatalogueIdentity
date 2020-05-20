@@ -5,19 +5,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
 {
     internal sealed class OdsRepositoryTestContext
     {
-        public OdsRepository OdsRepository { get; set; }
-
-        public OdsSettings OdsSettings { get; set; }
-
         private OdsRepositoryTestContext()
         {
             OdsSettings = new OdsSettings
             {
-                ApiBaseUrl = "https://fakeodsserver.net/ORD/2-0-0", 
-                BuyerOrganisationRoleIds = new[] {"RO98", "RO213"}
+                ApiBaseUrl = "https://fakeodsserver.net/ORD/2-0-0",
+                BuyerOrganisationRoleIds = new[] { "RO98", "RO177", "RO213", "RO272" }
             };
+
             OdsRepository = new OdsRepository(OdsSettings);
         }
+
+        public OdsRepository OdsRepository { get; set; }
+
+        public OdsSettings OdsSettings { get; set; }
 
         internal static OdsRepositoryTestContext Setup()
         {
