@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
@@ -21,11 +22,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 {
     public class Startup
     {
+        private readonly IWebHostEnvironment _enviroment;
+
         private const string BearerToken = "Bearer";
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment enviroment)
         {
             Configuration = configuration;
+            _enviroment = enviroment;
         }
 
         public IConfiguration Configuration { get; }
@@ -38,6 +42,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var requireHttps = Configuration.GetValue<bool>("RequireHttps");
             var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
+
+            IdentityModelEventSource.ShowPII = _enviroment.IsDevelopment();
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IOdsRepository, OdsRepository>();
