@@ -67,8 +67,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             _context[ScenarioContextKeys.OrganisationMapDictionary] = organisationDictionary;
         }
 
-        [When(@"a GET request is made for the Organisations section")]
-        public async Task WhenAGETRequestIsMadeForTheOrganisationsSection()
+        [When(@"a request is made to get a list of organisations")]
+        public async Task WhenARequestIsMadeToGetAListOfOrganisations()
         {
             await _request.GetAsync(_organisationUrl);
         }

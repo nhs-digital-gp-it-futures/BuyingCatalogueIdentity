@@ -34,6 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                     OrganisationFunction.Buyer, 
                     new List<Claim>
                     {
+                        new Claim(ApplicationClaimTypes.Organisation, ApplicationPermissions.View),
                         new Claim(ApplicationClaimTypes.Ordering, ApplicationPermissions.Manage)
                     }
                 }
