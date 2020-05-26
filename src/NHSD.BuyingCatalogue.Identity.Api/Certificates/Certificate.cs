@@ -37,8 +37,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
 
             try
             {
-                byte[] certBuffer = GetBytesFromPem(settings.CertificatePath, PemStringType.Certificate);
-                byte[] keyBuffer = GetBytesFromPem(settings.PrivateKeyPath, PemStringType.RsaPrivateKey);
+                byte[] certBuffer = GetBytesFromPem(settings.CertificatePath, "CERTIFICATE");
+                byte[] keyBuffer = GetBytesFromPem(settings.PrivateKeyPath, "RSA PRIVATE KEY");
 
                 using var certificate = new X509Certificate2(certBuffer);
                 using var rsa = RSA.Create();
@@ -58,35 +58,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
                 throw new CertificateSettingsException("Error with certificate or settings", e);
             }
         }
-        private static byte[] GetBytesFromPem(string pemString, PemStringType type)
+        private static byte[] GetBytesFromPem(string pemString, string sectionToken)
         {
             var fileStr = File.ReadAllText(pemString);
-            string header; 
-            string footer;
-
-            switch (type)
-            {
-                case PemStringType.Certificate:
-                    header = "-----BEGIN CERTIFICATE-----";
-                    footer = "-----END CERTIFICATE-----";
-                    break;
-                case PemStringType.RsaPrivateKey:
-                    header = "-----BEGIN RSA PRIVATE KEY-----";
-                    footer = "-----END RSA PRIVATE KEY-----";
-                    break;
-                default:
-                    return null;
-            }
+            string header = $"-----BEGIN {sectionToken}-----"; 
+            string footer = $"-----END {sectionToken}-----";
 
             int start = fileStr.IndexOf(header, StringComparison.InvariantCultureIgnoreCase) + header.Length;
             int end = fileStr.IndexOf(footer, start, StringComparison.InvariantCultureIgnoreCase) - start;
             return Convert.FromBase64String(fileStr.Substring(start, end));
         }
 
-        private enum PemStringType
-        {
-            Certificate,
-            RsaPrivateKey
-        }
     }
 }

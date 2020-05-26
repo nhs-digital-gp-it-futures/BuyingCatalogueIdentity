@@ -5,10 +5,5 @@
         public bool UseDeveloperCredentials { get; set; }
         public string CertificatePath { get; set; }
         public string PrivateKeyPath { get; set; }
-
-        public override string ToString()
-        {
-            return $"UseDeveloperCredentials: {UseDeveloperCredentials}, CertificatePath: {CertificatePath}, PrivateKeyPath: {PrivateKeyPath}";
-        }
     }
 }
