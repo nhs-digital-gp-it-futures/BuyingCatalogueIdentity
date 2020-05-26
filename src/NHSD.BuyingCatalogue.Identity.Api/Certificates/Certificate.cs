@@ -42,7 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
 
                 using var certificate = new X509Certificate2(certBuffer);
                 using var rsa = RSA.Create();
-                
+
                 rsa.ImportRSAPrivateKey(keyBuffer, out _);
                 var certificateWithPrivateKey = certificate.CopyWithPrivateKey(rsa);
 
@@ -58,16 +58,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
                 throw new CertificateSettingsException("Error with certificate or settings", e);
             }
         }
+
         private static byte[] GetBytesFromPem(string pemString, string sectionToken)
         {
             var fileStr = File.ReadAllText(pemString);
-            string header = $"-----BEGIN {sectionToken}-----"; 
+            string header = $"-----BEGIN {sectionToken}-----";
             string footer = $"-----END {sectionToken}-----";
 
             int start = fileStr.IndexOf(header, StringComparison.InvariantCultureIgnoreCase) + header.Length;
             int end = fileStr.IndexOf(footer, start, StringComparison.InvariantCultureIgnoreCase) - start;
             return Convert.FromBase64String(fileStr.Substring(start, end));
         }
-
     }
 }
