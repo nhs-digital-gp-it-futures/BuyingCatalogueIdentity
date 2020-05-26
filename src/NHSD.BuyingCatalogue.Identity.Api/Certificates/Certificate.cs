@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using Serilog;
@@ -35,19 +37,37 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
 
             try
             {
-                var certificate = new X509Certificate2(path, settings.CertificatePassword);
+                byte[] certBuffer = GetBytesFromPem(settings.CertificatePath, "CERTIFICATE");
+                byte[] keyBuffer = GetBytesFromPem(settings.PrivateKeyPath, "RSA PRIVATE KEY");
 
-                if (certificate.Verify())
+                using var certificate = new X509Certificate2(certBuffer);
+                using var rsa = RSA.Create();
+
+                rsa.ImportRSAPrivateKey(keyBuffer, out _);
+                var certificateWithPrivateKey = certificate.CopyWithPrivateKey(rsa);
+
+                if (certificateWithPrivateKey.Verify())
                     logger.Information("Certificate validation succeeded: {certificate}", certificate.ToString(true));
                 else
                     logger.Warning("Certificate validation failed: {certificate}", certificate.ToString(true));
 
-                return certificate;
+                return certificateWithPrivateKey;
             }
             catch (Exception e)
             {
                 throw new CertificateSettingsException("Error with certificate or settings", e);
             }
+        }
+
+        private static byte[] GetBytesFromPem(string pemString, string sectionToken)
+        {
+            var fileStr = File.ReadAllText(pemString);
+            string header = $"-----BEGIN {sectionToken}-----";
+            string footer = $"-----END {sectionToken}-----";
+
+            int start = fileStr.IndexOf(header, StringComparison.InvariantCultureIgnoreCase) + header.Length;
+            int end = fileStr.IndexOf(footer, start, StringComparison.InvariantCultureIgnoreCase) - start;
+            return Convert.FromBase64String(fileStr.Substring(start, end));
         }
     }
 }

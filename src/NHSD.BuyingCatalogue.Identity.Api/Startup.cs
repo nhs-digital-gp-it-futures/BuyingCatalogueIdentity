@@ -78,7 +78,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Api Resources: {@resources}", apiResources);
             Log.Logger.Information("Identity Resources: {@identityResources}", identityResources);
             Log.Logger.Information("Issuer Url on IdentityAPI is: {@issuerUrl}", issuerUrl);
-            Log.Logger.Information("Certificate Settings on IdentityAPI is: {settings}", certificateSettings);
+            Log.Logger.Information("Certificate Settings on IdentityAPI is: {@settings}", certificateSettings);
             Log.Logger.Information("Data protection app name is: {dataProtectionAppName}", dataProtectionAppName);
             Log.Logger.Information("Public Browse settings: {@publicBrowseSettings}", publicBrowseSettings);
 
