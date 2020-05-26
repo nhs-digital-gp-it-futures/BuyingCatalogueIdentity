@@ -14,7 +14,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
     [TestFixture]
     internal sealed class CertificateTests
     {
-        private const string CertificateName = ".certificate.pfx";
+        private const string CertificateName = ".cert.crt";
+        private const string CertificateKeyName = ".cert.key";
+
+        private static readonly string[] CertificateFileNames = new[] {CertificateName, CertificateKeyName};
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
@@ -23,7 +26,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
             var settings = new CertificateSettings
             {
                 CertificatePath = "BadPath",
-                CertificatePassword = "NHSD"
+                PrivateKeyPath = "NHSD"
             };
 
             Assert.Throws<CertificateSettingsException>(() => new Certificate(settings, Mock.Of<ILogger>()));
@@ -46,22 +49,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         [Test]
         public void Constructor_ValidCertificatePath_InitializesAsExpected()
         {
-            WriteEmbeddedCertificateToDisk();
+            WriteEmbeddedFilesToDisk();
 
             var settings = new CertificateSettings
             {
                 CertificatePath = CertificateName,
-                CertificatePassword = "NHSD"
+                PrivateKeyPath = CertificateKeyName
             };
 
             var certificate = new Certificate(settings, Mock.Of<ILogger>());
 
             certificate.Instance.Should().NotBeNull();
-            certificate.Instance.Thumbprint.Should().Be("FD1F4371008CF3CACB6DE23D4AB2EC9623557DD4");
+            certificate.Instance.Thumbprint.Should().Be("13C9ED6D78CBE4905367D5A99A66BF84B9D2E55F");
             certificate.IsAvailable.Should().BeTrue();
             certificate.Path.Should().Be(CertificateName);
-
-            DeleteCertificateFile();
+            DeleteEmbeddedFiles();
         }
 
         [Test]
@@ -91,20 +93,31 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
             certificate.Path.Should().BeNull();
         }
 
-        private static void DeleteCertificateFile()
+        private static void DeleteEmbeddedFiles()
         {
-            File.Delete(CertificateName);
+            foreach (var file in CertificateFileNames)
+            {
+                File.Delete(file);
+            }
         }
 
-        private static void WriteEmbeddedCertificateToDisk()
+        private static void WriteEmbeddedFilesToDisk()
+        {
+            foreach(var file in CertificateFileNames)
+            {
+                WriteEmbeddedFileToDisk(file);
+            }
+        }
+
+        private static void WriteEmbeddedFileToDisk(string fileName)
         {
             using var stream = Assembly
                 .GetExecutingAssembly()
-                .GetManifestResourceStream(typeof(CertificateTests).Namespace + CertificateName);
+                .GetManifestResourceStream(typeof(CertificateTests).Namespace + fileName);
 
-            Assert.NotNull(stream, $"Could not find the embedded resource {CertificateName}");
+            Assert.NotNull(stream, $"Could not find the embedded resource {fileName}");
 
-            using var outputStream = File.Create(CertificateName);
+            using var outputStream = File.Create(fileName);
             stream.CopyTo(outputStream);
         }
     }

@@ -11,7 +11,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Certificates\certificate.pfx" />
+    <None Remove="Certificates\cert.crt" />
+    <None Remove="Certificates\cert.key" />
+    <None Remove="Certificates\tempkey.key" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Certificates\cert.crt" />
+    <EmbeddedResource Include="Certificates\cert.key" />
     <EmbeddedResource Include="Certificates\tempkey.key" />
   </ItemGroup>
 

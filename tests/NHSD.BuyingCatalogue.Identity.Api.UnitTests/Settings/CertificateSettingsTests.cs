@@ -13,11 +13,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Settings
         {
             var certificateSettings = new CertificateSettings
             {
-                UseDeveloperCredentials = true, CertificatePath = "/Path", CertificatePassword = "Password"
+                UseDeveloperCredentials = true, CertificatePath = "/Path", PrivateKeyPath = "/KeyPath"
             };
             var stringResult = certificateSettings.ToString();
 
-            stringResult.Should().ContainAll("/Path", "True", "Pa******");
+            stringResult.Should().ContainAll("/Path", "True", "/KeyPath");
         }
     }
 }
