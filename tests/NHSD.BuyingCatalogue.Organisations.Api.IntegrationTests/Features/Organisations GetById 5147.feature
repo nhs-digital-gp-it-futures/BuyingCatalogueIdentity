@@ -34,12 +34,12 @@ Scenario: 2. Organisation is not found
 	Then a response with status code 404 is returned
 
 @5147
-Scenario: 3. A non authority user cannot access the organisations
+Scenario: 3. A buyer can access the organisations
 	Given a user is logged in
 		| Username            | Password     | Scope        |
 		| PennyLane@email.com | S0mePa$$w0rd | Organisation |
 	When a GET request is made for an organisation with name Organisation 1
-	Then a response with status code 403 is returned
+	Then a response with status code 200 is returned
 
 @5147
 Scenario: 4. If a user is not authorised then they cannot access the organisation
