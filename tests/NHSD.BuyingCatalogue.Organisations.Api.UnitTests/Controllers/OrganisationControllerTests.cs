@@ -166,9 +166,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public async Task GetIdByAsync_OrganisationDoesNotExist_ReturnsNotFound()
         {
+            var organisation = OrganisationBuilder.Create(1).WithOrganisationId(Guid.NewGuid()).Build();
+
             using var controller = OrganisationControllerBuilder
                 .Create()
-                .WithGetOrganisation(null)
+                .WithGetOrganisation(organisation)
                 .Build();
 
             var result = await controller.GetByIdAsync(Guid.NewGuid());
@@ -343,6 +345,47 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 using var controller = OrganisationControllerBuilder.Create().Build();
                 await controller.CreateOrganisationAsync(null);
             });
+        }
+
+        [Test]
+        public async Task GetServiceRecipientsAsync_OrganisationExists_ReturnsTheOrganisationServiceRecipients()
+        {
+            var organisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithOrganisationId(organisationId).Build();
+
+            using var controller = OrganisationControllerBuilder
+                .Create(organisationId)
+                .WithGetOrganisation(organisation)
+                .Build();
+
+            var result = await controller.GetServiceRecipientsAsync(organisation.OrganisationId);
+
+            result.Should().BeOfType<OkObjectResult>();
+            var objectResult = result as OkObjectResult;
+
+            var expected = new[] {new {organisation.Name, organisation.OdsCode}}.ToList();
+
+            objectResult.Value.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public async Task GetServiceRecipientsAsync_OrganisationIsNull_ReturnsNotFound()
+        {
+            var organisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithOrganisationId(organisationId).Build();
+
+            var invalidOrganisationId = Guid.NewGuid();
+
+            using var controller = OrganisationControllerBuilder
+                .Create(invalidOrganisationId)
+                .WithGetOrganisation(organisation)
+                .Build();
+
+            var result = await controller.GetServiceRecipientsAsync(invalidOrganisationId);
+
+            result.Should().BeEquivalentTo(new NotFoundResult());
         }
     }
 }

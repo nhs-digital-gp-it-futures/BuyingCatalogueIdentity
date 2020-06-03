@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Identity.Common.ViewModels.Messages;
+using NHSD.BuyingCatalogue.Organisations.Api.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
@@ -17,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Authorize(Policy = PolicyName.CanAccessOrganisations)]
     [Route("api/v1/Organisations")]
     [ApiController]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     public sealed class OrganisationsController : Controller
     {
         private readonly IOrganisationRepository _organisationRepository;
@@ -150,7 +152,36 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             response.OrganisationId = result.Value;
 
-            return CreatedAtAction(nameof(GetByIdAsync).TrimAsync(), null,  new { id = result.Value }, response);
+            return CreatedAtAction(nameof(GetByIdAsync).TrimAsync(), null, new { id = result.Value }, response);
+        }
+
+        [HttpGet]
+        [Route("{id}/service-recipients")]
+        public async Task<ActionResult> GetServiceRecipientsAsync(Guid id)
+        {
+            var primaryOrganisationId = User.GetPrimaryOrganisationId();
+            if (primaryOrganisationId != id)
+            {
+                return Forbid();
+            }
+
+            var organisation = await _organisationRepository.GetByIdAsync(id);
+
+            if (organisation is null)
+            {
+                return NotFound();
+            }
+
+            var model = new List<ServiceRecipientsModel>
+            {
+                new ServiceRecipientsModel
+                {
+                    Name = organisation.Name,
+                    OdsCode = organisation.OdsCode
+                }
+            };
+
+            return Ok(model);
         }
     }
 }
