@@ -17,16 +17,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
     {
         private IOrganisationRepository _organisationRepository;
         private ICreateOrganisationService _createOrganisationService;
-        private ClaimsPrincipal ClaimsPrincipal;
+        private readonly ClaimsPrincipal _claimsPrincipal;
 
         private OrganisationControllerBuilder(Guid primaryOrganisationId)
         {
             _createOrganisationService = Mock.Of<ICreateOrganisationService>();
             _organisationRepository = Mock.Of<IOrganisationRepository>();
-            ClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
                 new Claim("primaryOrganisationId", primaryOrganisationId.ToString())
-            }, "mock"));
+            },
+            "mock"));
         }
 
         internal static OrganisationControllerBuilder Create(Guid primaryOrganisationId = default)
@@ -100,7 +101,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             {
                 ControllerContext = new ControllerContext
                 {
-                    HttpContext = new DefaultHttpContext { User = ClaimsPrincipal }
+                    HttpContext = new DefaultHttpContext { User = _claimsPrincipal }
                 }
             };
         }

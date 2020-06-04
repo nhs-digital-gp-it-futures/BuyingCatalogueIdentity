@@ -54,7 +54,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
         private static object CreateServiceRecipients(JToken token)
         {
-            return new { Name = token.SelectToken("name").ToString(), OdsCode = token.SelectToken("odsCode").ToString() };
+            return new ServiceRecipientsTable
+            {
+                Name = token.SelectToken("name").ToString(),
+                OdsCode = token.SelectToken("odsCode").ToString()
+            };
         }
 
         private Guid GetOrganisationIdFromName(string organisationName)

@@ -20,7 +20,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Route("api/v1/Organisations")]
     [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
-    public sealed class OrganisationsController : Controller
+    public sealed class OrganisationsController : ControllerBase
     {
         private readonly IOrganisationRepository _organisationRepository;
         private readonly ICreateOrganisationService _createOrganisationService;
@@ -157,7 +157,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         [HttpGet]
         [Route("{id}/service-recipients")]
-        public async Task<ActionResult> GetServiceRecipientsAsync(Guid id)
+        public async Task<ActionResult<IEnumerable<ServiceRecipientsModel>>> GetServiceRecipientsAsync(Guid id)
         {
             var primaryOrganisationId = User.GetPrimaryOrganisationId();
             if (primaryOrganisationId != id)

@@ -1,7 +1,7 @@
-﻿Feature: Display all of the Service Recipients for an Organisation
-	As a Buyer
-	I want to be able to view all of the Service Recipients for a organisation
-	So that I can ensure all of the information is correct
+﻿Feature: Display all of the Service Recipients for an organisation
+    As a Buyer
+    I want to be able to view all of the Service Recipients for a organisation
+    So that I can ensure all of the information is correct
 
 Background:
     Given Organisations exist

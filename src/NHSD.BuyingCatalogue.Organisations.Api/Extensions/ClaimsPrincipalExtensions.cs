@@ -7,7 +7,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
     {
         private const string PrimaryOrganisationIdType = "primaryOrganisationId";
 
-        public static Guid GetPrimaryOrganisationId(this ClaimsPrincipal user)
+        internal static Guid GetPrimaryOrganisationId(this ClaimsPrincipal user)
         {
             return new Guid(user.FindFirst(PrimaryOrganisationIdType).Value);
         }
