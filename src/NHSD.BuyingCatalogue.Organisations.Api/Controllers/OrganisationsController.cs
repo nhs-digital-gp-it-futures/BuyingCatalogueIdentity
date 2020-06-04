@@ -181,7 +181,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 }
             };
 
-            return Ok(model);
+            return model;
         }
     }
 }

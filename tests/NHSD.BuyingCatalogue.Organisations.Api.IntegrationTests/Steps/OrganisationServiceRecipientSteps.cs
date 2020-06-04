@@ -52,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             expectedServiceRecipients.Should().BeEquivalentTo(serviceRecipients);
         }
 
-        private static object CreateServiceRecipients(JToken token)
+        private static ServiceRecipientsTable CreateServiceRecipients(JToken token)
         {
             return new ServiceRecipientsTable
             {

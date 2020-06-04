@@ -389,7 +389,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 }
             };
 
-            response.Should().BeEquivalentTo(new ActionResult<List<ServiceRecipientsModel>>(new OkObjectResult(expected)));
+            response.Should().BeEquivalentTo(new ActionResult<List<ServiceRecipientsModel>>(expected));
         }
     }
 }
