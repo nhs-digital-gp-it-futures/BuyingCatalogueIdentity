@@ -123,7 +123,29 @@ spec:
               value: {{ .port | quote }}
             - name: SMTPSERVER__EMAILSUBJECTPREFIX
               value: {{ .subjectPrefix | quote }}
+            {{- if .allowInvalidCertificate }}
+            - name: SMTPSERVER__ALLOWINVALIDCERTIFICATE
+              value: {{ .allowInvalidCertificate | quote }}
             {{- end }}
+            - name: SMTPSERVER__AUTHENTICATION__ISREQUIRED
+              value: {{ .authenticationRequired | quote }}
+            {{- if .authenticationRequired }}
+            {{- with .userName }}
+            - name: SMTPSERVER__AUTHENTICATION__USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name | quote }}
+                  key: {{ .key | quote }}
+            {{- end }}
+            {{- with .password }}
+            - name: SMTPSERVER__AUTHENTICATION__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name | quote }}
+                  key: {{ .key | quote }}
+            {{- end }} #pw
+            {{- end }} #auth
+            {{- end }} #email
 
             {{- with .Values.serviceDependencies.pb }}
             - name: PUBLICBROWSE__BASEADDRESS
@@ -135,7 +157,7 @@ spec:
               value: {{ .loginPath | quote }}
             - name: PUBLICBROWSE__LOGOUTPATH
               value: {{ .logoutPath | quote }}
-            {{- end }}
+            {{- end }} 
             - name: ALLOWINVALIDCERTIFICATE
               value: {{ .Values.allowInvalidCertificate | quote }}
             - name: DATAPROTECTION__APPLICATIONNAME
@@ -150,6 +172,55 @@ spec:
             - name: CERTIFICATESETTINGS__PRIVATEKEYPATH
               value: {{ .privateKeyPath | quote }}
             {{- end }}
+            {{- if .Values.passwordReset }}
+            {{- with .Values.passwordReset.emailMessage }}
+            {{- if .senderName }}
+            - name: PASSWORDRESET__EMAILMESSAGE__SENDER__NAME
+              value: {{ .senderName | quote }}
+            {{- end }}
+            {{- if .senderAddress }}
+            - name: PASSWORDRESET__EMAILMESSAGE__SENDER__ADDRESS
+              value: {{ .senderAddress | quote }}
+            {{- end }}
+            {{- if .subject }}
+            - name: PASSWORDRESET__EMAILMESSAGE__SUBJECT
+              value: {{ .subject | quote }}
+            {{- end }}
+            {{- if .htmlBody }}
+            - name: PASSWORDRESET__EMAILMESSAGE__HTMLBODY
+              value: {{ .htmlBody | quote }}
+            {{- end }}
+            {{- if .textBody }}
+            - name: PASSWORDRESET__EMAILMESSAGE__TEXTBODY
+              value: {{ .textBody | quote }}
+            {{- end }}                              
+            {{- end }} #email Message 
+            {{- end }} #password reset
+            {{- if .Values.registration }}
+            {{- with .Values.registration.emailMessage }}
+            {{- if .senderName }}
+            - name: REGISTRATION__EMAILMESSAGE__SENDER__NAME
+              value: {{ .senderName | quote }}
+            {{- end }}
+            {{- if .senderAddress }}
+            - name: REGISTRATION__EMAILMESSAGE__SENDER__ADDRESS
+              value: {{ .senderAddress | quote }}
+            {{- end }}
+            {{- if .subject }}
+            - name: REGISTRATION__EMAILMESSAGE__SUBJECT
+              value: {{ .subject | quote }}
+            {{- end }}
+            {{- if .htmlBody }}
+            - name: REGISTRATION__EMAILMESSAGE__HTMLBODY
+              value: {{ .htmlBody | quote }}
+            {{- end }}
+            {{- if .textBody }}
+            - name: REGISTRATION__EMAILMESSAGE__TEXTBODY
+              value: {{ .textBody | quote }}
+            {{- end }}                              
+            {{- end }} #email Message        
+            {{- end }} #registration   
+
             {{- if .Values.env.values -}}
             {{- range .Values.env.values }}
               - name: {{ .name }}
