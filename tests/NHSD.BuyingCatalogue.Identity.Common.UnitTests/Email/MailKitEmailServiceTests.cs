@@ -309,7 +309,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                 {
                     Sender = new EmailAddress { Address = "from@sender.uk" },
                     Recipient = new EmailAddress { Address = "to@recipient.uk" },
-                    Subject = "subject"
+                    Subject = "subject",
                 });
 
             mockTransport.Verify(
