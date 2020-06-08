@@ -50,6 +50,12 @@
     <ProjectReference Include="..\NHSD.BuyingCatalogue.Identity.Common\NHSD.BuyingCatalogue.Identity.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="start.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="NpmInstall" BeforeTargets="Build" Condition="!('$(DOTNET_RUNNING_IN_CONTAINER)' == 'true') And !Exists('node_modules')">
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />

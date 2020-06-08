@@ -103,6 +103,14 @@ serviceDependencies:
       name:
       key:  
     port:
+    #allowInvalidCertificate: false # note, if not set, will default to the global allowInvalidCertificate setting for isapi
+    authenticationRequired: false
+    # userName:
+    #   name:
+    #   key:
+    # password:
+    #   name:
+    #   key:
     subjectPrefix:
   pb:
     baseAddressConfig:
@@ -122,6 +130,25 @@ certificateSettings:
   useDeveloperCertificate: true
   certificatePath:
   privateKeyPath:
+
+# use these settings to adjust the password reset email
+# passwordReset:
+#   emailMessage:
+#     senderName:
+#     senderAddress:
+#     subject:
+#     htmlBody:
+#     textBody:
+
+# use these settings to adjust the registration email
+# registration:
+#   emailMessage:
+#     senderName:
+#     senderAddress:
+#     subject:
+#     htmlBody:
+#     textBody:
+
 
 env:
   configmap:
