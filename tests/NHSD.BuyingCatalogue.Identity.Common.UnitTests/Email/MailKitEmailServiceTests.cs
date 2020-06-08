@@ -129,7 +129,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                 {
                     Sender = new EmailAddress { Address = "from@sender.uk" },
                     Recipient = new EmailAddress { Address = "to@recipient.uk" },
-                    Subject = "subject"
+                    Subject = "subject",
                 };
 
                 var service = new MailKitEmailService(
@@ -166,7 +166,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                 {
                     Sender = new EmailAddress { Address = "from@sender.uk" },
                     Recipient = new EmailAddress { Address = "to@recipient.uk" },
-                    Subject = "subject"
+                    Subject = "subject",
                 };
 
                 var service = new MailKitEmailService(
@@ -212,7 +212,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
             {
                 IsRequired = true,
                 UserName = userName,
-                Password = password
+                Password = password,
             };
 
             var settings = new SmtpSettings { Authentication = authentication };
@@ -227,7 +227,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                 {
                     Sender = new EmailAddress { Address = "from@sender.uk" },
                     Recipient = new EmailAddress { Address = "to@recipient.uk" },
-                    Subject = "subject"
+                    Subject = "subject",
                 });
 
             mockTransport.Verify(
@@ -253,7 +253,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                 {
                     Sender = new EmailAddress { Address = "from@sender.uk" },
                     Recipient = new EmailAddress { Address = "to@recipient.uk" },
-                    Subject = "subject"
+                    Subject = "subject",
                 });
 
             mockTransport.Verify(
@@ -281,7 +281,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                 {
                     Sender = new EmailAddress { Address = "from@sender.uk" },
                     Recipient = new EmailAddress { Address = "to@recipient.uk" },
-                    Subject = subject
+                    Subject = subject,
                 });
 
             mockTransport.Verify(
