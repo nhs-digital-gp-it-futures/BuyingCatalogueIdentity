@@ -33,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
         public static async Task DenyAccessForNhsdUser(string connectionString)
         {
             using IDbConnection databaseConnection = new SqlConnection(connectionString);
-            await databaseConnection.ExecuteAsync("DENY CONNECT TO [NHSD-ISAPI;");
+            await databaseConnection.ExecuteAsync("DENY CONNECT TO [NHSD-ISAPI];");
         }
     }
 }
