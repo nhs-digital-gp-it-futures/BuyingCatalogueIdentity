@@ -1,4 +1,4 @@
-# Default values for isapi-db.
+# Default values for isapi-db-deploy.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -7,12 +7,12 @@ replicaCount: 1
 useLocalImage: false
 
 image:
-  repository: gpitfuturesdevacr.azurecr.io/nhsd/buying-catalogue/identity-api-user-db 
+  repository: gpitfuturesdevacr.azurecr.io/nhsd/buying-catalogue/isapi-db-deploy
   pullPolicy: Always
 
 imagePullSecrets: 
-nameOverride: "isapi-sql"
-fullnameOverride: "gpitfutures-bc-isapi-sql"
+nameOverride: "isapi-db-deploy"
+fullnameOverride: "gpitfutures-bc-isapi-db-deploy"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -34,57 +34,40 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
-  port: 1451
-
-resources:
+resources: 
   requests:
     cpu: 25m
-    memory: 700Mi
+    memory: 64Mi
   limits:
-    cpu: 4000m
-    memory: 2048Mi
+    cpu: 1000m
+    memory: 500Mi
 
 nodeSelector: {}
-
-insertTestData: false
 
 tolerations: []
 
 affinity: {}
 
+db:
+  name:
+  serverConfig:
+    name:
+    key:
+  serverPortConfig:
+    name:
+    key:
+  saUserNameSecret: 
+    name:
+    key:
+  saPasswordSecret: 
+    name:
+    key:
+  dbPasswordSecret:
+    name:
+    key:
+  sqlPackageArgs: ""
+
 env:
   configmap:
   secrets:
-  values:   
-
-dbName: CatalogueUsers
-dbUser: NHSD
-dbPasswordSecret: 
-  name:
-  key:
-saPasswordSecret:
-  name:
-  key:
-
-insertTestData: false
-
-createEaUser: false
-eaUser:
-  firstName:
-  lastName:
-  email:
-  passwordHash: 
-    name: 
-    key: 
-  phone:
-
-probes:
-  port: 1433
-  liveness:
-    initialDelaySeconds: 15
-    periodSeconds: 20
-  readiness:
-    initialDelaySeconds: 5
-    periodSeconds: 10
+  values:    
