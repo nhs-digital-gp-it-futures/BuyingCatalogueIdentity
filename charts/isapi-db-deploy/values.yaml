@@ -67,6 +67,17 @@ db:
     key:
   sqlPackageArgs: ""
 
+insertTestData: false
+createEaUser: false
+eaUser:
+  firstName:
+  lastName:
+  email:
+  passwordHash:
+    name:
+    key:   
+  phone:
+
 env:
   configmap:
   secrets:

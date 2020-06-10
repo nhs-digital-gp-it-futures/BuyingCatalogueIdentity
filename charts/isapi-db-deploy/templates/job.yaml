@@ -53,6 +53,29 @@ spec:
           - name: "SQLPACKAGEARGS"
             value: {{ .sqlPackageArgs }}
           {{- end }}
+          {{- if .Values.insertTestData }}
+          - name: INSERT_TEST_DATA
+            value: "True" 
+          {{- end}}
+          {{- if .Values.createEaUser }}
+          - name: CREATE_EA_USER 
+            value: "True"
+          {{- with .Values.eaUser }}
+          - name: EA_USER_FIRST_NAME
+            value: {{ .firstName }}
+          - name: EA_USER_LAST_NAME
+            value: {{ .lastName }}
+          - name: EA_USER_EMAIL
+            value: {{ .email }}
+          - name: EA_USER_PASSWORD_HASH
+            valueFrom:
+              secretKeyRef:
+                name: {{ .passwordHash.name }}
+                key: {{ .passwordHash.key }}
+          - name: EA_USER_PHONE
+            value: {{ .phone | quote }}
+          {{- end -}}
+          {{- end}}
           {{- if .Values.env.values -}}
           {{- range .Values.env.values }}
             - name: {{ .name }}
