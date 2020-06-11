@@ -1,31 +1,58 @@
 version: '3.5'
+
+x-networked: &networked
+  networks:
+    - nhsd_bcnetwork
+
+x-depends-on-db: &dependsOnDb
+  <<: *networked
+  depends_on:
+    - nhsd.buyingcatalogue.identity.api.user.db
+
+x-sa-password: &saPassword
+  - SA_PASSWORD: "MyTestPassword123!"
+
 services:
   nhsd.buyingcatalogue.identity.api.user.db:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-api-user-db:${TAG:-latest}
-    build: 
-      context: src/NHSD.BuyingCatalogue.Identity.UserDatabase
+    <<: *networked
+    image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: identity_api_user_db
     volumes:
       - nhsd_identity_user_db_volume:/var/opt/mssql/
-    networks:
-      - nhsd_bcnetwork
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=MyTestPassword123!
-      - MSSQL_PID=Express
-      - DB_NAME=${NHSD_LOCAL_DB_NAME:-CatalogueUsers}
-      - NHSD_PASSWORD=DisruptTheMarket1!
-      - INSERT_TEST_DATA=True
-      - CREATE_EA_USER=True
-      - EA_USER_FIRST_NAME=Agency
-      - EA_USER_LAST_NAME=User
-      - EA_USER_EMAIL=user@agency.com
-      - EA_USER_PASSWORD_HASH=AQAAAAEAACcQAAAAEEOFkNNrFpKmDC2TBv2CP/dzxfnjdXk97RoqRlunE/CGs2tmFcewKZj4M/fITiP2tg==
-      - EA_USER_PHONE=01234567890
+      <<: *saPassword
+      ACCEPT_EULA: "Y"
+    healthcheck:
+      test: '/opt/mssql-tools/bin/sqlcmd -b -d CatalogueUsers -U sa -P $${SA_PASSWORD} -Q "IF NOT EXISTS (SELECT * FROM dbo.[Organisations]) THROW 50000, ''Not ready'', 0;"'
+      interval: 20s
+      retries: 4
+      start_period: 40s
+      timeout: 10s
     ports:
       - "${NHSD_LOCAL_DB_PORT:-1533}:1433"
-      
+
+  dacpac.deploy:
+    <<: *dependsOnDb
+    image: ${REGISTRY:-nhsd}/buying-catalogue/isapi-db-deploy:${TAG:-latest}
+    container_name: identity_api_user_db_deploy
+    build:
+      context: "."
+      dockerfile: "src/NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment/Dockerfile"
+    environment:
+      <<: *saPassword
+      DB_NAME: "CatalogueUsers"
+      DB_SERVER: nhsd.buyingcatalogue.identity.api.user.db
+      NHSD_PASSWORD: "DisruptTheMarket1!" 
+      INSERT_TEST_DATA: "True"
+      CREATE_EA_USER: "True"
+      EA_USER_FIRST_NAME: "Agency"
+      EA_USER_LAST_NAME: "User"
+      EA_USER_EMAIL: "user@agency.com"
+      EA_USER_PASSWORD_HASH: "AQAAAAEAACcQAAAAEEOFkNNrFpKmDC2TBv2CP/dzxfnjdXk97RoqRlunE/CGs2tmFcewKZj4M/fITiP2tg=="
+      EA_USER_PHONE: "01234567890"     
+
   nhsd.buyingcatalogue.identity.api:
+    <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
     container_name: identity_api
     build: 
@@ -37,7 +64,7 @@ services:
       - CLIENTS__1__REDIRECTURLS__1=http://host.docker.internal:8072/signin-oidc
       - CLIENTS__1__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc
       - CLIENTS__1__POSTLOGOUTREDIRECTURLS__1=http://host.docker.internal:8072/signout-callback-oidc
-      - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
+      - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User ID=NHSD-ISAPI;Password=DisruptTheMarket1!}
       - ISSUERURL=http://host.docker.internal:8070/identity
       - SmtpServer__Host=nhsd.buyingcatalogue.email
       - SmtpServer__Port=587
@@ -54,38 +81,35 @@ services:
       - /bin/sh
       - -c 
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.dll
-    networks:
-      - nhsd_bcnetwork
     ports:
       - "8070:80"
 
   nhsd.pb.wiremock:
+    <<: *networked
     container_name: pb_wiremock
     image: ${REGISTRY:-nhsd}/buying-catalogue/pb-wiremock:${TAG:-latest}
     build: 
       context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/WireMock/PublicBrowse
       dockerfile: Dockerfile
-    networks:
-        - nhsd_bcnetwork   
     ports:
         - "8076:80"
 
   nhsd.buyingcatalogue.identity.api.broken.smtp:
+    <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
     container_name: identity_api_broken_smtp
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
+      - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User ID=NHSD-ISAPI;Password=DisruptTheMarket1!}
       - SmtpServer__Host=broken.smtp
       - SmtpServer__Port=1337
     depends_on:
       - nhsd.buyingcatalogue.identity.api
-    networks:
-      - nhsd_bcnetwork
     ports:
       - "8170:80"
 
   nhsd.buyingcatalogue.organisations.api:
+    <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/organisations-api:${TAG:-latest}
     container_name: organisations_api
     build: 
@@ -94,7 +118,7 @@ services:
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
         - AUTHORITY=http://host.docker.internal:8070/identity
-        - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User Id=NHSD;Password=DisruptTheMarket1!}
+        - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User ID=NHSD-ISAPI;Password=DisruptTheMarket1!}
         - AllowInvalidCertificate=True
         - ODS__APIBASEURL=http://nhsd.ods.api.wiremock/ORD/2-0-0
         - ODS__BUYERORGANISATIONROLEIDS__0=Buyer
@@ -106,23 +130,21 @@ services:
       - /bin/sh
       - -c 
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Organisations.Api.dll
-    networks:
-        - nhsd_bcnetwork
     ports:
         - "8075:80"
 
   nhsd.ods.api.wiremock:
+    <<: *networked
     container_name: ods_api_wiremock
     image: ${REGISTRY:-nhsd}/buying-catalogue/ods-api-wiremock:${TAG:-latest}
     build: 
       context: tests/NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests/WireMock/Ods
-      dockerfile: Dockerfile    
-    networks:
-        - nhsd_bcnetwork   
+      dockerfile: Dockerfile      
     ports:
         - "8080:80"
 
   nhsd.buyingcatalogue.identity.api.sampleresource:
+    <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-sampleresource:${TAG:-latest}
     container_name: identity_api_sample_resource
     build: 
@@ -135,12 +157,11 @@ services:
       - /bin/sh
       - -c 
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.SampleResource.dll
-    networks:
-        - nhsd_bcnetwork
     ports:
         - "8071:80"
         
   nhsd.buyingcatalogue.identity.api.samplemvcclient:
+    <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-samplemvcclient:${TAG:-latest}
     container_name: identity_api_sample_mvc_client
     build: 
@@ -154,12 +175,11 @@ services:
       - /bin/sh
       - -c 
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.dll
-    networks:
-        - nhsd_bcnetwork
     ports:
         - "8072:80"
 
   nhsd.buyingcatalogue.identity.api.samplemvcclient.invalidsecret:
+    <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-samplemvcclient:${TAG:-latest}
     container_name: identity_api_sample_mvc_client_invalidsecret
     environment:
@@ -167,8 +187,6 @@ services:
         - AUTHORITY=http://host.docker.internal:8070/identity
         - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
         - CLIENTSECRET=Invalid
-    networks:
-        - nhsd_bcnetwork
     ports:
         - "8073:80"
     
@@ -197,6 +215,7 @@ services:
       - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' | sudo tee -a /etc/hosts && /opt/bin/entry_point.sh
 
   nhsd.buyingcatalogue.email:
+    <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/smtp-server:${TAG:-latest}
     container_name: smtp_server
     build: 
@@ -205,8 +224,6 @@ services:
       - "1025:25"
       - "1180:80"
       - "1587:587"
-    networks:
-      - nhsd_bcnetwork
 
 networks: 
   nhsd_bcnetwork:

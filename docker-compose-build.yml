@@ -13,14 +13,15 @@ services:
     image: ${REGISTRY:-nhsd}/buying-catalogue/organisations-api:${TAG:-latest}
     container_name: organisations_api
     build: 
-        context: .
-        dockerfile: src/NHSD.BuyingCatalogue.Organisations.Api/Dockerfile
+      context: .
+      dockerfile: src/NHSD.BuyingCatalogue.Organisations.Api/Dockerfile
 
-  nhsd.buyingcatalogue.identity.api.user.db:
-    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-api-user-db:${TAG:-latest}
-    container_name: identity_api_user_db
-    build: 
-      context: src/NHSD.BuyingCatalogue.Identity.UserDatabase
+  dacpac.deploy:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/isapi-db-deploy:${TAG:-latest}
+    container_name: identity_api_user_db_deploy
+    build:
+      context: "."
+      dockerfile: "src/NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment/Dockerfile"
 
   nhsd.buyingcatalogue.email:
     image: ${REGISTRY:-nhsd}/buying-catalogue/smtp-server:${TAG:-latest}
