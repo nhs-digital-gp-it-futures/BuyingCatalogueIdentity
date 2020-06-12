@@ -4,6 +4,12 @@
     So that I can ensure all of the information is correct
 
 Background:
+    Given Ods Child Organisations exist for organisation Ods 1
+        | Name               | OdsCode | PrimaryRoleId |
+        | Ods Organisation 1 | B1G     | RO177         |
+        | Ods Organisation 2 | B2G     | RO177         |
+        | Ods Organisation 3 | B3G     | RO177         |
+        | Ods Organisation 4 | N0G     | RO171         |
     Given Organisations exist
         | Name           | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3        | Line4       | Town  | County         | Postcode | Country |
         | Organisation 1 | Ods 1   | ID 1          | true                     | 12    | Brick Lane | Central Area | City Centre | Leeds | West Yorkshire | LS1 1AW  | England |
@@ -19,8 +25,11 @@ Scenario: 1. Get a list of service recipients from an organisation
     When the user makes a request to retrieve the service recipients with an organisation name Organisation 1
     Then a response with status code 200 is returned
     And The organisation service recipient is returned with the following values
-        | Name           | OdsCode |
-        | Organisation 1 | Ods 1   |
+        | Name               | OdsCode |
+        | Organisation 1     | Ods 1   |
+        | Ods Organisation 1 | B1G     |
+        | Ods Organisation 2 | B2G     |
+        | Ods Organisation 3 | B3G     |
 
 @7412
 Scenario: 2. A buyer user cannot access the service recipients for an organisation they dont belong to

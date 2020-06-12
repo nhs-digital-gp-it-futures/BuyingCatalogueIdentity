@@ -24,20 +24,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();
 
         [Test]
-        public void Constructor_NullRepository_Throws()
+        public void Constructor_NullOrganisationRepository_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var _ = new OrganisationsController(null, Mock.Of<ICreateOrganisationService>());
+                var _ = new OrganisationsController(null, Mock.Of<ICreateOrganisationService>(), Mock.Of<IServiceRecipientRepository>());
             });
         }
 
         [Test]
-        public void Constructor_NullService_Throws()
+        public void Constructor_NullOrganisationService_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var _ = new OrganisationsController(Mock.Of<IOrganisationRepository>(), null);
+                var _ = new OrganisationsController(Mock.Of<IOrganisationRepository>(), null, Mock.Of<IServiceRecipientRepository>());
+            });
+        }
+
+        [Test]
+        public void Constructor_NullServiceRecipientRepository_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var _ = new OrganisationsController(Mock.Of<IOrganisationRepository>(), Mock.Of<ICreateOrganisationService>(), null);
             });
         }
 
@@ -373,9 +382,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var organisation = OrganisationBuilder.Create(1).WithOrganisationId(organisationId).Build();
 
+            var serviceRecipient1 = ServiceRecipientBuilder
+                .Create(1)
+                .Build();
+            var serviceRecipient2 = ServiceRecipientBuilder
+                .Create(2)
+                .Build();
+
             var controller = OrganisationControllerBuilder
                 .Create(organisationId)
                 .WithGetOrganisation(organisation)
+                .WithServiceRecipients(new List<ServiceRecipient>{serviceRecipient2, serviceRecipient1})
                 .Build();
 
             var response = await controller.GetServiceRecipientsAsync(organisation.OrganisationId);
@@ -386,10 +403,21 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 {
                     Name = organisation.Name,
                     OdsCode = organisation.OdsCode
+                },
+                new ServiceRecipientsModel
+                {
+                    Name = serviceRecipient1.Name,
+                    OdsCode = serviceRecipient1.OrgId
+                },
+                new ServiceRecipientsModel
+                {
+                    Name = serviceRecipient2.Name,
+                    OdsCode = serviceRecipient2.OrgId
                 }
             };
+            expected = expected.OrderBy(x => x.Name).ToList();
 
-            response.Should().BeEquivalentTo(new ActionResult<List<ServiceRecipientsModel>>(expected));
+            response.Should().BeEquivalentTo(new ActionResult<List<ServiceRecipientsModel>>(expected), config => config.WithStrictOrdering());
         }
     }
 }

@@ -17,12 +17,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
     {
         private IOrganisationRepository _organisationRepository;
         private ICreateOrganisationService _createOrganisationService;
+        private IServiceRecipientRepository _serviceRecipientRepository;
+
         private readonly ClaimsPrincipal _claimsPrincipal;
 
         private OrganisationControllerBuilder(Guid primaryOrganisationId)
         {
             _createOrganisationService = Mock.Of<ICreateOrganisationService>();
             _organisationRepository = Mock.Of<IOrganisationRepository>();
+            _serviceRecipientRepository = Mock.Of<IServiceRecipientRepository>();
+
             _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
                 new Claim("primaryOrganisationId", primaryOrganisationId.ToString())
@@ -33,6 +37,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         internal static OrganisationControllerBuilder Create(Guid primaryOrganisationId = default)
         {
             return new OrganisationControllerBuilder(primaryOrganisationId);
+        }
+
+        internal OrganisationControllerBuilder WithServiceRecipients(IEnumerable<ServiceRecipient> result)
+        {
+            var mockServiceRecipientsRepository = new Mock<IServiceRecipientRepository>();
+            mockServiceRecipientsRepository.Setup(x => x.GetServiceRecipientsByParentOdsCode(It.IsAny<string>()))
+                .ReturnsAsync(result);
+
+            _serviceRecipientRepository = mockServiceRecipientsRepository.Object;
+            return this;
         }
 
         internal OrganisationControllerBuilder WithListOrganisation(IEnumerable<Organisation> result)
@@ -97,7 +111,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
         internal OrganisationsController Build()
         {
-            return new OrganisationsController(_organisationRepository, _createOrganisationService)
+            return new OrganisationsController(_organisationRepository, _createOrganisationService, _serviceRecipientRepository)
             {
                 ControllerContext = new ControllerContext
                 {

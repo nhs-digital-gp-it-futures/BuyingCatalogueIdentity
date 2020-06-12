@@ -41,6 +41,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             }
         }
 
+        [Given(@"Ods Child Organisations exist for organisation (.*)")]
+        public async Task GivenChildOrganisationsExist(string odsCode, Table table)
+        {
+            var odsOrganisations = table.CreateSet<OdsApiResponseTable>().Select(TransformIntoOdsApiChildFormat);
+            var odsResponse = new {Organisations = odsOrganisations};
+            var odsApiOrganisationAsJson = JsonConvert.SerializeObject(odsResponse);
+            await _api.SetUpGETChildrenEndpoint(odsCode, odsApiOrganisationAsJson);
+        }
+
         [When(@"a GET request is made for an Ods organisation with code (.*)")]
         public async Task WhenAGETRequestIsMadeForAnOdsOrganisationWithOdsCode(string odsCode)
         {
@@ -57,6 +66,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             var actualOrganisation = CreateOrganisationFromJson(responseBody);
 
             actualOrganisation.Should().BeEquivalentTo(expectedOrganisation);
+        }
+
+        private static object TransformIntoOdsApiChildFormat(OdsApiResponseTable data)
+        {
+            return new
+            {
+                data.Name,
+                data.PrimaryRoleId,
+                OrgId = data.OdsCode
+            };
         }
 
         private static object TransformIntoOdsApiFormat(OdsApiResponseTable data)
@@ -113,6 +132,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                 PostCode = getAddressField("postcode"),
                 Country = getAddressField("country")
             };
+        }
+
+        private class OdsApiChildResponseTable
+        {
+            public string Name { get; set; }
+            public string OdsCode { get; set; }
+            public string PrimaryRoleId { get; set; }
         }
 
         private class OdsApiResponseTable

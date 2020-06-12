@@ -24,11 +24,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     {
         private readonly IOrganisationRepository _organisationRepository;
         private readonly ICreateOrganisationService _createOrganisationService;
+        private readonly IServiceRecipientRepository _serviceRecipientRepository;
 
-        public OrganisationsController(IOrganisationRepository organisationRepository, ICreateOrganisationService createOrganisationService)
+        public OrganisationsController(IOrganisationRepository organisationRepository, ICreateOrganisationService createOrganisationService, IServiceRecipientRepository serviceRecipientRepository)
         {
             _organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
             _createOrganisationService = createOrganisationService ?? throw new ArgumentNullException(nameof(createOrganisationService));
+            _serviceRecipientRepository = serviceRecipientRepository ?? throw new ArgumentNullException(nameof(serviceRecipientRepository));
         }
 
         [HttpGet]
@@ -172,16 +174,19 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
+            var children = await _serviceRecipientRepository.GetServiceRecipientsByParentOdsCode(organisation.OdsCode);
+
             var model = new List<ServiceRecipientsModel>
-            {
+            { 
                 new ServiceRecipientsModel
                 {
                     Name = organisation.Name,
                     OdsCode = organisation.OdsCode
                 }
             };
+            model.AddRange(children.Select(recipient => new ServiceRecipientsModel {Name = recipient.Name, OdsCode = recipient.OrgId}));
 
-            return model;
+            return model.OrderBy(x => x.Name).ToList();
         }
     }
 }

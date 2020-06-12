@@ -30,6 +30,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             await AddMapping(CreateMappingModel("/ORD/2-0-0/organisations/*", 500));
         }
 
+        internal async Task SetUpGETChildrenEndpoint(string odsCode, string responseBody)
+        {
+            await AddMapping(CreateMappingModel($"/ORD/2-0-0/organisations", 200, responseBody));
+        }
+
         internal async Task SetUpGETEndpoint(string odsCode, string responseBody)
         {
             await AddMapping(CreateMappingModel($"/ORD/2-0-0/organisations/{odsCode}", 200, responseBody));
