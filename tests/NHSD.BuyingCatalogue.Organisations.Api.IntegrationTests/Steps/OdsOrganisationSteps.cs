@@ -45,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         public async Task GivenChildOrganisationsExist(string odsCode, Table table)
         {
             var odsOrganisations = table.CreateSet<OdsApiResponseTable>().Select(TransformIntoOdsApiChildFormat);
-            var odsResponse = new {Organisations = odsOrganisations};
+            var odsResponse = new { Organisations = odsOrganisations };
             var odsApiOrganisationAsJson = JsonConvert.SerializeObject(odsResponse);
             await _api.SetUpGETChildrenEndpoint(odsCode, odsApiOrganisationAsJson);
         }

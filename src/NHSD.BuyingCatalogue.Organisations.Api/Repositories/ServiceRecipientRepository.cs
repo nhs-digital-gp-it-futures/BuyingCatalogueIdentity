@@ -20,19 +20,31 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         public async Task<IEnumerable<ServiceRecipient>> GetServiceRecipientsByParentOdsCode(string odsCode)
         {
-            var children = await _settings.ApiBaseUrl
-                .AppendPathSegment("organisations")
-                .SetQueryParam("RelTypeId", "RE4")
-                .SetQueryParam("TargetOrgId", odsCode)
-                .SetQueryParam("RelStatus", "active")
-                .SetQueryParam("Limit", 1000)
-                .AllowHttpStatus("3xx,4xx")
-                .GetJsonAsync<Children>();
+            var retrievedAll = false;
 
-            const string prescribingCostCentre = "RO177";
+            var costCentres = new List<ServiceRecipient>();
+            int offset = 0;
 
-            var prescribingCostCentres = children.Organisations.Where(o => o.PrimaryRoleId == prescribingCostCentre);
-            return prescribingCostCentres;
+            while (!retrievedAll)
+            {
+                var children = await _settings.ApiBaseUrl
+                    .AppendPathSegment("organisations")
+                    .SetQueryParam("RelTypeId", "RE4")
+                    .SetQueryParam("TargetOrgId", odsCode)
+                    .SetQueryParam("RelStatus", "active")
+                    .SetQueryParam("Limit", _settings.GetChildOrganisationSearchLimit)
+                    .SetQueryParam("Offset", offset)
+                    .AllowHttpStatus("3xx,4xx")
+                    .GetJsonAsync<Children>();
+                
+                var centres = children.Organisations.Where(o => o.PrimaryRoleId == _settings.GpPracticeRoleId);
+                costCentres.AddRange(centres);
+
+                retrievedAll = children.Organisations.Count() != _settings.GetChildOrganisationSearchLimit;
+                offset += _settings.GetChildOrganisationSearchLimit;
+            }
+
+            return costCentres;
         }
 
         internal class Children

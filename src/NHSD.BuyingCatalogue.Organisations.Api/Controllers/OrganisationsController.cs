@@ -26,7 +26,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         private readonly ICreateOrganisationService _createOrganisationService;
         private readonly IServiceRecipientRepository _serviceRecipientRepository;
 
-        public OrganisationsController(IOrganisationRepository organisationRepository, ICreateOrganisationService createOrganisationService, IServiceRecipientRepository serviceRecipientRepository)
+        public OrganisationsController(
+            IOrganisationRepository organisationRepository, 
+            ICreateOrganisationService createOrganisationService, 
+            IServiceRecipientRepository serviceRecipientRepository)
         {
             _organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
             _createOrganisationService = createOrganisationService ?? throw new ArgumentNullException(nameof(createOrganisationService));
@@ -174,8 +177,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            var children = await _serviceRecipientRepository.GetServiceRecipientsByParentOdsCode(organisation.OdsCode);
-
             var model = new List<ServiceRecipientsModel>
             { 
                 new ServiceRecipientsModel
@@ -184,7 +185,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                     OdsCode = organisation.OdsCode
                 }
             };
-            model.AddRange(children.Select(recipient => new ServiceRecipientsModel {Name = recipient.Name, OdsCode = recipient.OrgId}));
+
+            var children = await _serviceRecipientRepository.GetServiceRecipientsByParentOdsCode(organisation.OdsCode);
+            model.AddRange(children.Select(recipient => new ServiceRecipientsModel { Name = recipient.Name, OdsCode = recipient.OrgId }));
 
             return model.OrderBy(x => x.Name).ToList();
         }

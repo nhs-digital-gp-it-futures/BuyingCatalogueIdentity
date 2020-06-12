@@ -32,7 +32,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
         internal ServiceRecipient Build()
         {
-            return new ServiceRecipient {Name = _name, OrgId = _odsCode};
+            return new ServiceRecipient { Name = _name, OrgId = _odsCode };
         }
     }
 }
