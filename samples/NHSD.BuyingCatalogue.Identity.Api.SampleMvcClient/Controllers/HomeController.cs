@@ -90,7 +90,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
                 throw new Exception($"UserInfoResponse : {userInfoResponse.Error}");
             }
 
-            return View(new UserInfoViewModel { UserClaims = userInfoResponse.Claims });
+            return View(new UserInfoViewModel { UserClaims = userInfoResponse.Claims, AccessToken = accessToken });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

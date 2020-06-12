@@ -47,6 +47,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IOdsRepository, OdsRepository>();
+            services.AddTransient<IServiceRecipientRepository, ServiceRecipientRepository>();
 
             services.AddTransient<ICreateOrganisationService, CreateOrganisationService>();
 
