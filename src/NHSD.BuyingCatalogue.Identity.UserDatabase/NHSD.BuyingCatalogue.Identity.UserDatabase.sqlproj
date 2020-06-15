@@ -77,8 +77,8 @@
     <Build Include="Tables\AspNetUserTokens.sql" />
     <Build Include="Indexes\RoleNameIndex.sql" />
     <Build Include="Indexes\UserNameIndex.sql" />
-    <Build Include="Security\Logins\NHSD.sql" />
-    <Build Include="Security\Users\NHSD.sql" />
+    <None Include="Security\Logins\NHSD.sql" />
+    <None Include="Security\Users\NHSD.sql" />
     <Build Include="Tables\Organisations.sql" />
     <Build Include="Tables\DataProtectionKeys.sql" />
   </ItemGroup>

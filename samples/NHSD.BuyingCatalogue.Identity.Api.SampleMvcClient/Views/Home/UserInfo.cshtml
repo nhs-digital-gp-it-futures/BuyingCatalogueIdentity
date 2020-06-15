@@ -1,11 +1,11 @@
 ﻿@model NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.ViewModels.UserInfoViewModel
 
 @{
-    ViewData["Title"] = "User Information";
+    ViewData["Title"] = "User Information123";
 }
 <h1>@ViewData["Title"]</h1>
 
-<p>Here are your additional details.</p>
+<h3>Here are your additional details.</h3>
 
 <br />
 
@@ -20,4 +20,7 @@
             </tr>
         }
     </table>
+    <br/>
+    <h3>Here is your Access Token.</h3>
+    <p>@Model.AccessToken</p>
 }

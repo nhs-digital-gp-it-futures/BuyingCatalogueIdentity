@@ -49,7 +49,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests\NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.csproj", "{F569F73A-2430-4E50-B73D-B098B2D5994F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.Common.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.csproj", "{0BA3AF01-6D61-43CD-AE57-D9501C92B327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Common.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.csproj", "{0BA3AF01-6D61-43CD-AE57-D9501C92B327}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment", "src\NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment\NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment.csproj", "{8C4D4268-D22E-4BD6-898E-FDD81EACBD61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +117,10 @@ Global
 		{0BA3AF01-6D61-43CD-AE57-D9501C92B327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BA3AF01-6D61-43CD-AE57-D9501C92B327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BA3AF01-6D61-43CD-AE57-D9501C92B327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C4D4268-D22E-4BD6-898E-FDD81EACBD61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C4D4268-D22E-4BD6-898E-FDD81EACBD61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C4D4268-D22E-4BD6-898E-FDD81EACBD61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C4D4268-D22E-4BD6-898E-FDD81EACBD61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,6 +140,7 @@ Global
 		{C7801439-A853-47A4-81A2-71016B443982} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
 		{F569F73A-2430-4E50-B73D-B098B2D5994F} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
 		{0BA3AF01-6D61-43CD-AE57-D9501C92B327} = {2A3F346A-9455-45F7-8348-7BEDFB7024EF}
+		{8C4D4268-D22E-4BD6-898E-FDD81EACBD61} = {33728341-9F25-493F-942A-8766990C2F9A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A081915E-3D8B-4509-9F67-1971797275B2}

@@ -5,7 +5,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class OrganisationBuilder
     {
-        private readonly Guid _organisationId;
+        private Guid _organisationId;
         private string _name;
         private string _odsCode;
         private string _primaryRoleId;
@@ -27,6 +27,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         internal static OrganisationBuilder Create(int index)
         {
             return new OrganisationBuilder(index);
+        }
+
+        internal OrganisationBuilder WithOrganisationId(Guid organisationId)
+        {
+            _organisationId = organisationId;
+            return this;
         }
 
         internal OrganisationBuilder WithName(string name)

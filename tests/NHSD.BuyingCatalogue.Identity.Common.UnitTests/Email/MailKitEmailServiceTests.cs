@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Mail;
 using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MailKit;
 using MailKit.Security;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Common.Email;
@@ -26,7 +28,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
             var mockTransport = new Mock<IMailTransport>();
             mockTransport.SetupProperty(t => t.ServerCertificateValidationCallback);
 
-            new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+            new MailKitEmailService(
+                mockTransport.Object,
+                new SmtpSettings(),
+                Mock.Of<ILogger<MailKitEmailService>>());
 
             mockTransport.Object.ServerCertificateValidationCallback.Should().BeNull();
         }
@@ -39,7 +44,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
             var mockTransport = new Mock<IMailTransport>();
             mockTransport.SetupProperty(t => t.ServerCertificateValidationCallback);
 
-            new MailKitEmailService(mockTransport.Object, new SmtpSettings { AllowInvalidCertificate = true });
+            new MailKitEmailService(
+                mockTransport.Object,
+                new SmtpSettings { AllowInvalidCertificate = true },
+                Mock.Of<ILogger<MailKitEmailService>>());
 
             var callback = mockTransport.Object.ServerCertificateValidationCallback;
 
@@ -50,14 +58,20 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
         public void Constructor_IMailTransport_SmtpSettings_NullMailTransport_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new MailKitEmailService(null, new SmtpSettings()));
+            Assert.Throws<ArgumentNullException>(() => new MailKitEmailService(
+                null,
+                new SmtpSettings(),
+                Mock.Of<ILogger<MailKitEmailService>>()));
         }
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
         public void Constructor_IMailTransport_SmtpSettings_NullSettings_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new MailKitEmailService(Mock.Of<IMailTransport>(), null));
+            Assert.Throws<ArgumentNullException>(() => new MailKitEmailService(
+                Mock.Of<IMailTransport>(),
+                null,
+                Mock.Of<ILogger<MailKitEmailService>>()));
         }
 
         [Test]
@@ -75,7 +89,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
 
             var mockTransport = new Mock<IMailTransport>();
 
-            var service = new MailKitEmailService(mockTransport.Object, settings);
+            var service = new MailKitEmailService(
+                mockTransport.Object,
+                settings,
+                Mock.Of<ILogger<MailKitEmailService>>());
 
             await service.SendEmailAsync(
                 new EmailMessage
@@ -100,10 +117,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
             var mockTransport = new Mock<IMailTransport>();
             mockTransport.Setup(t => t.IsConnected).Returns(true);
             mockTransport.Setup(
-                    t => t.SendAsync(
-                        It.IsAny<MimeMessage>(),
-                        It.IsAny<CancellationToken>(),
-                        It.IsAny<ITransferProgress>()))
+                t => t.SendAsync(
+                    It.IsAny<MimeMessage>(),
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<ITransferProgress>()))
                 .ThrowsAsync(new ServiceNotAuthenticatedException());
 
             async Task SendEmailAsync()
@@ -115,7 +132,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                     Subject = "subject",
                 };
 
-                var service = new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+                var service = new MailKitEmailService(
+                    mockTransport.Object,
+                    new SmtpSettings(),
+                    Mock.Of<ILogger<MailKitEmailService>>());
+
                 await service.SendEmailAsync(message);
             }
 
@@ -148,7 +169,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                     Subject = "subject",
                 };
 
-                var service = new MailKitEmailService(mockTransport.Object, new SmtpSettings());
+                var service = new MailKitEmailService(
+                    mockTransport.Object,
+                    new SmtpSettings(),
+                    Mock.Of<ILogger<MailKitEmailService>>());
+
                 await service.SendEmailAsync(message);
             }
 
@@ -166,7 +191,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
         {
             static async Task SendEmail()
             {
-                var emailService = new MailKitEmailService(Mock.Of<IMailTransport>(), new SmtpSettings());
+                var emailService = new MailKitEmailService(
+                    Mock.Of<IMailTransport>(),
+                    new SmtpSettings(),
+                    Mock.Of<ILogger<MailKitEmailService>>());
+
                 await emailService.SendEmailAsync(null);
             }
 
@@ -174,7 +203,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
         }
 
         [Test]
-        public async Task SendEmailAsync_RequireAuthenticatioIsTrue_AuthenticatesUsingExpectedCredentials()
+        public async Task SendEmailAsync_RequireAuthenticationIsTrue_AuthenticatesUsingExpectedCredentials()
         {
             const string userName = "User";
             const string password = "Password";
@@ -188,7 +217,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
 
             var settings = new SmtpSettings { Authentication = authentication };
             var mockTransport = new Mock<IMailTransport>();
-            var service = new MailKitEmailService(mockTransport.Object, settings);
+            var service = new MailKitEmailService(
+                mockTransport.Object,
+                settings,
+                Mock.Of<ILogger<MailKitEmailService>>());
 
             await service.SendEmailAsync(
                 new EmailMessage
@@ -207,11 +239,14 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
         }
 
         [Test]
-        public async Task SendEmailAsync_RequireAuthenticatioIsFalse_DoesNotAuthenticate()
+        public async Task SendEmailAsync_RequireAuthenticationIsFalse_DoesNotAuthenticate()
         {
             var settings = new SmtpSettings { Authentication = new SmtpAuthenticationSettings() };
             var mockTransport = new Mock<IMailTransport>();
-            var service = new MailKitEmailService(mockTransport.Object, settings);
+            var service = new MailKitEmailService(
+                mockTransport.Object,
+                settings,
+                Mock.Of<ILogger<MailKitEmailService>>());
 
             await service.SendEmailAsync(
                 new EmailMessage
@@ -232,9 +267,12 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
         [Test]
         public async Task SendEmailAsync_SendsExpectedMessage()
         {
-            var settings = new SmtpSettings { Authentication = new SmtpAuthenticationSettings()};
+            var settings = new SmtpSettings { Authentication = new SmtpAuthenticationSettings() };
             var mockTransport = new Mock<IMailTransport>();
-            var service = new MailKitEmailService(mockTransport.Object, settings);
+            var service = new MailKitEmailService(
+                mockTransport.Object,
+                settings,
+                Mock.Of<ILogger<MailKitEmailService>>());
 
             var subject = Guid.NewGuid().ToString();
 
@@ -260,7 +298,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
             var settings = new SmtpSettings { Authentication = new SmtpAuthenticationSettings() };
             var mockTransport = new Mock<IMailTransport>();
             mockTransport.Setup(t => t.IsConnected).Returns(true);
-            var service = new MailKitEmailService(mockTransport.Object, settings);
+
+            var service = new MailKitEmailService(
+                mockTransport.Object,
+                settings,
+                Mock.Of<ILogger<MailKitEmailService>>());
 
             await service.SendEmailAsync(
                 new EmailMessage
@@ -275,6 +317,46 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Email
                     It.Is<bool>(q => q),
                     It.IsAny<CancellationToken>()),
                 Times.Once());
+        }
+
+        [Test]
+        public void SendEmailAsync_Exception_LogsError()
+        {
+            var mockLogger = new Mock<ILogger<MailKitEmailService>>();
+            var mockTransport = new Mock<IMailTransport>();
+            mockTransport.Setup(
+                t => t.SendAsync(
+                    It.IsAny<MimeMessage>(),
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<ITransferProgress>()))
+                .ThrowsAsync(new SmtpFailedRecipientException(SmtpStatusCode.ServiceNotAvailable, "to@recipient.uk"));
+
+            async Task SendEmailAsync()
+            {
+                var message = new EmailMessage
+                {
+                    Sender = new EmailAddress { Address = "from@sender.uk" },
+                    Recipient = new EmailAddress { Address = "to@recipient.uk" },
+                    Subject = "subject"
+                };
+
+                var service = new MailKitEmailService(
+                    mockTransport.Object,
+                    new SmtpSettings(),
+                    mockLogger.Object);
+
+                await service.SendEmailAsync(message);
+            }
+
+            Assert.ThrowsAsync<SmtpFailedRecipientException>(SendEmailAsync);
+            mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => true),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
         }
     }
 }

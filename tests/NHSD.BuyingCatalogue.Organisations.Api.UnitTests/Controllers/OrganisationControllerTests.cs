@@ -24,27 +24,36 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         private readonly Address _address1 = AddressBuilder.Create().WithLine1("18 Stone Road").Build();
 
         [Test]
-        public void Constructor_NullRepository_Throws()
+        public void Constructor_NullOrganisationRepository_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var _ = new OrganisationsController(null, Mock.Of<ICreateOrganisationService>());
+                var _ = new OrganisationsController(null, Mock.Of<ICreateOrganisationService>(), Mock.Of<IServiceRecipientRepository>());
             });
         }
 
         [Test]
-        public void Constructor_NullService_Throws()
+        public void Constructor_NullOrganisationService_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var _ = new OrganisationsController(Mock.Of<IOrganisationRepository>(), null);
+                var _ = new OrganisationsController(Mock.Of<IOrganisationRepository>(), null, Mock.Of<IServiceRecipientRepository>());
+            });
+        }
+
+        [Test]
+        public void Constructor_NullServiceRecipientRepository_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var _ = new OrganisationsController(Mock.Of<IOrganisationRepository>(), Mock.Of<ICreateOrganisationService>(), null);
             });
         }
 
         [Test]
         public async Task GetAllAsync_NoOrganisationsExist_EmptyResultIsReturned()
         {
-            using var controller = OrganisationControllerBuilder
+            var controller = OrganisationControllerBuilder
                 .Create()
                 .WithListOrganisation(new List<Organisation>())
                 .Build();
@@ -70,7 +79,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [TestCase("Organisation One", "ODS 1", null, true, true)]
         public async Task GetAllAsync_SingleOrganisationExists_ReturnsTheOrganisation(string name, string ods, string primaryRoleId, bool catalogueAgreementSigned, bool hasAddress)
         {
-            using var controller = OrganisationControllerBuilder
+            var controller = OrganisationControllerBuilder
                 .Create()
                 .WithListOrganisation(new List<Organisation>()
                 {
@@ -123,7 +132,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var org3 = OrganisationBuilder.Create(3).Build();
 
-            using var controller = OrganisationControllerBuilder
+            var controller = OrganisationControllerBuilder
                 .Create()
                 .WithListOrganisation(new List<Organisation>() { org1, org2, org3 })
                 .Build();
@@ -154,7 +163,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             getAllOrganisations.Setup(x => x.ListOrganisationsAsync())
                 .ReturnsAsync(new List<Organisation>());
 
-            using var controller = OrganisationControllerBuilder.Create()
+            var controller = OrganisationControllerBuilder.Create()
                 .WithOrganisationRepository(getAllOrganisations.Object)
                 .Build();
 
@@ -166,9 +175,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public async Task GetIdByAsync_OrganisationDoesNotExist_ReturnsNotFound()
         {
-            using var controller = OrganisationControllerBuilder
+            var organisation = OrganisationBuilder.Create(1).WithOrganisationId(Guid.NewGuid()).Build();
+
+            var controller = OrganisationControllerBuilder
                 .Create()
-                .WithGetOrganisation(null)
+                .WithGetOrganisation(organisation)
                 .Build();
 
             var result = await controller.GetByIdAsync(Guid.NewGuid());
@@ -181,7 +192,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             var organisation = OrganisationBuilder.Create(1).WithAddress(_address1).Build();
 
-            using var controller = OrganisationControllerBuilder
+            var controller = OrganisationControllerBuilder
                 .Create()
                 .WithGetOrganisation(organisation)
                 .Build();
@@ -200,7 +211,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             var organisation = OrganisationBuilder.Create(1).Build();
 
-            using var controller = OrganisationControllerBuilder
+            var controller = OrganisationControllerBuilder
                 .Create()
                 .WithGetOrganisation(organisation)
                 .Build();
@@ -223,7 +234,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             mockGetOrganisation.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(null as Organisation);
 
-            using var controller = OrganisationControllerBuilder.Create()
+            var controller = OrganisationControllerBuilder.Create()
                 .WithOrganisationRepository(mockGetOrganisation.Object)
                 .Build();
 
@@ -235,7 +246,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public async Task UpdateOrganisationByIdAsync_UpdateOrganisation_ReturnsStatusNoContent()
         {
-            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
+            var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
 
             var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationModel());
 
@@ -245,7 +256,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [Test]
         public async Task UpdateOrganisationByIdAsync_UpdateOrganisation_NonExistentOrganisation_ReturnsStatusNotFound()
         {
-            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(null).Build();
+            var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(null).Build();
 
             var response = await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationModel());
 
@@ -257,7 +268,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             var organisation = OrganisationBuilder.Create(1).WithCatalogueAgreementSigned(true).Build();
 
-            using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(organisation).Build();
+            var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(organisation).Build();
 
             var response = await controller.UpdateOrganisationByIdAsync(organisation.OrganisationId, new UpdateOrganisationModel { CatalogueAgreementSigned = false });
 
@@ -273,7 +284,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             repositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(new Organisation());
             repositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Organisation>()));
 
-            using var controller = OrganisationControllerBuilder.Create().WithOrganisationRepository(repositoryMock.Object).Build();
+            var controller = OrganisationControllerBuilder.Create().WithOrganisationRepository(repositoryMock.Object).Build();
 
             await controller.UpdateOrganisationByIdAsync(Guid.Empty, new UpdateOrganisationModel());
 
@@ -289,7 +300,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                using var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
+                var controller = OrganisationControllerBuilder.Create().WithUpdateOrganisation(new Organisation()).Build();
                 await controller.UpdateOrganisationByIdAsync(Guid.Empty, null);
             });
         }
@@ -298,7 +309,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public async Task CreateOrganisationAsync_ServiceReturnsSuccess_Returns_CreatedAtAction()
         {
             var organisationId = Guid.NewGuid();
-            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningSuccess(organisationId).Build();
+            var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningSuccess(organisationId).Build();
 
             var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestModel());
 
@@ -319,7 +330,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public async Task CreateOrganisationAsync_ServiceReturnsFailure_Returns_BadRequest()
         {
             const string errorMessage = "Some Error Message Id";
-            using var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningFailure(errorMessage).Build();
+            var controller = OrganisationControllerBuilder.Create().WithCreateOrganisationServiceReturningFailure(errorMessage).Build();
 
             var response = await controller.CreateOrganisationAsync(new CreateOrganisationRequestModel());
 
@@ -340,9 +351,73 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         {
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                using var controller = OrganisationControllerBuilder.Create().Build();
+                var controller = OrganisationControllerBuilder.Create().Build();
                 await controller.CreateOrganisationAsync(null);
             });
+        }
+
+        [Test]
+        public async Task GetServiceRecipientsAsync_OrganisationIsNull_ReturnsNotFound()
+        {
+            var organisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithOrganisationId(organisationId).Build();
+
+            var invalidOrganisationId = Guid.NewGuid();
+
+            var controller = OrganisationControllerBuilder
+                .Create(invalidOrganisationId)
+                .WithGetOrganisation(organisation)
+                .Build();
+
+            var result = await controller.GetServiceRecipientsAsync(invalidOrganisationId);
+
+            result.Should().BeEquivalentTo(new ActionResult<ServiceRecipientsModel>(new NotFoundResult()));
+        }
+
+        [Test]
+        public async Task GetServiceRecipientsAsync_OrganisationExists_ReturnsTheOrganisationServiceRecipients()
+        {
+            var organisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithOrganisationId(organisationId).Build();
+
+            var serviceRecipient1 = ServiceRecipientBuilder
+                .Create(1)
+                .Build();
+            var serviceRecipient2 = ServiceRecipientBuilder
+                .Create(2)
+                .Build();
+
+            var controller = OrganisationControllerBuilder
+                .Create(organisationId)
+                .WithGetOrganisation(organisation)
+                .WithServiceRecipients(new List<ServiceRecipient>{serviceRecipient2, serviceRecipient1})
+                .Build();
+
+            var response = await controller.GetServiceRecipientsAsync(organisation.OrganisationId);
+
+            var expected = new List<ServiceRecipientsModel>
+            {
+                new ServiceRecipientsModel
+                {
+                    Name = organisation.Name,
+                    OdsCode = organisation.OdsCode
+                },
+                new ServiceRecipientsModel
+                {
+                    Name = serviceRecipient1.Name,
+                    OdsCode = serviceRecipient1.OrgId
+                },
+                new ServiceRecipientsModel
+                {
+                    Name = serviceRecipient2.Name,
+                    OdsCode = serviceRecipient2.OrgId
+                }
+            };
+            expected = expected.OrderBy(x => x.Name).ToList();
+
+            response.Should().BeEquivalentTo(new ActionResult<List<ServiceRecipientsModel>>(expected), config => config.WithStrictOrdering());
         }
     }
 }

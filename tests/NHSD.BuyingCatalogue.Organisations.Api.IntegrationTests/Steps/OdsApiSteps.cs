@@ -13,6 +13,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class OdsApiSteps
     {
+        private const string OrganisationsUrl = "/ORD/2-0-0/organisations";
+
         private readonly ScenarioContext _context;
         private readonly Settings _settings;
 
@@ -27,12 +29,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             await ClearMappings();
 
-            await AddMapping(CreateMappingModel("/ORD/2-0-0/organisations/*", 500));
+            await AddMapping(CreateMappingModel($"{OrganisationsUrl}/*", 500));
+        }
+
+        internal async Task SetUpGETChildrenEndpoint(string odsCode, string responseBody)
+        {
+            await AddMapping(CreateMappingModel(OrganisationsUrl, 200, responseBody));
         }
 
         internal async Task SetUpGETEndpoint(string odsCode, string responseBody)
         {
-            await AddMapping(CreateMappingModel($"/ORD/2-0-0/organisations/{odsCode}", 200, responseBody));
+            await AddMapping(CreateMappingModel($"{OrganisationsUrl}/{odsCode}", 200, responseBody));
         }
 
         internal async Task ClearMappings()
