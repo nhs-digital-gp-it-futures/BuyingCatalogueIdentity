@@ -35,8 +35,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
                     .SetQueryParam("Limit", _settings.GetChildOrganisationSearchLimit)
                     .SetQueryParam("Offset", offset)
                     .AllowHttpStatus("3xx,4xx")
-                    .GetJsonAsync<Children>();
-                
+                    .GetJsonAsync<ServiceRecipientResponse>();
+
+                if (children.Organisations == null)
+                {
+                    break;
+                }
+
                 var centres = children.Organisations.Where(o => o.PrimaryRoleId == _settings.GpPracticeRoleId);
                 costCentres.AddRange(centres);
 
@@ -47,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             return costCentres;
         }
 
-        internal class Children
+        internal class ServiceRecipientResponse
         {
             public IEnumerable<ServiceRecipient> Organisations { get; set; }
         }
