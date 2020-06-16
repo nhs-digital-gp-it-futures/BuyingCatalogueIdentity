@@ -24,35 +24,36 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
             var costCentres = new List<ServiceRecipient>();
             int offset = 0;
+            int searchLimit = _settings.GetChildOrganisationSearchLimit;
 
             while (!retrievedAll)
             {
-                var children = await _settings.ApiBaseUrl
+                var serviceRecipientResponse = await _settings.ApiBaseUrl
                     .AppendPathSegment("organisations")
                     .SetQueryParam("RelTypeId", "RE4")
                     .SetQueryParam("TargetOrgId", odsCode)
                     .SetQueryParam("RelStatus", "active")
-                    .SetQueryParam("Limit", _settings.GetChildOrganisationSearchLimit)
+                    .SetQueryParam("Limit", searchLimit)
                     .SetQueryParam("Offset", offset)
                     .AllowHttpStatus("3xx,4xx")
                     .GetJsonAsync<ServiceRecipientResponse>();
 
-                if (children.Organisations == null)
+                if (serviceRecipientResponse.Organisations == null)
                 {
                     break;
                 }
 
-                var centres = children.Organisations.Where(o => o.PrimaryRoleId == _settings.GpPracticeRoleId);
+                var centres = serviceRecipientResponse.Organisations.Where(o => o.PrimaryRoleId == _settings.GpPracticeRoleId);
                 costCentres.AddRange(centres);
 
-                retrievedAll = children.Organisations.Count() != _settings.GetChildOrganisationSearchLimit;
-                offset += _settings.GetChildOrganisationSearchLimit;
+                retrievedAll = serviceRecipientResponse.Organisations.Count() != searchLimit;
+                offset += searchLimit;
             }
 
             return costCentres;
         }
 
-        internal class ServiceRecipientResponse
+        internal sealed class ServiceRecipientResponse
         {
             public IEnumerable<ServiceRecipient> Organisations { get; set; }
         }

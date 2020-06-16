@@ -96,7 +96,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 
             private ServiceRecipientTestContext()
             {
-
                 Settings = new OdsSettings()
                 {
                     ApiBaseUrl = "https://fakeodsserver.net/ORD/2-0-0", 
