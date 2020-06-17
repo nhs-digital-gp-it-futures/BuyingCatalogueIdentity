@@ -40,6 +40,14 @@ service:
     http:
     smtps:
 
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - paths: 
+        - /email
+  tls: []
+
 resources: 
   requests:
     memory: 64Mi
