@@ -28,7 +28,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
             while (!retrievedAll)
             {
-
                 var query = _settings.ApiBaseUrl
                     .AppendPathSegment("organisations")
                     .SetQueryParam("RelTypeId", "RE4")
