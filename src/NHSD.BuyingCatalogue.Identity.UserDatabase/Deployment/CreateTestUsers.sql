@@ -10,7 +10,7 @@ AND NOT EXISTS (
 BEGIN
     DECLARE @ccgRoleId AS nchar(4) = 'RO98';
     DECLARE @executiveAgencyRoleId AS nchar(5) = 'RO116';
-    DECLARE @HullCCGOdsCode AS nchar(3) = '03F';
+    DECLARE @hullCCGOdsCode AS nchar(3) = '03F';
 
     DECLARE @aliceOrganisationId AS uniqueidentifier = (SELECT TOP (1) OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId ORDER BY OdsCode);
     DECLARE @aliceOrganisationName AS nvarchar(255) =  (SELECT TOP (1) Name FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId ORDER BY OdsCode);
@@ -18,8 +18,8 @@ BEGIN
     DECLARE @bobOrganisationId AS uniqueidentifier = (SELECT OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @executiveAgencyRoleId);
     DECLARE @bobOrganisationName AS nvarchar(255) =  (SELECT TOP (1) Name FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId ORDER BY OdsCode);
 
-    DECLARE @sueOrganisationId AS uniqueidentifier = (SELECT TOP (1) OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId AND OdsCode = @HullCCGOdsCode);
-    DECLARE @sueOrganisationName AS nvarchar(255) =  (SELECT TOP (1) Name FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId AND OdsCode = @HullCCGOdsCode);
+    DECLARE @sueOrganisationId AS uniqueidentifier = (SELECT TOP (1) OrganisationId FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId AND OdsCode = @hullCCGOdsCode);
+    DECLARE @sueOrganisationName AS nvarchar(255) =  (SELECT TOP (1) Name FROM dbo.Organisations WHERE PrimaryRoleId = @ccgRoleId AND OdsCode = @hullCCGOdsCode);
 
 	DECLARE @address AS nchar(108) = N'{ "street_address": "One Hacker Way", "locality": "Heidelberg", "postal_code": 69118, "country": "Germany" }';
 
