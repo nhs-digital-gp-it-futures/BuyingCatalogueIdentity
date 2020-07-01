@@ -28,15 +28,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
             while (!retrievedAll)
             {
-                var serviceRecipientResponse = await _settings.ApiBaseUrl
+                var query = _settings.ApiBaseUrl
                     .AppendPathSegment("organisations")
                     .SetQueryParam("RelTypeId", "RE4")
                     .SetQueryParam("TargetOrgId", odsCode)
                     .SetQueryParam("RelStatus", "active")
                     .SetQueryParam("Limit", searchLimit)
-                    .SetQueryParam("Offset", offset)
-                    .AllowHttpStatus("3xx,4xx")
-                    .GetJsonAsync<ServiceRecipientResponse>();
+                    .AllowHttpStatus("3xx,4xx");
+
+                if (offset > 0)
+                {
+                    query.SetQueryParam("Offset", offset);
+                }
+
+                var serviceRecipientResponse = await query.GetJsonAsync<ServiceRecipientResponse>();
 
                 if (serviceRecipientResponse.Organisations == null)
                 {
