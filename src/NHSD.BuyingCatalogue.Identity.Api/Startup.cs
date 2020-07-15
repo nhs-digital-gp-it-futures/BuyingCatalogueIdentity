@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.DependencyInjection;
+using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using NHSD.BuyingCatalogue.Identity.Api.Logging;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
@@ -150,6 +151,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.RegisterHealthChecks(connectionString, smtpSettings);
 
+            services.AddSwaggerDocumentation();
+
             services.AddAuthentication()
                 .AddIdentityServerAuthentication(options =>
                 {
@@ -216,6 +219,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                app.UseSwaggerDocumentation();
             }
             else
             {
