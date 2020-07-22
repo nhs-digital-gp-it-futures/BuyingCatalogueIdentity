@@ -1,4 +1,5 @@
-﻿Feature: Accept Agreement page UI
+﻿@ignore
+Feature: Accept Agreement page UI
 	As a User
 	I want to be able to view the Accept Agreement page
 	So that I can read and accept the terms and conditions

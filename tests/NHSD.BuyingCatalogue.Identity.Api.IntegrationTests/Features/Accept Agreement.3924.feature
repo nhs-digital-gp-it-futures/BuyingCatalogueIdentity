@@ -1,4 +1,5 @@
-﻿Feature: User needs to sign the Accept Agreement page
+﻿@ignore
+Feature: User needs to sign the Accept Agreement page
 	As a Authority User
 	I want to be able to read & accept the terms and conditions
 	So that I can then proceed to the application
