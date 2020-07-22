@@ -8,9 +8,9 @@ Background:
         | Name           | OdsCode |
         | Organisation 1 | Ods 1   |
     And Users exist
-        | Id  | OrganisationName | FirstName | LastName | Email          | PhoneNumber | Disabled | Password          |
-        | 123 | Organisation 1   | John      | Doe      | test@user.com  | 01234567890 | false    | testingtesting123 |
-        | 234 | Organisation 1   | Jane      | Doe      | test2@user.com | 01234567890 | true     | testingtesting321 |
+        | Id  | OrganisationName | FirstName | LastName | Email          | PhoneNumber | Disabled | Password          | CatalogueAgreementSigned |
+        | 123 | Organisation 1   | John      | Doe      | test@user.com  | 01234567890 | false    | testingtesting123 | false                    |
+        | 234 | Organisation 1   | Jane      | Doe      | test2@user.com | 01234567890 | true     | testingtesting321 | false                    |
 
 @3540
 Scenario: 1. Logging in with an existing client with valid credentials
