@@ -34,9 +34,9 @@ Scenario: 1. User can set password on their account and then log in
     When the user navigates to a restricted web page
     Then the user is redirected to page identity/account/login
     When a login request is made with email address bob.bobkovitch@email.com and password Password123!
-    Then the user is redirected to page identity/Consent
-    When element with Data ID agree-terms-checkbox is clicked
-    And element with Data ID agreement-submit-button is clicked
+#    Then the user is redirected to page identity/Consent
+#    When element with Data ID agree-terms-checkbox is clicked
+#    And element with Data ID agreement-submit-button is clicked
     Then the user is redirected to page home/privacy
     And the page contains element with ID sampleResourceResult with text Authorized With Sample Resource
 

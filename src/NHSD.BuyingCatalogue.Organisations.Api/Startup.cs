@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Logging;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Data;
+using NHSD.BuyingCatalogue.Organisations.Api.Extensions;
 using NHSD.BuyingCatalogue.Organisations.Api.Logging;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Services;
@@ -59,6 +60,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             services.AddSingleton(odsSettings);
 
             services.RegisterHealthChecks(connectionString);
+
+            services.AddSwaggerDocumentation();
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
@@ -110,6 +113,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwaggerDocumentation();
             }
 
             app.UseRouting();
