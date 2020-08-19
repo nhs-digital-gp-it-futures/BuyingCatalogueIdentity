@@ -51,3 +51,4 @@ Scenario: 6. The NHS Footer is displayed
 Scenario: 6. The NHS Legal is displayed
     Then the page contains element with Data ID nhsuk-legal-panel
     And element with Data ID nhsuk-legal-panel contains a link to https://digital.nhs.uk/about-nhs-digital/privacy-and-cookies
+    And element with Data ID nhsuk-legal-panel contains a link to https://host.docker.internal/document/terms-of-use.pdf
