@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using NHSD.BuyingCatalogue.EmailClient;
+using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
-using NHSD.BuyingCatalogue.Identity.Common.Email;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
@@ -80,12 +81,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (callback is null)
                 throw new ArgumentNullException(nameof(callback));
 
-            var message = new EmailMessage(_settings.EmailMessage, callback)
-            {
-                Recipient = new EmailAddress(user.DisplayName, user.Email),
-            };
-
-            await _emailService.SendEmailAsync(message);
+            await _emailService.SendEmailAsync(
+                _settings.EmailMessageTemplate,
+                new EmailAddress(user.Email, user.DisplayName),
+                callback);
         }
 
         /// <summary>

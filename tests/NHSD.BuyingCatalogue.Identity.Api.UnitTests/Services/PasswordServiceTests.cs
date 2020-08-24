@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Moq;
+using NHSD.BuyingCatalogue.EmailClient;
 using NHSD.BuyingCatalogue.Identity.Api.Models;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
-using NHSD.BuyingCatalogue.Identity.Common.Email;
+using NHSD.BuyingCatalogue.Identity.Api.UnitTests.SharedMocks;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class PasswordServiceTests
+    internal static class PasswordServiceTests
     {
         private static Mock<IUserStore<ApplicationUser>> MockUserStore => new Mock<IUserStore<ApplicationUser>>();
 
@@ -32,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Constructor exception testing")]
-        public void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullEmailService_ThrowsException()
+        public static void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullEmailService_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
                 new PasswordService(
@@ -43,7 +44,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Constructor exception testing")]
-        public void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullSettings_ThrowsException()
+        public static void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullSettings_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
                 new PasswordService(
@@ -54,7 +55,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Constructor exception testing")]
-        public void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullUserManager_ThrowsException()
+        public static void Constructor_IEmailService_PasswordResetSettings_UserManagerApplicationUser_NullUserManager_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() =>
                 new PasswordService(
@@ -64,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public void GeneratePasswordResetTokenAsync_NullEmailAddress_ThrowsException()
+        public static void GeneratePasswordResetTokenAsync_NullEmailAddress_ThrowsException()
         {
             static async Task GeneratePasswordResetTokenAsync()
             {
@@ -81,7 +82,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [TestCase("")]
         [TestCase("\t")]
-        public void GeneratePasswordResetTokenAsync_EmptyOrWhiteSpaceEmailAddress_ThrowsException(string emailAddress)
+        public static void GeneratePasswordResetTokenAsync_EmptyOrWhiteSpaceEmailAddress_ThrowsException(string emailAddress)
         {
             async Task GeneratePasswordResetTokenAsync()
             {
@@ -97,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task GeneratePasswordResetTokenAsync_UserNotFound_ReturnsNull()
+        public static async Task GeneratePasswordResetTokenAsync_UserNotFound_ReturnsNull()
         {
             var service = new PasswordService(
                 Mock.Of<IEmailService>(),
@@ -110,7 +111,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task GeneratePasswordResetTokenAsync_UserFound_ReturnsExpectedToken()
+        public static async Task GeneratePasswordResetTokenAsync_UserFound_ReturnsExpectedToken()
         {
             const string emailAddress = "a@b.com";
             const string expectedToken = "HereBeToken";
@@ -137,7 +138,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public void SendResetEmailAsync_NullUser_ThrowsException()
+        public static void SendResetEmailAsync_NullUser_ThrowsException()
         {
             static async Task SendResetEmailAsync()
             {
@@ -153,7 +154,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public void SendResetEmailAsync_NullCallback_ThrowsException()
+        public static void SendResetEmailAsync_NullCallback_ThrowsException()
         {
             static async Task SendResetEmailAsync()
             {
@@ -169,63 +170,104 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SendResetEmailAsync_SendsExpectedEmail()
+        public static async Task SendResetEmailAsync_SendsEmail()
         {
-            const string emailAddress = "a@b.com";
-            const string expectedCallback = "https://identity/account/resetPassword?token=1234&emailAddress=a@b.com";
-            var expectedUser = ApplicationUserBuilder
-                .Create()
-                .WithFirstName("Eggs")
-                .WithLastName("Benedict")
-                .WithEmailAddress(emailAddress)
-                .Build();
-
-            var expectedSender = new EmailAddress("Uncle Robert", "uncle@bob.com");
-            const string expectedSubject = "Password Reset";
-
-            var configuredMessage = new EmailMessage
-            {
-                Sender = expectedSender,
-                Subject = expectedSubject,
-                HtmlBody = EmailMessage.ResetPasswordLinkPlaceholder,
-                TextBody = EmailMessage.ResetPasswordLinkPlaceholder,
-            };
-
-            var emailCount = 0;
-            EmailMessage actualEmailMessage = null;
-
-            void EmailCallback(EmailMessage message)
-            {
-                emailCount++;
-                actualEmailMessage = message;
-            }
-
+            var template = new EmailMessageTemplate { Sender = new EmailAddress() };
             var mockEmailService = new Mock<IEmailService>();
-            mockEmailService.Setup(e => e.SendEmailAsync(It.IsNotNull<EmailMessage>()))
-                .Callback<EmailMessage>(EmailCallback);
-
-            var settings = new PasswordResetSettings { EmailMessage = configuredMessage };
-            var service = new PasswordService(
+            var registrationService = new PasswordService(
                 mockEmailService.Object,
-                settings,
+                new PasswordResetSettings { EmailMessageTemplate = template },
                 MockUserManager.Object);
 
-            await service.SendResetEmailAsync(expectedUser, new Uri(expectedCallback));
+            await registrationService.SendResetEmailAsync(
+                ApplicationUserBuilder.Create().Build(),
+                new Uri("https://duckduckgo.com/"));
 
-            emailCount.Should().Be(1);
-
-            actualEmailMessage.Should().NotBeNull();
-            actualEmailMessage.Sender.Should().Be(expectedSender);
-            actualEmailMessage.Recipient.Should().BeEquivalentTo(
-                new EmailAddress(expectedUser.DisplayName, expectedUser.Email));
-
-            actualEmailMessage.Subject.Should().Be(expectedSubject);
-            actualEmailMessage.HtmlBody.Should().Be(expectedCallback);
-            actualEmailMessage.TextBody.Should().Be(expectedCallback);
+            mockEmailService.Verify(e => e.SendEmailAsync(It.IsNotNull<EmailMessage>()), Times.Once());
         }
 
         [Test]
-        public async Task ResetPasswordAsync_WithUser_ReturnsIdentityResult()
+        public static async Task SendResetEmailAsync_UsesExpectedTemplate()
+        {
+            const string subject = "Gozleme";
+
+            var template = new EmailMessageTemplate
+            {
+                Sender = new EmailAddress(),
+                Subject = subject,
+            };
+
+            var mockEmailService = new MockEmailService();
+            var registrationService = new PasswordService(
+                mockEmailService,
+                new PasswordResetSettings { EmailMessageTemplate = template },
+                MockUserManager.Object);
+
+            await registrationService.SendResetEmailAsync(
+                ApplicationUserBuilder.Create().Build(),
+                new Uri("https://duckduckgo.com/"));
+
+            mockEmailService.SentMessage.Subject.Should().Be(subject);
+        }
+
+        [Test]
+        public static async Task SendResetEmailAsync_UsesExpectedRecipient()
+        {
+            var template = new EmailMessageTemplate { Sender = new EmailAddress(), };
+            var mockEmailService = new MockEmailService();
+
+            var user = ApplicationUserBuilder
+                .Create()
+                .WithFirstName("Uncle")
+                .WithLastName("Bob")
+                .WithEmailAddress("uncle@bob.com")
+                .Build();
+
+            var registrationService = new PasswordService(
+                mockEmailService,
+                new PasswordResetSettings { EmailMessageTemplate = template },
+                MockUserManager.Object);
+
+            await registrationService.SendResetEmailAsync(
+                user,
+                new Uri("https://duckduckgo.com/"));
+
+            var recipients = mockEmailService.SentMessage.Recipients;
+            recipients.Should().HaveCount(1);
+
+            var recipient = recipients[0];
+            recipient.Address.Should().Be(user.Email);
+            recipient.DisplayName.Should().Be(user.DisplayName);
+        }
+
+        [Test]
+        public static async Task SendResetEmailAsync_UsesExpectedCallback()
+        {
+            const string expectedCallback = "https://callback.nhs.uk/";
+
+            var callback = new Uri(expectedCallback);
+            var template = new EmailMessageTemplate
+            {
+                Sender = new EmailAddress(),
+                TextBody = new EmailMessageBody(),
+            };
+
+            var mockEmailService = new MockEmailService();
+            var registrationService = new PasswordService(
+                mockEmailService,
+                new PasswordResetSettings { EmailMessageTemplate = template },
+                MockUserManager.Object);
+
+            await registrationService.SendResetEmailAsync(
+                ApplicationUserBuilder.Create().Build(),
+                callback);
+
+            mockEmailService.SentMessage.TextBody!.FormatItems.Should().HaveCount(1);
+            mockEmailService.SentMessage.TextBody!.FormatItems[0].Should().Be(expectedCallback);
+        }
+
+        [Test]
+        public static async Task ResetPasswordAsync_WithUser_ReturnsIdentityResult()
         {
             const string email = "a@b.c";
             const string token = "I am a token, honest!";
@@ -254,7 +296,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [TestCase("valid@email.address.test", "")]
         [TestCase("valid@email.address.test", "\t")]
         [TestCase("invalid@email.address.test", "ValidToken")]
-        public async Task IsValidPasswordResetToken_BadInput_ReturnsFalse(string emailAddress, string token)
+        public static async Task IsValidPasswordResetToken_BadInput_ReturnsFalse(string emailAddress, string token)
         {
             var service = new PasswordService(
                 Mock.Of<IEmailService>(),
@@ -267,7 +309,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task IsValidPasswordResetToken_InvokesVerifyUserTokenAsync()
+        public static async Task IsValidPasswordResetToken_InvokesVerifyUserTokenAsync()
         {
             const string emailAddress = "invalid@email.address.test";
             const string token = "Token";
