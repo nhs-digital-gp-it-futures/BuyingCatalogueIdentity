@@ -11,11 +11,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
             EmailAddress recipient,
             params object[] formatItems)
         {
-            var message = new EmailMessage(messageTemplate);
-            message.AddRecipient(recipient);
-            message.AddFormatItems(formatItems);
-
-            await service.SendEmailAsync(message);
+            await service.SendEmailAsync(new EmailMessage(messageTemplate, new[] { recipient }, null, formatItems));
         }
     }
 }

@@ -158,7 +158,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             static async Task SendResetEmailAsync()
             {
-                var service = new PasswordService(
+                var service = new PasswordService( 
                     Mock.Of<IEmailService>(),
                     new PasswordResetSettings(),
                     MockUserManager.Object);
@@ -172,7 +172,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [Test]
         public static async Task SendResetEmailAsync_SendsEmail()
         {
-            var template = new EmailMessageTemplate { Sender = new EmailAddress() };
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
             var mockEmailService = new Mock<IEmailService>();
             var registrationService = new PasswordService(
                 mockEmailService.Object,
@@ -191,9 +191,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string subject = "Gozleme";
 
-            var template = new EmailMessageTemplate
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))
             {
-                Sender = new EmailAddress(),
                 Subject = subject,
             };
 
@@ -213,7 +212,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [Test]
         public static async Task SendResetEmailAsync_UsesExpectedRecipient()
         {
-            var template = new EmailMessageTemplate { Sender = new EmailAddress(), };
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
             var mockEmailService = new MockEmailService();
 
             var user = ApplicationUserBuilder
@@ -246,11 +245,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             const string expectedCallback = "https://callback.nhs.uk/";
 
             var callback = new Uri(expectedCallback);
-            var template = new EmailMessageTemplate
-            {
-                Sender = new EmailAddress(),
-                TextBody = new EmailMessageBody(),
-            };
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
 
             var mockEmailService = new MockEmailService();
             var registrationService = new PasswordService(

@@ -31,7 +31,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Moq" Version="4.14.5" />
-    <PackageReference Include="NHSD.BuyingCatalogue.EmailClient" Version="2.0.0" />
+    <PackageReference Include="NHSD.BuyingCatalogue.EmailClient" Version="3.0.0-9345-message-content-bugfix.3" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
       <PrivateAssets>all</PrivateAssets>

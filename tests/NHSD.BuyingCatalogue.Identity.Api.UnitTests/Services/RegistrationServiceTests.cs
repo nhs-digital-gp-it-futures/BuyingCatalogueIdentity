@@ -65,14 +65,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [Test]
         public static async Task SendInitialEmailAsync_SendsEmail()
         {
-            var inputMessage = new EmailMessageTemplate
+            var inputMessage = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))
             {
-                Sender = new EmailAddress(),
-                HtmlBody = new EmailMessageBody("HTML"),
-                TextBody = new EmailMessageBody("Text"),
+                HtmlContent = "HTML",
+                PlainTextContent = "Text",
             };
-
-            inputMessage.Recipients.Add(new EmailAddress());
 
             var settings = new RegistrationSettings { EmailMessageTemplate = inputMessage };
             var mockEmailService = new Mock<IEmailService>();
@@ -99,9 +96,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             const string subject = "Gozleme";
 
-            var template = new EmailMessageTemplate
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))
             {
-                Sender = new EmailAddress(),
                 Subject = subject,
             };
 
@@ -120,7 +116,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [Test]
         public static async Task SendInitialEmailAsync_UsesExpectedRecipient()
         {
-            var template = new EmailMessageTemplate { Sender = new EmailAddress(), };
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
             var mockEmailService = new MockEmailService();
 
             var user = ApplicationUserBuilder
@@ -151,11 +147,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             const string expectedCallback = "https://callback.nhs.uk/";
 
             var callback = new Uri(expectedCallback);
-            var template = new EmailMessageTemplate
-            {
-                Sender = new EmailAddress(),
-                TextBody = new EmailMessageBody(),
-            };
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
 
             var passwordResetCallback = Mock.Of<IPasswordResetCallback>(
                 c => c.GetPasswordResetCallback(It.IsNotNull<PasswordResetToken>()) == callback);

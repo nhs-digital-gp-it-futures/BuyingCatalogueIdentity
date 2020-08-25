@@ -14,9 +14,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
         [Test]
         public static async Task SendEmailAsync_MessageHasExpectedRecipient()
         {
-            var recipient = new EmailAddress();
+            var recipient = new EmailAddress("to@recipient.test");
             var service = new MockEmailService();
-            var template = new EmailMessageTemplate { Sender = new EmailAddress() };
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
 
             await service.SendEmailAsync(template, recipient);
 
@@ -29,14 +29,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
         {
             object[] formatItems = { 1, "2" };
             var service = new MockEmailService();
-            var template = new EmailMessageTemplate
-            {
-                Sender = new EmailAddress(),
-                HtmlBody = new EmailMessageBody(),
-                TextBody = new EmailMessageBody(),
-            };
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
 
-            await service.SendEmailAsync(template, new EmailAddress(), formatItems);
+            await service.SendEmailAsync(template, new EmailAddress("to@recipient.test"), formatItems);
 
             service.SentMessage.HtmlBody!.FormatItems.Should().BeEquivalentTo(formatItems);
             service.SentMessage.TextBody!.FormatItems.Should().BeEquivalentTo(formatItems);
@@ -48,13 +43,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
             const string subject = "Banitsa";
 
             var service = new MockEmailService();
-            var template = new EmailMessageTemplate
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))
             {
-                Sender = new EmailAddress(),
                 Subject = subject,
             };
 
-            await service.SendEmailAsync(template, new EmailAddress());
+            await service.SendEmailAsync(template, new EmailAddress("to@recipient.test"));
 
             service.SentMessage.Subject.Should().Be(subject);
         }
