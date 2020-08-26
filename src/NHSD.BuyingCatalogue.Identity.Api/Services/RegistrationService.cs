@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using NHSD.BuyingCatalogue.EmailClient;
+using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
-using NHSD.BuyingCatalogue.Identity.Common.Email;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
@@ -44,12 +45,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             var user = token.User;
 
-            var message = new EmailMessage(_settings.EmailMessage, _passwordResetCallback.GetPasswordResetCallback(token))
-            {
-                Recipient = new EmailAddress(user.DisplayName, user.Email),
-            };
-
-            await _emailService.SendEmailAsync(message);
+            await _emailService.SendEmailAsync(
+                _settings.EmailMessageTemplate,
+                new EmailAddress(user.Email, user.DisplayName),
+                _passwordResetCallback.GetPasswordResetCallback(token));
         }
     }
 }

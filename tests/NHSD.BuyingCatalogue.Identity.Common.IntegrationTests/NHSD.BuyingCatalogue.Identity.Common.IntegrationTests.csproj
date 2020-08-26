@@ -7,10 +7,10 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.35" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
-    <PackageReference Include="SpecFlow" Version="3.3.57" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="SpecFlow" Version="3.4.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
 
   <ItemGroup>

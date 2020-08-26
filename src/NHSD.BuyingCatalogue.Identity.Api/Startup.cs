@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using IdentityServer4.Stores;
-using MailKit;
-using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using NHSD.BuyingCatalogue.EmailClient.Configuration;
+using NHSD.BuyingCatalogue.EmailClient.DependencyInjection;
 using NHSD.BuyingCatalogue.Identity.Api.Certificates;
 using NHSD.BuyingCatalogue.Identity.Api.Data;
 using NHSD.BuyingCatalogue.Identity.Api.DependencyInjection;
@@ -27,9 +27,7 @@ using NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.Validators;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
-using NHSD.BuyingCatalogue.Identity.Common.Email;
 using NHSD.BuyingCatalogue.Identity.Common.Extensions;
-using NHSD.BuyingCatalogue.Identity.Common.Settings;
 using Serilog;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
@@ -83,8 +81,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             Log.Logger.Information("Data protection app name is: {dataProtectionAppName}", dataProtectionAppName);
             Log.Logger.Information("Public Browse settings: {@publicBrowseSettings}", publicBrowseSettings);
 
+            services.AddEmailClient(smtpSettings);
+
             services.AddSingleton(passwordResetSettings);
-            services.AddSingleton(smtpSettings);
             services.AddSingleton(cookieExpiration);
             services.AddSingleton(disabledErrorMessage);
             services.AddSingleton(registrationSettings);
@@ -98,7 +97,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services
                 .AddTransient<IRegistrationService, RegistrationService>()
                 .AddTransient<ICreateBuyerService, CreateBuyerService>()
-                .AddTransient<IEmailService, MailKitEmailService>()
                 .AddScoped<IAgreementConsentService, AgreementConsentService>()
                 .AddScoped<ILoginService, LoginService>()
                 .AddScoped<ILogoutService, LogoutService>()
@@ -106,8 +104,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 .AddScoped<IPasswordResetCallback, PasswordResetCallback>();
 
             services.AddTransient<IApplicationUserValidator, ApplicationUserValidator>();
-
-            services.AddScoped<IMailTransport, SmtpClient>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -149,7 +145,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 options.SlidingExpiration = cookieExpiration.SlidingExpiration;
             });
 
-            services.RegisterHealthChecks(connectionString, smtpSettings);
+            services.AddHealthChecks(connectionString)
+                .AddSmtpHealthCheck(smtpSettings);
 
             services.AddSwaggerDocumentation();
 

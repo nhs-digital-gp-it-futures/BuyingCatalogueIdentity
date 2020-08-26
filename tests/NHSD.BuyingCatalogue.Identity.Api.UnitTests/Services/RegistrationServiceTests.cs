@@ -3,21 +3,22 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NHSD.BuyingCatalogue.EmailClient;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders;
-using NHSD.BuyingCatalogue.Identity.Common.Email;
+using NHSD.BuyingCatalogue.Identity.Api.UnitTests.SharedMocks;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class RegistrationServiceTests
+    internal static class RegistrationServiceTests
     {
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
-        public void Constructor_IEmailService_IPasswordResetCallback_RegistrationSettings_NullEmailService_ThrowsException()
+        public static void Constructor_IEmailService_IPasswordResetCallback_RegistrationSettings_NullEmailService_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => new RegistrationService(
                 null,
@@ -27,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
-        public void Constructor_IEmailService_IPasswordResetCallback_RegistrationSettings_NullPasswordResetCallback_ThrowsException()
+        public static void Constructor_IEmailService_IPasswordResetCallback_RegistrationSettings_NullPasswordResetCallback_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => new RegistrationService(
                 Mock.Of<IEmailService>(),
@@ -37,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
-        public void Constructor_IEmailService_IPasswordResetCallback_RegistrationSettings_NullSettings_ThrowsException()
+        public static void Constructor_IEmailService_IPasswordResetCallback_RegistrationSettings_NullSettings_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => new RegistrationService(
                 Mock.Of<IEmailService>(),
@@ -46,7 +47,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public void SendInitialEmailAsync_NullUser_ThrowsException()
+        public static void SendInitialEmailAsync_NullUser_ThrowsException()
         {
             static async Task SendEmail()
             {
@@ -62,17 +63,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SendInitialEmailAsync_SendsEmail()
+        public static async Task SendInitialEmailAsync_SendsEmail()
         {
-            var inputMessage = new EmailMessage
+            var inputMessage = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))
             {
-                Sender = new EmailAddress(),
-                Recipient = new EmailAddress(),
-                HtmlBody = "HTML",
-                TextBody = "Text",
+                HtmlContent = "HTML",
+                PlainTextContent = "Text",
             };
 
-            var settings = new RegistrationSettings { EmailMessage = inputMessage };
+            var settings = new RegistrationSettings { EmailMessageTemplate = inputMessage };
             var mockEmailService = new Mock<IEmailService>();
             var mockPasswordResetCallback = Mock.Of<IPasswordResetCallback>(
                 c => c.GetPasswordResetCallback(It.IsAny<PasswordResetToken>()) == new Uri("https://www.google.co.uk/"));
@@ -93,31 +92,32 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SendInitialEmailAsync_SendsExpectedMessage()
+        public static async Task SendInitialEmailAsync_UsesExpectedTemplate()
         {
-            const string expectedCallback = "https://callback.nhs.uk/";
-            const string htmlBody = "HTML ";
+            const string subject = "Gozleme";
 
-            var callback = new Uri(expectedCallback);
-            var textBody = Guid.NewGuid().ToString();
-            var inputMessage = new EmailMessage
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))
             {
-                Sender = new EmailAddress(),
-                Recipient = new EmailAddress(),
-                HtmlBody = htmlBody + EmailMessage.ResetPasswordLinkPlaceholder,
-                TextBody = textBody + EmailMessage.ResetPasswordLinkPlaceholder,
+                Subject = subject,
             };
 
-            var passwordResetCallback = Mock.Of<IPasswordResetCallback>(
-                c => c.GetPasswordResetCallback(It.IsNotNull<PasswordResetToken>()) == callback);
+            var mockEmailService = new MockEmailService();
+            var registrationService = new RegistrationService(
+                mockEmailService,
+                Mock.Of<IPasswordResetCallback>(),
+                new RegistrationSettings { EmailMessageTemplate = template });
 
-            var settings = new RegistrationSettings { EmailMessage = inputMessage };
+            await registrationService.SendInitialEmailAsync(
+                new PasswordResetToken("Token", ApplicationUserBuilder.Create().Build()));
 
-            EmailMessage actualMessage = null;
+            mockEmailService.SentMessage.Subject.Should().Be(subject);
+        }
 
-            var mockEmailService = new Mock<IEmailService>();
-            mockEmailService.Setup(s => s.SendEmailAsync(It.IsNotNull<EmailMessage>()))
-                .Callback<EmailMessage>(m => actualMessage = m);
+        [Test]
+        public static async Task SendInitialEmailAsync_UsesExpectedRecipient()
+        {
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
+            var mockEmailService = new MockEmailService();
 
             var user = ApplicationUserBuilder
                 .Create()
@@ -126,16 +126,43 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithEmailAddress("uncle@bob.com")
                 .Build();
 
-            var registrationService = new RegistrationService(mockEmailService.Object, passwordResetCallback, settings);
+            var registrationService = new RegistrationService(
+                mockEmailService,
+                Mock.Of<IPasswordResetCallback>(),
+                new RegistrationSettings { EmailMessageTemplate = template });
+
             await registrationService.SendInitialEmailAsync(new PasswordResetToken("Token", user));
 
-            actualMessage.TextBody.Should().Be(textBody + expectedCallback);
-            actualMessage.HtmlBody.Should().Be(htmlBody + expectedCallback);
+            var recipients = mockEmailService.SentMessage.Recipients;
+            recipients.Should().HaveCount(1);
 
-            var recipient = actualMessage.Recipient;
-            recipient.Should().NotBeNull();
-            recipient.DisplayName.Should().Be(user.DisplayName);
+            var recipient = recipients[0];
             recipient.Address.Should().Be(user.Email);
+            recipient.DisplayName.Should().Be(user.DisplayName);
+        }
+
+        [Test]
+        public static async Task SendInitialEmailAsync_UsesExpectedCallback()
+        {
+            const string expectedCallback = "https://callback.nhs.uk/";
+
+            var callback = new Uri(expectedCallback);
+            var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"));
+
+            var passwordResetCallback = Mock.Of<IPasswordResetCallback>(
+                c => c.GetPasswordResetCallback(It.IsNotNull<PasswordResetToken>()) == callback);
+
+            var mockEmailService = new MockEmailService();
+            var registrationService = new RegistrationService(
+                mockEmailService,
+                passwordResetCallback,
+                new RegistrationSettings { EmailMessageTemplate = template });
+
+            await registrationService.SendInitialEmailAsync(
+                new PasswordResetToken("Token", ApplicationUserBuilder.Create().Build()));
+
+            mockEmailService.SentMessage.TextBody!.FormatItems.Should().HaveCount(1);
+            mockEmailService.SentMessage.TextBody!.FormatItems[0].Should().Be(expectedCallback);
         }
     }
 }
