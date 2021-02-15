@@ -27,6 +27,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1292F524-ECBD-4239-83BD-91B0FB1F5215}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Api.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests\NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.csproj", "{AA3F369F-A4FC-4AFE-878A-952F13688352}"
@@ -51,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Organi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.Common.IntegrationTests", "tests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests\NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.csproj", "{0BA3AF01-6D61-43CD-AE57-D9501C92B327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment", "src\NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment\NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment.csproj", "{8C4D4268-D22E-4BD6-898E-FDD81EACBD61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment", "src\NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment\NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment.csproj", "{8C4D4268-D22E-4BD6-898E-FDD81EACBD61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

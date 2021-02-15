@@ -37,6 +37,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 
         public IEnumerable<string> AllowedScopes { get; set; }
 
+        public IEnumerable<string> AllowedCorsOrigins { get; set; }
+
         public Client ToClient()
         {
             var allowedGrantTypes = AllowedGrantTypes switch
@@ -52,6 +54,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
                 ClientId = ClientId,
                 ClientName = ClientName,
                 AllowOfflineAccess = AllowOfflineAccess,
+                AllowedCorsOrigins = AllowedCorsOrigins?.ToList() ?? new List<string>(),
                 RequireClientSecret = RequireClientSecret,
                 RequirePkce = RequirePkce,
                 ClientSecrets = new[] { new Secret(Secret?.ToSha256()) },

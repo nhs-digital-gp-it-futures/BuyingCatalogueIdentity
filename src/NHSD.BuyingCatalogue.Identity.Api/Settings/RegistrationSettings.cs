@@ -1,4 +1,4 @@
-﻿using NHSD.BuyingCatalogue.Identity.Common.Email;
+﻿using NHSD.BuyingCatalogue.EmailClient;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Settings
 {
@@ -11,6 +11,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
         /// Gets or sets the sender, subject and content of
         /// the e-mail message to send to a new user.
         /// </summary>
-        public EmailMessage EmailMessage { get; set; }
+        public EmailMessageTemplate EmailMessageTemplate { get; set; }
     }
 }

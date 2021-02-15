@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.8'
 
 x-networked: &networked
   networks:
@@ -18,7 +18,9 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: identity_api_user_db
     volumes:
-      - nhsd_identity_user_db_volume:/var/opt/mssql/
+      - type: volume
+        source: nhsd_identity_user_db_volume
+        target: /var/opt/mssql/
     environment:
       <<: *saPassword
       ACCEPT_EULA: "Y"
@@ -60,29 +62,33 @@ services:
       dockerfile: src/NHSD.BuyingCatalogue.Identity.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - CLIENTS__1__REDIRECTURLS__0=http://localhost:8072/signin-oidc
-      - CLIENTS__1__REDIRECTURLS__1=http://host.docker.internal:8072/signin-oidc
-      - CLIENTS__1__POSTLOGOUTREDIRECTURLS__0=http://localhost:8072/signout-callback-oidc
-      - CLIENTS__1__POSTLOGOUTREDIRECTURLS__1=http://host.docker.internal:8072/signout-callback-oidc
+      - ASPNETCORE_HTTPS_PORT=9070
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=changeit
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/localhost.pfx
+      - ASPNETCORE_URLS=https://+:443
+      - CLIENTS__1__REDIRECTURLS__0=https://localhost:9072/signin-oidc
+      - CLIENTS__1__REDIRECTURLS__1=https://host.docker.internal:9072/signin-oidc
+      - CLIENTS__1__POSTLOGOUTREDIRECTURLS__0=https://localhost:9072/signout-callback-oidc
+      - CLIENTS__1__POSTLOGOUTREDIRECTURLS__1=https://host.docker.internal:9072/signout-callback-oidc
       - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User ID=NHSD-ISAPI;Password=DisruptTheMarket1!}
-      - ISSUERURL=http://host.docker.internal:8070/identity
+      - ISSUERURL=https://host.docker.internal:9070/identity
       - SmtpServer__Host=nhsd.buyingcatalogue.email
       - SmtpServer__Port=587
       - SmtpServer__emailSubjectPrefix=INTEGRATION_TEST
       - AllowInvalidCertificate=True   
-      - PUBLICBROWSE__BASEADDRESS=http://localhost:8076/publicbrowse
+      - PUBLICBROWSE__BASEADDRESS=http://host.docker.internal:8076/publicbrowse
       - PUBLICBROWSE__LOGINPATH=/re-login
       - PUBLICBROWSE__LOGOUTPATH=/logout-callback
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email
       - nhsd.pb.wiremock
-    entrypoint: 
-      - /bin/sh
-      - -c 
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.dll
     ports:
-      - "8070:80"
+      - "9070:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./mkcert:/certs:ro"
 
   nhsd.pb.wiremock:
     <<: *networked
@@ -92,7 +98,7 @@ services:
       context: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/WireMock/PublicBrowse
       dockerfile: Dockerfile
     ports:
-        - "8076:80"
+      - "8076:80"
 
   nhsd.buyingcatalogue.identity.api.broken.smtp:
     <<: *networked
@@ -113,25 +119,29 @@ services:
     image: ${REGISTRY:-nhsd}/buying-catalogue/organisations-api:${TAG:-latest}
     container_name: organisations_api
     build: 
-        context: .
-        dockerfile: src/NHSD.BuyingCatalogue.Organisations.Api/Dockerfile
+      context: .
+      dockerfile: src/NHSD.BuyingCatalogue.Organisations.Api/Dockerfile
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070/identity
-        - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User ID=NHSD-ISAPI;Password=DisruptTheMarket1!}
-        - AllowInvalidCertificate=True
-        - ODS__APIBASEURL=http://nhsd.ods.api.wiremock/ORD/2-0-0
-        - ODS__BUYERORGANISATIONROLEIDS__0=Buyer
-        - ODS__BUYERORGANISATIONROLEIDS__1=AlsoBuyer
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=changeit
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/localhost.pfx
+      - ASPNETCORE_HTTPS_PORT=9075
+      - AUTHORITY=https://host.docker.internal:9070/identity
+      - ConnectionStrings__CatalogueUsers=${NHSD_CATALOGUEUSERS_DB:-Data Source=nhsd.buyingcatalogue.identity.api.user.db;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=True;User ID=NHSD-ISAPI;Password=DisruptTheMarket1!}
+      - AllowInvalidCertificate=True
+      - ODS__APIBASEURL=http://nhsd.ods.api.wiremock/ORD/2-0-0
+      - ODS__BUYERORGANISATIONROLEIDS__0=Buyer
+      - ODS__BUYERORGANISATIONROLEIDS__1=AlsoBuyer
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.ods.api.wiremock
-    entrypoint: 
-      - /bin/sh
-      - -c 
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Organisations.Api.dll
     ports:
-        - "8075:80"
+      - "9075:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./mkcert:/certs:ro"
 
   nhsd.ods.api.wiremock:
     <<: *networked
@@ -141,57 +151,76 @@ services:
       context: tests/NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests/WireMock/Ods
       dockerfile: Dockerfile      
     ports:
-        - "8080:80"
+      - "8080:80"
 
   nhsd.buyingcatalogue.identity.api.sampleresource:
     <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-sampleresource:${TAG:-latest}
     container_name: identity_api_sample_resource
     build: 
-        context: .
-        dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleResource/Dockerfile
+      context: .
+      dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleResource/Dockerfile
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070/identity
-    entrypoint: 
-      - /bin/sh
-      - -c 
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.SampleResource.dll
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=changeit
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/localhost.pfx
+      - ASPNETCORE_HTTPS_PORT=9071
+      - AUTHORITY=https://host.docker.internal:9070/identity
+      - CAROOT=/certs
     ports:
-        - "8071:80"
+      - "9071:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./mkcert:/certs:ro"
         
   nhsd.buyingcatalogue.identity.api.samplemvcclient:
     <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-samplemvcclient:${TAG:-latest}
     container_name: identity_api_sample_mvc_client
     build: 
-        context: .
-        dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient/Dockerfile
+      context: .
+      dockerfile: samples/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient/Dockerfile
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070/identity
-        - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
-    entrypoint: 
-      - /bin/sh
-      - -c 
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.dll
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=changeit
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/localhost.pfx
+      - ASPNETCORE_HTTPS_PORT=9072
+      - AUTHORITY=https://host.docker.internal:9070/identity
+      - CAROOT=/certs
+      - SAMPLERESOURCEURL=https://host.docker.internal:9071/identity
     ports:
-        - "8072:80"
+      - "9072:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./mkcert:/certs:ro"
 
   nhsd.buyingcatalogue.identity.api.samplemvcclient.invalidsecret:
     <<: *networked
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/api-samplemvcclient:${TAG:-latest}
     container_name: identity_api_sample_mvc_client_invalidsecret
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - AUTHORITY=http://host.docker.internal:8070/identity
-        - SAMPLERESOURCEURL=http://host.docker.internal:8071/Identity
-        - CLIENTSECRET=Invalid
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=changeit
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/localhost.pfx
+      - ASPNETCORE_HTTPS_PORT=9073
+      - AUTHORITY=https://host.docker.internal:9070/identity
+      - SAMPLERESOURCEURL=https://host.docker.internal:9071/identity
+      - CAROOT=/certs
+      - CLIENTSECRET=Invalid
     ports:
-        - "8073:80"
+      - "9073:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./mkcert:/certs:ro"
     
   selenium-hub:
-    image: selenium/hub
+    image: selenium/hub:latest
     container_name: selenium-hub
     ports:
       - "4444:4444"
@@ -199,8 +228,8 @@ services:
   chrome:
     image: ${REGISTRY:-nhsd}/buying-catalogue/identity/chrome-node:${TAG:-latest}
     build: 
-        context: .
-        dockerfile: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/Selenium/Dockerfile
+      context: .
+      dockerfile: tests/NHSD.BuyingCatalogue.Identity.Api.IntegrationTests/Tools/Selenium/Dockerfile
     volumes:
       - /dev/shm:/dev/shm
     depends_on:

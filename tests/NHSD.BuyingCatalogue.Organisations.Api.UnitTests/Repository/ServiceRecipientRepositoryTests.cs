@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,13 +15,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
     public sealed class ServiceRecipientRepositoryTests
     {
         private const string OdsCode = "XYZ";
-        
+
         [Test]
         public async Task GetServiceRecipientsByParentOdsCode_SinglePage_ReturnsOrganisation()
         {
             var context = ServiceRecipientTestContext.Setup();
             context.Settings.GetChildOrganisationSearchLimit = 2;
-            var childOrg = new ServiceRecipient {Name = "Organisation 1", PrimaryRoleId = "RO177", OrgId = "ABC"};
+            var childOrg = new ServiceRecipient { Name = "Organisation 1", PrimaryRoleId = "RO177", OrgId = "ABC" };
             var json = CreatePageJson(childOrg);
             context.Http.RespondWith(status: 200, body: json);
 
@@ -77,10 +75,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [Test]
         public void Ctor_NullSettings_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => { new ServiceRecipientRepository(null);});
+            Assert.Throws<ArgumentNullException>(() => { new ServiceRecipientRepository(null); });
         }
 
-        private string CreatePageJson(params ServiceRecipient[] serviceRecipients)
+        private static string CreatePageJson(params ServiceRecipient[] serviceRecipients)
         {
             var recipientJson = serviceRecipients.Select(x => JsonSerializer.Serialize(x));
             var json = string.Join(',', recipientJson);
@@ -90,21 +88,23 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 
         private sealed class ServiceRecipientTestContext
         {
-            public OdsSettings Settings { get; set; }
-            public ServiceRecipientRepository Repository { get; set; }
-            public HttpTest Http { get; set; }
-
             private ServiceRecipientTestContext()
             {
-                Settings = new OdsSettings()
+                Settings = new OdsSettings
                 {
-                    ApiBaseUrl = "https://fakeodsserver.net/ORD/2-0-0", 
+                    ApiBaseUrl = "https://fakeodsserver.net/ORD/2-0-0",
                     GetChildOrganisationSearchLimit = 1,
                     GpPracticeRoleId = "RO177"
                 };
                 Repository = new ServiceRecipientRepository(Settings);
                 Http = new HttpTest();
             }
+
+            public OdsSettings Settings { get; set; }
+
+            public ServiceRecipientRepository Repository { get; set; }
+
+            public HttpTest Http { get; set; }
 
             public static ServiceRecipientTestContext Setup()
             {

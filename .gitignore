@@ -348,3 +348,6 @@ docker/out
 
 # IdentityServer developer signing credentials
 *.rsa
+
+# mkcert directory
+mkcert/

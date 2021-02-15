@@ -23,9 +23,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 {
     public class Startup
     {
-        private readonly IWebHostEnvironment _environment;
-
         private const string BearerToken = "Bearer";
+        private readonly IWebHostEnvironment _environment;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -59,9 +58,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddSingleton(odsSettings);
 
-            services.RegisterHealthChecks(connectionString);
+            services.AddHealthChecks(connectionString);
 
-            services.AddSwaggerDocumentation();
+            services.AddSwaggerDocumentation(Configuration);
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
