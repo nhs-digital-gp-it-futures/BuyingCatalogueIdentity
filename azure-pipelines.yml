@@ -9,11 +9,9 @@ variables:
 
 trigger:
 - master
-- development
 
 pr:
 - master
-- development
 
 jobs:
 - job: version
@@ -142,7 +140,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   variables:
     semVer: $[ dependencies.version.outputs['setVersionStep.semVer'] ]
-  condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
+  condition: succeeded()
   dependsOn: 
     - version
     - buildAndTest
@@ -198,7 +196,7 @@ jobs:
 
   - task: DockerCompose@0
     displayName: 'Build: Test'
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/development')))
+    condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       containerregistrytype: 'Azure Container Registry'
       azureSubscription: 'NHSAPP-BuyingCatalogue (Non-Prod)'
@@ -210,7 +208,7 @@ jobs:
 
   - task: DockerCompose@0
     displayName: 'Push: Test'
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/development')))
+    condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       containerregistrytype: 'Azure Container Registry'
       azureSubscription: 'NHSAPP-BuyingCatalogue (Non-Prod)'
@@ -222,7 +220,7 @@ jobs:
 
   - task: DockerCompose@0
     displayName: 'Build: Prod'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       containerregistrytype: 'Azure Container Registry'
       azureSubscription: 'NHSAPP-BuyingCatalogue (Prod)'
@@ -234,7 +232,7 @@ jobs:
 
   - task: DockerCompose@0
     displayName: 'Push: Prod'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       containerregistrytype: 'Azure Container Registry'
       azureSubscription: 'NHSAPP-BuyingCatalogue (Prod)'
