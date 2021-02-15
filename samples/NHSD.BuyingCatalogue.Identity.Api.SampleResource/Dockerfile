@@ -1,7 +1,11 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
-RUN apt update && apt install iproute2 -y 
+RUN apt update && apt install iproute2 libnss3-tools wget -y
+RUN wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64 && \
+    mv mkcert-v1.4.3-linux-amd64 mkcert && chmod +x mkcert
+RUN cp mkcert /usr/local/bin/
 WORKDIR /app
 EXPOSE 80
+EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
@@ -17,4 +21,6 @@ RUN dotnet publish "NHSD.BuyingCatalogue.Identity.Api.SampleResource.csproj" -c 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "NHSD.BuyingCatalogue.Identity.Api.SampleResource.dll"]
+COPY --from=build /app/build/start.sh .
+RUN ["chmod", "+x", "./start.sh"]
+ENTRYPOINT ["/bin/bash", "-c",  "./start.sh"]
