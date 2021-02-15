@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+
+  nhsd.buyingcatalogue.identity.api:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/identity-isapi:${TAG:-latest}
+    container_name: identity_api
+    build: 
+      context: .
+      dockerfile: src/NHSD.BuyingCatalogue.Identity.Api/Dockerfile
+
+  nhsd.buyingcatalogue.organisations.api:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/organisations-api:${TAG:-latest}
+    container_name: organisations_api
+    build: 
+      context: .
+      dockerfile: src/NHSD.BuyingCatalogue.Organisations.Api/Dockerfile
+
+  dacpac.deploy:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/isapi-db-deploy:${TAG:-latest}
+    container_name: identity_api_user_db_deploy
+    build:
+      context: "."
+      dockerfile: "src/NHSD.BuyingCatalogue.Identity.UserDatabase.Deployment/Dockerfile"
+
+  nhsd.buyingcatalogue.email:
+    image: ${REGISTRY:-nhsd}/buying-catalogue/smtp-server:${TAG:-latest}
+    container_name: smtp_server
+    build: 
+      context: src/NHSD.BuyingCatalogue.Smtp
