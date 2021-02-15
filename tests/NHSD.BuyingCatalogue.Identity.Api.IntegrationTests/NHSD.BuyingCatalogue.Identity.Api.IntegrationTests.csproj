@@ -36,7 +36,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
-    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="85.0.4183.8700" />
+    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="88.0.4324.9600" />
     <PackageReference Include="SpecFlow" Version="3.4.3" />
     <PackageReference Include="SpecFlow.NUnit" Version="3.4.3" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.4.3" />

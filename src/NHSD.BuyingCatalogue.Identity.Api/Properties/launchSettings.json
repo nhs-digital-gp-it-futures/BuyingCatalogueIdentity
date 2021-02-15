@@ -5,7 +5,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://host.docker.internal:5102"
+      "applicationUrl": "http://host.docker.internal:5102;https://host.docker.internal:6102"
     },
     "NHSD.BuyingCatalogue.Identity.Api Integration": {
       "commandName": "Project",
@@ -15,7 +15,7 @@
         "ConnectionStrings__CatalogueUsers": "Data Source=localhost,1533;Initial Catalog=CatalogueUsers;MultipleActiveResultSets=true;User ID=NHSD-ISAPI;Password=DisruptTheMarket1!",
         "SmtpServer__Port": "1587"
       },
-      "applicationUrl": "http://localhost:5102"
+      "applicationUrl": "http://localhost:5102;https://localhost:6102"
     }
   }
 }

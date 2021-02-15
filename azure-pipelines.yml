@@ -73,6 +73,11 @@ jobs:
       version: $(dotnetVersion)
       includePreviewVersions: false
 
+  - task: Bash@3
+    inputs:
+      filePath: 'create_certificate.sh'
+    displayName: 'Create certificate'
+
   - task: DockerInstaller@0
     inputs:
       dockerVersion: $(dockerVersion)
@@ -90,7 +95,31 @@ jobs:
       projects: '**/*UnitTests.csproj'
       arguments: '-v n  --collect "Code coverage"'
 
-  - script: curl http://host.docker.internal:8072/home -v
+  - task: Bash@3
+    displayName: 'Wait until APIs are ready'
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "Waiting for Identity and OAPI to be ready..."
+        
+        n=0
+        until [ "$n" -ge "300" ]; do
+            identityHealth=$(curl https://localhost:9070/identity/health/ready)
+            oapiHealth=$(curl https://localhost:9075/health/ready)
+
+            if [ "$identityHealth" = "Healthy" ] && [ "$oapiHealth" = "Healthy" ]; then
+                echo "Identity and OAPI were ready in $n seconds"
+                break
+            fi
+
+            echo "Identity reports status $identityHealth"
+            echo "OAPI reports status $oapiHealth"
+
+            n=$((n+1)) 
+            sleep 1
+        done
+
+  - script: curl https://host.docker.internal:9072/home -v
     displayName: 'Assert host is able to resolve host.docker.internal'
     
   - task: DotNetCoreCLI@2
@@ -99,6 +128,10 @@ jobs:
       command: test
       projects: '**/*IntegrationTests.csproj'
       arguments: '-v n'
+  
+  - script: docker-compose logs
+    displayName: 'Docker Logs'
+    condition: failed()
 
   - script: docker-compose down -v
     displayName: 'Docker down'
