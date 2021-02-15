@@ -60,7 +60,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddHealthChecks(connectionString);
 
-            services.AddSwaggerDocumentation();
+            services.AddSwaggerDocumentation(Configuration);
 
             services.AddAuthentication(BearerToken)
                 .AddJwtBearer(BearerToken, options =>
