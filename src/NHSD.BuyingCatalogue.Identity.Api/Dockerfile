@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 RUN apt update && apt install iproute2 -y 
 WORKDIR /app
 EXPOSE 80
+EXPOSE 443
 
 FROM node:12 AS pre-build
 WORKDIR /node
@@ -29,4 +30,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=build /app/build/start.sh .
+RUN ["chmod", "+x", "./start.sh"]
 ENTRYPOINT ["/bin/bash", "-c",  "./start.sh"]

@@ -28,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils
                 Proxy = null
             };
 
-            options.AddArguments("window-size=1920,1080", "no-sandbox", "disable-dev-shm-usage");
+            options.AddArguments("window-size=1920,1080", "no-sandbox", "disable-dev-shm-usage", "ignore-certificate-errors");
 
             if (!Debugger.IsAttached)
             {

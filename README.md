@@ -14,7 +14,7 @@
 
 ## Overview
 
-This application uses **.NET core** to provide an identity service currently implemented with IdentityServer 4 wrapping ASP.NET Identity. It is used to provide token-based authentication and API access control in the Buying Catalogue associated services.
+This application uses **.NET core** to provide an identity service currently implemented with IdentityServer 4 wrapping ASP.NET Identity. It is used to provide token-based authentication and API access control in the associated Buying Catalogue services.
 
 ### Project structure
 
@@ -67,9 +67,25 @@ This server is [maildev](https://github.com/maildev/maildev) server with [stunne
 | outside the docker network | localhost                  | 1025  |  X  |
 | outside the docker network | localhost                  | 1587  | 1.2 |
 
-Navigate yourself to [localhost:1180/email](http://localhost:1180/email) to view the mailbox UI
+Navigate to [localhost:1180/email](http://localhost:1180/email) to view the mailbox UI.
 
 ## Running the Application
+
+### Prerequisites
+
+Before running the application it is necessary to generate a certificate. Scripts are provided (details below) that will create the required certificate. These scripts should only need to be run once prior to starting the application or running the tests for the first time. The script will create a directory named `mkcert`; do not delete this directory – it is required for HTTPS support and for the integration tests. However, if any issues occur or the `mkcert` directory is accidentally deleted the script can be re-run.
+
+#### Windows
+
+Run the `Create Certificate.ps1` PowerShell script.
+
+#### Linux
+
+Run the `create_certificate.sh` bash script.
+
+**Note:** this script assumes you are running a Debian-based distribution. If you are running a distribution that does not use APT for package management you will need to edit the script or run the equivalent set of commands manually.
+
+### To start the application
 
 To start up the web application, run the following command from the root directory of the repository.
 
@@ -80,7 +96,7 @@ docker-compose up -d --build
 This will start the application in a docker container. You can verify that the service has launched correctly by navigating to the following url via any web browser.
 
 ```http
-http://localhost:8070/account/login
+https://localhost:9070/identity/account/login
 ```
 
 ### To stop the application
