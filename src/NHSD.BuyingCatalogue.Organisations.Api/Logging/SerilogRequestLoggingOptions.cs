@@ -8,27 +8,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Logging
     {
         internal const string HealthCheckEndpointDisplayName = "Health checks";
 
-        private static bool IsHealthCheck(HttpContext httpContext)
+        public static LogEventLevel GetLevel(HttpContext httpContext, double elapsed, Exception exception)
         {
-            var endpoint = httpContext.GetEndpoint();
+            _ = elapsed;
 
-            return endpoint != null && string.Equals(
-                endpoint.DisplayName,
-                HealthCheckEndpointDisplayName,
-                StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static LogEventLevel GetLevel(HttpContext httpContext, double _, Exception exception)
-        {
-            if (exception != null)
+            if (exception is not null)
                 return LogEventLevel.Error;
 
-            if (httpContext == null || httpContext.Response.StatusCode > 499)
+            if (httpContext is null || httpContext.Response.StatusCode > 499)
                 return LogEventLevel.Error;
 
             return IsHealthCheck(httpContext)
                 ? LogEventLevel.Verbose
                 : LogEventLevel.Information;
+        }
+
+        private static bool IsHealthCheck(HttpContext httpContext)
+        {
+            var endpoint = httpContext.GetEndpoint();
+
+            return endpoint is not null && string.Equals(
+                endpoint.DisplayName,
+                HealthCheckEndpointDisplayName,
+                StringComparison.OrdinalIgnoreCase);
         }
     }
 }

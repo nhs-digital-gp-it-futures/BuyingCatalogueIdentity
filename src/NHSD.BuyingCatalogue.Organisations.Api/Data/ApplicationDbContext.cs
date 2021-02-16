@@ -6,12 +6,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
 {
     public sealed class ApplicationDbContext : DbContext
     {
-        public DbSet<Organisation> Organisations { get; set; }
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+
+        public DbSet<Organisation> Organisations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

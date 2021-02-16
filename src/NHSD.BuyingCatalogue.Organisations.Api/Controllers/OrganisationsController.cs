@@ -22,24 +22,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     public sealed class OrganisationsController : ControllerBase
     {
-        private readonly IOrganisationRepository _organisationRepository;
-        private readonly ICreateOrganisationService _createOrganisationService;
-        private readonly IServiceRecipientRepository _serviceRecipientRepository;
+        private readonly IOrganisationRepository organisationRepository;
+        private readonly ICreateOrganisationService createOrganisationService;
+        private readonly IServiceRecipientRepository serviceRecipientRepository;
 
         public OrganisationsController(
-            IOrganisationRepository organisationRepository, 
-            ICreateOrganisationService createOrganisationService, 
+            IOrganisationRepository organisationRepository,
+            ICreateOrganisationService createOrganisationService,
             IServiceRecipientRepository serviceRecipientRepository)
         {
-            _organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
-            _createOrganisationService = createOrganisationService ?? throw new ArgumentNullException(nameof(createOrganisationService));
-            _serviceRecipientRepository = serviceRecipientRepository ?? throw new ArgumentNullException(nameof(serviceRecipientRepository));
+            this.organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
+            this.createOrganisationService = createOrganisationService ?? throw new ArgumentNullException(nameof(createOrganisationService));
+            this.serviceRecipientRepository = serviceRecipientRepository ?? throw new ArgumentNullException(nameof(serviceRecipientRepository));
         }
 
         [HttpGet]
         public async Task<ActionResult> GetAllAsync()
         {
-            IEnumerable<Organisation> organisationsList = await _organisationRepository.ListOrganisationsAsync();
+            IEnumerable<Organisation> organisationsList = await organisationRepository.ListOrganisationsAsync();
 
             return Ok(new GetAllOrganisationsModel
             {
@@ -61,8 +61,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                             County = organisation.Address.County,
                             Postcode = organisation.Address.Postcode,
                             Country = organisation.Address.Country,
-                        }
-                    })
+                        },
+                    }),
             });
         }
 
@@ -70,12 +70,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult> GetByIdAsync(Guid id)
         {
-            var organisation = await _organisationRepository.GetByIdAsync(id);
+            var organisation = await organisationRepository.GetByIdAsync(id);
 
             if (organisation is null)
             {
                 return NotFound();
             }
+
+            var addressModel = organisation.Address is null ? null : new AddressModel
+            {
+                Line1 = organisation.Address.Line1,
+                Line2 = organisation.Address.Line2,
+                Line3 = organisation.Address.Line3,
+                Line4 = organisation.Address.Line4,
+                Town = organisation.Address.Town,
+                County = organisation.Address.County,
+                Postcode = organisation.Address.Postcode,
+                Country = organisation.Address.Country,
+            };
 
             return Ok(new OrganisationModel
             {
@@ -84,17 +96,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 OdsCode = organisation.OdsCode,
                 PrimaryRoleId = organisation.PrimaryRoleId,
                 CatalogueAgreementSigned = organisation.CatalogueAgreementSigned,
-                Address = organisation.Address is null ? null : new AddressModel
-                {
-                    Line1 = organisation.Address.Line1,
-                    Line2 = organisation.Address.Line2,
-                    Line3 = organisation.Address.Line3,
-                    Line4 = organisation.Address.Line4,
-                    Town = organisation.Address.Town,
-                    County = organisation.Address.County,
-                    Postcode = organisation.Address.Postcode,
-                    Country = organisation.Address.Country,
-                }
+                Address = addressModel,
             });
         }
 
@@ -107,7 +109,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            var organisation = await _organisationRepository.GetByIdAsync(id);
+
+            var organisation = await organisationRepository.GetByIdAsync(id);
 
             if (organisation is null)
             {
@@ -116,7 +119,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             organisation.CatalogueAgreementSigned = model.CatalogueAgreementSigned;
 
-            await _organisationRepository.UpdateAsync(organisation);
+            await organisationRepository.UpdateAsync(organisation);
 
             return NoContent();
         }
@@ -128,30 +131,31 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
 
-            var address = model.Address;
-            var result = await _createOrganisationService.CreateAsync(new CreateOrganisationRequest(
+            var addressModel = model.Address;
+            var address = addressModel is null ? null : new Address
+            {
+                Line1 = addressModel.Line1,
+                Line2 = addressModel.Line2,
+                Line3 = addressModel.Line3,
+                Line4 = addressModel.Line4,
+                Town = addressModel.Town,
+                County = addressModel.County,
+                Postcode = addressModel.Postcode,
+                Country = addressModel.Country,
+            };
+
+            var result = await createOrganisationService.CreateAsync(new CreateOrganisationRequest(
                 model.OrganisationName,
                 model.OdsCode,
                 model.PrimaryRoleId,
                 model.CatalogueAgreementSigned,
-                address is null ? null : new Address
-                {
-                    Line1 = address.Line1,
-                    Line2 = address.Line2,
-                    Line3 = address.Line3,
-                    Line4 = address.Line4,
-                    Town = address.Town,
-                    County = address.County,
-                    Postcode = address.Postcode,
-                    Country = address.Country
-                }
-            ));
+                address));
 
             var response = new CreateOrganisationResponseModel();
 
             if (!result.IsSuccess)
             {
-                response.Errors = result.Errors.Select(x => new ErrorMessageViewModel(x.Id, x.Field));
+                response.Errors = result.Errors.Select(d => new ErrorMessageViewModel(d.Id, d.Field));
                 return BadRequest(response);
             }
 
@@ -170,7 +174,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return Forbid();
             }
 
-            var organisation = await _organisationRepository.GetByIdAsync(id);
+            var organisation = await organisationRepository.GetByIdAsync(id);
 
             if (organisation is null)
             {
@@ -178,18 +182,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             }
 
             var model = new List<ServiceRecipientsModel>
-            { 
-                new ServiceRecipientsModel
+            {
+                new()
                 {
                     Name = organisation.Name,
-                    OdsCode = organisation.OdsCode
-                }
+                    OdsCode = organisation.OdsCode,
+                },
             };
 
-            var children = await _serviceRecipientRepository.GetServiceRecipientsByParentOdsCode(organisation.OdsCode);
+            var children = await serviceRecipientRepository.GetServiceRecipientsByParentOdsCode(organisation.OdsCode);
             model.AddRange(children.Select(recipient => new ServiceRecipientsModel { Name = recipient.Name, OdsCode = recipient.OrgId }));
 
-            return model.OrderBy(x => x.Name).ToList();
+            return model.OrderBy(m => m.Name).ToList();
         }
     }
 }

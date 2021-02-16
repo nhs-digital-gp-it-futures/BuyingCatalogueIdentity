@@ -14,7 +14,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
                 .HasConversion(
                     addressEntity => JsonConvert.SerializeObject(addressEntity, new JsonSerializerSettings
                     {
-                        NullValueHandling = NullValueHandling.Ignore
+                        NullValueHandling = NullValueHandling.Ignore,
                     }),
                     addressEntity => JsonConvert.DeserializeObject<Address>(addressEntity));
         }

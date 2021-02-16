@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
     {
         private const string Version = "v1";
 
-        internal static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services,
+        internal static IServiceCollection AddSwaggerDocumentation(
+            this IServiceCollection services,
             IConfiguration configuration)
         {
             if (services is null)
@@ -39,19 +41,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
                     {
                         AuthorizationUrl = authorizationUrl,
                         TokenUrl = tokenUrl,
-                        Scopes = new Dictionary<string, string> { { "Ordering", "Organisation" } }
-                    }
-                }
+                        Scopes = new Dictionary<string, string> { { "Ordering", "Organisation" } },
+                    },
+                },
             };
 
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc(Version,
+                options.SwaggerDoc(
+                    Version,
                     new OpenApiInfo
                     {
                         Version = Version,
                         Title = "ORGANISATIONS API",
-                        Description = "NHS Digital GP IT Buying Catalogue HTTP ORGANISATIONS API"
+                        Description = "NHS Digital GP IT Buying Catalogue HTTP ORGANISATIONS API",
                     });
 
                 options.AddSecurityDefinition("oauth2", openApiSecurityScheme);
@@ -78,14 +81,31 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint($"{(endpointPrefix)}/swagger/{Version}/swagger.json",
+                options.SwaggerEndpoint(
+                    $"{endpointPrefix}/swagger/{Version}/swagger.json",
                     $"Buying Catalogue Organisations API {Version}");
             });
 
             return app;
         }
 
-        // ReSharper disable once ClassNeverInstantiated.Local
+        private static bool HasAuthorizeAttribute(OperationFilterContext context)
+        {
+            // Check for authorize attribute
+            var contextMethodInfo = context.MethodInfo;
+            var declaringType = contextMethodInfo.DeclaringType;
+            if (declaringType is null)
+            {
+                return false;
+            }
+
+            var hasAuthorize = declaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any()
+                || contextMethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
+
+            return hasAuthorize;
+        }
+
+        [UsedImplicitly]
         private sealed class AuthorizeCheckOperationFilter : IOperationFilter
         {
             public void Apply(OpenApiOperation operation, OperationFilterContext context)
@@ -105,30 +125,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
 
                 var oAuthScheme = new OpenApiSecurityScheme
                 {
-                    Reference = new OpenApiReference { Id = "oauth2", Type = ReferenceType.SecurityScheme }
+                    Reference = new OpenApiReference { Id = "oauth2", Type = ReferenceType.SecurityScheme },
                 };
 
                 operation.Security = new List<OpenApiSecurityRequirement>
                 {
-                    new OpenApiSecurityRequirement {[oAuthScheme] = new[] { "organisationsapi" } }
+                    // ReSharper disable once StringLiteralTypo
+                    new() { [oAuthScheme] = new[] { "organisationsapi" } },
                 };
             }
-        }
-
-        private static bool HasAuthorizeAttribute(OperationFilterContext context)
-        {
-            // Check for authorize attribute
-            var contextMethodInfo = context.MethodInfo;
-            var declaringType = contextMethodInfo.DeclaringType;
-            if (declaringType is null)
-            {
-                return false;
-            }
-
-            var hasAuthorize = declaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() ||
-                               contextMethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
-
-            return hasAuthorize;
         }
     }
 }

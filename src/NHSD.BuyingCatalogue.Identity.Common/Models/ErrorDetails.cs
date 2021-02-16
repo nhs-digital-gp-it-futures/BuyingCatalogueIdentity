@@ -4,15 +4,15 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models
 {
     public sealed class ErrorDetails : IEquatable<ErrorDetails>
     {
-        public string Id { get; }
-
-        public string? Field { get; }
-
         public ErrorDetails(string id, string? field = null)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Field = field;
         }
+
+        public string Id { get; }
+
+        public string? Field { get; }
 
         public bool Equals(ErrorDetails? other)
         {
@@ -26,13 +26,11 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Models
                 && string.Equals(Field, other.Field, StringComparison.Ordinal);
         }
 
-
         public override bool Equals(object? obj)
         {
             return Equals(obj as ErrorDetails);
         }
 
         public override int GetHashCode() => HashCode.Combine(Id, Field);
-        
     }
 }

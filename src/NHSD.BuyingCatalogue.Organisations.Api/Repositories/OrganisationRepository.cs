@@ -10,26 +10,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
     internal sealed class OrganisationRepository : IOrganisationRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext context;
 
         public OrganisationRepository(ApplicationDbContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         public async Task<IEnumerable<Organisation>> ListOrganisationsAsync()
         {
-            return await _context.Organisations.OrderBy(c=>c.Name).ToListAsync();
+            return await context.Organisations.OrderBy(c => c.Name).ToListAsync();
         }
 
         public async Task<Organisation> GetByIdAsync(Guid id)
         {
-            return await _context.Organisations.FirstOrDefaultAsync(org => org.OrganisationId == id);
+            return await context.Organisations.FirstOrDefaultAsync(org => org.OrganisationId == id);
         }
 
         public async Task<Organisation> GetByOdsCodeAsync(string odsCode)
         {
-            return await _context.Organisations.FirstOrDefaultAsync(org => org.OdsCode == odsCode);
+            return await context.Organisations.FirstOrDefaultAsync(org => org.OdsCode == odsCode);
         }
 
         public async Task CreateOrganisationAsync(Organisation organisation)
@@ -37,17 +37,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             if (organisation is null)
                 throw new ArgumentNullException(nameof(organisation));
 
-            _context.Organisations.Add(organisation);
-            await _context.SaveChangesAsync();
+            await context.Organisations.AddAsync(organisation);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Organisation organisation)
         {
-            if (organisation is null) 
+            if (organisation is null)
                 throw new ArgumentNullException(nameof(organisation));
-            
-            _context.Organisations.Update(organisation);
-            await _context.SaveChangesAsync();
+
+            context.Organisations.Update(organisation);
+            await context.SaveChangesAsync();
         }
     }
 }

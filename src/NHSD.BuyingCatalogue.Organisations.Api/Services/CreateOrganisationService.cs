@@ -9,13 +9,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 {
     public sealed class CreateOrganisationService : ICreateOrganisationService
     {
-        private readonly IOrganisationRepository _organisationRepository;
-        private readonly IOrganisationValidator _organisationValidator;
+        private readonly IOrganisationRepository organisationRepository;
+        private readonly IOrganisationValidator organisationValidator;
 
         public CreateOrganisationService(IOrganisationRepository organisationRepository, IOrganisationValidator organisationValidator)
         {
-            _organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
-            _organisationValidator = organisationValidator ?? throw new ArgumentNullException(nameof(organisationValidator));
+            this.organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
+            this.organisationValidator = organisationValidator ?? throw new ArgumentNullException(nameof(organisationValidator));
         }
 
         public async Task<Result<Guid?>> CreateAsync(CreateOrganisationRequest request)
@@ -31,15 +31,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
                 LastUpdated = DateTime.UtcNow,
                 CatalogueAgreementSigned = request.CatalogueAgreementSigned,
                 Address = request.Address,
-                OrganisationId = Guid.NewGuid()
+                OrganisationId = Guid.NewGuid(),
             };
 
-            var validationResult = await _organisationValidator.ValidateAsync(organisation);
+            var validationResult = await organisationValidator.ValidateAsync(organisation);
 
             if (!validationResult.IsSuccess)
                 return Result.Failure<Guid?>(validationResult.Errors);
 
-            await _organisationRepository.CreateOrganisationAsync(organisation);
+            await organisationRepository.CreateOrganisationAsync(organisation);
 
             return Result.Success((Guid?)organisation.OrganisationId);
         }

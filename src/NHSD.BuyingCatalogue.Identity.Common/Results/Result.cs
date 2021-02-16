@@ -8,65 +8,56 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
 {
     public sealed class Result : IEquatable<Result>
     {
-        private static readonly Result _success = new Result();
+        private static readonly Result SuccessfulResult = new();
 
-        public bool IsSuccess { get; }
-
-        public IReadOnlyCollection<ErrorDetails> Errors { get; }
-
-        private Result() : this(true, Enumerable.Empty<ErrorDetails>())
+        private Result()
+            : this(true, Enumerable.Empty<ErrorDetails>())
         {
         }
 
-        private Result(IEnumerable<ErrorDetails> errors) : this(false, errors)
+        private Result(IEnumerable<ErrorDetails> errors)
+            : this(false, errors)
         {
         }
 
         private Result(bool isSuccess, IEnumerable<ErrorDetails>? errors)
         {
             IsSuccess = isSuccess;
-            Errors = new ReadOnlyCollection<ErrorDetails>(errors != null ? errors.ToList() : new List<ErrorDetails>());
+            Errors = new ReadOnlyCollection<ErrorDetails>(errors?.ToList() ?? new List<ErrorDetails>());
         }
+
+        public bool IsSuccess { get; }
+
+        public IReadOnlyCollection<ErrorDetails> Errors { get; }
 
         public static Result Success()
         {
-            return _success;
+            return SuccessfulResult;
         }
 
         public static Result<T> Success<T>(T value)
         {
-            return new Result<T>(true, new List<ErrorDetails>(), value);
+            return new(true, new List<ErrorDetails>(), value);
         }
 
         public static Result Failure(IEnumerable<ErrorDetails> errors)
         {
-            return new Result(errors);
+            return new(errors);
         }
 
         public static Result Failure(params ErrorDetails[] errors)
         {
-            return new Result(errors);
+            return new(errors);
         }
 
         public static Result<T> Failure<T>(params ErrorDetails[] errors)
         {
-            return new Result<T>(false, errors, default!);
+            return new(false, errors, default!);
         }
 
         public static Result<T> Failure<T>(IEnumerable<ErrorDetails> errors)
         {
-            return new Result<T>(false, errors, default!);
-        }
-
-        private static bool AreErrorsEqual(IEnumerable<ErrorDetails> first, IEnumerable<ErrorDetails> second)
-        {
-            if (first is null)
-                return second is null;
-
-            if (second is null)
-                return false;
-
-            return first.SequenceEqual(second);
+            return new(false, errors, default!);
         }
 
         public bool Equals(Result? other)
@@ -77,8 +68,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
             if (ReferenceEquals(this, other))
                 return true;
 
-            return other is object
-                && IsSuccess == other.IsSuccess
+            return IsSuccess == other.IsSuccess
                 && AreErrorsEqual(Errors, other.Errors);
         }
 
@@ -88,5 +78,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.Results
         }
 
         public override int GetHashCode() => HashCode.Combine(IsSuccess, Errors);
+
+        private static bool AreErrorsEqual(IEnumerable<ErrorDetails> first, IEnumerable<ErrorDetails> second)
+        {
+            return first.SequenceEqual(second);
+        }
     }
 }
