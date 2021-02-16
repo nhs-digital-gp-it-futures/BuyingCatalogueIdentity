@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
@@ -12,13 +13,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class OrganisationsSteps
     {
-        private readonly ScenarioContext _context;
-        private readonly Settings _settings;
+        private readonly ScenarioContext context;
+        private readonly Settings settings;
 
         public OrganisationsSteps(ScenarioContext context, Settings settings)
         {
-            _context = context;
-            _settings = settings;
+            this.context = context;
+            this.settings = settings;
         }
 
         [Given(@"Organisations exist")]
@@ -46,27 +47,39 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
                     .Build();
 
-                await organisation.InsertAsync(_settings.ConnectionString);
+                await organisation.InsertAsync(settings.ConnectionString);
                 organisationDictionary.Add(organisation.Name, organisation.OrganisationId);
             }
 
-            _context[ScenarioContextKeys.OrganisationMapDictionary] = organisationDictionary;
+            context[ScenarioContextKeys.OrganisationMapDictionary] = organisationDictionary;
         }
 
-        private class OrganisationTable
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OrganisationTable
         {
-            public string Name { get; set; }
-            public string OdsCode { get; set; }
-            public string PrimaryRoleId { get; set; }
-            public bool CatalogueAgreementSigned { get; set; }
-            public string Line1 { get; set; }
-            public string Line2 { get; set; }
-            public string Line3 { get; set; }
-            public string Line4 { get; set; }
-            public string Town { get; set; }
-            public string County { get; set; }
-            public string Postcode { get; set; }
-            public string Country { get; set; }
+            public string Name { get; init; }
+
+            public string OdsCode { get; init; }
+
+            public string PrimaryRoleId { get; init; }
+
+            public bool CatalogueAgreementSigned { get; init; }
+
+            public string Line1 { get; init; }
+
+            public string Line2 { get; init; }
+
+            public string Line3 { get; init; }
+
+            public string Line4 { get; init; }
+
+            public string Town { get; init; }
+
+            public string County { get; init; }
+
+            public string Postcode { get; init; }
+
+            public string Country { get; init; }
         }
     }
 }

@@ -11,33 +11,33 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class RegistrationSteps
     {
-        private readonly ScenarioContext _context;
-        private readonly Uri _discovery;
-        private readonly SeleniumContext _seleniumContext;
+        private readonly ScenarioContext context;
+        private readonly Uri discovery;
+        private readonly SeleniumContext seleniumContext;
 
         public RegistrationSteps(
             IConfiguration configuration,
             ScenarioContext context,
             SeleniumContext seleniumContext)
         {
-            _context = context;
-            _discovery = configuration.GetValue<Uri>("DiscoveryAddress");
-            _seleniumContext = seleniumContext;
+            this.context = context;
+            discovery = configuration.GetValue<Uri>("DiscoveryAddress");
+            this.seleniumContext = seleniumContext;
         }
 
         [When(@"the user navigates to identity url (\S*)$")]
         public void WhenTheUserNavigatesToUrl(string url)
         {
-            _seleniumContext.WebDriver.Navigate().GoToUrl(new Uri(_discovery, url));
+            seleniumContext.WebDriver.Navigate().GoToUrl(new Uri(discovery, url));
         }
 
         [When(@"the user navigates to identity url (\S*) with a password reset token")]
         public void WhenTheUserNavigatesToUrlWithValidPasswordResetToken(string url)
         {
-            var user = _context.Get<IdentityUser>();
-            var encodedToken = HttpUtility.UrlEncode(_context.Get<string>(ScenarioContextKeys.PasswordResetToken));
+            var user = context.Get<IdentityUser>();
+            var encodedToken = HttpUtility.UrlEncode(context.Get<string>(ScenarioContextKeys.PasswordResetToken));
 
-            _seleniumContext.WebDriver.Navigate().GoToUrl(new Uri(_discovery, $"{url}?email={user.Email}&token={encodedToken}"));
+            seleniumContext.WebDriver.Navigate().GoToUrl(new Uri(discovery, $"{url}?email={user.Email}&token={encodedToken}"));
         }
     }
 }

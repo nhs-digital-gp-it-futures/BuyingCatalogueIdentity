@@ -9,43 +9,43 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class PublicBrowseSteps
     {
-        private readonly SeleniumContext _context;
-        private readonly Uri _publicBrowseBaseUrl;
-        private readonly Uri _publicBrowseLoginUrl;
-        private readonly Uri _publicBrowseLogoutUrl;
+        private readonly SeleniumContext context;
+        private readonly Uri publicBrowseBaseUrl;
+        private readonly Uri publicBrowseLoginUrl;
+        private readonly Uri publicBrowseLogoutUrl;
 
         public PublicBrowseSteps(SeleniumContext context, Settings settings)
         {
-            _context = context;
-            _publicBrowseBaseUrl = settings.PublicBrowseBaseUrl;
-            _publicBrowseLoginUrl = settings.PublicBrowseLoginUrl;
-            _publicBrowseLogoutUrl = settings.PublicBrowseLogoutUrl;
+            this.context = context;
+            publicBrowseBaseUrl = settings.PublicBrowseBaseUrl;
+            publicBrowseLoginUrl = settings.PublicBrowseLoginUrl;
+            publicBrowseLogoutUrl = settings.PublicBrowseLogoutUrl;
         }
 
         [Then(@"the user is redirected to the public browse homepage")]
         public void ThenTheUserIsRedirectedToThePublicBrowseHomepage()
         {
-            _context.WebWaiter.Until(w => string.Equals(
+            context.WebWaiter.Until(w => string.Equals(
                 w.Url,
-                _publicBrowseBaseUrl.ToString(),
+                publicBrowseBaseUrl.ToString(),
                 StringComparison.OrdinalIgnoreCase));
         }
 
         [Then(@"the user is redirected to the public browse login page")]
         public void ThenTheUserIsRedirectedToThePublicBrowseLoginPage()
         {
-            _context.WebWaiter.Until(w => string.Equals(
+            context.WebWaiter.Until(w => string.Equals(
                 w.Url,
-                _publicBrowseLoginUrl.ToString(),
+                publicBrowseLoginUrl.ToString(),
                 StringComparison.OrdinalIgnoreCase));
         }
 
         [Then(@"the user is redirected to the public browse logout page")]
         public void ThenTheUserIsRedirectedToThePublicBrowseLogoutPage()
         {
-            _context.WebWaiter.Until(w => string.Equals(
+            context.WebWaiter.Until(w => string.Equals(
                 w.Url,
-                _publicBrowseLogoutUrl.ToString(),
+                publicBrowseLogoutUrl.ToString(),
                 StringComparison.OrdinalIgnoreCase));
         }
 
@@ -63,10 +63,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
         private void AssertHrefAttributeIsEqualToPublicBrowseHomepage(string dataTestId)
         {
-            var link = _context.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataTestId}]"));
+            var link = context.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataTestId}]"));
             var linkHref = link.GetAttribute("href");
 
-            linkHref.Should().Be(_publicBrowseBaseUrl.ToString());
+            linkHref.Should().Be(publicBrowseBaseUrl.ToString());
         }
     }
 }

@@ -19,37 +19,37 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class PasswordResetSteps
     {
-        private readonly ScenarioContext _context;
-        private readonly DataProtectorTokenProvider<IdentityUser> _dataProtectionProvider;
-        private readonly DirectoryInfo _keysDirectory = new DirectoryInfo("DP_Keys");
-        private readonly IXmlRepository _keyRepository;
-        private readonly Settings _settings;
+        private readonly ScenarioContext context;
+        private readonly DataProtectorTokenProvider<IdentityUser> dataProtectionProvider;
+        private readonly DirectoryInfo keysDirectory = new("DP_Keys");
+        private readonly IXmlRepository keyRepository;
+        private readonly Settings settings;
 
         public PasswordResetSteps(ScenarioContext context, Settings settings)
         {
-            _context = context;
-            _settings = settings;
+            this.context = context;
+            this.settings = settings;
 
-            _keyRepository = new FileSystemXmlRepository(_keysDirectory, NullLoggerFactory.Instance);
+            keyRepository = new FileSystemXmlRepository(keysDirectory, NullLoggerFactory.Instance);
             var provider = DataProtectionProvider.Create(
-                _keysDirectory,
+                keysDirectory,
                 b => b.SetApplicationName(settings.DataProtectionAppName));
 
-            _dataProtectionProvider = new DataProtectorTokenProvider<IdentityUser>(
+            dataProtectionProvider = new DataProtectorTokenProvider<IdentityUser>(
                 provider,
                 null,
                 new Logger<DataProtectorTokenProvider<IdentityUser>>(NullLoggerFactory.Instance));
         }
 
         private IEnumerable<DataProtectionKey> Keys =>
-            _keyRepository.GetAllElements().Select(e => new DataProtectionKey(e));
+            keyRepository.GetAllElements().Select(e => new DataProtectionKey(e));
 
         [When(@"the user with ID (\S*) has an expired password reset token")]
         public async Task WhenTheUserWithIdHasExpiredPasswordResetTokenAsync(string userId)
         {
             await WhenTheUserWithIdHasValidPasswordResetTokenAsync(userId);
             var userEntity = new UserEntity { Id = userId, SecurityStamp = Guid.NewGuid().ToString() };
-            await userEntity.UpdateSecurityStamp(_settings.ConnectionString);
+            await userEntity.UpdateSecurityStamp(settings.ConnectionString);
         }
 
         [When(@"the user with ID (\S*) has a valid password reset token")]
@@ -58,7 +58,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             await SaveDbKeysToRepositoryAsync();
 
             var userEntity = new UserEntity { Id = userId };
-            var userInDb = await userEntity.GetAsync(_settings.ConnectionString);
+            var userInDb = await userEntity.GetAsync(settings.ConnectionString);
 
             var identityUser = new IdentityUser(userId)
             {
@@ -79,21 +79,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 null,
                 null);
 
-            userManager.RegisterTokenProvider(TokenOptions.DefaultProvider, _dataProtectionProvider);
+            userManager.RegisterTokenProvider(TokenOptions.DefaultProvider, dataProtectionProvider);
 
-            _context.Set(identityUser);
-            _context[ScenarioContextKeys.PasswordResetToken] = await userManager.GeneratePasswordResetTokenAsync(identityUser);
+            context.Set(identityUser);
+            context[ScenarioContextKeys.PasswordResetToken] = await userManager.GeneratePasswordResetTokenAsync(identityUser);
 
-            await DataProtectionKeys.SaveToDbAsync(_settings.ConnectionString, Keys);
+            await DataProtectionKeys.SaveToDbAsync(settings.ConnectionString, Keys);
         }
 
         private async Task SaveDbKeysToRepositoryAsync()
         {
-            var dbKeys = await DataProtectionKeys.GetFromDbAsync(_settings.ConnectionString);
+            var dbKeys = await DataProtectionKeys.GetFromDbAsync(settings.ConnectionString);
             var newKeys = dbKeys.Except(Keys);
 
             foreach (var key in newKeys)
-                _keyRepository.StoreElement(key.Element, key.FriendlyName);
+                keyRepository.StoreElement(key.Element, key.FriendlyName);
         }
     }
 }

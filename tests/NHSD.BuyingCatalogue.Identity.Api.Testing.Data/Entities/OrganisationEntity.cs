@@ -15,7 +15,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public string PrimaryRoleId { get; set; }
 
-        public string Address { get { return JsonConvert.SerializeObject(AddressObject); } }
+        public string Address
+        {
+            get { return JsonConvert.SerializeObject(AddressObject); }
+        }
 
         public bool CatalogueAgreementSigned { get; set; }
 
@@ -23,32 +26,42 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public Address AddressObject { get; set; }
 
-        protected override string InsertSql => $@"
-                                INSERT INTO dbo.Organisations
-                                (OrganisationId,
-                                Name,
-                                OdsCode,
-                                PrimaryRoleId,
-                                Address,
-                                CatalogueAgreementSigned,
-                                LastUpdated)
-                                VALUES
-                                    (@OrganisationId,
-                                     @Name,
-                                     @OdsCode,
-                                     @PrimaryRoleId,
-                                     @Address,
-                                     @CatalogueAgreementSigned,
-                                     @LastUpdated)";
+        protected override string InsertSql => @"
+            INSERT INTO dbo.Organisations
+            (
+                OrganisationId,
+                Name,
+                OdsCode,
+                PrimaryRoleId,
+                Address,
+                CatalogueAgreementSigned,
+                LastUpdated
+            )
+            VALUES
+            (
+                @OrganisationId,
+                @Name,
+                @OdsCode,
+                @PrimaryRoleId,
+                @Address,
+                @CatalogueAgreementSigned,
+                @LastUpdated
+            );";
 
         protected override string GetSql { get; }
 
-        public static async Task<OrganisationEntity> GetByNameAsync(string connectionString, string organisationName) =>
-            await SqlRunner.FetchSingleResultAsync<OrganisationEntity>(connectionString, $@"SELECT TOP (1)
-                                    OrganisationId,
-                                    Name
-                                    FROM Organisations
-                                    WHERE Name = @organisationName
-                                    ORDER BY Name ASC", new { organisationName });
+        public static async Task<OrganisationEntity> GetByNameAsync(string connectionString, string organisationName)
+        {
+            const string sql = @"
+                  SELECT TOP (1) OrganisationId, Name
+                    FROM dbo.Organisations
+                   WHERE Name = @organisationName
+                ORDER BY Name ASC";
+
+            return await SqlRunner.FetchSingleResultAsync<OrganisationEntity>(
+                connectionString,
+                sql,
+                new { organisationName });
+        }
     }
 }

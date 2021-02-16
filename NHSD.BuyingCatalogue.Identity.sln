@@ -8,9 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{33728341-9F25-493F-942A-8766990C2F9A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2A3F346A-9455-45F7-8348-7BEDFB7024EF}"
-	ProjectSection(SolutionItems) = preProject
-		tests\.editorconfig = tests\.editorconfig
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{6C536770-4D47-43B6-8E56-39116686665C}"
 EndProject

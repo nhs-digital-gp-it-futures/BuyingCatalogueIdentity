@@ -27,19 +27,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public bool CatalogueAgreementSigned { get; set; }
 
+        // ReSharper disable once StringLiteralTypo
         protected override string InsertSql => @"
             INSERT INTO dbo.AspNetUsers
                 (Id, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed,
-	            PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed,
-	            TwoFactorEnabled, LockoutEnabled, AccessFailedCount,
-	            PrimaryOrganisationId, OrganisationFunction, [Disabled], CatalogueAgreementSigned,
-	            FirstName, LastName)
+                PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed,
+                TwoFactorEnabled, LockoutEnabled, AccessFailedCount,
+                PrimaryOrganisationId, OrganisationFunction, [Disabled], CatalogueAgreementSigned,
+                FirstName, LastName)
             VALUES
                 (@id, @email, UPPER(@email), @email, UPPER(@email), 1,
-	            @passwordHash, @securityStamp, NEWID(), @phoneNumber, 1,
-	            0, 0, 0,
-	            @organisationId, @organisationFunction, @disabled, @catalogueAgreementSigned,
-	            @firstName, @lastName);";
+                @passwordHash, @securityStamp, NEWID(), @phoneNumber, 1,
+                0, 0, 0,
+                @organisationId, @organisationFunction, @disabled, @catalogueAgreementSigned,
+                @firstName, @lastName);";
 
         protected override string GetSql => @"
               SELECT FirstName, LastName, PhoneNumber, Email AS EmailAddress, Disabled, dbo.Organisations.Name AS OrganisationName,
@@ -50,7 +51,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
               WHERE Id = @id";
 
         private static string GetIdByEmailSql => @"
-              SELECT Id 
+              SELECT Id
               FROM dbo.AspNetUsers
               WHERE Email = @Email";
 
@@ -63,6 +64,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
             await SqlRunner.FetchSingleResultAsync<string>(connectionString, GetIdByEmailSql, this);
 
         public async Task UpdateSecurityStamp(string connectionString) =>
-            await SqlRunner.ExecuteAsync(connectionString, UpdateSecurityStampSql, new { id = Id, securityStamp = SecurityStamp});
+            await SqlRunner.ExecuteAsync(connectionString, UpdateSecurityStampSql, new { id = Id, securityStamp = SecurityStamp });
     }
 }

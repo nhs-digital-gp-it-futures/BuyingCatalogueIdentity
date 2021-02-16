@@ -12,15 +12,15 @@ using TechTalk.SpecFlow;
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers
 {
     [Binding]
-    public sealed class EmailServerDriver
+    internal sealed class EmailServerDriver
     {
-        private readonly ScenarioContext _context;
-        private readonly Settings _settings;
+        private readonly ScenarioContext context;
+        private readonly Settings settings;
 
         public EmailServerDriver(ScenarioContext context, Settings settings)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         internal async Task<int> GetEmailCountAsync()
@@ -31,25 +31,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Drivers
 
         internal async Task<IEnumerable<Email>> FindAllEmailsAsync()
         {
-            var responseBody = await _settings.SmtpServerApiBaseUrl
+            var responseBody = await settings.SmtpServerApiBaseUrl
                 .AppendPathSegment("email")
                 .GetJsonListAsync();
 
-            return responseBody.Select(x => new Email
+            return responseBody.Select(m => new Email
             {
-                PlainTextBody = x.text,
-                HtmlBody = x.html,
-                Subject = x.subject,
-                From = x.from[0].address,
-                To = x.to[0].address
+                PlainTextBody = m.text,
+                HtmlBody = m.html,
+                Subject = m.subject,
+                From = m.from[0].address,
+                To = m.to[0].address,
             });
         }
 
         internal async Task ClearAllEmailsAsync()
         {
-            if (_context.TryGetValue(ScenarioContextKeys.EmailSent, out bool _))
+            if (context.TryGetValue(ScenarioContextKeys.EmailSent, out bool _))
             {
-                await _settings.SmtpServerApiBaseUrl
+                await settings.SmtpServerApiBaseUrl
                     .AppendPathSegments("email", "all")
                     .DeleteAsync();
             }

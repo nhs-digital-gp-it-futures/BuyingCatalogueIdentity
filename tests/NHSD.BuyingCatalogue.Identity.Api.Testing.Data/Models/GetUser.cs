@@ -2,20 +2,20 @@
 {
     public sealed class GetUser
     {
-        public string FirstName { get; }
+        public string FirstName { get; init; }
 
-        public string LastName { get; }
+        public string LastName { get; init; }
 
         public string Name => $"{FirstName} {LastName}";
 
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; init; }
 
-        public string EmailAddress { get; set; }
+        public string EmailAddress { get; init; }
 
-        public bool Disabled { get; set; }
+        public bool Disabled { get; init; }
 
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; init; }
 
-        public string SecurityStamp { get; set; }
+        public string SecurityStamp { get; init; }
     }
 }
