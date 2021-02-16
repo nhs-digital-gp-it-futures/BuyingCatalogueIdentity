@@ -15,11 +15,12 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
-    internal sealed class AgreementConsentServiceTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class AgreementConsentServiceTests
     {
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_NullEventService_ThrowsException()
+        public static void Constructor_NullEventService_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
                 () => new AgreementConsentService(null, Mock.Of<IIdentityServerInteractionService>(), Mock.Of<IScopeRepository>()));
@@ -27,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_NullInteractionService_ThrowsException()
+        public static void Constructor_NullInteractionService_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
                 () => new AgreementConsentService(Mock.Of<IEventService>(), null, Mock.Of<IScopeRepository>()));
@@ -35,14 +36,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_NullScopeRepository_ThrowsException()
+        public static void Constructor_NullScopeRepository_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
                 () => new AgreementConsentService(Mock.Of<IEventService>(), Mock.Of<IIdentityServerInteractionService>(), null));
         }
 
         [Test]
-        public void IsValidReturnUrl_NullReturnUrl_ThrowsException()
+        public static void IsValidReturnUrl_NullReturnUrl_ThrowsException()
         {
             var service = new AgreementConsentService(
                 Mock.Of<IEventService>(),
@@ -53,7 +54,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task IsValidReturnUrl_BadReturnUrl_ReturnsFalse()
+        public static async Task IsValidReturnUrl_BadReturnUrl_ReturnsFalse()
         {
             var service = new AgreementConsentService(
                 Mock.Of<IEventService>(),
@@ -66,7 +67,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task IsValidReturnUrl_ValidReturnUrl_ReturnsFalse()
+        public static async Task IsValidReturnUrl_ValidReturnUrl_ReturnsFalse()
         {
             var mockInteractionService = new Mock<IIdentityServerInteractionService>();
             mockInteractionService.Setup(i => i.GetAuthorizationContextAsync(It.IsNotNull<string>()))
@@ -83,7 +84,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task GrantConsent_BadReturnUrl_ReturnsFailure()
+        public static async Task GrantConsent_BadReturnUrl_ReturnsFailure()
         {
             var service = new AgreementConsentService(
                 Mock.Of<IEventService>(),
@@ -96,7 +97,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task GrantConsent_ValidReturnUrl_GrantsExpectedConsent()
+        public static async Task GrantConsent_ValidReturnUrl_GrantsExpectedConsent()
         {
             AuthorizationRequest actualContext = null;
             ConsentResponse actualConsentResponse = null;
@@ -130,14 +131,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             await service.GrantConsent(new Uri("https://www.goodurl.co.uk/"), null);
 
-            mockInteractionService.Verify(grantConsent, Times.Once());
+            mockInteractionService.Verify(grantConsent);
 
             actualContext.Should().Be(expectedContext);
             actualConsentResponse.Should().BeEquivalentTo(new ConsentResponse { RememberConsent = true, ScopesConsented = expectedScopes });
         }
 
         [Test]
-        public async Task GrantConsent_ValidReturnUrl_RaisesConsentGrantedEvent()
+        public static async Task GrantConsent_ValidReturnUrl_RaisesConsentGrantedEvent()
         {
             const string subjectId = "SubjectId";
             const string clientId = "ClientId";
@@ -166,7 +167,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             await service.GrantConsent(new Uri("https://www.goodurl.co.uk/"), subjectId);
 
-            mockEventService.Verify(raise, Times.Once());
+            mockEventService.Verify(raise);
 
             actualEvent.Should().BeOfType<ConsentGrantedEvent>();
             actualEvent.Should().BeEquivalentTo(new ConsentGrantedEvent(
@@ -178,7 +179,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task GrantConsent_ValidReturnUrl_ReturnsSuccess()
+        public static async Task GrantConsent_ValidReturnUrl_ReturnsSuccess()
         {
             var mockInteractionService = new Mock<IIdentityServerInteractionService>();
             mockInteractionService.Setup(i => i.GetAuthorizationContextAsync(It.IsNotNull<string>()))
@@ -196,7 +197,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public void GrantConsent_NullReturnUrl_ThrowsException()
+        public static void GrantConsent_NullReturnUrl_ThrowsException()
         {
             var service = new AgreementConsentService(
                 Mock.Of<IEventService>(),

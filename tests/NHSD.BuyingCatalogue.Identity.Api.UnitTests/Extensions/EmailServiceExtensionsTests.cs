@@ -40,6 +40,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
         [Test]
         public static async Task SendEmailAsync_UsesMessageTemplate()
         {
+            // ReSharper disable once StringLiteralTypo
             const string subject = "Banitsa";
 
             var service = new MockEmailService();

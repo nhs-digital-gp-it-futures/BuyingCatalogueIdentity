@@ -12,10 +12,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class LoginServiceTests
+    internal static class LoginServiceTests
     {
         [Test]
-        public async Task SignInAsync_FailedSignIn_NullContext_ReturnsExpectedResult()
+        public static async Task SignInAsync_FailedSignIn_NullContext_ReturnsExpectedResult()
         {
             using var loginService = new LoginServiceBuilder()
                 .WithSignInResult(IdentitySignInResult.Failed)
@@ -29,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SignInAsync_FailedSignIn_WithContext_ReturnsExpectedResult()
+        public static async Task SignInAsync_FailedSignIn_WithContext_ReturnsExpectedResult()
         {
             const string loginHint = "Hint";
 
@@ -47,7 +47,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SignInAsync_FailedSignInWithContext_RaisesLoginFailureEvent()
+        public static async Task SignInAsync_FailedSignInWithContext_RaisesLoginFailureEvent()
         {
             const string clientId = "ClientId";
             const string username = "UncleBob@email.com";
@@ -78,7 +78,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SignInAsync_FailedSignInWithNullContext_RaisesLoginFailureEvent()
+        public static async Task SignInAsync_FailedSignInWithNullContext_RaisesLoginFailureEvent()
         {
             const string username = "UncleBob@email.com";
 
@@ -113,7 +113,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         [TestCase("User", null)]
         [TestCase("User", "")]
         [TestCase("User", "\t")]
-        public async Task SignInAsync_MissingCredentials_ReturnsExpectedResult(string username, string password)
+        public static async Task SignInAsync_MissingCredentials_ReturnsExpectedResult(string username, string password)
         {
             using var loginService = new LoginServiceBuilder().Build();
 
@@ -124,7 +124,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SignInAsync_SuccessfulSignIn_NullContext_ReturnsExpectedResult()
+        public static async Task SignInAsync_SuccessfulSignIn_NullContext_ReturnsExpectedResult()
         {
             using var loginService = new LoginServiceBuilder()
                 .WithSignInResult(IdentitySignInResult.Success)
@@ -139,7 +139,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SignInAsync_SuccessfulSignIn_WithContext_ReturnsExpectedResult()
+        public static async Task SignInAsync_SuccessfulSignIn_WithContext_ReturnsExpectedResult()
         {
             using var loginService = new LoginServiceBuilder()
                 .WithAuthorizationContextResult(new AuthorizationRequest())
@@ -155,7 +155,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SignInAsync_SuccessfulSignInWithContext_RaisesLoginSuccessEvent()
+        public static async Task SignInAsync_SuccessfulSignInWithContext_RaisesLoginSuccessEvent()
         {
             int eventCount = 0;
             UserLoginSuccessEvent raisedEvent = null;
@@ -193,7 +193,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task SignInAsync_SuccessfulSignInWithNullContext_RaisesLoginSuccessEvent()
+        public static async Task SignInAsync_SuccessfulSignInWithNullContext_RaisesLoginSuccessEvent()
         {
             int eventCount = 0;
             UserLoginSuccessEvent raisedEvent = null;

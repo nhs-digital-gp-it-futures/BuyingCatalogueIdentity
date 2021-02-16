@@ -5,53 +5,45 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     internal sealed class LoginViewModelBuilder
     {
-        private string _emailAddress;
-        private string _password;
-        private Uri _returnUrl;
-        private string _disabledError;
+        private string emailAddress;
+        private string password;
+        private Uri returnUrl;
 
         private LoginViewModelBuilder()
         {
-            _returnUrl = new Uri("https://postman-echo.com/get", UriKind.Absolute);
+            returnUrl = new Uri("https://postman-echo.com/get", UriKind.Absolute);
         }
 
         internal static LoginViewModelBuilder Create()
         {
-            return new LoginViewModelBuilder();
+            return new();
         }
 
-        internal LoginViewModelBuilder WithEmailAddress(string emailAddress)
+        internal LoginViewModelBuilder WithEmailAddress(string address)
         {
-            _emailAddress = emailAddress;
+            emailAddress = address;
             return this;
         }
 
-        internal LoginViewModelBuilder WithPassword(string password)
+        internal LoginViewModelBuilder WithPassword(string pass)
         {
-            _password = password;
+            password = pass;
             return this;
         }
 
-        internal LoginViewModelBuilder WithReturnUrl(Uri returnUrl)
+        internal LoginViewModelBuilder WithReturnUrl(Uri url)
         {
-            _returnUrl = returnUrl;
-            return this;
-        }        
-        
-        internal LoginViewModelBuilder WithDisabledError(string disabledError)
-        {
-            _disabledError = disabledError;
+            returnUrl = url;
             return this;
         }
 
         internal LoginViewModel Build()
         {
-            return new LoginViewModel
+            return new()
             {
-                EmailAddress = _emailAddress,
-                Password = _password,
-                ReturnUrl = _returnUrl,
-                DisabledError = _disabledError
+                EmailAddress = emailAddress,
+                Password = password,
+                ReturnUrl = returnUrl,
             };
         }
     }

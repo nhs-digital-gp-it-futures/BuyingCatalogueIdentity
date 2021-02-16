@@ -16,10 +16,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class ApplicationUserValidatorTests
+    internal static class ApplicationUserValidatorTests
     {
         [Test]
-        public async Task ValidateAsync_ValidApplicationUser_ReturnsSuccess()
+        public static async Task ValidateAsync_ValidApplicationUser_ReturnsSuccess()
         {
             var context = ApplicationUserValidatorTestContext.Setup();
             var sut = context.ApplicationUserValidator;
@@ -34,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
         }
 
         [TestCaseSource(typeof(TestContextTestCaseData), nameof(TestContextTestCaseData.InvalidFirstNameCases))]
-        public async Task ValidateAsync_WithFirstName_ReturnsFailure(string input, params string[] errorMessageIds)
+        public static async Task ValidateAsync_WithFirstName_ReturnsFailure(string input, params string[] errorMessageIds)
         {
             var context = ApplicationUserValidatorTestContext.Setup();
             var sut = context.ApplicationUserValidator;
@@ -51,7 +51,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
         }
 
         [TestCaseSource(typeof(TestContextTestCaseData), nameof(TestContextTestCaseData.InvalidLastNameCases))]
-        public async Task ValidateAsync_WithLastName_ReturnsFailure(string input, params string[] errorMessageIds)
+        public static async Task ValidateAsync_WithLastName_ReturnsFailure(string input, params string[] errorMessageIds)
         {
             var context = ApplicationUserValidatorTestContext.Setup();
             var sut = context.ApplicationUserValidator;
@@ -68,7 +68,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
         }
 
         [TestCaseSource(typeof(TestContextTestCaseData), nameof(TestContextTestCaseData.InvalidPhoneNumberCases))]
-        public async Task ValidateAsync_WithPhoneNumber_ReturnsFailure(string input, params string[] errorMessageIds)
+        public static async Task ValidateAsync_WithPhoneNumber_ReturnsFailure(string input, params string[] errorMessageIds)
         {
             var context = ApplicationUserValidatorTestContext.Setup();
             var sut = context.ApplicationUserValidator;
@@ -85,7 +85,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
         }
 
         [TestCaseSource(typeof(TestContextTestCaseData), nameof(TestContextTestCaseData.InvalidEmailTestCases))]
-        public async Task ValidateAsync_WithEmailAddress_ReturnsFailure(string input, string[] errorMessageIds)
+        public static async Task ValidateAsync_WithEmailAddress_ReturnsFailure(string input, string[] errorMessageIds)
         {
             var context = ApplicationUserValidatorTestContext.Setup();
             var sut = context.ApplicationUserValidator;
@@ -102,7 +102,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
         }
 
         [Test]
-        public async Task ValidateAsync_DuplicateEmailAddress_ReturnsFailure()
+        public static async Task ValidateAsync_DuplicateEmailAddress_ReturnsFailure()
         {
             const string duplicateEmailAddress = "duplicate@email.com";
 
@@ -121,12 +121,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
 
             var actual = await sut.ValidateAsync(user);
 
-            var expected = Result.Failure(new List<ErrorDetails> { new ErrorDetails("EmailAlreadyExists", "EmailAddress") });
+            var expected = Result.Failure(new List<ErrorDetails> { new("EmailAlreadyExists", "EmailAddress") });
             actual.Should().Be(expected);
         }
 
         [Test]
-        public void Constructor_NullUserRepository_ThrowsException()
+        public static void Constructor_NullUserRepository_ThrowsException()
         {
             static void Test()
             {
@@ -137,88 +137,84 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
         }
 
         [Test]
-        public void ValidateAsync_NullApplicationUser_ThrowsException()
+        public static void ValidateAsync_NullApplicationUser_ThrowsException()
         {
-            static async Task Test()
+            var context = ApplicationUserValidatorTestContext.Setup();
+            var sut = context.ApplicationUserValidator;
+
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await sut.ValidateAsync(null));
+        }
+
+        private sealed class TestContextTestCaseData
+        {
+            internal static IEnumerable<TestCaseData> InvalidFirstNameCases
             {
-                var context = ApplicationUserValidatorTestContext.Setup();
-                var sut = context.ApplicationUserValidator;
-                
-                await sut.ValidateAsync(null);
+                get
+                {
+                    yield return new TestCaseData(string.Empty, new[] { "FirstNameRequired" });
+                    yield return new TestCaseData("  ", new[] { "FirstNameRequired" });
+                    yield return new TestCaseData(new string('a', 101), new[] { "FirstNameTooLong" });
+                }
             }
 
-            Assert.ThrowsAsync<ArgumentNullException>(Test);
-        }
-    }
-
-    internal class TestContextTestCaseData
-    {
-        internal static IEnumerable<TestCaseData> InvalidFirstNameCases
-        {
-            get
+            internal static IEnumerable<TestCaseData> InvalidLastNameCases
             {
-                yield return new TestCaseData("", new[] { "FirstNameRequired" });
-                yield return new TestCaseData("  ", new[] { "FirstNameRequired" });
-                yield return new TestCaseData(new string('a', 101), new[] { "FirstNameTooLong" });
+                get
+                {
+                    yield return new TestCaseData(string.Empty, new[] { "LastNameRequired" });
+                    yield return new TestCaseData("  ", new[] { "LastNameRequired" });
+                    yield return new TestCaseData(new string('a', 101), new[] { "LastNameTooLong" });
+                }
+            }
+
+            internal static IEnumerable<TestCaseData> InvalidPhoneNumberCases
+            {
+                get
+                {
+                    yield return new TestCaseData(string.Empty, new[] { "PhoneNumberRequired" });
+                    yield return new TestCaseData("  ", new[] { "PhoneNumberRequired" });
+                    yield return new TestCaseData(new string('p', 36), new[] { "PhoneNumberTooLong" });
+                }
+            }
+
+            internal static IEnumerable<TestCaseData> InvalidEmailTestCases
+            {
+                get
+                {
+                    yield return new TestCaseData(string.Empty, new[] { "EmailRequired" });
+                    yield return new TestCaseData("  ", new[] { "EmailRequired" });
+                    yield return new TestCaseData($"a@{new string('b', 255)}", new[] { "EmailTooLong" });
+                    yield return new TestCaseData("test", new[] { "EmailInvalidFormat" });
+                    yield return new TestCaseData("test@", new[] { "EmailInvalidFormat" });
+                    yield return new TestCaseData("@test", new[] { "EmailInvalidFormat" });
+                    yield return new TestCaseData("@", new[] { "EmailInvalidFormat" });
+                    yield return new TestCaseData("bobsmith@test@com", new[] { "EmailInvalidFormat" });
+                }
             }
         }
 
-        internal static IEnumerable<TestCaseData> InvalidLastNameCases
+        private sealed class ApplicationUserValidatorTestContext
         {
-            get
+            private ApplicationUserValidatorTestContext()
             {
-                yield return new TestCaseData("", new[] { "LastNameRequired" });
-                yield return new TestCaseData("  ", new[] { "LastNameRequired" });
-                yield return new TestCaseData(new string('a', 101), new[] { "LastNameTooLong" });
-            }
-        }
+                UsersRepositoryMock = new Mock<IUsersRepository>();
+                UsersRepositoryMock
+                    .Setup(r => r.GetByEmailAsync(It.IsAny<string>()))
+                    .ReturnsAsync(() => ApplicationUserByEmail);
 
-        internal static IEnumerable<TestCaseData> InvalidPhoneNumberCases
-        {
-            get
+                ApplicationUserValidator = new ApplicationUserValidator(UsersRepositoryMock.Object);
+            }
+
+            internal ApplicationUserValidator ApplicationUserValidator { get; }
+
+            internal ApplicationUser ApplicationUserByEmail { get; set; }
+
+            private Mock<IUsersRepository> UsersRepositoryMock { get; }
+
+            public static ApplicationUserValidatorTestContext Setup()
             {
-                yield return new TestCaseData("", new[] { "PhoneNumberRequired" });
-                yield return new TestCaseData("  ", new[] { "PhoneNumberRequired" });
-                yield return new TestCaseData(new string('p', 36), new[] { "PhoneNumberTooLong" });
+                return new();
             }
-        }
-
-        internal static IEnumerable<TestCaseData> InvalidEmailTestCases
-        {
-            get
-            {
-                yield return new TestCaseData("", new[] { "EmailRequired" });
-                yield return new TestCaseData("  ", new[] { "EmailRequired" });
-                yield return new TestCaseData($"a@{new string('b', 255)}", new[] { "EmailTooLong" });
-                yield return new TestCaseData("test", new[] { "EmailInvalidFormat" });
-                yield return new TestCaseData("test@", new[] { "EmailInvalidFormat" });
-                yield return new TestCaseData("@test", new[] { "EmailInvalidFormat" });
-                yield return new TestCaseData("@", new[] { "EmailInvalidFormat" });
-                yield return new TestCaseData("bobsmith@test@com", new[] { "EmailInvalidFormat" });
-            }
-        }
-    }
-
-    internal sealed class ApplicationUserValidatorTestContext
-    {
-        private ApplicationUserValidatorTestContext()
-        {
-            UsersRepositoryMock = new Mock<IUsersRepository>();
-            UsersRepositoryMock.Setup(x => x.GetByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(() => ApplicationUserByEmail);
-
-            ApplicationUserValidator = new ApplicationUserValidator(UsersRepositoryMock.Object);
-        }
-
-        internal Mock<IUsersRepository> UsersRepositoryMock { get; set; }
-
-        internal ApplicationUserValidator ApplicationUserValidator { get; }
-
-        internal ApplicationUser ApplicationUserByEmail { get; set; }
-
-        public static ApplicationUserValidatorTestContext Setup()
-        {
-            return new ApplicationUserValidatorTestContext();
         }
     }
 }

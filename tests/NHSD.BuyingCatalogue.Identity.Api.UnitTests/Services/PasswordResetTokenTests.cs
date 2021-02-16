@@ -6,10 +6,11 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
-    internal sealed class PasswordResetTokenTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class PasswordResetTokenTests
     {
         [Test]
-        public void Constructor_String_ApplicationUser_InitializesExpectedMembers()
+        public static void Constructor_String_ApplicationUser_InitializesExpectedMembers()
         {
             const string expectedToken = "TokenToken";
             var expectedUser = ApplicationUserBuilder.Create().Build();

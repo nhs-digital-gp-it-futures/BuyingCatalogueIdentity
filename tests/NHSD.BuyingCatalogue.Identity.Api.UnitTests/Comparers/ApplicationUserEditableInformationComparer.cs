@@ -6,20 +6,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Comparers
 {
     internal sealed class ApplicationUserEditableInformationComparer : IEqualityComparer<ApplicationUser>
     {
-        private static readonly Lazy<ApplicationUserEditableInformationComparer> _instance =
-            new Lazy<ApplicationUserEditableInformationComparer>(() =>
-                new ApplicationUserEditableInformationComparer());
+        private static readonly Lazy<ApplicationUserEditableInformationComparer> ComparerInstance =
+            new(() => new ApplicationUserEditableInformationComparer());
+
+        private ApplicationUserEditableInformationComparer()
+        {
+        }
 
         public static ApplicationUserEditableInformationComparer Instance
         {
             get
             {
-                return _instance.Value;
+                return ComparerInstance.Value;
             }
-        }
-
-        private ApplicationUserEditableInformationComparer()
-        {
         }
 
         public bool Equals(ApplicationUser original, ApplicationUser comparison)
@@ -33,7 +32,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Comparers
             if (original.GetType() != comparison.GetType())
                 return false;
 
-            return string.Equals(original.FirstName, comparison.FirstName, StringComparison.Ordinal) 
+            return string.Equals(original.FirstName, comparison.FirstName, StringComparison.Ordinal)
                 && string.Equals(original.LastName, comparison.LastName, StringComparison.Ordinal)
                 && string.Equals(original.PhoneNumber, comparison.PhoneNumber, StringComparison.Ordinal)
                 && string.Equals(original.Email, comparison.Email, StringComparison.Ordinal)
@@ -49,12 +48,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Comparers
         public int GetHashCode(ApplicationUser obj)
         {
             return HashCode.Combine(
-                obj.FirstName, 
-                obj.LastName, 
-                obj.PhoneNumber, 
-                obj.Email, 
-                obj.PrimaryOrganisationId, 
-                obj.OrganisationFunction, 
+                obj.FirstName,
+                obj.LastName,
+                obj.PhoneNumber,
+                obj.Email,
+                obj.PrimaryOrganisationId,
+                obj.OrganisationFunction,
                 obj.Disabled,
                 obj.CatalogueAgreementSigned);
         }

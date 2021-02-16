@@ -9,7 +9,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.ViewModels
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class LoginViewModelTests
+    internal static class LoginViewModelTests
     {
         private const string Password = "Password";
         private const string EmailAddress = "test@email.com";
@@ -21,7 +21,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.ViewModels
         [TestCase(null, EmailAddress, LoginViewModel.ErrorMessages.PasswordRequired)]
         [TestCase(Password, NotAnEmailAddress, LoginViewModel.ErrorMessages.EmailAddressInvalid)]
         [TestCase(Password, EmailAddress)]
-        public void InvalidModel_HasExpectedValidationErrors(string password, string emailAddress, params string[] expectedErrors)
+        public static void InvalidModel_HasExpectedValidationErrors(string password, string emailAddress, params string[] expectedErrors)
         {
             var errors = new List<ValidationResult>();
             var model = new LoginViewModel { Password = password, EmailAddress = emailAddress };

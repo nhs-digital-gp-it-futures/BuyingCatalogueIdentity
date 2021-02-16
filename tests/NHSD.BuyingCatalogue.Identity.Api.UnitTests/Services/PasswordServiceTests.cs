@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
@@ -140,7 +139,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         {
             static async Task SendResetEmailAsync()
             {
-                var service = new PasswordService( 
+                var service = new PasswordService(
                     Mock.Of<IEmailService>(),
                     new PasswordResetSettings(),
                     MockUserManager.Object);
@@ -165,12 +164,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 ApplicationUserBuilder.Create().Build(),
                 new Uri("https://duckduckgo.com/"));
 
-            mockEmailService.Verify(e => e.SendEmailAsync(It.IsNotNull<EmailMessage>()), Times.Once());
+            mockEmailService.Verify(e => e.SendEmailAsync(It.IsNotNull<EmailMessage>()));
         }
 
         [Test]
         public static async Task SendResetEmailAsync_UsesExpectedTemplate()
         {
+            // ReSharper disable once StringLiteralTypo
             const string subject = "Gozleme";
 
             var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))
@@ -253,9 +253,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var expectedResult = new IdentityResult();
             var user = ApplicationUserBuilder.Create().Build();
             var mockUserManager = MockUserManager;
-            mockUserManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(user);
-            mockUserManager.Setup(x => x.ResetPasswordAsync(user, token, password)).ReturnsAsync(() => expectedResult);
+            mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+            mockUserManager.Setup(m => m.ResetPasswordAsync(user, token, password)).ReturnsAsync(() => expectedResult);
 
             var service = new PasswordService(
                 Mock.Of<IEmailService>(),
@@ -309,8 +308,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 It.Is<ApplicationUser>(u => u == expectedUser),
                 It.Is<string>(p => p.Equals(new IdentityOptions().Tokens.PasswordResetTokenProvider, StringComparison.Ordinal)),
                 It.Is<string>(p => p.Equals(UserManager<ApplicationUser>.ResetPasswordTokenPurpose, StringComparison.Ordinal)),
-                It.Is<string>(t => t.Equals(token, StringComparison.Ordinal))),
-                Times.Once());
+                It.Is<string>(t => t.Equals(token, StringComparison.Ordinal))));
         }
     }
 }

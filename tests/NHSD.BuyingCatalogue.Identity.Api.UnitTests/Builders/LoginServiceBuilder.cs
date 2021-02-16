@@ -13,25 +13,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     internal sealed class LoginServiceBuilder
     {
-        private IEventService _eventService;
-        private IIdentityServerInteractionService _identityServerInteractionService;
-        private SignInManager<ApplicationUser> _signInManager;
-        private UserManager<ApplicationUser> _userManager;
+        private IEventService eventService;
+        private IIdentityServerInteractionService identityServerInteractionService;
+        private SignInManager<ApplicationUser> signInManager;
+        private UserManager<ApplicationUser> userManager;
 
         internal LoginServiceBuilder()
         {
-            _eventService = Mock.Of<IEventService>();
-            _identityServerInteractionService = Mock.Of<IIdentityServerInteractionService>();
-            _userManager = CreateDefaultMockUserManager(ApplicationUserBuilder.Create().Build());
+            eventService = Mock.Of<IEventService>();
+            identityServerInteractionService = Mock.Of<IIdentityServerInteractionService>();
+            userManager = CreateDefaultMockUserManager(ApplicationUserBuilder.Create().Build());
         }
 
         internal LoginService Build()
         {
-            return new LoginService(
-                _eventService,
-                _identityServerInteractionService,
-                _signInManager,
-                _userManager);
+            return new(
+                eventService,
+                identityServerInteractionService,
+                signInManager,
+                userManager);
         }
 
         internal LoginServiceBuilder WithAuthorizationContextResult(
@@ -42,7 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 .Setup(i => i.GetAuthorizationContextAsync(It.IsAny<string>()))
                 .ReturnsAsync(getAuthorizationContextResult);
 
-            _identityServerInteractionService = mockInteractionService.Object;
+            identityServerInteractionService = mockInteractionService.Object;
 
             return this;
         }
@@ -51,23 +51,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             where T : Event
         {
             var mockEventService = new Mock<IEventService>();
-            mockEventService.Setup(e => e.RaiseAsync(It.IsNotNull<T>()))
-                .Callback<Event>(e => eventCallback(e as T));
+            mockEventService.Setup(e => e.RaiseAsync(It.IsNotNull<T>())).Callback<Event>(e => eventCallback(e as T));
 
-            _eventService = mockEventService.Object;
+            eventService = mockEventService.Object;
 
             return this;
         }
 
         internal LoginServiceBuilder WithFindUserResult(ApplicationUser findByNameResult = null)
         {
-            _userManager = CreateDefaultMockUserManager(findByNameResult);
+            userManager = CreateDefaultMockUserManager(findByNameResult);
             return this;
         }
 
         internal LoginServiceBuilder WithSignInResult(IdentitySignInResult signInResult)
         {
-            _signInManager = CreateDefaultMockSignInManager(signInResult);
+            signInManager = CreateDefaultMockSignInManager(signInResult);
             return this;
         }
 
@@ -83,6 +82,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
                 null,
                 null,
                 null);
+
             mockUserManager
                 .Setup(s => s.FindByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(findByNameResult);
@@ -93,7 +93,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         private SignInManager<ApplicationUser> CreateDefaultMockSignInManager(IdentitySignInResult signInResult)
         {
             var mockSignInManager = new Mock<SignInManager<ApplicationUser>>(
-                _userManager,
+                userManager,
                 Mock.Of<IHttpContextAccessor>(),
                 Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(),
                 null,
