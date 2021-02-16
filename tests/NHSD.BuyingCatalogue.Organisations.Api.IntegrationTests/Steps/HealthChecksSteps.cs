@@ -11,28 +11,28 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class HealthChecksSteps
     {
-        private readonly Response _response;
-        private readonly Request _request;
-        private readonly ScenarioContext _context;
+        private readonly Response response;
+        private readonly Request request;
+        private readonly ScenarioContext context;
 
         public HealthChecksSteps(Response response, Request request, ScenarioContext context, Config config)
         {
-            _response = response;
-            _request = request;
-            _context = context;
-            _context[ScenarioContextKeys.OrganisationsApiBaseUrl] = config.OrganisationsApiBaseUrl;
+            this.response = response;
+            this.request = request;
+            this.context = context;
+            this.context[ScenarioContextKeys.OrganisationsApiBaseUrl] = config.OrganisationsApiBaseUrl;
         }
 
         [When(@"the dependency health-check endpoint is hit")]
         public async Task WhenTheHealthCheckEndpointIsHit()
         {
-            await _request.GetAsync(_context.Get<Uri>(ScenarioContextKeys.OrganisationsApiBaseUrl), "health", "ready");
+            await request.GetAsync(context.Get<Uri>(ScenarioContextKeys.OrganisationsApiBaseUrl), "health", "ready");
         }
 
         [Then(@"the response will be (Healthy|Degraded|Unhealthy)")]
         public async Task ThenTheHealthStatusIs(string status)
         {
-            var healthStatus = await _response.Result.Content.ReadAsStringAsync();
+            var healthStatus = await response.Result.Content.ReadAsStringAsync();
             healthStatus.Should().Be(status);
         }
     }

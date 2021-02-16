@@ -8,13 +8,12 @@ namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support
     {
         private const string NullString = "NULL";
 
-        public bool CanRetrieve(KeyValuePair<string, string> keyValuePair, Type targetType, Type propertyType) 
-            => propertyType == typeof(string) && IsNullValueMatch(keyValuePair.Value);
+        public bool CanRetrieve(KeyValuePair<string, string> keyValuePair, Type targetType, Type propertyType) =>
+            propertyType == typeof(string) && IsNullValueMatch(keyValuePair.Value);
 
-        public object Retrieve(KeyValuePair<string, string> keyValuePair, Type targetType, Type propertyType) 
-            => null;
+        public object Retrieve(KeyValuePair<string, string> keyValuePair, Type targetType, Type propertyType) => null;
 
-        private static bool IsNullValueMatch(string value) 
-            => string.Equals(value?.Trim(), NullString, StringComparison.OrdinalIgnoreCase);
+        private static bool IsNullValueMatch(string value) =>
+            string.Equals(value?.Trim(), NullString, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -4,50 +4,51 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class AddressBuilder
     {
-        private string _line1;
-        private readonly string _line2;
-        private readonly string _line3;
-        private readonly string _line4;
-        private readonly string _town;
-        private readonly string _county;
-        private readonly string _postcode;
-        private readonly string _country;
-        
+        private readonly string line2;
+        private readonly string line3;
+        private readonly string line4;
+        private readonly string town;
+        private readonly string county;
+        private readonly string postcode;
+        private readonly string country;
+
+        private string line1;
+
         private AddressBuilder()
         {
-            _line1 = "Line1";
-            _line2 = "Line2";
-            _line3 = "Line3";
-            _line4 = "Line4";
-            _town = "Town";
-            _county = "County";
-            _postcode = "Postcode";
-            _country = "Country";
+            line1 = "Line1";
+            line2 = "Line2";
+            line3 = "Line3";
+            line4 = "Line4";
+            town = "Town";
+            county = "County";
+            postcode = "Postcode";
+            country = "Country";
         }
 
         internal static AddressBuilder Create()
         {
-            return new AddressBuilder();
+            return new();
         }
 
-        internal AddressBuilder WithLine1(string line1)
+        internal AddressBuilder WithLine1(string line)
         {
-            _line1 = line1;
+            line1 = line;
             return this;
         }
 
         internal Address Build()
         {
-            return new Address
+            return new()
             {
-                Line1 = _line1,
-                Line2 = _line2,
-                Line3 = _line3,
-                Line4 = _line4,
-                Town = _town,
-                County = _county,
-                Postcode = _postcode,
-                Country = _country
+                Line1 = line1,
+                Line2 = line2,
+                Line3 = line3,
+                Line4 = line4,
+                Town = town,
+                County = county,
+                Postcode = postcode,
+                Country = country,
             };
         }
     }

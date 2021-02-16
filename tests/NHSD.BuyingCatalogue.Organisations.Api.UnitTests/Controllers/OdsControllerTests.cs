@@ -38,8 +38,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithGetByOdsCode(nonBuyerOrganisation)
                 .Build();
 
+            // ReSharper disable StringLiteralTypo
             var response = await controller.GetByOdsCodeAsync("dolor eternum");
 
+            // ReSharper restore StringLiteralTypo
             response.Should().BeOfType<StatusCodeResult>();
 
             response.Should().BeEquivalentTo(new StatusCodeResult(StatusCodes.Status406NotAcceptable));
@@ -58,10 +60,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             var response = await controller.GetByOdsCodeAsync(buyerOrganisation.OdsCode);
 
             response.Should().BeOfType<OkObjectResult>();
-
-            var result = response as OkObjectResult;
-
-            result.Value.Should().BeEquivalentTo(
+            response.As<OkObjectResult>().Value.Should().BeEquivalentTo(
                 buyerOrganisation,
                 options => options.Excluding(o => o.IsActive).Excluding(o => o.IsBuyerOrganisation));
         }
@@ -81,7 +80,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             await controller.GetByOdsCodeAsync(odsCode);
 
-            odsRepositoryMock.Verify(x => x.GetBuyerOrganisationByOdsCodeAsync(odsCode));
+            odsRepositoryMock.Verify(r => r.GetBuyerOrganisationByOdsCodeAsync(odsCode));
         }
     }
 }

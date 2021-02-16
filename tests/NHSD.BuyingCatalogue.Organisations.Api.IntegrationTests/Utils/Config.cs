@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Utils
 {
-    public sealed class Config
+    internal sealed class Config
     {
         public Config(IConfiguration config)
         {

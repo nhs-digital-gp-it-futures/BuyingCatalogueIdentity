@@ -4,35 +4,23 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class ServiceRecipientBuilder
     {
-        private string _name;
-        private string _odsCode;
+        private readonly string name;
+        private readonly string odsCode;
 
         private ServiceRecipientBuilder(int index)
         {
-            _name = $"Service {index}";
-            _odsCode = $"ODS {index}";
+            name = $"Service {index}";
+            odsCode = $"ODS {index}";
         }
 
         internal static ServiceRecipientBuilder Create(int index)
         {
-            return new ServiceRecipientBuilder(index);
-        }
-
-        internal ServiceRecipientBuilder WithName(string name)
-        {
-            _name = name;
-            return this;
-        }
-
-        internal ServiceRecipientBuilder WithOdsCode(string odsCode)
-        {
-            _odsCode = odsCode;
-            return this;
+            return new(index);
         }
 
         internal ServiceRecipient Build()
         {
-            return new ServiceRecipient { Name = _name, OrgId = _odsCode };
+            return new() { Name = name, OrgId = odsCode };
         }
     }
 }

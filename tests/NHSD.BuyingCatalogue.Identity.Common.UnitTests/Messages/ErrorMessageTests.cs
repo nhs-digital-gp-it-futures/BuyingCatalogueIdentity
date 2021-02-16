@@ -7,10 +7,10 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Messages
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class ErrorMessageTests
+    internal static class ErrorMessageTests
     {
         [Test]
-        public void Constructor_String_InitializesCorrectly()
+        public static void Constructor_String_InitializesCorrectly()
         {
             const string expectedId = "ErrorMessageId";
 
@@ -21,7 +21,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Messages
         }
 
         [Test]
-        public void Constructor_String_String_InitializesCorrectly()
+        public static void Constructor_String_String_InitializesCorrectly()
         {
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
@@ -33,18 +33,13 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Messages
         }
 
         [Test]
-        public void Constructor_NullId_ThrowsException()
+        public static void Constructor_NullId_ThrowsException()
         {
-            static void CreateError()
-            {
-                _ = new ErrorDetails(null);
-            }
-
-            Assert.Throws<ArgumentNullException>(CreateError);
+            Assert.Throws<ArgumentNullException>(() => _ = new ErrorDetails(null!));
         }
 
         [Test]
-        public void TwoErrorsWithSameProperties_AreEqual()
+        public static void TwoErrorsWithSameProperties_AreEqual()
         {
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
@@ -58,13 +53,13 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Messages
         }
 
         [Test]
-        public void TwoErrorsDifferentFieldValues_AreNotEqual()
+        public static void TwoErrorsDifferentFieldValues_AreNotEqual()
         {
             const string expectedId = "ErrorMessageId";
             const string expectedField = "ErrorMessageId";
 
             var first = new ErrorDetails(expectedId, expectedField);
-            var second = new ErrorDetails(expectedId, null);
+            var second = new ErrorDetails(expectedId);
 
             var actual = first.Equals(second);
 
