@@ -1,6 +1,9 @@
-<Project Sdk="MSBuild.Sdk.SqlProj/1.11.1">
+﻿<Project Sdk="MSBuild.Sdk.SqlProj/1.11.1">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <SqlServerVersion>SqlAzure</SqlServerVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
 </Project>

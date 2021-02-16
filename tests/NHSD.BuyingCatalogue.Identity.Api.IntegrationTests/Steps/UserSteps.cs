@@ -17,8 +17,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class UserSteps
     {
-        private readonly string _identityOrganisationsUrl;
-        private readonly string _identityUsersUrl;
+        private readonly Uri _identityOrganisationsUrl;
+        private readonly Uri _identityUsersUrl;
 
         private readonly ScenarioContext _context;
         private readonly Response _response;
@@ -31,8 +31,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             _response = response;
             _request = request;
             _settings = settings;
-            _identityOrganisationsUrl = settings.IdentityApiBaseUrl + "/api/v1/Organisations";
-            _identityUsersUrl = settings.IdentityApiBaseUrl + "/api/v1/users";
+            _identityOrganisationsUrl = new Uri(settings.IdentityApiBaseUrl, "api/v1/Organisations");
+            _identityUsersUrl = new Uri(settings.IdentityApiBaseUrl, "api/v1/users");
         }
 
         [Given(@"Users exist")]
@@ -228,7 +228,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
 
             public string PhoneNumber { get; set; } = "01234567890";
 
-            public bool Disabled { get; set; } = false;
+            public bool Disabled { get; set; }
 
             public string Id { get; set; }
 

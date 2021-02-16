@@ -11,8 +11,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     {
         private readonly SeleniumContext _context;
 
-        private readonly string _sampleMvcBaseUrl;
-        private readonly string _identityApiBaseUrl;
+        private readonly Uri _sampleMvcBaseUrl;
+        private readonly Uri _identityApiBaseUrl;
 
         public LoginSteps(SeleniumContext context, Settings settings)
         {
@@ -25,7 +25,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"the user navigates to a restricted web page")]
         public void WhenTheUserNavigatesToARestrictedPage()
         {
-            _context.WebDriver.Navigate().GoToUrl($"{_sampleMvcBaseUrl}/home/privacy");
+            _context.WebDriver.Navigate().GoToUrl(new Uri(_sampleMvcBaseUrl, "/home/privacy"));
         }
 
         [When(@"the redirect URL is modified to be invalid")]
@@ -95,13 +95,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [Then(@"the user is logged out")]
         public void ThenUserIsLoggedOut()
         {
-            _context.WebDriver.Url.Should().BeEquivalentTo($"{_sampleMvcBaseUrl}/");
+            _context.WebDriver.Url.Should().BeEquivalentTo($"{_sampleMvcBaseUrl}");
         }
 
         [Given(@"the user navigates directly to the login page")]
         public void GivenTheUserNavigatesToTheLoginPage()
         {
-            _context.WebDriver.Navigate().GoToUrl($"{_identityApiBaseUrl}/Account/Login");
+            _context.WebDriver.Navigate().GoToUrl(new Uri(_identityApiBaseUrl, "Account/Login"));
         }
     }
 }

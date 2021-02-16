@@ -18,6 +18,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(string errorId)
         {
             var message = await _interactionService.GetErrorContextAsync(errorId);
@@ -25,6 +26,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 message.ClientId,
                 message.Error,
                 message.ErrorDescription);
+
             return View("Error");
         }
     }

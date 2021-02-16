@@ -7,6 +7,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
     internal sealed class StepArgumentTransformations
     {
         [StepArgumentTransformation]
-        internal static string ParseNewLineString(string value) => value.Replace(@"\n", Environment.NewLine);
+        internal static string ParseNewLineString(string value) => value.Replace(
+            @"\n",
+            Environment.NewLine,
+            StringComparison.Ordinal);
     }
 }

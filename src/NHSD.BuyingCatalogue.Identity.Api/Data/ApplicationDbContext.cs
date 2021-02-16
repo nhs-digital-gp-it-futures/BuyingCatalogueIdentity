@@ -17,14 +17,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Data
 
         public DbSet<Organisation> Organisations { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            if (modelBuilder is null)
-                throw new ArgumentNullException(nameof(modelBuilder));
+            if (builder is null)
+                throw new ArgumentNullException(nameof(builder));
 
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.ApplyConfiguration(new ApplicationUserEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ApplicationUserEntityTypeConfiguration());
         }
     }
 }

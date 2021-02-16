@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using IdentityServer4.Stores;
@@ -32,8 +31,6 @@ using Serilog;
 
 namespace NHSD.BuyingCatalogue.Identity.Api
 {
-    [SuppressMessage("Performance", "CA1822:Mark members as static",
-        Justification = "ASP.net needs this to not be static")]
     public sealed class Startup
     {
         private readonly IConfiguration _configuration;
@@ -187,6 +184,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             services.AddControllersWithViews();
 
             services.AddDataProtection(dataProtectionAppName, certificate);
+
+            if (_environment.IsDevelopment())
+                services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -215,7 +215,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api
             {
                 IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
                 app.UseSwaggerDocumentation();
             }
             else

@@ -1,8 +1,8 @@
 variables:
   - name: dockerVersion
-    value: '19.03.5'
+    value: '20.10.3'
   - name: dotnetVersion
-    value: '3.x'
+    value: '5.0.x'
   - name: MSBUILDSINGLELOADCONTEXT
     value: '1'
   - group: dev-acr-secrets
@@ -22,7 +22,7 @@ jobs:
   - task: UseGitVersion@5
     displayName: gitversion
     inputs:
-      versionSpec: '5.0.1'
+      versionSpec: '5.x'
   - script: echo "##vso[task.setvariable variable=semVer;isOutput=true]$(GitVersion.SemVer)"
     name: setVersionStep
   - script: echo semVer $(setVersionStep.semVer)
@@ -87,11 +87,27 @@ jobs:
     displayName: 'Docker up'
 
   - task: DotNetCoreCLI@2
+    displayName: 'Run dotnet restore'
+    inputs:
+      command: restore
+      projects: '**/*Tests.csproj'
+      feedsToUse: config
+      nugetConfigPath: 'NuGet.config'
+      arguments: '-v n'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run dotnet build'
+    inputs:
+      command: build
+      projects: '**/*Tests.csproj'
+      arguments: '--no-restore'
+
+  - task: DotNetCoreCLI@2
     displayName: 'Run unit tests'
     inputs:
       command: test
       projects: '**/*UnitTests.csproj'
-      arguments: '-v n  --collect "Code coverage"'
+      arguments: '-v n --no-build --collect "Code coverage"'
 
   - task: Bash@3
     displayName: 'Wait until APIs are ready'
@@ -119,13 +135,13 @@ jobs:
 
   - script: curl https://host.docker.internal:9072/home -v
     displayName: 'Assert host is able to resolve host.docker.internal'
-    
+
   - task: DotNetCoreCLI@2
     displayName: 'Run Integration tests'
     inputs:
       command: test
       projects: '**/*IntegrationTests.csproj'
-      arguments: '-v n'
+      arguments: '-v n --no-build'
   
   - script: docker-compose logs
     displayName: 'Docker Logs'

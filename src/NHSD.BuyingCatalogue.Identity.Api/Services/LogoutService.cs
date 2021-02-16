@@ -40,7 +40,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
 
-            if (logoutRequest is object)
+            if (logoutRequest is not null)
             {
                 await _eventService.RaiseAsync(new UserLogoutSuccessEvent(logoutRequest.SubjectId, logoutRequest.ClientName));
             }

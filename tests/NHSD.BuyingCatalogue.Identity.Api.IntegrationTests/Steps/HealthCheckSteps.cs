@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
@@ -33,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"the dependency health-check endpoint is hit")]
         public async Task WhenTheHealthCheckEndpointIsHit()
         {
-            await _request.GetAsync(_context.Get<string>(ScenarioContextKeys.IdentityApiBaseUrl), "health", "ready");
+            await _request.GetAsync(_context.Get<Uri>(ScenarioContextKeys.IdentityApiBaseUrl), "health", "ready");
         }
 
         [Then(@"the response will be (Healthy|Degraded|Unhealthy)")]

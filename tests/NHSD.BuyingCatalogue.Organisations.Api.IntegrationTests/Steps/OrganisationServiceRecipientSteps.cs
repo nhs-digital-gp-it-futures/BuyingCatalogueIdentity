@@ -19,19 +19,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private readonly Response _response;
         private readonly Request _request;
 
-        private readonly string _organisationServiceRecipientUrl;
+        private readonly Uri organisationsUrl;
 
         public OrganisationServiceRecipientSteps(
             ScenarioContext context,
             Response response,
             Request request,
-            Settings settings)
+            Config config)
         {
             _context = context;
             _response = response;
             _request = request;
-            _organisationServiceRecipientUrl =
-                settings.OrganisationsApiBaseUrl + "/api/v1/Organisations/{0}/service-recipients";
+            organisationsUrl = new Uri(config.OrganisationsApiBaseUrl, "api/v1/Organisations/");
         }
 
         [When(@"the user makes a request to retrieve the service recipients with an organisation name (.*)")]
@@ -39,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             var organisationId = GetOrganisationIdFromName(organisationName);
 
-            await _request.GetAsync(string.Format(_organisationServiceRecipientUrl, organisationId));
+            await _request.GetAsync(new Uri(organisationsUrl, $"{organisationId}/service-recipients"));
         }
 
         [Then(@"The organisation service recipient is returned with the following values")]
@@ -54,7 +53,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
         private static ServiceRecipientsTable CreateServiceRecipients(JToken token)
         {
-            return new ServiceRecipientsTable
+            return new()
             {
                 Name = token.SelectToken("name").ToString(),
                 OdsCode = token.SelectToken("odsCode").ToString()
@@ -70,6 +69,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private sealed class ServiceRecipientsTable
         {
             public string Name { get; set; }
+
             public string OdsCode { get; set; }
         }
     }

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using IdentityModel.Client;
-using Newtonsoft.Json.Linq;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
 {
-    public sealed class Program
+    public static class Program
     {
         private static async Task Main()
         {
-            // discover endpoints from metadata
-            var client = new HttpClient();
+            // Discover endpoints from metadata
+            using var client = new HttpClient();
 
             var discoveryDocument = await client.GetDiscoveryDocumentAsync("http://localhost:8070");
             if (discoveryDocument.IsError)
@@ -20,16 +20,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
                 return;
             }
 
-            // request token
-            TokenResponse tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            // Request token
+            using var passwordTokenRequest = new PasswordTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
                 ClientId = "PasswordClient",
                 ClientSecret = "PasswordSecret",
                 UserName = "Bobsmith@email.com",
                 Password = "Pass123$",
-                Scope = "Organisation"
-            });
+                Scope = "Organisation",
+            };
+
+            TokenResponse tokenResponse = await client.RequestPasswordTokenAsync(passwordTokenRequest);
 
             if (tokenResponse.IsError)
             {
@@ -40,11 +42,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
-            // call api
-            var apiClient = new HttpClient();
+            // Call API
+            using var apiClient = new HttpClient();
             apiClient.SetBearerToken(tokenResponse.AccessToken);
 
-            var response = await apiClient.GetAsync("http://localhost:8071/Identity");
+            var response = await apiClient.GetAsync(new Uri("http://localhost:8071/Identity"));
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine(response.StatusCode);
@@ -52,7 +54,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             else
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(JArray.Parse(content));
+                Console.WriteLine(JsonDocument.Parse(content));
             }
         }
     }

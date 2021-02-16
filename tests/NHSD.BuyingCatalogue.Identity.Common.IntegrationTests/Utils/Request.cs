@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
@@ -17,16 +18,16 @@ namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
             _context = context;
         }
 
-        public async Task GetAsync(string url, params object[] pathSegments)
-            => _response.Result = await CreateCommonRequest(url, pathSegments).GetAsync();
+        public async Task GetAsync(Uri url, params object[] pathSegments)
+            => _response.Result = (await CreateCommonRequest(url, pathSegments).GetAsync()).ResponseMessage;
 
-        public async Task PostJsonAsync(string url, object payload, params object[] pathSegments)
-            => _response.Result = await CreateCommonRequest(url, pathSegments).PostJsonAsync(payload);
+        public async Task PostJsonAsync(Uri url, object payload, params object[] pathSegments)
+            => _response.Result = (await CreateCommonRequest(url, pathSegments).PostJsonAsync(payload)).ResponseMessage;
 
-        public async Task PutJsonAsync(string url, object payload, params object[] pathSegments)
-            => _response.Result = await CreateCommonRequest(url, pathSegments).PutJsonAsync(payload);
+        public async Task PutJsonAsync(Uri url, object payload, params object[] pathSegments)
+            => _response.Result = (await CreateCommonRequest(url, pathSegments).PutJsonAsync(payload)).ResponseMessage;
 
-        private IFlurlRequest CreateCommonRequest(string url, params object[] pathSegments)
+        private IFlurlRequest CreateCommonRequest(Uri url, params object[] pathSegments)
         {
             return url
                 .AppendPathSegments(pathSegments)

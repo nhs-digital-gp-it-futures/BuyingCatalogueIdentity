@@ -8,24 +8,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class DatabaseSteps
     {
-        private readonly Settings _settings;
+        private readonly Config _config;
 
-        public DatabaseSteps(Settings settings)
+        public DatabaseSteps(Config config)
         {
-            _settings = settings;
+            _config = config;
         }
 
         [Given(@"the call to the database will fail")]
         public async Task GivenTheCallToTheDatabaseWillFail()
         {
-            await IntegrationDatabase.RemoveReadRoleAsync(_settings.AdminConnectionString);
-            await IntegrationDatabase.RemoveWriteRoleAsync(_settings.AdminConnectionString);
+            await IntegrationDatabase.RemoveReadRoleAsync(_config.AdminConnectionString);
+            await IntegrationDatabase.RemoveWriteRoleAsync(_config.AdminConnectionString);
         }
 
         [Given(@"The Database Server is down")]
         public async Task GivenTheDatabaseServerIsDown()
         {
-            await IntegrationDatabase.DenyAccessForNhsdUser(_settings.AdminConnectionString);
+            await IntegrationDatabase.DenyAccessForNhsdUser(_config.AdminConnectionString);
         }
     }
 }

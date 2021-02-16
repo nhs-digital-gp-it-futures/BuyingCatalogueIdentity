@@ -18,7 +18,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
     [Produces("application/json")]
     [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme,
         Policy = PolicyName.CanAccessOrganisationUsers)]
-    public sealed class UsersController : Controller
+    public sealed class UsersController : ControllerBase
     {
         private readonly ICreateBuyerService _createBuyerService;
         private readonly IUsersRepository _usersRepository;

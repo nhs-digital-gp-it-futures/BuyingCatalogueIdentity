@@ -18,14 +18,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private readonly Request _request;
         private readonly OdsApiSteps _api;
 
-        private readonly string _organisationUrl;
+        private readonly Uri _organisationUrl;
 
-        public OdsOrganisationSteps(Response response, Request request, Settings settings, OdsApiSteps api)
+        public OdsOrganisationSteps(Response response, Request request, Config config, OdsApiSteps api)
         {
             _response = response;
             _request = request;
             _api = api;
-            _organisationUrl = settings.OrganisationsApiBaseUrl + "/api/v1/ods";
+            _organisationUrl = new Uri(config.OrganisationsApiBaseUrl, "api/v1/ods");
         }
 
         [Given(@"Ods Organisations exist")]
@@ -41,13 +41,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             }
         }
 
-        [Given(@"Ods Child Organisations exist for organisation (.*)")]
-        public async Task GivenChildOrganisationsExist(string odsCode, Table table)
+        [Given(@"Ods Child Organisations exist for organisation .*")]
+        public async Task GivenChildOrganisationsExist(Table table)
         {
             var odsOrganisations = table.CreateSet<OdsApiResponseTable>().Select(TransformIntoOdsApiChildFormat);
             var odsResponse = new { Organisations = odsOrganisations };
             var odsApiOrganisationAsJson = JsonConvert.SerializeObject(odsResponse);
-            await _api.SetUpGETChildrenEndpoint(odsCode, odsApiOrganisationAsJson);
+            await _api.SetUpGETChildrenEndpoint(odsApiOrganisationAsJson);
         }
 
         [When(@"a GET request is made for an Ods organisation with code (.*)")]
@@ -137,38 +137,61 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private class OdsApiChildResponseTable
         {
             public string Name { get; set; }
+
             public string OdsCode { get; set; }
+
             public string PrimaryRoleId { get; set; }
         }
 
         private class OdsApiResponseTable
         {
             public string Name { get; set; }
+
             public string OdsCode { get; set; }
+
             public string PrimaryRoleId { get; set; }
+
             public string Status { get; set; }
+
             public string AddrLn1 { get; set; }
+
             public string AddrLn2 { get; set; }
+
             public string AddrLn3 { get; set; }
+
             public string AddrLn4 { get; set; }
+
             public string Town { get; set; }
+
             public string County { get; set; }
+
             public string PostCode { get; set; }
+
             public string Country { get; set; }
         }
 
         private class OrganisationTable
         {
             public string OdsCode { get; set; }
+
             public string OrganisationName { get; set; }
+
             public string PrimaryRoleId { get; set; }
+
             public string Line1 { get; set; }
+
             public string Line2 { get; set; }
+
             public string Line3 { get; set; }
+
             public string Line4 { get; set; }
+
             public string Town { get; set; }
+
             public string County { get; set; }
+
             public string PostCode { get; set; }
+
             public string Country { get; set; }
         }
     }

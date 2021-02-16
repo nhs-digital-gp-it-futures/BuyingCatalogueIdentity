@@ -12,7 +12,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
 
         public DataProtectionKey(XElement key)
         {
-            Element = key;
+            Element = key ?? throw new ArgumentNullException(nameof(key));
             Id = key.Attribute("id")?.Value;
             FriendlyName = $"key-{Id}";
             Xml = key.ToString(SaveOptions.DisableFormatting);

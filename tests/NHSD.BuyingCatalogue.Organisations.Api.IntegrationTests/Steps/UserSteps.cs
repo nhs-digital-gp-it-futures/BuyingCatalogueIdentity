@@ -14,12 +14,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     internal sealed class UserSteps
     {
         private readonly ScenarioContext _context;
-        private readonly Settings _settings;
+        private readonly Config _config;
 
-        public UserSteps(ScenarioContext context, Settings settings)
+        public UserSteps(ScenarioContext context, Config config)
         {
             _context = context;
-            _settings = settings;
+            _config = config;
         }
 
         [Given(@"Users exist")]
@@ -43,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     CatalogueAgreementSigned = user.CatalogueAgreementSigned,
                 };
                 userEntity.PasswordHash = new PasswordHasher<UserEntity>().HashPassword(userEntity, user.Password);
-                await userEntity.InsertAsync(_settings.ConnectionString);
+                await userEntity.InsertAsync(_config.ConnectionString);
             }
         }
 
@@ -65,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
             public string PhoneNumber { get; set; } = "01234567890";
 
-            public bool Disabled { get; set; } = false;
+            public bool Disabled { get; set; }
 
             public string Id { get; set; }
 

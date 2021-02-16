@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
@@ -14,18 +15,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private readonly Request _request;
         private readonly ScenarioContext _context;
 
-        public HealthChecksSteps(Response response, Request request, ScenarioContext context, Settings settings)
+        public HealthChecksSteps(Response response, Request request, ScenarioContext context, Config config)
         {
             _response = response;
             _request = request;
             _context = context;
-            _context[ScenarioContextKeys.OrganisationsApiBaseUrl] = settings.OrganisationsApiBaseUrl;
+            _context[ScenarioContextKeys.OrganisationsApiBaseUrl] = config.OrganisationsApiBaseUrl;
         }
 
         [When(@"the dependency health-check endpoint is hit")]
         public async Task WhenTheHealthCheckEndpointIsHit()
         {
-            await _request.GetAsync(_context.Get<string>(ScenarioContextKeys.OrganisationsApiBaseUrl), "health", "ready");
+            await _request.GetAsync(_context.Get<Uri>(ScenarioContextKeys.OrganisationsApiBaseUrl), "health", "ready");
         }
 
         [Then(@"the response will be (Healthy|Degraded|Unhealthy)")]
