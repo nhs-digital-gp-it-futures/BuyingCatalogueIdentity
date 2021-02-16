@@ -16,13 +16,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     internal sealed class AuthorisedSteps
     {
         private readonly ScenarioContext _context;
-        private IConfiguration _configuration { get; }
 
         public AuthorisedSteps(IConfiguration configuration, ScenarioContext context)
         {
             _configuration = configuration;
             _context = context;
         }
+
+        private IConfiguration _configuration { get; }
 
         [Given(@"a user is logged in")]
         public async Task GivenAnUserIsLoggedInWithUsernameAndPassword(Table table)
@@ -31,12 +32,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
             using var client = new HttpClient();
 
-            var discoveryDocument =
-                await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
-                {
-                    Policy = new DiscoveryPolicy { RequireHttps = false },
-                    Address = discoveryAddress,
-                });
+            using var discoveryDocumentRequest = new DiscoveryDocumentRequest
+            {
+                Policy = new DiscoveryPolicy { RequireHttps = false },
+                Address = discoveryAddress,
+            };
+
+            var discoveryDocument = await client.GetDiscoveryDocumentAsync(discoveryDocumentRequest);
 
             if (discoveryDocument.IsError)
             {
@@ -46,15 +48,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
             var user = table.CreateSet<UserTable>().First();
 
-            TokenResponse tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            using var passwordTokenRequest = new PasswordTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
                 ClientId = "PasswordClient",
                 ClientSecret = "PasswordSecret",
                 UserName = user.Username,
                 Password = user.Password,
-                Scope = user.Scope
-            });
+                Scope = user.Scope,
+            };
+
+            TokenResponse tokenResponse = await client.RequestPasswordTokenAsync(passwordTokenRequest);
 
             if (tokenResponse.IsError)
             {
@@ -84,7 +88,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private sealed class UserTable
         {
             public string Username { get; set; }
+
             public string Password { get; set; }
+
             public string Scope { get; set; }
         }
     }

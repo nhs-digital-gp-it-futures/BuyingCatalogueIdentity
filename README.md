@@ -6,19 +6,19 @@
 
 ### Requirements
 
-- .NET Core Version 3.1
+- .NET Version 5.0
 - Docker
-- Nodejs Version 12.16.1
+- node.js Version 14
 
-> Before you begin please install **.NET Core 3.1**, **Nodejs 12.16.1** & **Docker** on your machine.
+> Before you begin please install **.NET 5.0**, **node.js 14** & **Docker** on your machine.
 
 ## Overview
 
-This application uses **.NET core** to provide an identity service currently implemented with IdentityServer 4 wrapping ASP.NET Identity. It is used to provide token-based authentication and API access control in the associated Buying Catalogue services.
+This application uses **.NET 5** to provide an identity service currently implemented with IdentityServer 4 wrapping ASP.NET Identity. It is used to provide token-based authentication and API access control in the associated Buying Catalogue services.
 
 ### Project structure
 
-This repository uses **.NET Core**, **Nodejs** and **Docker**.
+This repository uses **.NET 5**, **node.js** and **Docker**.
 
 It contains the following endpoints:
 

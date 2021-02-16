@@ -16,7 +16,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         internal const string InvalidTokenCode = "InvalidToken";
 
         private readonly IEmailService _emailService;
-        private readonly IdentityOptions _identityOptions = new IdentityOptions();
+        private readonly IdentityOptions _identityOptions = new();
         private readonly PasswordResetSettings _settings;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -52,9 +52,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// <exception cref="ArgumentException"><paramref name="emailAddress"/> is empty or white space.</exception>
         public async Task<PasswordResetToken> GeneratePasswordResetTokenAsync(string emailAddress)
         {
-            if (emailAddress is null)
-                throw new ArgumentNullException(nameof(emailAddress));
-
             if (string.IsNullOrWhiteSpace(emailAddress))
                 throw new ArgumentException($"{nameof(emailAddress)} must be provided", nameof(emailAddress));
 

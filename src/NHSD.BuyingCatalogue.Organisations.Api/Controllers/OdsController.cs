@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +25,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         [Route("{odsCode}")]
         public async Task<ActionResult> GetByOdsCodeAsync(string odsCode)
         {
-            if (odsCode is null)
-                throw new ArgumentNullException(nameof(odsCode));
-
             if (string.IsNullOrWhiteSpace(odsCode))
                 return NotFound();
 

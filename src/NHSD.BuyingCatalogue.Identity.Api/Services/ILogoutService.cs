@@ -7,6 +7,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     {
         Task<LogoutRequest> GetLogoutRequestAsync(string logoutId);
 
-        Task SignOutAsync(LogoutRequest logoutViewModel);
+        Task SignOutAsync(LogoutRequest logoutRequest);
     }
 }

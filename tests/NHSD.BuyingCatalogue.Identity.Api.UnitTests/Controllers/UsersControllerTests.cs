@@ -28,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             var context = UsersControllerTestContext.Setup();
 
-            using var controller = context.Controller;
+            var controller = context.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty);
             result.Should().BeOfType<OkObjectResult>();
@@ -40,7 +40,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             var context = UsersControllerTestContext.Setup();
 
-            using var controller = context.Controller;
+            var controller = context.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
             var users = result.Value as GetAllOrganisationUsersModel;
@@ -60,7 +60,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             var context = UsersControllerTestContext.Setup();
             context.Users = users.Select(x => x.RepoUser);
 
-            using var controller = context.Controller;
+            var controller = context.Controller;
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
             var viewModel = result.Value as GetAllOrganisationUsersModel;
@@ -73,7 +73,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             var context = UsersControllerTestContext.Setup();
 
-            using var controller = context.Controller;
+            var controller = context.Controller;
 
             await controller.GetUsersByOrganisationId(Guid.Empty);
 
@@ -88,7 +88,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             var context = UsersControllerTestContext.Setup();
             context.CreateBuyerResult = Result.Success(newUserId);
 
-            using var controller = context.Controller;
+            var controller = context.Controller;
 
             var response = await controller.CreateBuyerAsync(Guid.Empty, new CreateBuyerRequestModel());
 
@@ -109,7 +109,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         {
             var context = UsersControllerTestContext.Setup();
 
-            using var controller = context.Controller;
+            var controller = context.Controller;
 
             var organisationId = Guid.NewGuid();
             var createUserRequestViewModel = new CreateBuyerRequestModel
@@ -163,11 +163,137 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             async Task<ActionResult<CreateBuyerResponseModel>> CreateUser()
             {
-                using var controller = context.Controller;
+                var controller = context.Controller;
                 return await controller.CreateBuyerAsync(Guid.Empty, null);
             }
 
             Assert.ThrowsAsync<ArgumentNullException>(CreateUser);
+        }
+
+        [Test]
+        public async Task GetUserById_WithExistingUserId_ReturnsTheUser()
+        {
+            var context = UsersControllerTestContext.Setup();
+            context.User = ApplicationUserBuilder.Create().Build();
+
+            var expected = new GetUserModel
+            {
+                Name = context.User.FirstName + " " + context.User.LastName,
+                PhoneNumber = context.User.PhoneNumber,
+                EmailAddress = context.User.Email,
+                Disabled = context.User.Disabled,
+                PrimaryOrganisationId = context.User.PrimaryOrganisationId
+            };
+
+            var controller = context.Controller;
+
+            var result = await controller.GetUserByIdAsync(context.User.Id);
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var objectResult = result.Result as OkObjectResult;
+            objectResult.Value.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public async Task GetUserById_NoExistingUserId_ReturnsNotFound()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            var controller = context.Controller;
+
+            var result = await controller.GetUserByIdAsync(string.Empty);
+            result.Result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public async Task GetUserById_UserRepository_GetUserByIdAsync_CalledOnce()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            var controller = context.Controller;
+
+            await controller.GetUserByIdAsync(string.Empty);
+
+            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(String.Empty), Times.Once);
+        }
+
+        [Test]
+        public async Task EnableUserAsync_GetUserByIdAndEnableThem_ReturnsOk()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(true).Build();
+
+            var result = await controller.EnableUserAsync(context.User.Id);
+            result.Should().BeOfType<NoContentResult>();
+
+            context.User.Disabled.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task EnableUserAsync_UserIsNull_ReturnsNotFound()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            var controller = context.Controller;
+
+            var result = await controller.EnableUserAsync("unknown");
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public async Task EnableUserAsync_UserRepository_UpdateAsync_CalledOnce()
+        {
+            var context = UsersControllerTestContext.Setup();
+            var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(true).Build();
+
+            await controller.EnableUserAsync(context.User.Id);
+
+            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(context.User.Id), Times.Once);
+            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
+        }
+
+        [Test]
+        public async Task DisableUserAsync_GetUserByIdAndDisableThem_ReturnsOk()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(false).Build();
+
+            var result = await controller.DisableUserAsync(context.User.Id);
+            result.Should().BeOfType<NoContentResult>();
+
+            context.User.Disabled.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task DisableUserAsync_UserIsNull_ReturnsNotFound()
+        {
+            var context = UsersControllerTestContext.Setup();
+
+            var controller = context.Controller;
+
+            var result = await controller.DisableUserAsync("unknown");
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public async Task DisableUser_UserRepository_UpdateAsync_CalledOnce()
+        {
+            var context = UsersControllerTestContext.Setup();
+            var controller = context.Controller;
+
+            context.User = ApplicationUserBuilder.Create().WithDisabled(false).Build();
+
+            await controller.DisableUserAsync(context.User.Id);
+
+            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(context.User.Id), Times.Once);
+            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
         }
 
         private static (ApplicationUser RepoUser, OrganisationUserModel ExpectedUser) CreateApplicationUserTestData(
@@ -196,132 +322,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             );
         }
 
-        [Test]
-        public async Task GetUserById_WithExistingUserId_ReturnsTheUser()
-        {
-            var context = UsersControllerTestContext.Setup();
-            context.User = ApplicationUserBuilder.Create().Build();
-
-            var expected = new GetUserModel
-            {
-                Name = context.User.FirstName + " " + context.User.LastName,
-                PhoneNumber = context.User.PhoneNumber,
-                EmailAddress = context.User.Email,
-                Disabled = context.User.Disabled,
-                PrimaryOrganisationId = context.User.PrimaryOrganisationId
-            };
-
-            using var controller = context.Controller;
-
-            var result = await controller.GetUserByIdAsync(context.User.Id);
-            result.Result.Should().BeOfType<OkObjectResult>();
-            var objectResult = result.Result as OkObjectResult;
-            objectResult.Value.Should().BeEquivalentTo(expected);
-        }
-
-        [Test]
-        public async Task GetUserById_NoExistingUserId_ReturnsNotFound()
-        {
-            var context = UsersControllerTestContext.Setup();
-
-            using var controller = context.Controller;
-
-            var result = await controller.GetUserByIdAsync(string.Empty);
-            result.Result.Should().BeOfType<NotFoundResult>();
-        }
-
-        [Test]
-        public async Task GetUserById_UserRepository_GetUserByIdAsync_CalledOnce()
-        {
-            var context = UsersControllerTestContext.Setup();
-
-            using var controller = context.Controller;
-
-            await controller.GetUserByIdAsync(string.Empty);
-
-            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(String.Empty), Times.Once);
-        }
-
-        [Test]
-        public async Task EnableUserAsync_GetUserByIdAndEnableThem_ReturnsOk()
-        {
-            var context = UsersControllerTestContext.Setup();
-
-            using var controller = context.Controller;
-
-            context.User = ApplicationUserBuilder.Create().WithDisabled(true).Build();
-
-            var result = await controller.EnableUserAsync(context.User.Id);
-            result.Should().BeOfType<NoContentResult>();
-
-            context.User.Disabled.Should().BeFalse();
-        }
-
-        [Test]
-        public async Task EnableUserAsync_UserIsNull_ReturnsNotFound()
-        {
-            var context = UsersControllerTestContext.Setup();
-
-            using var controller = context.Controller;
-
-            var result = await controller.EnableUserAsync("unknown");
-            result.Should().BeOfType<NotFoundResult>();
-        }
-
-        [Test]
-        public async Task EnableUserAsync_UserRepository_UpdateAsync_CalledOnce()
-        {
-            var context = UsersControllerTestContext.Setup();
-            using var controller = context.Controller;
-
-            context.User = ApplicationUserBuilder.Create().WithDisabled(true).Build();
-
-            await controller.EnableUserAsync(context.User.Id);
-
-            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(context.User.Id), Times.Once);
-            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
-        }
-
-        [Test]
-        public async Task DisableUserAsync_GetUserByIdAndDisableThem_ReturnsOk()
-        {
-            var context = UsersControllerTestContext.Setup();
-
-            using var controller = context.Controller;
-
-            context.User = ApplicationUserBuilder.Create().WithDisabled(false).Build();
-
-            var result = await controller.DisableUserAsync(context.User.Id);
-            result.Should().BeOfType<NoContentResult>();
-
-            context.User.Disabled.Should().BeTrue();
-        }
-
-        [Test]
-        public async Task DisableUserAsync_UserIsNull_ReturnsNotFound()
-        {
-            var context = UsersControllerTestContext.Setup();
-
-            using var controller = context.Controller;
-
-            var result = await controller.DisableUserAsync("unknown");
-            result.Should().BeOfType<NotFoundResult>();
-        }
-
-        [Test]
-        public async Task DisableUser_UserRepository_UpdateAsync_CalledOnce()
-        {
-            var context = UsersControllerTestContext.Setup();
-            using var controller = context.Controller;
-
-            context.User = ApplicationUserBuilder.Create().WithDisabled(false).Build();
-
-            await controller.DisableUserAsync(context.User.Id);
-
-            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(context.User.Id), Times.Once);
-            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
-        }
-
         private sealed class UsersControllerTestContext
         {
             private UsersControllerTestContext()
@@ -346,15 +346,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             }
 
             internal Mock<ICreateBuyerService> CreateBuyerServiceMock { get; }
-            
+
             internal Result<string> CreateBuyerResult { get; set; } = Result.Success("NewUserId");
-            
+
             internal Mock<IUsersRepository> UsersRepositoryMock { get; }
-            
+
             internal IEnumerable<ApplicationUser> Users { get; set; }
-            
+
             internal UsersController Controller { get; }
-            
+
             internal ApplicationUser User { get; set; }
 
             internal static UsersControllerTestContext Setup()

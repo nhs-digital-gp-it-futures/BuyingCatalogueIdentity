@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Utils;
@@ -16,12 +15,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private const string OrganisationsUrl = "/ORD/2-0-0/organisations";
 
         private readonly ScenarioContext _context;
-        private readonly Settings _settings;
+        private readonly Config _config;
 
-        public OdsApiSteps(ScenarioContext context, Settings settings)
+        public OdsApiSteps(ScenarioContext context, Config config)
         {
             _context = context;
-            _settings = settings;
+            _config = config;
         }
 
         [Given(@"Ods API is down")]
@@ -32,7 +31,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             await AddMapping(CreateMappingModel($"{OrganisationsUrl}/*", 500));
         }
 
-        internal async Task SetUpGETChildrenEndpoint(string odsCode, string responseBody)
+        internal async Task SetUpGETChildrenEndpoint(string responseBody)
         {
             await AddMapping(CreateMappingModel(OrganisationsUrl, 200, responseBody));
         }
@@ -46,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             if (_context.Get(ScenarioContextKeys.MappingAdded, false))
             {
-                var api = RestClient.For<IWireMockAdminApi>(new Uri(_settings.OdsApiWireMockBaseUrl));
+                var api = RestClient.For<IWireMockAdminApi>(_config.OdsApiWireMockBaseUrl);
                 await api.DeleteMappingsAsync();
                 _context[ScenarioContextKeys.MappingAdded] = false;
             }
@@ -54,7 +53,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
         private static MappingModel CreateMappingModel(string path, int responseStatusCode, string responseBody = null)
         {
-            return new MappingModel
+            return new()
             {
                 Response = new ResponseModel { StatusCode = responseStatusCode, Body = responseBody },
                 Request = new RequestModel
@@ -67,7 +66,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                                 {
                                     Name = "WildcardMatcher",
                                     Pattern = path,
-                                    IgnoreCase = true
+                                    IgnoreCase = true,
                                 }
                             }
                     },
@@ -78,7 +77,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
         private async Task AddMapping(MappingModel model)
         {
-            var api = RestClient.For<IWireMockAdminApi>(new Uri(_settings.OdsApiWireMockBaseUrl));
+            var api = RestClient.For<IWireMockAdminApi>(_config.OdsApiWireMockBaseUrl);
             var result = await api.PostMappingAsync(model);
             result.Status.Should().Be("Mapping added");
             _context[ScenarioContextKeys.MappingAdded] = true;

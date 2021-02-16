@@ -1,4 +1,5 @@
-﻿using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+﻿using System;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
@@ -7,7 +8,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     internal sealed class LogoutSteps
     {
         private readonly SeleniumContext _context;
-        private readonly string _identityApiBaseUrl;
+        private readonly Uri _identityApiBaseUrl;
 
         public LogoutSteps(SeleniumContext context, Settings settings)
         {
@@ -18,7 +19,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         [When(@"the user navigates directly to the logout page")]
         public void GivenTheUserNavigatesToTheLogoutPage()
         {
-            _context.WebDriver.Navigate().GoToUrl($"{_identityApiBaseUrl}/Account/Logout");
+            _context.WebDriver.Navigate().GoToUrl(new Uri(_identityApiBaseUrl, "Account/Logout"));
         }
     }
 }

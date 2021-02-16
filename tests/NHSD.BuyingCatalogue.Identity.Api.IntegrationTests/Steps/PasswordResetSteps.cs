@@ -48,7 +48,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public async Task WhenTheUserWithIdHasExpiredPasswordResetTokenAsync(string userId)
         {
             await WhenTheUserWithIdHasValidPasswordResetTokenAsync(userId);
-            var userEntity = new UserEntity {Id = userId, SecurityStamp = Guid.NewGuid().ToString()};
+            var userEntity = new UserEntity { Id = userId, SecurityStamp = Guid.NewGuid().ToString() };
             await userEntity.UpdateSecurityStamp(_settings.ConnectionString);
         }
 
@@ -67,8 +67,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 SecurityStamp = userInDb.SecurityStamp,
             };
 
-            var userManager = new UserManager<IdentityUser>(
-                new UserStore(identityUser),
+            using var userStore = new UserStore(identityUser);
+            using var userManager = new UserManager<IdentityUser>(
+                userStore,
                 null,
                 null,
                 null,

@@ -21,18 +21,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private readonly ScenarioContext _context;
         private readonly Response _response;
         private readonly Request _request;
-        private readonly Settings _settings;
+        private readonly Config _config;
 
-        private readonly string _organisationUrl;
+        private readonly Uri _organisationUrl;
 
-        public OrganisationsSteps(ScenarioContext context, Response response, Request request, Settings settings)
+        public OrganisationsSteps(ScenarioContext context, Response response, Request request, Config config)
         {
             _context = context;
             _response = response;
             _request = request;
-            _settings = settings;
+            _config = config;
 
-            _organisationUrl = _settings.OrganisationsApiBaseUrl + "/api/v1/Organisations";
+            _organisationUrl = new Uri(_config.OrganisationsApiBaseUrl, "/api/v1/Organisations/");
         }
 
         [Given(@"Organisations exist")]
@@ -60,7 +60,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
                     .Build();
 
-                await organisation.InsertAsync(_settings.ConnectionString);
+                await organisation.InsertAsync(_config.ConnectionString);
                 organisationDictionary.Add(organisation.Name, organisation.OrganisationId);
             }
 
@@ -134,14 +134,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         public async Task ThenTheResponseContainsValidLocationHeaderForUser(string organisationName)
         {
             var persistedOrganisation = await GetOrganisationEntityByName(organisationName);
-            var expected = new Uri($"{_organisationUrl}/{persistedOrganisation.OrganisationId}");
+            var expected = new Uri(_organisationUrl, persistedOrganisation.OrganisationId.ToString());
             var actual = _response.Result.Headers.Location;
             actual.Should().BeEquivalentTo(expected);
-        }
-
-        private async Task<OrganisationEntity> GetOrganisationEntityByName(string name)
-        {
-            return await OrganisationEntity.GetByNameAsync(_settings.ConnectionString, name);
         }
 
         private static object CreateOrganisation(JToken token)
@@ -161,12 +156,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                 Postcode = token.SelectToken("address.postcode").ToString(),
                 Country = token.SelectToken("address.country").ToString()
             };
-        }
-
-        private Guid GetOrganisationIdFromName(string organisationName)
-        {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
-            return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
         }
 
         private static object TransformOrganisationIntoPayload(OrganisationTable data)
@@ -191,10 +180,21 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             };
         }
 
+        private async Task<OrganisationEntity> GetOrganisationEntityByName(string name)
+        {
+            return await OrganisationEntity.GetByNameAsync(_config.ConnectionString, name);
+        }
+
+        private Guid GetOrganisationIdFromName(string organisationName)
+        {
+            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
+            return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
+        }
+
         private async Task UpdateOrganisationMappingFromResponseBody(string organisationName)
         {
             var guidAsString = await GetValueFromResponseBody<string>("organisationId");
-            Guid.TryParse(guidAsString, out Guid organisationId);
+            var organisationId = Guid.Parse(guidAsString);
             UpdateOrganisationMapping(organisationName, organisationId);
         }
 
@@ -226,12 +226,19 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             public bool CatalogueAgreementSigned { get; set; }
 
             public string Line1 { get; set; }
+
             public string Line2 { get; set; }
+
             public string Line3 { get; set; }
+
             public string Line4 { get; set; }
+
             public string Town { get; set; }
+
             public string County { get; set; }
+
             public string Postcode { get; set; }
+
             public string Country { get; set; }
         }
     }

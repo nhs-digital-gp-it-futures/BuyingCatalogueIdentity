@@ -1,16 +1,17 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
-RUN apt update && apt install iproute2 -y 
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
+RUN apk update && apk add icu-libs iproute2
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM node:12 AS pre-build
+FROM node:14 AS pre-build
 WORKDIR /node
 COPY src/NHSD.BuyingCatalogue.Identity.Api/package.json .
 COPY src/NHSD.BuyingCatalogue.Identity.Api/Styles ./Styles
 RUN npm install && npm run build
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /
 COPY ["src/NHSD.BuyingCatalogue.Identity.Common/NHSD.BuyingCatalogue.Identity.Common.csproj", "src/NHSD.BuyingCatalogue.Identity.Common/"]
 COPY ["src/NHSD.BuyingCatalogue.Identity.Api/NHSD.BuyingCatalogue.Identity.Api.csproj", "src/NHSD.BuyingCatalogue.Identity.Api/"]
@@ -31,4 +32,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=build /app/build/start.sh .
 RUN ["chmod", "+x", "./start.sh"]
-ENTRYPOINT ["/bin/bash", "-c",  "./start.sh"]
+ENTRYPOINT ["sh", "./start.sh"]

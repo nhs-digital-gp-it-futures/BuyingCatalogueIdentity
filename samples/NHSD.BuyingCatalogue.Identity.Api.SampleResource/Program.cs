@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Logging;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleResource
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,26 +10,27 @@ using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 {
-
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class OdsControllerTests
+    internal static class OdsControllerTests
     {
-        [Test]
-        public async Task GetByOdsCodeAsync_OrganisationDoesNotExist_ReturnsNotFound()
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("\t")]
+        public static async Task GetByOdsCodeAsync_OrganisationDoesNotExist_ReturnsNotFound(string odsCode)
         {
             using var controller = OdsControllerBuilder
                 .Create()
                 .WithGetByOdsCode(null)
                 .Build();
 
-            var result = await controller.GetByOdsCodeAsync(string.Empty);
+            var result = await controller.GetByOdsCodeAsync(odsCode);
 
             result.Should().BeEquivalentTo(new NotFoundResult());
         }
 
         [Test]
-        public async Task GetByOdsCodeAsync_OrganisationIsNotBuyerOrganisation_ReturnsNotAccepted()
+        public static async Task GetByOdsCodeAsync_OrganisationIsNotBuyerOrganisation_ReturnsNotAccepted()
         {
             var nonBuyerOrganisation = OdsOrganisationBuilder.Create(1).Build();
             using var controller = OdsControllerBuilder
@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task GetByOdsCodeAsync_OrganisationExists_ReturnsActiveBuyerOrganisation()
+        public static async Task GetByOdsCodeAsync_OrganisationExists_ReturnsActiveBuyerOrganisation()
         {
             var buyerOrganisation = OdsOrganisationBuilder.Create(1, true).Build();
 
@@ -61,27 +61,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var result = response as OkObjectResult;
 
-            result.Value.Should().BeEquivalentTo(buyerOrganisation, options => options.Excluding(o => o.IsActive).Excluding(o => o.IsBuyerOrganisation));
+            result.Value.Should().BeEquivalentTo(
+                buyerOrganisation,
+                options => options.Excluding(o => o.IsActive).Excluding(o => o.IsBuyerOrganisation));
         }
 
         [Test]
-        public void GetByOdsCodeAsync_NullOdsCode_ThrowsArgumentNullException()
-        {
-            static async Task GetOrganisationByNullOdsCode()
-            {
-                using var controller = OdsControllerBuilder.Create().Build();
-                await controller.GetByOdsCodeAsync(null);
-            }
-            Assert.ThrowsAsync<ArgumentNullException>(GetOrganisationByNullOdsCode);
-        }
-
-        [Test]
-        public async Task GetByOdsCodeAsync_VerifyMethodIsCalledOnce_VerifiesMethod()
+        public static async Task GetByOdsCodeAsync_VerifyMethodIsCalledOnce_VerifiesMethod()
         {
             const string odsCode = "123";
 
             var odsRepositoryMock = new Mock<IOdsRepository>();
-            odsRepositoryMock.Setup(x => x.GetBuyerOrganisationByOdsCodeAsync(It.IsAny<string>()))
+            odsRepositoryMock.Setup(r => r.GetBuyerOrganisationByOdsCodeAsync(It.IsAny<string>()))
                 .ReturnsAsync((OdsOrganisation)null);
 
             using var controller = OdsControllerBuilder.Create()
@@ -90,7 +81,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             await controller.GetByOdsCodeAsync(odsCode);
 
-            odsRepositoryMock.Verify(x => x.GetBuyerOrganisationByOdsCodeAsync(odsCode), Times.Once);
+            odsRepositoryMock.Verify(x => x.GetBuyerOrganisationByOdsCodeAsync(odsCode));
         }
     }
 }

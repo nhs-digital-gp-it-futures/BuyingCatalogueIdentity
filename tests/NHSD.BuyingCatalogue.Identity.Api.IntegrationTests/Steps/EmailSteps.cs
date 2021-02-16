@@ -67,7 +67,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             var link = _context["EmailLink"].As<string>();
             var index = link.IndexOf("Email=", StringComparison.InvariantCulture);
             var trimmedString = link.Substring(0, index);
-            
+
             _context["EmailLink"] = $"{trimmedString}Email={email}";
         }
 
@@ -75,11 +75,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public void WhenTheEmailLinkIsClicked()
         {
             var link = _context["EmailLink"].As<string>();
-            _seleniumContext.WebDriver.Navigate().GoToUrl(link);
+            _seleniumContext.WebDriver.Navigate().GoToUrl(new Uri(link));
         }
 
         private string PasswordResetUrlRegex(string expectedEmailAddress) =>
-            $@"(?:\s|<a href=""){_settings.IdentityApiBaseUrl}/Account/ResetPassword\?Token=(?:\S+)&Email={expectedEmailAddress}(?:\s|"">)";
+            $@"(?:\s|<a href=""){_settings.IdentityApiBaseUrl}Account/ResetPassword\?Token=(?:\S+)&Email={expectedEmailAddress}(?:\s|"">)";
 
         private sealed class EmailTable
         {

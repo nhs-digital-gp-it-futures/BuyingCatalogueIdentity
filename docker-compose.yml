@@ -83,10 +83,12 @@ services:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.buyingcatalogue.email
       - nhsd.pb.wiremock
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip route | awk '/default/ { print $$3 " host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Identity.Api.dll
     ports:
       - "9070:443"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - "./mkcert:/certs:ro"
 
@@ -136,10 +138,12 @@ services:
     depends_on:
       - nhsd.buyingcatalogue.identity.api.user.db
       - nhsd.ods.api.wiremock
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip route | awk '/default/ { print $$3 " host.docker.internal"}' >> /etc/hosts && dotnet /app/NHSD.BuyingCatalogue.Organisations.Api.dll
     ports:
       - "9075:443"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - "./mkcert:/certs:ro"
 
@@ -170,8 +174,6 @@ services:
       - CAROOT=/certs
     ports:
       - "9071:443"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - "./mkcert:/certs:ro"
         
@@ -193,8 +195,6 @@ services:
       - SAMPLERESOURCEURL=https://host.docker.internal:9071/identity
     ports:
       - "9072:443"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - "./mkcert:/certs:ro"
 
@@ -214,8 +214,6 @@ services:
       - CLIENTSECRET=Invalid
     ports:
       - "9073:443"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - "./mkcert:/certs:ro"
     
@@ -241,7 +239,7 @@ services:
     entrypoint: 
       - /bin/sh
       - -c 
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' | sudo tee -a /etc/hosts && /opt/bin/entry_point.sh
+      - ip route | awk '/default/ { print $$3 " host.docker.internal"}' | sudo tee -a /etc/hosts && /opt/bin/entry_point.sh
 
   nhsd.buyingcatalogue.email:
     <<: *networked
