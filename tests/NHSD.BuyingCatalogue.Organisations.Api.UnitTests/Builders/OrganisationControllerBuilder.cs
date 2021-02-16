@@ -15,70 +15,68 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class OrganisationControllerBuilder
     {
-        private IOrganisationRepository _organisationRepository;
-        private ICreateOrganisationService _createOrganisationService;
-        private IServiceRecipientRepository _serviceRecipientRepository;
+        private readonly ClaimsPrincipal claimsPrincipal;
 
-        private readonly ClaimsPrincipal _claimsPrincipal;
+        private IOrganisationRepository organisationRepository;
+        private ICreateOrganisationService createOrganisationService;
+        private IServiceRecipientRepository serviceRecipientRepository;
 
         private OrganisationControllerBuilder(Guid primaryOrganisationId)
         {
-            _createOrganisationService = Mock.Of<ICreateOrganisationService>();
-            _organisationRepository = Mock.Of<IOrganisationRepository>();
-            _serviceRecipientRepository = Mock.Of<IServiceRecipientRepository>();
+            createOrganisationService = Mock.Of<ICreateOrganisationService>();
+            organisationRepository = Mock.Of<IOrganisationRepository>();
+            serviceRecipientRepository = Mock.Of<IServiceRecipientRepository>();
 
-            _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim("primaryOrganisationId", primaryOrganisationId.ToString())
-            },
-            "mock"));
+            var claims = new[] { new Claim("primaryOrganisationId", primaryOrganisationId.ToString()) };
+            claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "mock"));
         }
 
         internal static OrganisationControllerBuilder Create(Guid primaryOrganisationId = default)
         {
-            return new OrganisationControllerBuilder(primaryOrganisationId);
+            return new(primaryOrganisationId);
         }
 
         internal OrganisationControllerBuilder WithServiceRecipients(IEnumerable<ServiceRecipient> result)
         {
             var mockServiceRecipientsRepository = new Mock<IServiceRecipientRepository>();
-            mockServiceRecipientsRepository.Setup(x => x.GetServiceRecipientsByParentOdsCode(It.IsAny<string>()))
+            mockServiceRecipientsRepository
+                .Setup(r => r.GetServiceRecipientsByParentOdsCode(It.IsAny<string>()))
                 .ReturnsAsync(result);
 
-            _serviceRecipientRepository = mockServiceRecipientsRepository.Object;
+            serviceRecipientRepository = mockServiceRecipientsRepository.Object;
             return this;
         }
 
         internal OrganisationControllerBuilder WithListOrganisation(IEnumerable<Organisation> result)
         {
             var mockListOrganisation = new Mock<IOrganisationRepository>();
-            mockListOrganisation.Setup(x => x.ListOrganisationsAsync()).ReturnsAsync(result);
+            mockListOrganisation.Setup(r => r.ListOrganisationsAsync()).ReturnsAsync(result);
 
-            _organisationRepository = mockListOrganisation.Object;
+            organisationRepository = mockListOrganisation.Object;
             return this;
         }
 
         internal OrganisationControllerBuilder WithGetOrganisation(Organisation result)
         {
             var mockGetOrganisation = new Mock<IOrganisationRepository>();
-            mockGetOrganisation.Setup(x => x.GetByIdAsync(result.OrganisationId)).ReturnsAsync(result);
+            mockGetOrganisation.Setup(r => r.GetByIdAsync(result.OrganisationId)).ReturnsAsync(result);
 
-            _organisationRepository = mockGetOrganisation.Object;
+            organisationRepository = mockGetOrganisation.Object;
             return this;
         }
 
         internal OrganisationControllerBuilder WithUpdateOrganisation(Organisation organisation)
         {
             var repositoryMock = new Mock<IOrganisationRepository>();
-            repositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(organisation);
-            repositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Organisation>()));
-            _organisationRepository = repositoryMock.Object;
+            repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(organisation);
+            repositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Organisation>()));
+            organisationRepository = repositoryMock.Object;
             return this;
         }
 
-        internal OrganisationControllerBuilder WithOrganisationRepository(IOrganisationRepository organisationRepository)
+        internal OrganisationControllerBuilder WithOrganisationRepository(IOrganisationRepository repository)
         {
-            _organisationRepository = organisationRepository;
+            organisationRepository = repository;
             return this;
         }
 
@@ -92,32 +90,34 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return WithCreateOrganisationServiceReturningResult(Result.Failure<Guid?>(new ErrorDetails(result)));
         }
 
+        internal OrganisationsController Build()
+        {
+            return new(organisationRepository, createOrganisationService, serviceRecipientRepository)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = new DefaultHttpContext { User = claimsPrincipal },
+                },
+            };
+        }
+
         private OrganisationControllerBuilder WithCreateOrganisationServiceReturningResult(Result<Guid?> result)
         {
             WithCreateOrganisation();
-            var createOrganisationService = new Mock<ICreateOrganisationService>();
-            createOrganisationService.Setup(s => s.CreateAsync(It.IsAny<CreateOrganisationRequest>()))
+            var service = new Mock<ICreateOrganisationService>();
+            service
+                .Setup(s => s.CreateAsync(It.IsAny<CreateOrganisationRequest>()))
                 .ReturnsAsync(result);
-            _createOrganisationService = createOrganisationService.Object;
+
+            createOrganisationService = service.Object;
             return this;
         }
 
         private void WithCreateOrganisation()
         {
             var repositoryMock = new Mock<IOrganisationRepository>();
-            repositoryMock.Setup(x => x.CreateOrganisationAsync(It.IsAny<Organisation>()));
-            _organisationRepository = repositoryMock.Object;
-        }
-
-        internal OrganisationsController Build()
-        {
-            return new OrganisationsController(_organisationRepository, _createOrganisationService, _serviceRecipientRepository)
-            {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = new DefaultHttpContext { User = _claimsPrincipal }
-                }
-            };
+            repositoryMock.Setup(r => r.CreateOrganisationAsync(It.IsAny<Organisation>()));
+            organisationRepository = repositoryMock.Object;
         }
     }
 }

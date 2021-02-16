@@ -5,11 +5,11 @@
 
 Background:
     Given Ods Organisations exist
-        | Name               | OdsCode | PrimaryRoleId | Status    | AddrLn1 | AddrLn2         | AddrLn3         | AddrLn4     | Town     | County          | Postcode | Country |
-        | Ods Organisation 1 | B1G     | Buyer         | Active    | 12      | Brick Lane      | Central Area    | City Centre | Leeds    | West Yorkshire  | LS1 1AW  | England |
-        | Ods Organisation 2 | B2G     | Buyer         | Disbanded | 37      | Sand Brick Lane | Central Area    | City Centre | Bradford | West Yorkshire  | BD4 1FK  | England |
-        | Ods Organisation 3 | B3G     | AlsoBuyer     | Active    | 21      | Jump Street     | All over        | Suburb      | Metairie | Louisiana       | 504      | USA     |
-        | Ods Organisation 4 | N0G     | 153XP         | Active    | 15      | Sun Ave         | End of the Road | Suburb      | York     | North Yorkshire | YO11 4LO | England |
+        | Name               | OdsCode | PrimaryRoleId | Status    | AddressLine1 | AddressLine2    | AddressLine3    | AddressLine4 | Town     | County          | Postcode | Country |
+        | Ods Organisation 1 | B1G     | Buyer         | Active    | 12           | Brick Lane      | Central Area    | City Centre  | Leeds    | West Yorkshire  | LS1 1AW  | England |
+        | Ods Organisation 2 | B2G     | Buyer         | Disbanded | 37           | Sand Brick Lane | Central Area    | City Centre  | Bradford | West Yorkshire  | BD4 1FK  | England |
+        | Ods Organisation 3 | B3G     | AlsoBuyer     | Active    | 21           | Jump Street     | All over        | Suburb       | Metairie | Louisiana       | 504      | USA     |
+        | Ods Organisation 4 | N0G     | 153XP         | Active    | 15           | Sun Ave         | End of the Road | Suburb       | York     | North Yorkshire | YO11 4LO | England |
     And Organisations exist
         | Name           | OdsCode |
         | Organisation 1 | B1G     |

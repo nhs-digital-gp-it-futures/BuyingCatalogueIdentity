@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
@@ -13,13 +14,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class UserSteps
     {
-        private readonly ScenarioContext _context;
-        private readonly Config _config;
+        private readonly ScenarioContext context;
+        private readonly Config config;
 
         public UserSteps(ScenarioContext context, Config config)
         {
-            _context = context;
-            _config = config;
+            this.context = context;
+            this.config = config;
         }
 
         [Given(@"Users exist")]
@@ -43,37 +44,38 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     CatalogueAgreementSigned = user.CatalogueAgreementSigned,
                 };
                 userEntity.PasswordHash = new PasswordHasher<UserEntity>().HashPassword(userEntity, user.Password);
-                await userEntity.InsertAsync(_config.ConnectionString);
+                await userEntity.InsertAsync(config.ConnectionString);
             }
         }
 
         private Guid GetOrganisationIdFromName(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
+            var allOrganisations = context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
             return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class NewUserTable
         {
-            public string Password { get; set; } = "Pass123$";
+            public string Password { get; init; } = "Pass123$";
 
-            public string FirstName { get; set; } = "Test";
+            public string FirstName { get; init; } = "Test";
 
-            public string LastName { get; set; } = "User";
+            public string LastName { get; init; } = "User";
 
-            public string Email { get; set; }
+            public string Email { get; init; }
 
-            public string PhoneNumber { get; set; } = "01234567890";
+            public string PhoneNumber { get; init; } = "01234567890";
 
-            public bool Disabled { get; set; }
+            public bool Disabled { get; init; }
 
-            public string Id { get; set; }
+            public string Id { get; init; }
 
-            public string OrganisationName { get; set; }
+            public string OrganisationName { get; init; }
 
-            public string OrganisationFunction { get; set; } = "Authority";
+            public string OrganisationFunction { get; init; } = "Authority";
 
-            public bool CatalogueAgreementSigned { get; set; } = true;
+            public bool CatalogueAgreementSigned { get; init; } = true;
         }
     }
 }

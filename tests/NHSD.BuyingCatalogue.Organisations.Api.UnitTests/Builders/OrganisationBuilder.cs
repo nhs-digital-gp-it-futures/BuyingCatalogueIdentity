@@ -5,77 +5,78 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class OrganisationBuilder
     {
-        private Guid _organisationId;
-        private string _name;
-        private string _odsCode;
-        private string _primaryRoleId;
-        private bool _catalogueAgreementSigned;
-        private Address _address;
-        private readonly DateTime _lastUpdated;
+        private readonly DateTime lastUpdated;
+
+        private Guid organisationId;
+        private string name;
+        private string odsCode;
+        private string primaryRoleId;
+        private bool catalogueAgreementSigned;
+        private Address address;
 
         private OrganisationBuilder(int index)
         {
-            _organisationId = Guid.NewGuid();
-            _name = $"Organisation {index}";
-            _odsCode = $"ODS {index}";
-            _primaryRoleId = $"ID {index}";
-            _catalogueAgreementSigned = true;
-            _address = null;
-            _lastUpdated = DateTime.UtcNow;
+            organisationId = Guid.NewGuid();
+            name = $"Organisation {index}";
+            odsCode = $"ODS {index}";
+            primaryRoleId = $"ID {index}";
+            catalogueAgreementSigned = true;
+            address = null;
+            lastUpdated = DateTime.UtcNow;
         }
 
         internal static OrganisationBuilder Create(int index)
         {
-            return new OrganisationBuilder(index);
+            return new(index);
         }
 
-        internal OrganisationBuilder WithOrganisationId(Guid organisationId)
+        internal OrganisationBuilder WithOrganisationId(Guid id)
         {
-            _organisationId = organisationId;
+            organisationId = id;
             return this;
         }
 
-        internal OrganisationBuilder WithName(string name)
+        internal OrganisationBuilder WithName(string value)
         {
-            _name = name;
+            name = value;
             return this;
         }
 
-        internal OrganisationBuilder WithOdsCode(string odsCode)
+        internal OrganisationBuilder WithOdsCode(string code)
         {
-            _odsCode = odsCode;
+            odsCode = code;
             return this;
         }
 
-        internal OrganisationBuilder WithPrimaryRoleId(string primaryRoleId)
+        internal OrganisationBuilder WithPrimaryRoleId(string id)
         {
-            _primaryRoleId = primaryRoleId;
+            primaryRoleId = id;
             return this;
         }
 
         internal OrganisationBuilder WithCatalogueAgreementSigned(bool isSigned)
         {
-            _catalogueAgreementSigned = isSigned;
+            catalogueAgreementSigned = isSigned;
             return this;
         }
 
-        internal OrganisationBuilder WithAddress(Address address)
+        internal OrganisationBuilder WithAddress(Address value)
         {
-            _address = address;
+            address = value;
             return this;
         }
 
         internal Organisation Build()
         {
-            return new Organisation
+            return new()
             {
-                OrganisationId = _organisationId,
-                Name = _name,
-                OdsCode = _odsCode,
-                PrimaryRoleId = _primaryRoleId,
-                CatalogueAgreementSigned = _catalogueAgreementSigned,
-                Address = _address,
-                LastUpdated = _lastUpdated
+                OrganisationId = organisationId,
+                Name = name,
+                OdsCode = odsCode,
+                PrimaryRoleId = primaryRoleId,
+                CatalogueAgreementSigned = catalogueAgreementSigned,
+                Address = address,
+                LastUpdated = lastUpdated,
             };
         }
     }

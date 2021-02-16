@@ -11,13 +11,13 @@ using TechTalk.SpecFlow.Assist;
 namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Hooks
 {
     [Binding]
-    public sealed class IntegrationHook
+    internal sealed class IntegrationHook
     {
-        private readonly IObjectContainer _objectContainer;
+        private readonly IObjectContainer objectContainer;
 
         public IntegrationHook(IObjectContainer objectContainer)
         {
-            _objectContainer = objectContainer ?? throw new ArgumentNullException(nameof(objectContainer));
+            this.objectContainer = objectContainer ?? throw new ArgumentNullException(nameof(objectContainer));
         }
 
         [BeforeScenario]
@@ -38,12 +38,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Hooks
 
         public void RegisterTestConfiguration()
         {
+            // ReSharper disable once StringLiteralTypo
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()
                 .Build();
 
-            _objectContainer.RegisterInstanceAs<IConfiguration>(configurationBuilder);
+            objectContainer.RegisterInstanceAs<IConfiguration>(configurationBuilder);
         }
 
         private static void RegisterCustomValueRetrievers()
@@ -55,11 +56,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Hooks
         }
 
         private async Task ResetDatabaseAsync() =>
-            await IntegrationDatabase.ResetAsync(_objectContainer.Resolve<IConfiguration>());
+            await IntegrationDatabase.ResetAsync(objectContainer.Resolve<IConfiguration>());
 
         private async Task DeleteAllOdsEndpointMappings()
         {
-            var odsApi = _objectContainer.Resolve<OdsApiSteps>();
+            var odsApi = objectContainer.Resolve<OdsApiSteps>();
             await odsApi.ClearMappings();
         }
     }

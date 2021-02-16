@@ -4,38 +4,38 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class OdsOrganisationBuilder
     {
-        private string _odsCode;
-        private string _name;
-        private string _primaryRoleId;
-        private Address _address;
-        private bool _isActive;
-        private bool _isBuyerOrganisation;
+        private readonly string odsCode;
+        private readonly string name;
+        private readonly string primaryRoleId;
+        private readonly Address address;
+        private readonly bool isActive;
+        private readonly bool isBuyerOrganisation;
 
         private OdsOrganisationBuilder(int index, bool isActiveBuyerOrganisation)
         {
-            _name = $"Organisation {index}";
-            _odsCode = $"ODS {index}";
-            _primaryRoleId = $"ID {index}";
-            _address = null;
-            _isActive = isActiveBuyerOrganisation;
-            _isBuyerOrganisation = isActiveBuyerOrganisation;
+            name = $"Organisation {index}";
+            odsCode = $"ODS {index}";
+            primaryRoleId = $"ID {index}";
+            address = null;
+            isActive = isActiveBuyerOrganisation;
+            isBuyerOrganisation = isActiveBuyerOrganisation;
         }
 
         internal static OdsOrganisationBuilder Create(int index, bool isActiveBuyerOrganisation = false)
         {
-            return new OdsOrganisationBuilder(index, isActiveBuyerOrganisation);
+            return new(index, isActiveBuyerOrganisation);
         }
 
         internal OdsOrganisation Build()
         {
-            return new OdsOrganisation
+            return new()
             {
-                OdsCode = _odsCode,
-                OrganisationName = _name,
-                PrimaryRoleId = _primaryRoleId,
-                Address = _address,
-                IsActive = _isActive,
-                IsBuyerOrganisation = _isBuyerOrganisation
+                OdsCode = odsCode,
+                OrganisationName = name,
+                PrimaryRoleId = primaryRoleId,
+                Address = address,
+                IsActive = isActive,
+                IsBuyerOrganisation = isBuyerOrganisation,
             };
         }
     }

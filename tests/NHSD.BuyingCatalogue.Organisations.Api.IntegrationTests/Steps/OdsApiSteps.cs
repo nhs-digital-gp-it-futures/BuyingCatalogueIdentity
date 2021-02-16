@@ -14,13 +14,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     {
         private const string OrganisationsUrl = "/ORD/2-0-0/organisations";
 
-        private readonly ScenarioContext _context;
-        private readonly Config _config;
+        private readonly ScenarioContext context;
+        private readonly Config config;
 
         public OdsApiSteps(ScenarioContext context, Config config)
         {
-            _context = context;
-            _config = config;
+            this.context = context;
+            this.config = config;
         }
 
         [Given(@"Ods API is down")]
@@ -31,23 +31,23 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             await AddMapping(CreateMappingModel($"{OrganisationsUrl}/*", 500));
         }
 
-        internal async Task SetUpGETChildrenEndpoint(string responseBody)
+        internal async Task SetUpGetChildrenEndpoint(string responseBody)
         {
             await AddMapping(CreateMappingModel(OrganisationsUrl, 200, responseBody));
         }
 
-        internal async Task SetUpGETEndpoint(string odsCode, string responseBody)
+        internal async Task SetUpGetEndpoint(string odsCode, string responseBody)
         {
             await AddMapping(CreateMappingModel($"{OrganisationsUrl}/{odsCode}", 200, responseBody));
         }
 
         internal async Task ClearMappings()
         {
-            if (_context.Get(ScenarioContextKeys.MappingAdded, false))
+            if (context.Get(ScenarioContextKeys.MappingAdded, false))
             {
-                var api = RestClient.For<IWireMockAdminApi>(_config.OdsApiWireMockBaseUrl);
+                var api = RestClient.For<IWireMockAdminApi>(config.OdsApiWireMockBaseUrl);
                 await api.DeleteMappingsAsync();
-                _context[ScenarioContextKeys.MappingAdded] = false;
+                context[ScenarioContextKeys.MappingAdded] = false;
             }
         }
 
@@ -61,26 +61,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     Path = new PathModel
                     {
                         Matchers = new[]
+                        {
+                            new MatcherModel
                             {
-                                new MatcherModel
-                                {
-                                    Name = "WildcardMatcher",
-                                    Pattern = path,
-                                    IgnoreCase = true,
-                                }
-                            }
+                                Name = "WildcardMatcher",
+                                Pattern = path,
+                                IgnoreCase = true,
+                            },
+                        },
                     },
                     Methods = new[] { "GET" },
-                }
+                },
             };
         }
 
         private async Task AddMapping(MappingModel model)
         {
-            var api = RestClient.For<IWireMockAdminApi>(_config.OdsApiWireMockBaseUrl);
+            var api = RestClient.For<IWireMockAdminApi>(config.OdsApiWireMockBaseUrl);
             var result = await api.PostMappingAsync(model);
             result.Status.Should().Be("Mapping added");
-            _context[ScenarioContextKeys.MappingAdded] = true;
+            context[ScenarioContextKeys.MappingAdded] = true;
         }
     }
 }

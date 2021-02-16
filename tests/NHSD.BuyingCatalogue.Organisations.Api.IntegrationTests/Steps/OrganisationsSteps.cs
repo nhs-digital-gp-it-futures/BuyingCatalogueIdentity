@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
+using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
@@ -18,21 +19,21 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class OrganisationsSteps
     {
-        private readonly ScenarioContext _context;
-        private readonly Response _response;
-        private readonly Request _request;
-        private readonly Config _config;
+        private readonly ScenarioContext context;
+        private readonly Response response;
+        private readonly Request request;
+        private readonly Config config;
 
-        private readonly Uri _organisationUrl;
+        private readonly Uri organisationUrl;
 
         public OrganisationsSteps(ScenarioContext context, Response response, Request request, Config config)
         {
-            _context = context;
-            _response = response;
-            _request = request;
-            _config = config;
+            this.context = context;
+            this.response = response;
+            this.request = request;
+            this.config = config;
 
-            _organisationUrl = new Uri(_config.OrganisationsApiBaseUrl, "/api/v1/Organisations/");
+            organisationUrl = new Uri(config.OrganisationsApiBaseUrl, "/api/v1/Organisations/");
         }
 
         [Given(@"Organisations exist")]
@@ -48,7 +49,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     .WithOdsCode(organisationTableItem.OdsCode)
                     .WithPrimaryRoleId(organisationTableItem.PrimaryRoleId)
                     .WithCatalogueAgreementSigned(organisationTableItem.CatalogueAgreementSigned)
-
                     .WithAddressLine1(organisationTableItem.Line1)
                     .WithAddressLine2(organisationTableItem.Line2)
                     .WithAddressLine3(organisationTableItem.Line3)
@@ -57,20 +57,19 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     .WithAddressCounty(organisationTableItem.County)
                     .WithAddressPostcode(organisationTableItem.Postcode)
                     .WithAddressCountry(organisationTableItem.Country)
-
                     .Build();
 
-                await organisation.InsertAsync(_config.ConnectionString);
+                await organisation.InsertAsync(config.ConnectionString);
                 organisationDictionary.Add(organisation.Name, organisation.OrganisationId);
             }
 
-            _context[ScenarioContextKeys.OrganisationMapDictionary] = organisationDictionary;
+            context[ScenarioContextKeys.OrganisationMapDictionary] = organisationDictionary;
         }
 
         [When(@"a request is made to get a list of organisations")]
         public async Task WhenARequestIsMadeToGetAListOfOrganisations()
         {
-            await _request.GetAsync(_organisationUrl);
+            await request.GetAsync(organisationUrl);
         }
 
         [Then(@"the Organisations list is returned with the following values")]
@@ -78,7 +77,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             var expectedOrganisations = table.CreateSet<OrganisationTable>().ToList();
 
-            var organisations = (await _response.ReadBodyAsJsonAsync()).SelectToken("organisations").Select(CreateOrganisation);
+            var organisations = (await response.ReadBodyAsJsonAsync()).SelectToken("organisations")?.Select(CreateOrganisation);
 
             organisations.Should().BeEquivalentTo(expectedOrganisations, options => options.WithStrictOrdering());
         }
@@ -88,7 +87,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             var expectedOrganisation = table.CreateSet<OrganisationTable>().FirstOrDefault();
 
-            JToken responseBody = await _response.ReadBodyAsJsonAsync();
+            JToken responseBody = await response.ReadBodyAsJsonAsync();
 
             var organisation = CreateOrganisation(responseBody);
 
@@ -96,30 +95,30 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         }
 
         [When(@"a GET request is made for an organisation with name (.*)")]
-        public async Task WhenAGETRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName)
+        public async Task WhenAGetRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName)
         {
             var organisationId = GetOrganisationIdFromName(organisationName);
 
-            await _request.GetAsync(_organisationUrl, organisationId);
+            await request.GetAsync(organisationUrl, organisationId);
         }
 
         [When(@"a PUT request is made to update an organisation with name (.*)")]
-        public async Task WhenAPUTRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName, Table table)
+        public async Task WhenAPutRequestIsMadeForAnOrganisationWithNameOrganisation(string organisationName, Table table)
         {
             var data = table.CreateInstance<UpdateOrganisationPayload>();
             var organisationId = GetOrganisationIdFromName(organisationName);
 
-            await _request.PutJsonAsync(_organisationUrl, data, organisationId);
+            await request.PutJsonAsync(organisationUrl, data, organisationId);
         }
 
         [When(@"a POST request is made to create an organisation with values")]
-        public async Task WhenAPOSTRequestIsMadeForAnOrganisationWithValues(Table table)
+        public async Task WhenAPostRequestIsMadeForAnOrganisationWithValues(Table table)
         {
             var data = table.CreateInstance<OrganisationTable>();
 
-            await _request.PostJsonAsync(_organisationUrl, TransformOrganisationIntoPayload(data));
+            await request.PostJsonAsync(organisationUrl, TransformOrganisationIntoPayload(data));
 
-            if (_response.Result.StatusCode == HttpStatusCode.Created)
+            if (response.Result.StatusCode == HttpStatusCode.Created)
                 await UpdateOrganisationMappingFromResponseBody(data.Name);
         }
 
@@ -134,8 +133,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         public async Task ThenTheResponseContainsValidLocationHeaderForUser(string organisationName)
         {
             var persistedOrganisation = await GetOrganisationEntityByName(organisationName);
-            var expected = new Uri(_organisationUrl, persistedOrganisation.OrganisationId.ToString());
-            var actual = _response.Result.Headers.Location;
+            var expected = new Uri(organisationUrl, persistedOrganisation.OrganisationId.ToString());
+            var actual = response.Result.Headers.Location;
             actual.Should().BeEquivalentTo(expected);
         }
 
@@ -143,18 +142,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             return new
             {
-                Name = token.SelectToken("name").ToString(),
-                OdsCode = token.SelectToken("odsCode").ToString(),
-                PrimaryRoleId = token.SelectToken("primaryRoleId").ToString(),
-                CatalogueAgreementSigned = token.SelectToken("catalogueAgreementSigned").ToObject<bool>(),
-                Line1 = token.SelectToken("address.line1").ToString(),
-                Line2 = token.SelectToken("address.line2").ToString(),
-                Line3 = token.SelectToken("address.line3").ToString(),
-                Line4 = token.SelectToken("address.line4").ToString(),
-                Town = token.SelectToken("address.town").ToString(),
-                County = token.SelectToken("address.county").ToString(),
-                Postcode = token.SelectToken("address.postcode").ToString(),
-                Country = token.SelectToken("address.country").ToString()
+                Name = token.SelectToken("name")?.ToString(),
+                OdsCode = token.SelectToken("odsCode")?.ToString(),
+                PrimaryRoleId = token.SelectToken("primaryRoleId")?.ToString(),
+                CatalogueAgreementSigned = token.SelectToken("catalogueAgreementSigned")?.ToObject<bool>(),
+                Line1 = token.SelectToken("address.line1")?.ToString(),
+                Line2 = token.SelectToken("address.line2")?.ToString(),
+                Line3 = token.SelectToken("address.line3")?.ToString(),
+                Line4 = token.SelectToken("address.line4")?.ToString(),
+                Town = token.SelectToken("address.town")?.ToString(),
+                County = token.SelectToken("address.county")?.ToString(),
+                Postcode = token.SelectToken("address.postcode")?.ToString(),
+                Country = token.SelectToken("address.country")?.ToString(),
             };
         }
 
@@ -175,19 +174,19 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     data.Town,
                     data.County,
                     data.Postcode,
-                    data.Country
-                }
+                    data.Country,
+                },
             };
         }
 
         private async Task<OrganisationEntity> GetOrganisationEntityByName(string name)
         {
-            return await OrganisationEntity.GetByNameAsync(_config.ConnectionString, name);
+            return await OrganisationEntity.GetByNameAsync(config.ConnectionString, name);
         }
 
         private Guid GetOrganisationIdFromName(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
+            var allOrganisations = context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
             return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
         }
 
@@ -200,46 +199,48 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
         private async Task<T> GetValueFromResponseBody<T>(string fieldName)
         {
-            var response = await _response.ReadBodyAsJsonAsync();
-            return response.Value<T>(fieldName);
+            var jsonBody = await response.ReadBodyAsJsonAsync();
+            return jsonBody.Value<T>(fieldName);
         }
 
         private void UpdateOrganisationMapping(string organisationName, Guid organisationId)
         {
-            _context.Get(ScenarioContextKeys.OrganisationMapDictionary, new Dictionary<string, Guid>())
+            context.Get(ScenarioContextKeys.OrganisationMapDictionary, new Dictionary<string, Guid>())
                 .Add(organisationName, organisationId);
         }
 
-        private class UpdateOrganisationPayload
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class UpdateOrganisationPayload
         {
-            public bool CatalogueAgreementSigned { get; set; }
+            public bool CatalogueAgreementSigned { get; init; }
         }
 
-        private class OrganisationTable
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OrganisationTable
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string OdsCode { get; set; }
+            public string OdsCode { get; init; }
 
-            public string PrimaryRoleId { get; set; }
+            public string PrimaryRoleId { get; init; }
 
-            public bool CatalogueAgreementSigned { get; set; }
+            public bool CatalogueAgreementSigned { get; init; }
 
-            public string Line1 { get; set; }
+            public string Line1 { get; init; }
 
-            public string Line2 { get; set; }
+            public string Line2 { get; init; }
 
-            public string Line3 { get; set; }
+            public string Line3 { get; init; }
 
-            public string Line4 { get; set; }
+            public string Line4 { get; init; }
 
-            public string Town { get; set; }
+            public string Town { get; init; }
 
-            public string County { get; set; }
+            public string County { get; init; }
 
-            public string Postcode { get; set; }
+            public string Postcode { get; init; }
 
-            public string Country { get; set; }
+            public string Country { get; init; }
         }
     }
 }

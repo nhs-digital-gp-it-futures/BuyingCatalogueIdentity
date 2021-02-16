@@ -13,19 +13,19 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class OrganisationValidatorTests
+    internal static class OrganisationValidatorTests
     {
         [Test]
-        public void Constructor_NullRepository_Throws()
+        public static void Constructor_NullRepository_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var _ = new OrganisationValidator(null);
+                _ = new OrganisationValidator(null);
             });
         }
 
         [Test]
-        public async Task Validate_Organisation_Does_Not_Exist_Returns_Success()
+        public static async Task Validate_Organisation_Does_Not_Exist_Returns_Success()
         {
             var newOrganisation = OrganisationBuilder.Create(1).Build();
 
@@ -40,7 +40,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
         }
 
         [Test]
-        public async Task Validate_Organisation_Does_Exist_Returns_Failure()
+        public static async Task Validate_Organisation_Does_Exist_Returns_Failure()
         {
             var existingOrganisation = OrganisationBuilder.Create(1).Build();
 
@@ -55,7 +55,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
         }
 
         [Test]
-        public async Task Validate_Calls_OrganisationRepository_Once()
+        public static async Task Validate_Calls_OrganisationRepository_Once()
         {
             var newOrganisation = OrganisationBuilder.Create(1).Build();
 
@@ -66,11 +66,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Validators
 
             await validator.ValidateAsync(newOrganisation);
 
-            mockOrganisationRepository.Verify(r => r.GetByOdsCodeAsync(newOrganisation.OdsCode), Times.Once);
+            mockOrganisationRepository.Verify(r => r.GetByOdsCodeAsync(newOrganisation.OdsCode));
         }
 
         [Test]
-        public void Validate_NullOrganisation_Throws()
+        public static void Validate_NullOrganisation_Throws()
         {
             var mockOrganisationRepository = SetUpGetByOdsCodeAsync(null);
 

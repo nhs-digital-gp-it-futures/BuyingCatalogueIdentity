@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
@@ -15,9 +16,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class OrganisationServiceRecipientSteps
     {
-        private readonly ScenarioContext _context;
-        private readonly Response _response;
-        private readonly Request _request;
+        private readonly ScenarioContext context;
+        private readonly Response response;
+        private readonly Request request;
 
         private readonly Uri organisationsUrl;
 
@@ -27,9 +28,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             Request request,
             Config config)
         {
-            _context = context;
-            _response = response;
-            _request = request;
+            this.context = context;
+            this.response = response;
+            this.request = request;
             organisationsUrl = new Uri(config.OrganisationsApiBaseUrl, "api/v1/Organisations/");
         }
 
@@ -38,7 +39,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             var organisationId = GetOrganisationIdFromName(organisationName);
 
-            await _request.GetAsync(new Uri(organisationsUrl, $"{organisationId}/service-recipients"));
+            await request.GetAsync(new Uri(organisationsUrl, $"{organisationId}/service-recipients"));
         }
 
         [Then(@"The organisation service recipient is returned with the following values")]
@@ -46,7 +47,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             var expectedServiceRecipients = table.CreateSet<ServiceRecipientsTable>().ToList();
 
-            var serviceRecipients = (await _response.ReadBodyAsJsonAsync()).Select(CreateServiceRecipients);
+            var serviceRecipients = (await response.ReadBodyAsJsonAsync()).Select(CreateServiceRecipients);
 
             expectedServiceRecipients.Should().BeEquivalentTo(serviceRecipients);
         }
@@ -55,22 +56,23 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             return new()
             {
-                Name = token.SelectToken("name").ToString(),
-                OdsCode = token.SelectToken("odsCode").ToString()
+                Name = token.SelectToken("name")?.ToString(),
+                OdsCode = token.SelectToken("odsCode")?.ToString(),
             };
         }
 
         private Guid GetOrganisationIdFromName(string organisationName)
         {
-            var allOrganisations = _context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
+            var allOrganisations = context.Get<IDictionary<string, Guid>>(ScenarioContextKeys.OrganisationMapDictionary);
             return allOrganisations.TryGetValue(organisationName, out Guid organisationId) ? organisationId : Guid.Empty;
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class ServiceRecipientsTable
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string OdsCode { get; set; }
+            public string OdsCode { get; init; }
         }
     }
 }

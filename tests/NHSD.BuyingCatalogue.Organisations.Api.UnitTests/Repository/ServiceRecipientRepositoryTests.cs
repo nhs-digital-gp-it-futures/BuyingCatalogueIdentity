@@ -12,12 +12,13 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 {
     [TestFixture]
-    public sealed class ServiceRecipientRepositoryTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class ServiceRecipientRepositoryTests
     {
         private const string OdsCode = "XYZ";
 
         [Test]
-        public async Task GetServiceRecipientsByParentOdsCode_SinglePage_ReturnsOrganisation()
+        public static async Task GetServiceRecipientsByParentOdsCode_SinglePage_ReturnsOrganisation()
         {
             var context = ServiceRecipientTestContext.Setup();
             context.Settings.GetChildOrganisationSearchLimit = 2;
@@ -30,7 +31,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public async Task GetServiceRecipientsByParentOdsCode_MultiplePage_ReturnsAllOrganisations()
+        public static async Task GetServiceRecipientsByParentOdsCode_MultiplePage_ReturnsAllOrganisations()
         {
             var context = ServiceRecipientTestContext.Setup();
             context.Settings.GetChildOrganisationSearchLimit = 1;
@@ -49,7 +50,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public async Task GetServiceRecipientsByParentOdsCode_SinglePageDifferentRoleIds_ReturnsOnlyMatching()
+        public static async Task GetServiceRecipientsByParentOdsCode_SinglePageDifferentRoleIds_ReturnsOnlyMatching()
         {
             var context = ServiceRecipientTestContext.Setup();
             context.Settings.GetChildOrganisationSearchLimit = 3;
@@ -64,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public async Task GetServiceRecipientsByParentOdsCode_NoOrganisations_ReturnsEmptyList()
+        public static async Task GetServiceRecipientsByParentOdsCode_NoOrganisations_ReturnsEmptyList()
         {
             var context = ServiceRecipientTestContext.Setup();
             context.Http.RespondWith(status: 200, body: CreatePageJson());
@@ -73,14 +74,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public void Ctor_NullSettings_ThrowsException()
+        public static void Constructor_NullSettings_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => { new ServiceRecipientRepository(null); });
+            Assert.Throws<ArgumentNullException>(() => { _ = new ServiceRecipientRepository(null); });
         }
 
         private static string CreatePageJson(params ServiceRecipient[] serviceRecipients)
         {
-            var recipientJson = serviceRecipients.Select(x => JsonSerializer.Serialize(x));
+            var recipientJson = serviceRecipients.Select(r => JsonSerializer.Serialize(r));
             var json = string.Join(',', recipientJson);
 
             return $@"{{""Organisations"": [{json}]}}";
@@ -94,21 +95,21 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
                 {
                     ApiBaseUrl = "https://fakeodsserver.net/ORD/2-0-0",
                     GetChildOrganisationSearchLimit = 1,
-                    GpPracticeRoleId = "RO177"
+                    GpPracticeRoleId = "RO177",
                 };
                 Repository = new ServiceRecipientRepository(Settings);
                 Http = new HttpTest();
             }
 
-            public OdsSettings Settings { get; set; }
+            internal OdsSettings Settings { get; }
 
-            public ServiceRecipientRepository Repository { get; set; }
+            internal ServiceRecipientRepository Repository { get; }
 
-            public HttpTest Http { get; set; }
+            internal HttpTest Http { get; }
 
-            public static ServiceRecipientTestContext Setup()
+            internal static ServiceRecipientTestContext Setup()
             {
-                return new ServiceRecipientTestContext();
+                return new();
             }
         }
     }

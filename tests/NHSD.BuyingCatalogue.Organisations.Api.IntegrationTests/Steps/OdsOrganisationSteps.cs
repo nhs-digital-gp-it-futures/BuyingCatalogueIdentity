@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
@@ -14,18 +15,18 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class OdsOrganisationSteps
     {
-        private readonly Response _response;
-        private readonly Request _request;
-        private readonly OdsApiSteps _api;
+        private readonly Response response;
+        private readonly Request request;
+        private readonly OdsApiSteps api;
 
-        private readonly Uri _organisationUrl;
+        private readonly Uri organisationUrl;
 
         public OdsOrganisationSteps(Response response, Request request, Config config, OdsApiSteps api)
         {
-            _response = response;
-            _request = request;
-            _api = api;
-            _organisationUrl = new Uri(config.OrganisationsApiBaseUrl, "api/v1/ods");
+            this.response = response;
+            this.request = request;
+            this.api = api;
+            organisationUrl = new Uri(config.OrganisationsApiBaseUrl, "api/v1/ods");
         }
 
         [Given(@"Ods Organisations exist")]
@@ -37,7 +38,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             {
                 var odsApiOrganisation = TransformIntoOdsApiFormat(org);
                 var odsApiOrganisationAsJson = JsonConvert.SerializeObject(odsApiOrganisation);
-                await _api.SetUpGETEndpoint(org.OdsCode, odsApiOrganisationAsJson);
+                await api.SetUpGetEndpoint(org.OdsCode, odsApiOrganisationAsJson);
             }
         }
 
@@ -47,13 +48,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             var odsOrganisations = table.CreateSet<OdsApiResponseTable>().Select(TransformIntoOdsApiChildFormat);
             var odsResponse = new { Organisations = odsOrganisations };
             var odsApiOrganisationAsJson = JsonConvert.SerializeObject(odsResponse);
-            await _api.SetUpGETChildrenEndpoint(odsApiOrganisationAsJson);
+            await api.SetUpGetChildrenEndpoint(odsApiOrganisationAsJson);
         }
 
         [When(@"a GET request is made for an Ods organisation with code (.*)")]
-        public async Task WhenAGETRequestIsMadeForAnOdsOrganisationWithOdsCode(string odsCode)
+        public async Task WhenAGetRequestIsMadeForAnOdsOrganisationWithOdsCode(string odsCode)
         {
-            await _request.GetAsync(_organisationUrl, odsCode);
+            await request.GetAsync(organisationUrl, odsCode);
         }
 
         [Then(@"the Ods Organisation is returned with the following values")]
@@ -61,7 +62,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             var expectedOrganisation = table.CreateSet<OrganisationTable>().FirstOrDefault();
 
-            JToken responseBody = await _response.ReadBodyAsJsonAsync();
+            JToken responseBody = await response.ReadBodyAsJsonAsync();
 
             var actualOrganisation = CreateOrganisationFromJson(responseBody);
 
@@ -74,7 +75,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             {
                 data.Name,
                 data.PrimaryRoleId,
-                OrgId = data.OdsCode
+                OrgId = data.OdsCode,
             };
         }
 
@@ -90,15 +91,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     {
                         Location = new
                         {
-                            data.AddrLn1,
-                            data.AddrLn2,
-                            data.AddrLn3,
-                            data.AddrLn4,
+                            AddrLn1 = data.AddressLine1,
+                            AddrLn2 = data.AddressLine2,
+                            AddrLn3 = data.AddressLine3,
+                            AddrLn4 = data.AddressLine4,
                             data.Town,
                             data.County,
                             data.PostCode,
-                            data.Country
-                        }
+                            data.Country,
+                        },
                     },
                     Roles = new
                     {
@@ -107,17 +108,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                             new
                             {
                                 id = data.PrimaryRoleId,
-                                primaryRole = true
-                            }
-                        }
-                    }
-                }
+                                primaryRole = true,
+                            },
+                        },
+                    },
+                },
             };
         }
 
         private static OrganisationTable CreateOrganisationFromJson(JToken json)
         {
-            var getAddressField = new Func<string, string>(s => json.SelectToken("address").Value<string>(s));
+            var getAddressField = new Func<string, string>(s => json.SelectToken("address")?.Value<string>(s));
             return new OrganisationTable
             {
                 OdsCode = json.Value<string>("odsCode"),
@@ -130,69 +131,62 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                 Town = getAddressField("town"),
                 County = getAddressField("county"),
                 PostCode = getAddressField("postcode"),
-                Country = getAddressField("country")
+                Country = getAddressField("country"),
             };
         }
 
-        private class OdsApiChildResponseTable
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OdsApiResponseTable
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string OdsCode { get; set; }
+            public string OdsCode { get; init; }
 
-            public string PrimaryRoleId { get; set; }
+            public string PrimaryRoleId { get; init; }
+
+            public string Status { get; init; }
+
+            public string AddressLine1 { get; init; }
+
+            public string AddressLine2 { get; init; }
+
+            public string AddressLine3 { get; init; }
+
+            public string AddressLine4 { get; init; }
+
+            public string Town { get; init; }
+
+            public string County { get; init; }
+
+            public string PostCode { get; init; }
+
+            public string Country { get; init; }
         }
 
-        private class OdsApiResponseTable
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OrganisationTable
         {
-            public string Name { get; set; }
+            public string OdsCode { get; init; }
 
-            public string OdsCode { get; set; }
+            public string OrganisationName { get; init; }
 
-            public string PrimaryRoleId { get; set; }
+            public string PrimaryRoleId { get; init; }
 
-            public string Status { get; set; }
+            public string Line1 { get; init; }
 
-            public string AddrLn1 { get; set; }
+            public string Line2 { get; init; }
 
-            public string AddrLn2 { get; set; }
+            public string Line3 { get; init; }
 
-            public string AddrLn3 { get; set; }
+            public string Line4 { get; init; }
 
-            public string AddrLn4 { get; set; }
+            public string Town { get; init; }
 
-            public string Town { get; set; }
+            public string County { get; init; }
 
-            public string County { get; set; }
+            public string PostCode { get; init; }
 
-            public string PostCode { get; set; }
-
-            public string Country { get; set; }
-        }
-
-        private class OrganisationTable
-        {
-            public string OdsCode { get; set; }
-
-            public string OrganisationName { get; set; }
-
-            public string PrimaryRoleId { get; set; }
-
-            public string Line1 { get; set; }
-
-            public string Line2 { get; set; }
-
-            public string Line3 { get; set; }
-
-            public string Line4 { get; set; }
-
-            public string Town { get; set; }
-
-            public string County { get; set; }
-
-            public string PostCode { get; set; }
-
-            public string Country { get; set; }
+            public string Country { get; init; }
         }
     }
 }

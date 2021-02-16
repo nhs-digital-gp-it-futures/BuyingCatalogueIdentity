@@ -16,28 +16,28 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class CreateOrganisationServiceTests
+    internal static class CreateOrganisationServiceTests
     {
         [Test]
-        public void Constructor_NullRepository_Throws()
+        public static void Constructor_NullRepository_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var _ = new CreateOrganisationService(null, Mock.Of<IOrganisationValidator>());
+                _ = new CreateOrganisationService(null, Mock.Of<IOrganisationValidator>());
             });
         }
 
         [Test]
-        public void Constructor_NullValidator_Throws()
+        public static void Constructor_NullValidator_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var _ = new CreateOrganisationService(Mock.Of<IOrganisationRepository>(), null);
+                _ = new CreateOrganisationService(Mock.Of<IOrganisationRepository>(), null);
             });
         }
 
         [Test]
-        public void CreateAsync_NullRequest_Throws()
+        public static void CreateAsync_NullRequest_Throws()
         {
             var service = new CreateOrganisationService(Mock.Of<IOrganisationRepository>(), Mock.Of<IOrganisationValidator>());
 
@@ -45,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task CreateAsync_ValidationSuccess_Returns_Success()
+        public static async Task CreateAsync_ValidationSuccess_Returns_Success()
         {
             var service = new CreateOrganisationService(SetUpRepository(), SetUpValidator(true));
 
@@ -56,7 +56,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task CreateAsync_ValidationFailure_Returns_Failure()
+        public static async Task CreateAsync_ValidationFailure_Returns_Failure()
         {
             var service = new CreateOrganisationService(SetUpRepository(), SetUpValidator(false));
 
@@ -68,29 +68,29 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task CreateAsync_OnSuccess_Calls_CreateOrganisationAsync_Once()
+        public static async Task CreateAsync_OnSuccess_Calls_CreateOrganisationAsync_Once()
         {
             var mockOrganisationRepository = SetUpRepositoryMock();
             var service = new CreateOrganisationService(mockOrganisationRepository.Object, SetUpValidator(true));
 
             await service.CreateAsync(SetUpRequest());
 
-            mockOrganisationRepository.Verify(r => r.CreateOrganisationAsync(It.IsAny<Organisation>()), Times.Once);
+            mockOrganisationRepository.Verify(r => r.CreateOrganisationAsync(It.IsAny<Organisation>()));
         }
 
         [Test]
-        public async Task CreateAsync_OnFailure_Calls_CreateOrganisationAsync_ZeroTimes()
+        public static async Task CreateAsync_OnFailure_Calls_CreateOrganisationAsync_ZeroTimes()
         {
             var mockOrganisationRepository = SetUpRepositoryMock();
             var service = new CreateOrganisationService(mockOrganisationRepository.Object, SetUpValidator(false));
 
             await service.CreateAsync(SetUpRequest());
 
-            mockOrganisationRepository.Verify(r => r.CreateOrganisationAsync(It.IsAny<Organisation>()), Times.Never);
+            mockOrganisationRepository.Verify(r => r.CreateOrganisationAsync(It.IsAny<Organisation>()), Times.Never());
         }
 
         [Test]
-        public async Task CreateAsync_CreatesOrganisationWithCorrectValues()
+        public static async Task CreateAsync_CreatesOrganisationWithCorrectValues()
         {
             var expected = OrganisationBuilder.Create(1).WithAddress(AddressBuilder.Create().Build()).Build();
 
@@ -146,7 +146,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
             bool catalogueAgreementSigned = false,
             Address address = null)
         {
-            return new CreateOrganisationRequest(name, odsCode, primaryRoleId, catalogueAgreementSigned, address);
+            return new(name, odsCode, primaryRoleId, catalogueAgreementSigned, address);
         }
     }
 }

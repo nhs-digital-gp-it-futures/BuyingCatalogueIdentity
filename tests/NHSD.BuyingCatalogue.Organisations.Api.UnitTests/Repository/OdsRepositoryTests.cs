@@ -14,13 +14,37 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class OdsRepositoryTests
+    internal static class OdsRepositoryTests
     {
         private const string OdsCode = "XYZ";
-        private const string ValidResponseBody = @"{""Organisation"": {""Name"": ""SOUTH EAST - H&J COMMISSIONING HUB"", ""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""}, {""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""97T""}, ""Status"": ""Active"", ""LastChangeDate"": ""2020-04-01"", ""orgRecordClass"": ""RC1"", ""GeoLoc"": {""Location"": {""AddrLn1"": ""C/O NHS ENGLAND"", ""AddrLn2"": ""1W09, 1ST FLOOR, QUARRY HOUSE"", ""AddrLn3"": ""QUARRY HILL"", ""Town"": ""LEEDS"", ""PostCode"": ""LS2 7UA"", ""Country"": ""ENGLAND""}}, ""Roles"": {""Role"": [{""id"": ""RO218"", ""uniqueRoleId"": 391223, ""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""}, {""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Status"": ""Active""}, {""id"": ""RO98"", ""uniqueRoleId"": 386574, ""primaryRole"": true, ""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""}, {""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Status"": ""Active""}]}, ""Rels"": {""Rel"": [{""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""}, {""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Status"": ""Active"", ""Target"": {""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""Y59""}, ""PrimaryRoleId"": {""id"": ""RO209"", ""uniqueRoleId"": 299360}}, ""id"": ""RE5"", ""uniqueRelId"": 619596}]}, ""Succs"": {""Succ"": [{""uniqueSuccId"": 37762, ""Date"": [{""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Type"": ""Predecessor"", ""Target"": {""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""14W""}, ""PrimaryRoleId"": {""id"": ""RO98"", ""uniqueRoleId"": 296831}}}, {""uniqueSuccId"": 37761, ""Date"": [{""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Type"": ""Predecessor"", ""Target"": {""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""14V""}, ""PrimaryRoleId"": {""id"": ""RO98"", ""uniqueRoleId"": 296829}}}]}}}";
+
+        private const string ValidResponseBody = @"{""Organisation"": "
+            + @"{""Name"": ""SOUTH EAST - H&J COMMISSIONING HUB"", "
+            + @"""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""}, "
+            + @"{""Type"": ""Legal"", ""Start"": ""2020-04-01""}], "
+            + @"""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""97T""}, "
+            + @"""Status"": ""Active"", ""LastChangeDate"": ""2020-04-01"", ""orgRecordClass"": ""RC1"", "
+            + @"""GeoLoc"": {""Location"": {""AddrLn1"": ""C/O NHS ENGLAND"", ""AddrLn2"": ""1W09, 1ST FLOOR, QUARRY HOUSE"", "
+            + @"""AddrLn3"": ""QUARRY HILL"", ""Town"": ""LEEDS"", ""PostCode"": ""LS2 7UA"", ""Country"": ""ENGLAND""}}, "
+            + @"""Roles"": {""Role"": [{""id"": ""RO218"", ""uniqueRoleId"": 391223, "
+            + @"""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""}, "
+            + @"{""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Status"": ""Active""}, "
+            + @"{""id"": ""RO98"", ""uniqueRoleId"": 386574, ""primaryRole"": true, "
+            + @"""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""},"
+            + @" {""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Status"": ""Active""}]}, "
+            + @"""Rels"": {""Rel"": [{""Date"": [{""Type"": ""Operational"", ""Start"": ""2019-10-25""}, "
+            + @"{""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Status"": ""Active"", "
+            + @"""Target"": {""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""Y59""}, "
+            + @"""PrimaryRoleId"": {""id"": ""RO209"", ""uniqueRoleId"": 299360}}, ""id"": ""RE5"", ""uniqueRelId"": 619596}]}, "
+            + @"""Succs"": {""Succ"": [{""uniqueSuccId"": 37762, ""Date"": [{""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Type"": ""Predecessor"", "
+            + @"""Target"": {""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""14W""}, "
+            + @"""PrimaryRoleId"": {""id"": ""RO98"", ""uniqueRoleId"": 296831}}}, {""uniqueSuccId"": 37761, "
+            + @"""Date"": [{""Type"": ""Legal"", ""Start"": ""2020-04-01""}], ""Type"": ""Predecessor"", "
+            + @"""Target"": {""OrgId"": {""root"": ""2.16.840.1.113883.2.1.3.2.4.18.48"", ""assigningAuthorityName"": ""HSCIC"", ""extension"": ""14V""}, "
+            + @"""PrimaryRoleId"": {""id"": ""RO98"", ""uniqueRoleId"": 296829}}}]}}}";
 
         [Test]
-        public async Task GetBuyerOrganisationByOdsCode_WithValidResponse_Returns_BuyerOrganisation()
+        public static async Task GetBuyerOrganisationByOdsCode_WithValidResponse_Returns_BuyerOrganisation()
         {
             var context = OdsRepositoryTestContext.Setup();
             using var httpTest = new HttpTest();
@@ -38,7 +62,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
                     Line3 = "QUARRY HILL",
                     Town = "LEEDS",
                     Postcode = "LS2 7UA",
-                    Country = "ENGLAND"
+                    Country = "ENGLAND",
                 },
                 IsActive = true,
                 IsBuyerOrganisation = true,
@@ -52,7 +76,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public async Task GetBuyerOrganisationByOdsCode_WithNotFoundResponseFromOdsApi_Returns_Null()
+        public static async Task GetBuyerOrganisationByOdsCode_WithNotFoundResponseFromOdsApi_Returns_Null()
         {
             var context = OdsRepositoryTestContext.Setup();
             using var httpTest = new HttpTest();
@@ -64,7 +88,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public void GetBuyerOrganisationByOdsCode_WithInternalServerErrorResponseFromOdsApi_Throws()
+        public static void GetBuyerOrganisationByOdsCode_WithInternalServerErrorResponseFromOdsApi_Throws()
         {
             var context = OdsRepositoryTestContext.Setup();
             using var httpTest = new HttpTest();
@@ -74,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_Once()
+        public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_Once()
         {
             var context = OdsRepositoryTestContext.Setup();
             using var httpTest = new HttpTest();
@@ -89,7 +113,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
-        public void Constructor_IOdsRepository_OdsSettings_NullSettings_ThrowsException()
+        public static void Constructor_IOdsRepository_OdsSettings_NullSettings_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => new OdsRepository(null));
         }

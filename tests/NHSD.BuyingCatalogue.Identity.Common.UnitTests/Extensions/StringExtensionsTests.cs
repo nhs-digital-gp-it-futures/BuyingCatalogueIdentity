@@ -7,41 +7,47 @@ namespace NHSD.BuyingCatalogue.Identity.Common.UnitTests.Extensions
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class StringExtensionsTests
+    internal static class StringExtensionsTests
     {
         [Test]
-        public void TrimAsync_NullInput_Throws()
+        public static void TrimAsync_NullInput_Throws()
         {
+            string input = null;
+
             Assert.Throws<ArgumentNullException>(() =>
             {
-                string input = null;
+                // ReSharper disable once AssignNullToNotNullAttribute
                 input.TrimAsync();
             });
         }
 
         [Test]
-        public void TrimController_NullInput_Throws()
+        public static void TrimController_NullInput_Throws()
         {
+            string input = null;
+
             Assert.Throws<ArgumentNullException>(() =>
             {
-                string input = null;
+                // ReSharper disable once AssignNullToNotNullAttribute
                 input.TrimController();
             });
         }
 
+        // ReSharper disable once StringLiteralTypo
         [TestCase("FooAsync", "Foo")]
         [TestCase("Fooasync", "Foo")]
         [TestCase("Foo", "Foo")]
-        public void TrimAsync_Tests(string input, string expected)
+        public static void TrimAsync_Tests(string input, string expected)
         {
             string actual = input.TrimAsync();
             actual.Should().BeEquivalentTo(expected);
         }
 
+        // ReSharper disable StringLiteralTypo
+        [TestCase("Barcontroller", "Barcontroller")] // ReSharper restore StringLiteralTypo
         [TestCase("BarController", "Bar")]
-        [TestCase("Barcontroller", "Barcontroller")]
         [TestCase("Bar", "Bar")]
-        public void TrimController_Tests(string input, string expected)
+        public static void TrimController_Tests(string input, string expected)
         {
             string actual = input.TrimController();
             actual.Should().BeEquivalentTo(expected);
