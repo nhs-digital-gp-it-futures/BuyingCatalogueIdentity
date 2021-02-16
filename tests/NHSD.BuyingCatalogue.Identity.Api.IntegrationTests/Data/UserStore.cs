@@ -6,11 +6,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data
 {
     internal sealed class UserStore : IUserSecurityStampStore<IdentityUser>
     {
-        private readonly IdentityUser _identityUser;
+        private readonly IdentityUser identityUser;
 
         internal UserStore(IdentityUser identityUser)
         {
-            _identityUser = identityUser;
+            this.identityUser = identityUser;
         }
 
         public void Dispose()
@@ -19,12 +19,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data
 
         public Task<string> GetUserIdAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_identityUser.Id);
+            return Task.FromResult(identityUser.Id);
         }
 
         public Task<string> GetUserNameAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_identityUser.UserName);
+            return Task.FromResult(identityUser.UserName);
         }
 
         public Task SetUserNameAsync(IdentityUser user, string userName, CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data
 
         public Task<string> GetNormalizedUserNameAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_identityUser.NormalizedUserName);
+            return Task.FromResult(identityUser.NormalizedUserName);
         }
 
         public Task SetNormalizedUserNameAsync(IdentityUser user, string normalizedName, CancellationToken cancellationToken)
@@ -59,12 +59,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Data
 
         public Task<IdentityUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_identityUser);
+            return Task.FromResult(identityUser);
         }
 
         public Task<IdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_identityUser);
+            return Task.FromResult(identityUser);
         }
 
         public Task SetSecurityStampAsync(IdentityUser user, string stamp, CancellationToken cancellationToken)

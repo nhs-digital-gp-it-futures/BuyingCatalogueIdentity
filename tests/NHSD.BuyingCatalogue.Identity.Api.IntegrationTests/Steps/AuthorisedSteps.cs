@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
@@ -15,20 +16,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     [Binding]
     internal sealed class AuthorisedSteps
     {
-        private readonly ScenarioContext _context;
+        private readonly ScenarioContext context;
 
         public AuthorisedSteps(IConfiguration configuration, ScenarioContext context)
         {
-            _configuration = configuration;
-            _context = context;
+            Configuration = configuration;
+            this.context = context;
         }
 
-        private IConfiguration _configuration { get; }
+        private IConfiguration Configuration { get; }
 
         [Given(@"a user is logged in")]
         public async Task GivenAnUserIsLoggedInWithUsernameAndPassword(Table table)
         {
-            var discoveryAddress = _configuration.GetValue<string>("DiscoveryAddress");
+            var discoveryAddress = Configuration.GetValue<string>("DiscoveryAddress");
 
             using var client = new HttpClient();
 
@@ -38,8 +39,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 Address = discoveryAddress,
             };
 
-            var discoveryDocument =
-                await client.GetDiscoveryDocumentAsync(discoveryDocumentRequest);
+            var discoveryDocument = await client.GetDiscoveryDocumentAsync(discoveryDocumentRequest);
 
             if (discoveryDocument.IsError)
             {
@@ -67,32 +67,33 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
                 return;
             }
 
-            _context[ScenarioContextKeys.AccessToken] = tokenResponse.AccessToken;
+            context[ScenarioContextKeys.AccessToken] = tokenResponse.AccessToken;
         }
 
         [Given(@"the claims contains the following information")]
         public void GivenTheClaimsContainsOrganisation(Table table)
         {
-            var expectedClaims = table.Rows.Select(x => (ClaimType: x["ClaimType"], ClaimValue: x["ClaimValue"]));
+            var expectedClaims = table.Rows.Select(r => (ClaimType: r["ClaimType"], ClaimValue: r["ClaimValue"]));
             var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(_context.Get(ScenarioContextKeys.AccessToken, string.Empty));
-            var claims = token.Claims.Select(x => (ClaimType: x.Type, ClaimValue: x.Value));
+            var token = handler.ReadJwtToken(context.Get(ScenarioContextKeys.AccessToken, string.Empty));
+            var claims = token.Claims.Select(c => (ClaimType: c.Type, ClaimValue: c.Value));
             claims.Should().Contain(expectedClaims);
         }
 
         [Then(@"the access token should be empty")]
         public void ThenTheAccessTokenShouldBeEmpty()
         {
-            _context.Get(ScenarioContextKeys.AccessToken, string.Empty).Should().BeEmpty();
+            context.Get(ScenarioContextKeys.AccessToken, string.Empty).Should().BeEmpty();
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class UserTable
         {
-            public string Username { get; set; }
+            public string Username { get; init; }
 
-            public string Password { get; set; }
+            public string Password { get; init; }
 
-            public string Scope { get; set; }
+            public string Scope { get; init; }
         }
     }
 }

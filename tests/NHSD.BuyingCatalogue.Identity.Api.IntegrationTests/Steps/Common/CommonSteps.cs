@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using JetBrains.Annotations;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -10,18 +11,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
     [Binding]
     internal sealed class CommonSteps
     {
-        private readonly Response _response;
+        private readonly Response response;
 
         public CommonSteps(Response response)
         {
-            _response = response;
+            this.response = response;
         }
 
         [Then(@"a response with status code ([\d]+) is returned")]
         public void AResponseIsReturned(int code)
         {
-            _response.Should().NotBeNull();
-            _response.Result.StatusCode.Should().Be(code);
+            response.Should().NotBeNull();
+            response.Result.StatusCode.Should().Be(code);
         }
 
         [Then(@"the response contains the following errors")]
@@ -29,24 +30,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps.Common
         {
             var expected = table.CreateSet<ResponseErrorsTable>();
 
-            var response = await _response.ReadBodyAsJsonAsync();
+            var jsonBody = await response.ReadBodyAsJsonAsync();
 
-            var actual = response
-                .SelectToken("errors")
+            var actual = jsonBody
+                .SelectToken("errors")?
                 .Select(t => new ResponseErrorsTable
                 {
                     ErrorMessageId = t.Value<string>("id"),
-                    FieldName = t.Value<string>("field")
+                    FieldName = t.Value<string>("field"),
                 });
 
             actual.Should().BeEquivalentTo(expected);
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class ResponseErrorsTable
         {
-            public string ErrorMessageId { get; set; }
+            public string ErrorMessageId { get; init; }
 
-            public string FieldName { get; set; }
+            public string FieldName { get; init; }
         }
     }
 }
