@@ -5,59 +5,59 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     public sealed class CreateBuyerRequestBuilder
     {
-        private Guid _primaryOrganisationId;
-        private string _firstName;
-        private string _lastName;
-        private string _phoneNumber;
-        private string _emailAddress;
+        private Guid primaryOrganisationId;
+        private string firstName;
+        private string lastName;
+        private string phoneNumber;
+        private string emailAddress;
 
         public CreateBuyerRequestBuilder()
         {
-            _primaryOrganisationId = Guid.NewGuid();
-            _firstName = "Test";
-            _lastName = "Smith";
-            _phoneNumber = "0123456789";
-            _emailAddress = "a.b@c.com";
+            primaryOrganisationId = Guid.NewGuid();
+            firstName = "Test";
+            lastName = "Smith";
+            phoneNumber = "0123456789";
+            emailAddress = "a.b@c.com";
         }
 
         public static CreateBuyerRequestBuilder Create()
         {
-            return new CreateBuyerRequestBuilder();
+            return new();
         }
 
-        public CreateBuyerRequestBuilder WithPrimaryOrganisationId(Guid primaryOrganisationId)
+        public CreateBuyerRequestBuilder WithPrimaryOrganisationId(Guid id)
         {
-            _primaryOrganisationId = primaryOrganisationId;
+            primaryOrganisationId = id;
             return this;
         }
 
-        public CreateBuyerRequestBuilder WithFirstName(string firstName)
+        public CreateBuyerRequestBuilder WithFirstName(string name)
         {
-            _firstName = firstName;
+            firstName = name;
             return this;
         }
 
-        public CreateBuyerRequestBuilder WithLastName(string lastName)
+        public CreateBuyerRequestBuilder WithLastName(string name)
         {
-            _lastName = lastName;
+            lastName = name;
             return this;
         }
 
-        public CreateBuyerRequestBuilder WithPhoneNumber(string phoneNumber)
+        public CreateBuyerRequestBuilder WithPhoneNumber(string number)
         {
-            _phoneNumber = phoneNumber;
+            phoneNumber = number;
             return this;
         }
 
-        public CreateBuyerRequestBuilder WithEmailAddress(string emailAddress)
+        public CreateBuyerRequestBuilder WithEmailAddress(string address)
         {
-            _emailAddress = emailAddress;
+            emailAddress = address;
             return this;
         }
 
         public CreateBuyerRequest Build()
         {
-            return new CreateBuyerRequest(_primaryOrganisationId, _firstName, _lastName, _phoneNumber, _emailAddress);
+            return new(primaryOrganisationId, firstName, lastName, phoneNumber, emailAddress);
         }
     }
 }

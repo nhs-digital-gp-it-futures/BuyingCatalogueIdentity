@@ -7,115 +7,115 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
     internal sealed class ApplicationUserBuilder
     {
         private static readonly IDictionary<
-            OrganisationFunction, 
-            Func<ApplicationUserBuilder, ApplicationUser>> _applicationUserFactory 
-            = new Dictionary<OrganisationFunction, Func<ApplicationUserBuilder, ApplicationUser>>
+            OrganisationFunction,
+            Func<ApplicationUserBuilder, ApplicationUser>> ApplicationUserFactory =
+            new Dictionary<OrganisationFunction, Func<ApplicationUserBuilder, ApplicationUser>>
             {
                 {
-                    OrganisationFunction.Authority, builder => 
+                    OrganisationFunction.Authority, builder =>
                         ApplicationUser.CreateAuthority(
-                            builder._username, 
-                            builder._firstName, 
-                            builder._lastName, 
-                            builder._phoneNumber, 
-                            builder._emailAddress, 
-                            builder._primaryOrganisationId)
+                            builder.username,
+                            builder.firstName,
+                            builder.lastName,
+                            builder.phoneNumber,
+                            builder.emailAddress,
+                            builder.primaryOrganisationId)
                 },
                 {
-                    OrganisationFunction.Buyer, builder => 
+                    OrganisationFunction.Buyer, builder =>
                         ApplicationUser.CreateBuyer(
-                            builder._username, 
-                            builder._firstName, 
-                            builder._lastName, 
-                            builder._phoneNumber, 
-                            builder._emailAddress, 
-                            builder._primaryOrganisationId)
+                            builder.username,
+                            builder.firstName,
+                            builder.lastName,
+                            builder.phoneNumber,
+                            builder.emailAddress,
+                            builder.primaryOrganisationId)
                 },
             };
 
-        private string _userId;
-        private string _firstName;
-        private string _lastName;
-        private string _phoneNumber;
-        private string _emailAddress;
-        private string _username;
-        private Guid _primaryOrganisationId;
-        private bool _disabled;
-        private bool _catalogueAgreementSigned;
-        private OrganisationFunction _organisationFunction;
+        private string userId;
+        private string firstName;
+        private string lastName;
+        private string phoneNumber;
+        private string emailAddress;
+        private string username;
+        private Guid primaryOrganisationId;
+        private bool disabled;
+        private bool catalogueAgreementSigned;
+        private OrganisationFunction organisationFunction;
 
         private ApplicationUserBuilder()
         {
-            _userId = Guid.NewGuid().ToString();
-            _firstName = "Bob";
-            _lastName = "Smith";
-            _phoneNumber = "0123456789";
-            _emailAddress = "a.b@c.com";
-            _username = _emailAddress;
-            _primaryOrganisationId = Guid.NewGuid();
-            _catalogueAgreementSigned = false;
-            _organisationFunction = OrganisationFunction.Buyer;
+            userId = Guid.NewGuid().ToString();
+            firstName = "Bob";
+            lastName = "Smith";
+            phoneNumber = "0123456789";
+            emailAddress = "a.b@c.com";
+            username = emailAddress;
+            primaryOrganisationId = Guid.NewGuid();
+            catalogueAgreementSigned = false;
+            organisationFunction = OrganisationFunction.Buyer;
         }
 
-        internal static ApplicationUserBuilder Create() => new ApplicationUserBuilder();
+        internal static ApplicationUserBuilder Create() => new();
 
-        internal ApplicationUserBuilder WithUserId(string userId)
+        internal ApplicationUserBuilder WithUserId(string id)
         {
-            _userId = userId;
+            userId = id;
             return this;
         }
 
-        internal ApplicationUserBuilder WithFirstName(string firstName)
+        internal ApplicationUserBuilder WithFirstName(string name)
         {
-            _firstName = firstName;
+            firstName = name;
             return this;
         }
 
-        internal ApplicationUserBuilder WithLastName(string lastName)
+        internal ApplicationUserBuilder WithLastName(string name)
         {
-            _lastName = lastName;
+            lastName = name;
             return this;
         }
 
-        internal ApplicationUserBuilder WithPhoneNumber(string phoneNumber)
+        internal ApplicationUserBuilder WithPhoneNumber(string number)
         {
-            _phoneNumber = phoneNumber;
+            phoneNumber = number;
             return this;
         }
 
-        internal ApplicationUserBuilder WithEmailAddress(string emailAddress)
+        internal ApplicationUserBuilder WithEmailAddress(string address)
         {
-            _emailAddress = emailAddress;
+            emailAddress = address;
             return this;
         }
 
-        internal ApplicationUserBuilder WithUsername(string userName)
+        internal ApplicationUserBuilder WithUsername(string name)
         {
-            _username = userName;
+            username = name;
             return this;
         }
 
-        internal ApplicationUserBuilder WithPrimaryOrganisationId(Guid primaryOrganisationId)
+        internal ApplicationUserBuilder WithPrimaryOrganisationId(Guid id)
         {
-            _primaryOrganisationId = primaryOrganisationId;
+            primaryOrganisationId = id;
             return this;
         }
 
-        internal ApplicationUserBuilder WithOrganisationFunction(OrganisationFunction organisationFunction)
+        internal ApplicationUserBuilder WithOrganisationFunction(OrganisationFunction function)
         {
-            _organisationFunction = organisationFunction;
+            organisationFunction = function;
             return this;
         }
 
-        internal ApplicationUserBuilder WithDisabled(bool disabled)
+        internal ApplicationUserBuilder WithDisabled(bool isDisabled)
         {
-            _disabled = disabled;
+            disabled = isDisabled;
             return this;
         }
 
-        internal ApplicationUserBuilder WithCatalogueAgreementSigned(bool catalogueAgreementSigned)
+        internal ApplicationUserBuilder WithCatalogueAgreementSigned(bool agreementSigned)
         {
-            _catalogueAgreementSigned = catalogueAgreementSigned;
+            catalogueAgreementSigned = agreementSigned;
             return this;
         }
 
@@ -123,20 +123,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         private ApplicationUser CreateUserByOrganisationFunction()
         {
-            if (!_applicationUserFactory.TryGetValue(_organisationFunction, out var factory))
+            if (!ApplicationUserFactory.TryGetValue(organisationFunction, out var factory))
             {
-                throw new InvalidOperationException($"Unknown type of user '{_organisationFunction?.DisplayName}'");
+                throw new InvalidOperationException($"Unknown type of user '{organisationFunction?.DisplayName}'");
             }
 
             var user = factory(this);
-            user.Id = _userId;
+            user.Id = userId;
 
-            if (_disabled)
+            if (disabled)
             {
                 user.MarkAsDisabled();
             }
 
-            if (_catalogueAgreementSigned)
+            if (catalogueAgreementSigned)
             {
                 user.MarkCatalogueAgreementAsSigned();
             }

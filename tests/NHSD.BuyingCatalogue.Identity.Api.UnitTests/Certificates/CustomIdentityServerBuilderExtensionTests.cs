@@ -19,12 +19,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
 {
     [TestFixture]
     [Parallelizable(ParallelScope.None)]
-    internal sealed class CustomIdentityServerBuilderExtensionTests
+    internal static class CustomIdentityServerBuilderExtensionTests
     {
         private const string DeveloperKeyFileName = "tempkey.rsa";
 
         [Test]
-        public void AddCustomSigningCredential_NullCertificate_ThrowsException()
+        public static void AddCustomSigningCredential_NullCertificate_ThrowsException()
         {
             var builder = Mock.Of<IIdentityServerBuilder>();
 
@@ -33,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         }
 
         [Test]
-        public void AddCustomSigningCredential_NullLogger_ThrowsException()
+        public static void AddCustomSigningCredential_NullLogger_ThrowsException()
         {
             var builder = Mock.Of<IIdentityServerBuilder>();
 
@@ -42,7 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         }
 
         [Test]
-        public async Task AddCustomSigningCredential_WithCertificate_SetsSigningCredentials()
+        public static async Task AddCustomSigningCredential_WithCertificate_SetsSigningCredentials()
         {
             using var x509 = CreateValidCertificate();
 
@@ -59,8 +59,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
             var signingCredentialStore = provider.GetService<ISigningCredentialStore>();
             var validationKeysStore = provider.GetService<IValidationKeysStore>();
 
-            signingCredentialStore.Should().NotBeNull();
-            validationKeysStore.Should().NotBeNull();
+            Assert.NotNull(signingCredentialStore);
+            Assert.NotNull(validationKeysStore);
 
             var signingCredentials = await signingCredentialStore.GetSigningCredentialsAsync();
             var validationKeys = (await validationKeysStore.GetValidationKeysAsync()).ToList();
@@ -76,8 +76,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
         }
 
         [Test]
-        public async Task AddCustomSigningCredential_WithoutCertificate_SetsDeveloperCredentials()
+        public static async Task AddCustomSigningCredential_WithoutCertificate_SetsDeveloperCredentials()
         {
+            // ReSharper disable once StringLiteralTypo
             const string expectedKeyId = "xEB-cwCvL4brqLxCMzkw3Q";
 
             WriteEmbeddedDeveloperCertificateToDisk();
@@ -91,8 +92,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
             var signingCredentialStore = provider.GetService<ISigningCredentialStore>();
             var validationKeysStore = provider.GetService<IValidationKeysStore>();
 
-            signingCredentialStore.Should().NotBeNull();
-            validationKeysStore.Should().NotBeNull();
+            Assert.NotNull(signingCredentialStore);
+            Assert.NotNull(validationKeysStore);
 
             var signingCredentials = await signingCredentialStore.GetSigningCredentialsAsync();
             var validationKeys = (await validationKeysStore.GetValidationKeysAsync()).ToList();
@@ -114,8 +115,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
             var fixture = new Fixture();
             var subject = fixture.Create<string>();
 
+            // ReSharper disable once IdentifierTypo
             using var ecdsa = ECDsa.Create();
-            var req = new CertificateRequest($"cn={subject}", ecdsa, HashAlgorithmName.SHA256);
+            var req = new CertificateRequest($"cn={subject}", ecdsa!, HashAlgorithmName.SHA256);
 
             return req.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddHours(1));
         }
@@ -127,6 +129,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Certificates
 
         private static void WriteEmbeddedDeveloperCertificateToDisk()
         {
+            // ReSharper disable once StringLiteralTypo
             const string embeddedDeveloperKeyFileName = "tempkey.key";
 
             using var stream = Assembly

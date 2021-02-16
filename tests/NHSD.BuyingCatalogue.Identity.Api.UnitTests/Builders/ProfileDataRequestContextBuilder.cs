@@ -7,33 +7,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     internal sealed class ProfileDataRequestContextBuilder
     {
-        private string _subjectId;
-        private readonly Client _client;
-        private readonly string _caller;
-        private IEnumerable<string> _requestedClaimTypes;
+        private readonly Client client;
+        private readonly string caller;
+        private readonly IEnumerable<string> requestedClaimTypes;
+
+        private string subjectId;
 
         internal ProfileDataRequestContextBuilder()
         {
-            _subjectId = string.Empty;
-            _client = new Client();
-            _caller = string.Empty;
-            _requestedClaimTypes = new List<string>();
+            subjectId = string.Empty;
+            client = new Client();
+            caller = string.Empty;
+            requestedClaimTypes = new List<string>();
         }
 
         internal static ProfileDataRequestContextBuilder Create()
         {
-            return new ProfileDataRequestContextBuilder();
+            return new();
         }
 
-        internal ProfileDataRequestContextBuilder WithSubjectId(string subjectId)
+        internal ProfileDataRequestContextBuilder WithSubjectId(string id)
         {
-            _subjectId = subjectId;
-            return this;
-        }
-
-        internal ProfileDataRequestContextBuilder WithRequestedClaimTypes(params string[] requestedClaimTypes)
-        {
-            _requestedClaimTypes = requestedClaimTypes;
+            subjectId = id;
             return this;
         }
 
@@ -41,14 +36,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         {
             List<Claim> claims = new List<Claim>();
 
-            if (_subjectId is object)
-                claims.Add(new Claim(JwtClaimTypes.Subject, _subjectId));
+            if (subjectId is not null)
+                claims.Add(new Claim(JwtClaimTypes.Subject, subjectId));
 
             return new ProfileDataRequestContext(
-                new ClaimsPrincipal(new ClaimsIdentity(claims)), 
-                _client, 
-                _caller,
-                _requestedClaimTypes);
+                new ClaimsPrincipal(new ClaimsIdentity(claims)),
+                client,
+                caller,
+                requestedClaimTypes);
         }
     }
 }

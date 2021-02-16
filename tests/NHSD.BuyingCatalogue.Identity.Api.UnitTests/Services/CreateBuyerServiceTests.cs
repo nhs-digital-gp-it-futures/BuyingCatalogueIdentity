@@ -19,74 +19,58 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class CreateBuyerServiceTests
+    internal static class CreateBuyerServiceTests
     {
         [Test]
-        public void Constructor_NullApplicationUserValidator_ThrowsException()
+        public static void Constructor_NullApplicationUserValidator_ThrowsException()
         {
-            static void Test()
-            {
-                var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(
-                    null,
-                    context.UsersRepositoryMock.Object,
-                    context.PasswordServiceMock.Object,
-                    context.RegistrationServiceMock.Object);
-            }
+            var context = CreateBuyerServiceTestContext.Setup();
 
-            Assert.Throws<ArgumentNullException>(Test);
+            Assert.Throws<ArgumentNullException>(() => _ = new CreateBuyerService(
+                null,
+                context.UsersRepositoryMock.Object,
+                context.PasswordServiceMock.Object,
+                context.RegistrationServiceMock.Object));
         }
 
         [Test]
-        public void Constructor_NullUserRepository_ThrowsException()
+        public static void Constructor_NullUserRepository_ThrowsException()
         {
-            static void Test()
-            {
-                var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(
-                    context.ApplicationUserValidatorMock.Object,
-                    null,
-                    context.PasswordServiceMock.Object,
-                    context.RegistrationServiceMock.Object);
-            }
+            var context = CreateBuyerServiceTestContext.Setup();
 
-            Assert.Throws<ArgumentNullException>(Test);
+            Assert.Throws<ArgumentNullException>(() => _ = new CreateBuyerService(
+                context.ApplicationUserValidatorMock.Object,
+                null,
+                context.PasswordServiceMock.Object,
+                context.RegistrationServiceMock.Object));
         }
 
         [Test]
-        public void Constructor_NullPasswordService_ThrowsException()
+        public static void Constructor_NullPasswordService_ThrowsException()
         {
-            static void Test()
-            {
-                var context = CreateBuyerServiceTestContext.Setup();
-                var service = new CreateBuyerService(
-                    context.ApplicationUserValidatorMock.Object,
-                    context.UsersRepositoryMock.Object,
-                    null,
-                    context.RegistrationServiceMock.Object);
-            }
+            var context = CreateBuyerServiceTestContext.Setup();
 
-            Assert.Throws<ArgumentNullException>(Test);
+            Assert.Throws<ArgumentNullException>(() => _ = new CreateBuyerService(
+                context.ApplicationUserValidatorMock.Object,
+                context.UsersRepositoryMock.Object,
+                null,
+                context.RegistrationServiceMock.Object));
         }
 
         [Test]
-        public void Constructor_NullRegistrationService_ThrowsException()
+        public static void Constructor_NullRegistrationService_ThrowsException()
         {
-            static void Test()
-            {
-                var context = CreateBuyerServiceTestContext.Setup();
-                var sut = new CreateBuyerService(
-                    context.ApplicationUserValidatorMock.Object,
-                    context.UsersRepositoryMock.Object,
-                    context.PasswordServiceMock.Object,
-                    null);
-            }
+            var context = CreateBuyerServiceTestContext.Setup();
 
-            Assert.Throws<ArgumentNullException>(Test);
+            Assert.Throws<ArgumentNullException>(() => _ = new CreateBuyerService(
+                context.ApplicationUserValidatorMock.Object,
+                context.UsersRepositoryMock.Object,
+                context.PasswordServiceMock.Object,
+                null));
         }
 
         [Test]
-        public void CreateAsync_NullCreateBuyerRequest_ThrowsException()
+        public static void CreateAsync_NullCreateBuyerRequest_ThrowsException()
         {
             static async Task TestAsync()
             {
@@ -100,7 +84,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task CreateAsync_SuccessfulApplicationUserValidation_ReturnsSuccess()
+        public static async Task CreateAsync_SuccessfulApplicationUserValidation_ReturnsSuccess()
         {
             var context = CreateBuyerServiceTestContext.Setup();
             var sut = context.CreateBuyerService;
@@ -114,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task CreateAsync_ApplicationUserValidation_CalledOnce()
+        public static async Task CreateAsync_ApplicationUserValidation_CalledOnce()
         {
             var context = CreateBuyerServiceTestContext.Setup();
             var sut = context.CreateBuyerService;
@@ -132,13 +116,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
                 .Build();
 
-            context.ApplicationUserValidatorMock.Verify(x =>
-                x.ValidateAsync(It.Is<ApplicationUser>(
-                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
+            context.ApplicationUserValidatorMock.Verify(v => v.ValidateAsync(
+                It.Is<ApplicationUser>(actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))));
         }
 
         [Test]
-        public async Task CreateAsync_SuccessfulApplicationUserValidation_UserRepository_CalledOnce()
+        public static async Task CreateAsync_SuccessfulApplicationUserValidation_UserRepository_CalledOnce()
         {
             var context = CreateBuyerServiceTestContext.Setup();
             var sut = context.CreateBuyerService;
@@ -156,13 +139,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 .WithPrimaryOrganisationId(request.PrimaryOrganisationId)
                 .Build();
 
-            context.UsersRepositoryMock.Verify(x =>
-                x.CreateUserAsync(It.Is<ApplicationUser>(
-                    actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))), Times.Once);
+            context.UsersRepositoryMock.Verify(r => r.CreateUserAsync(
+                It.Is<ApplicationUser>(actual => ApplicationUserEditableInformationComparer.Instance.Equals(expected, actual))));
         }
 
         [Test]
-        public async Task CreateAsync_ApplicationUserValidationFails_ReturnFailureResult()
+        public static async Task CreateAsync_ApplicationUserValidationFails_ReturnFailureResult()
         {
             var context = CreateBuyerServiceTestContext.Setup();
             context.ApplicationUserValidatorResult = Result.Failure(new List<ErrorDetails>());
@@ -178,7 +160,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public async Task CreateBuyerAsync_NewApplicationUser_SendsEmail()
+        public static async Task CreateBuyerAsync_NewApplicationUser_SendsEmail()
         {
             const string expectedToken = "TokenMcToken";
 
@@ -204,46 +186,46 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 t.Token.Equals(expectedToken, StringComparison.Ordinal)
                 && ApplicationUserEditableInformationComparer.Instance.Equals(expectedUser, t.User);
 
-            context.RegistrationServiceMock.Verify(x => x.SendInitialEmailAsync(It.Is(expected)), Times.Once);
-        }
-    }
-
-    internal sealed class CreateBuyerServiceTestContext
-    {
-        private CreateBuyerServiceTestContext()
-        {
-            ApplicationUserValidatorMock = new Mock<IApplicationUserValidator>();
-            ApplicationUserValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ApplicationUser>()))
-                .ReturnsAsync(() => ApplicationUserValidatorResult);
-
-            UsersRepositoryMock = new Mock<IUsersRepository>();
-            UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
-
-            PasswordServiceMock = new Mock<IPasswordService>();
-            RegistrationServiceMock = new Mock<IRegistrationService>();
-
-            CreateBuyerService = new CreateBuyerService(
-                ApplicationUserValidatorMock.Object,
-                UsersRepositoryMock.Object,
-                PasswordServiceMock.Object,
-                RegistrationServiceMock.Object);
+            context.RegistrationServiceMock.Verify(s => s.SendInitialEmailAsync(It.Is(expected)));
         }
 
-        internal Mock<IApplicationUserValidator> ApplicationUserValidatorMock { get; set; }
-
-        internal Result ApplicationUserValidatorResult { get; set; } = Result.Success();
-
-        internal Mock<IUsersRepository> UsersRepositoryMock { get; set; }
-
-        internal CreateBuyerService CreateBuyerService { get; }
-
-        internal Mock<IPasswordService> PasswordServiceMock { get; set; }
-
-        internal Mock<IRegistrationService> RegistrationServiceMock { get; set; }
-
-        public static CreateBuyerServiceTestContext Setup()
+        private sealed class CreateBuyerServiceTestContext
         {
-            return new CreateBuyerServiceTestContext();
+            private CreateBuyerServiceTestContext()
+            {
+                ApplicationUserValidatorMock = new Mock<IApplicationUserValidator>();
+                ApplicationUserValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<ApplicationUser>()))
+                    .ReturnsAsync(() => ApplicationUserValidatorResult);
+
+                UsersRepositoryMock = new Mock<IUsersRepository>();
+                UsersRepositoryMock.Setup(r => r.CreateUserAsync(It.IsAny<ApplicationUser>()));
+
+                PasswordServiceMock = new Mock<IPasswordService>();
+                RegistrationServiceMock = new Mock<IRegistrationService>();
+
+                CreateBuyerService = new CreateBuyerService(
+                    ApplicationUserValidatorMock.Object,
+                    UsersRepositoryMock.Object,
+                    PasswordServiceMock.Object,
+                    RegistrationServiceMock.Object);
+            }
+
+            internal Mock<IApplicationUserValidator> ApplicationUserValidatorMock { get; }
+
+            internal Result ApplicationUserValidatorResult { get; set; } = Result.Success();
+
+            internal Mock<IUsersRepository> UsersRepositoryMock { get; }
+
+            internal CreateBuyerService CreateBuyerService { get; }
+
+            internal Mock<IPasswordService> PasswordServiceMock { get; }
+
+            internal Mock<IRegistrationService> RegistrationServiceMock { get; }
+
+            public static CreateBuyerServiceTestContext Setup()
+            {
+                return new();
+            }
         }
     }
 }

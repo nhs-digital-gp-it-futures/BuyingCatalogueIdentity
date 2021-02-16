@@ -13,51 +13,51 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     internal sealed class AccountControllerBuilder
     {
-        private readonly Mock<IPasswordService> _mockPasswordService;
-        private readonly Mock<IPasswordResetCallback> _mockPasswordResetCallback;
+        private readonly Mock<IPasswordService> mockPasswordService;
+        private readonly Mock<IPasswordResetCallback> mockPasswordResetCallback;
 
-        private ControllerContext _context;
-        private ILoginService _loginService;
-        private ILogoutService _logoutService;
-        private DisabledErrorMessageSettings _disabledErrorMessageSettings;
-        private PublicBrowseSettings _publicBrowseSettings;
+        private ControllerContext context;
+        private ILoginService loginService;
+        private ILogoutService logoutService;
+        private DisabledErrorMessageSettings disabledErrorMessageSettings;
+        private PublicBrowseSettings publicBrowseSettings;
 
         private AccountControllerBuilder()
         {
-            _context = Mock.Of<ControllerContext>();
-            _loginService = Mock.Of<ILoginService>();
-            _logoutService = Mock.Of<ILogoutService>();
-            _mockPasswordResetCallback = new Mock<IPasswordResetCallback>();
-            _mockPasswordService = new Mock<IPasswordService>();
-            _disabledErrorMessageSettings = new DisabledErrorMessageSettings
+            context = Mock.Of<ControllerContext>();
+            loginService = Mock.Of<ILoginService>();
+            logoutService = Mock.Of<ILogoutService>();
+            mockPasswordResetCallback = new Mock<IPasswordResetCallback>();
+            mockPasswordService = new Mock<IPasswordService>();
+            disabledErrorMessageSettings = new DisabledErrorMessageSettings
             {
                 EmailAddress = "Email",
-                PhoneNumber = "Phone"
+                PhoneNumber = "Phone",
             };
 
-            _publicBrowseSettings = new PublicBrowseSettings();
+            publicBrowseSettings = new PublicBrowseSettings();
         }
 
         internal static AccountControllerBuilder Create()
         {
-            return new AccountControllerBuilder();
+            return new();
         }
 
         internal AccountControllerBuilder WithDisabledErrorMessageSetting(DisabledErrorMessageSettings settings)
         {
-            _disabledErrorMessageSettings = settings;
+            disabledErrorMessageSettings = settings;
             return this;
         }
 
-        internal AccountControllerBuilder WithLogoutService(ILogoutService logoutService)
+        internal AccountControllerBuilder WithLogoutService(ILogoutService service)
         {
-            _logoutService = logoutService;
+            logoutService = service;
             return this;
         }
 
         internal AccountControllerBuilder WithResetEmailCallback(Action<ApplicationUser, Uri> emailCallback)
         {
-            _mockPasswordService.Setup(p => p.SendResetEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<Uri>()))
+            mockPasswordService.Setup(p => p.SendResetEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<Uri>()))
                 .Callback(emailCallback);
 
             return this;
@@ -65,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         internal AccountControllerBuilder WithResetToken(PasswordResetToken token)
         {
-            _mockPasswordService.Setup(p => p.GeneratePasswordResetTokenAsync(It.IsAny<string>()))
+            mockPasswordService.Setup(p => p.GeneratePasswordResetTokenAsync(It.IsAny<string>()))
                 .ReturnsAsync(token);
 
             return this;
@@ -79,7 +79,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(c => c.Request).Returns(mockRequest.Object);
 
-            _context = new ControllerContext { HttpContext = mockHttpContext.Object };
+            context = new ControllerContext { HttpContext = mockHttpContext.Object };
 
             return this;
         }
@@ -87,17 +87,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         internal AccountControllerBuilder WithSignInResult(Result<SignInResponse> result)
         {
             var mockLoginService = new Mock<ILoginService>();
-            mockLoginService.Setup(l => l.SignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>()))
+            mockLoginService
+                .Setup(l => l.SignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>()))
                 .ReturnsAsync(result);
 
-            _loginService = mockLoginService.Object;
+            loginService = mockLoginService.Object;
 
             return this;
         }
 
         internal AccountControllerBuilder WithResetCallbackUrl(string url)
         {
-            _mockPasswordResetCallback.Setup(c => c.GetPasswordResetCallback(It.IsAny<PasswordResetToken>()))
+            mockPasswordResetCallback
+                .Setup(c => c.GetPasswordResetCallback(It.IsAny<PasswordResetToken>()))
                 .Returns(new Uri(url));
 
             return this;
@@ -105,40 +107,42 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 
         internal AccountControllerBuilder WithPasswordResetResult(IdentityResult result)
         {
-            _mockPasswordService.Setup(x => x.ResetPasswordAsync(
+            mockPasswordService
+                .Setup(s => s.ResetPasswordAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<string>())
-                ).ReturnsAsync(result);
+                    It.IsAny<string>()))
+                .ReturnsAsync(result);
 
             return this;
         }
 
         internal AccountControllerBuilder WithIsValidPasswordResetTokenResult()
         {
-            _mockPasswordService.Setup(p => p.IsValidPasswordResetTokenAsync(It.IsAny<string>(), It.IsAny<string>()))
+            mockPasswordService
+                .Setup(p => p.IsValidPasswordResetTokenAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             return this;
         }
 
-        internal AccountControllerBuilder WithPublicBrowseSettings(PublicBrowseSettings publicBrowseSettings)
+        internal AccountControllerBuilder WithPublicBrowseSettings(PublicBrowseSettings settings)
         {
-            _publicBrowseSettings = publicBrowseSettings;
+            publicBrowseSettings = settings;
             return this;
         }
 
         internal AccountController Build()
         {
-            return new AccountController(
-                _loginService,
-                _logoutService,
-                _mockPasswordResetCallback.Object,
-                _mockPasswordService.Object,
-                _disabledErrorMessageSettings,
-                _publicBrowseSettings)
+            return new(
+                loginService,
+                logoutService,
+                mockPasswordResetCallback.Object,
+                mockPasswordService.Object,
+                disabledErrorMessageSettings,
+                publicBrowseSettings)
             {
-                ControllerContext = _context,
+                ControllerContext = context,
             };
         }
     }

@@ -21,10 +21,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class UsersControllerTests
+    internal static class UsersControllerTests
     {
         [Test]
-        public async Task GetUsersByOrganisationId_ReturnsOkObjectResult()
+        public static async Task GetUsersByOrganisationId_ReturnsOkObjectResult()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -32,44 +32,50 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             var result = await controller.GetUsersByOrganisationId(Guid.Empty);
             result.Should().BeOfType<OkObjectResult>();
-            (result as OkObjectResult).Value.Should().BeOfType<GetAllOrganisationUsersModel>();
+            result.As<OkObjectResult>().Value.Should().BeOfType<GetAllOrganisationUsersModel>();
         }
 
         [Test]
-        public async Task GetUsersByOrganisationId_NoUsers_ReturnsEmptyList()
+        public static async Task GetUsersByOrganisationId_NoUsers_ReturnsEmptyList()
         {
             var context = UsersControllerTestContext.Setup();
 
             var controller = context.Controller;
 
-            var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
-            var users = result.Value as GetAllOrganisationUsersModel;
-            users.Users.Should().BeEmpty();
+            var result = await controller.GetUsersByOrganisationId(Guid.Empty);
+
+            result.Should().BeOfType<OkObjectResult>();
+            result.As<OkObjectResult>().Value.Should().BeOfType<GetAllOrganisationUsersModel>();
+            result.As<OkObjectResult>().Value.As<GetAllOrganisationUsersModel>().Users.Should().BeEmpty();
         }
 
         [Test]
-        public async Task GetUsersByOrganisationId_ValidId_ReturnsUsers()
+        public static async Task GetUsersByOrganisationId_ValidId_ReturnsUsers()
         {
             var users = new List<(ApplicationUser RepoUser, OrganisationUserModel Expected)>
             {
                 CreateApplicationUserTestData(false),
                 CreateApplicationUserTestData(true),
-                CreateApplicationUserTestData(false)
+                CreateApplicationUserTestData(false),
             };
 
             var context = UsersControllerTestContext.Setup();
-            context.Users = users.Select(x => x.RepoUser);
+            context.Users = users.Select(t => t.RepoUser);
 
             var controller = context.Controller;
 
-            var result = await controller.GetUsersByOrganisationId(Guid.Empty) as OkObjectResult;
-            var viewModel = result.Value as GetAllOrganisationUsersModel;
+            var result = await controller.GetUsersByOrganisationId(Guid.Empty);
 
-            viewModel.Users.Should().BeEquivalentTo(users.Select(x => x.Expected));
+            result.Should().BeOfType<OkObjectResult>();
+            result.As<OkObjectResult>().Value.Should().BeOfType<GetAllOrganisationUsersModel>();
+            result.As<OkObjectResult>()
+                .Value.As<GetAllOrganisationUsersModel>()
+                .Users.Should()
+                .BeEquivalentTo(users.Select(t => t.Expected));
         }
 
         [Test]
-        public async Task GetUsersByOrganisationId_UserRepository_GetUsersByOrganisationIdAsync_CalledOnce()
+        public static async Task GetUsersByOrganisationId_UserRepository_GetUsersByOrganisationIdAsync_CalledOnce()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -77,11 +83,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             await controller.GetUsersByOrganisationId(Guid.Empty);
 
-            context.UsersRepositoryMock.Verify(x => x.FindByOrganisationIdAsync(Guid.Empty), Times.Once);
+            context.UsersRepositoryMock.Verify(r => r.FindByOrganisationIdAsync(Guid.Empty));
         }
 
         [Test]
-        public async Task CreateBuyerAsync_CreateBuyerSuccessfulResult_ReturnsUserId()
+        public static async Task CreateBuyerAsync_CreateBuyerSuccessfulResult_ReturnsUserId()
         {
             const string newUserId = "New Test User Id";
 
@@ -105,7 +111,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task CreateBuyerAsync_CreateBuyerService_CreateAsync_CalledOnce()
+        public static async Task CreateBuyerAsync_CreateBuyerService_CreateAsync_CalledOnce()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -117,7 +123,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 FirstName = "Bob",
                 LastName = "Smith",
                 PhoneNumber = "98654321",
-                EmailAddress = "bob@smith.com"
+                EmailAddress = "bob@smith.com",
             };
 
             await controller.CreateBuyerAsync(organisationId, createUserRequestViewModel);
@@ -131,13 +137,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .WithPrimaryOrganisationId(organisationId)
                 .Build();
 
-            context.CreateBuyerServiceMock.Verify(x => x.CreateAsync(expected), Times.Once);
+            context.CreateBuyerServiceMock.Verify(s => s.CreateAsync(expected));
         }
 
         [Test]
-        public async Task CreateBuyerAsync_CreateBuyerFailureResult_ReturnsBadRequest()
+        public static async Task CreateBuyerAsync_CreateBuyerFailureResult_ReturnsBadRequest()
         {
-            var errors = new List<ErrorDetails> { new ErrorDetails("TestErrorId", "TestField") };
+            var errors = new List<ErrorDetails> { new("TestErrorId", "TestField") };
 
             var context = UsersControllerTestContext.Setup();
             context.CreateBuyerResult = Result.Failure<string>(errors);
@@ -150,14 +156,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             response.Should().BeOfType<ActionResult<CreateBuyerResponseModel>>();
             var actual = response.Result;
 
-            var expectedErrors =
-                new List<ErrorMessageViewModel> { new ErrorMessageViewModel("TestErrorId", "TestField") };
+            var expectedErrors = new List<ErrorMessageViewModel> { new("TestErrorId", "TestField") };
             var expected = new BadRequestObjectResult(new CreateBuyerResponseModel { Errors = expectedErrors });
             actual.Should().BeEquivalentTo(expected);
         }
 
         [Test]
-        public void CreateBuyerAsync_NullApplicationUser_ThrowsException()
+        public static void CreateBuyerAsync_NullApplicationUser_ThrowsException()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -171,7 +176,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task GetUserById_WithExistingUserId_ReturnsTheUser()
+        public static async Task GetUserById_WithExistingUserId_ReturnsTheUser()
         {
             var context = UsersControllerTestContext.Setup();
             context.User = ApplicationUserBuilder.Create().Build();
@@ -182,19 +187,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 PhoneNumber = context.User.PhoneNumber,
                 EmailAddress = context.User.Email,
                 Disabled = context.User.Disabled,
-                PrimaryOrganisationId = context.User.PrimaryOrganisationId
+                PrimaryOrganisationId = context.User.PrimaryOrganisationId,
             };
 
             var controller = context.Controller;
 
             var result = await controller.GetUserByIdAsync(context.User.Id);
+
             result.Result.Should().BeOfType<OkObjectResult>();
-            var objectResult = result.Result as OkObjectResult;
-            objectResult.Value.Should().BeEquivalentTo(expected);
+            result.Result.As<OkObjectResult>().Value.Should().BeOfType<GetUserModel>();
+            result.Result.As<OkObjectResult>().Value.Should().BeEquivalentTo(expected);
         }
 
         [Test]
-        public async Task GetUserById_NoExistingUserId_ReturnsNotFound()
+        public static async Task GetUserById_NoExistingUserId_ReturnsNotFound()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -205,7 +211,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task GetUserById_UserRepository_GetUserByIdAsync_CalledOnce()
+        public static async Task GetUserById_UserRepository_GetUserByIdAsync_CalledOnce()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -213,11 +219,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             await controller.GetUserByIdAsync(string.Empty);
 
-            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(String.Empty), Times.Once);
+            context.UsersRepositoryMock.Verify(r => r.GetByIdAsync(string.Empty));
         }
 
         [Test]
-        public async Task EnableUserAsync_GetUserByIdAndEnableThem_ReturnsOk()
+        public static async Task EnableUserAsync_GetUserByIdAndEnableThem_ReturnsOk()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -232,7 +238,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task EnableUserAsync_UserIsNull_ReturnsNotFound()
+        public static async Task EnableUserAsync_UserIsNull_ReturnsNotFound()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -243,7 +249,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task EnableUserAsync_UserRepository_UpdateAsync_CalledOnce()
+        public static async Task EnableUserAsync_UserRepository_UpdateAsync_CalledOnce()
         {
             var context = UsersControllerTestContext.Setup();
             var controller = context.Controller;
@@ -252,12 +258,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             await controller.EnableUserAsync(context.User.Id);
 
-            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(context.User.Id), Times.Once);
-            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
+            context.UsersRepositoryMock.Verify(r => r.GetByIdAsync(context.User.Id));
+            context.UsersRepositoryMock.Verify(r => r.UpdateAsync(context.User));
         }
 
         [Test]
-        public async Task DisableUserAsync_GetUserByIdAndDisableThem_ReturnsOk()
+        public static async Task DisableUserAsync_GetUserByIdAndDisableThem_ReturnsOk()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -272,7 +278,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task DisableUserAsync_UserIsNull_ReturnsNotFound()
+        public static async Task DisableUserAsync_UserIsNull_ReturnsNotFound()
         {
             var context = UsersControllerTestContext.Setup();
 
@@ -283,7 +289,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task DisableUser_UserRepository_UpdateAsync_CalledOnce()
+        public static async Task DisableUser_UserRepository_UpdateAsync_CalledOnce()
         {
             var context = UsersControllerTestContext.Setup();
             var controller = context.Controller;
@@ -292,8 +298,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             await controller.DisableUserAsync(context.User.Id);
 
-            context.UsersRepositoryMock.Verify(x => x.GetByIdAsync(context.User.Id), Times.Once);
-            context.UsersRepositoryMock.Verify(x => x.UpdateAsync(context.User), Times.Once);
+            context.UsersRepositoryMock.Verify(r => r.GetByIdAsync(context.User.Id));
+            context.UsersRepositoryMock.Verify(r => r.UpdateAsync(context.User));
         }
 
         private static (ApplicationUser RepoUser, OrganisationUserModel ExpectedUser) CreateApplicationUserTestData(
@@ -317,9 +323,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                     PhoneNumber = repositoryApplicationUser.PhoneNumber,
                     FirstName = repositoryApplicationUser.FirstName,
                     LastName = repositoryApplicationUser.LastName,
-                    IsDisabled = repositoryApplicationUser.Disabled
-                }
-            );
+                    IsDisabled = repositoryApplicationUser.Disabled,
+                });
         }
 
         private sealed class UsersControllerTestContext
@@ -327,22 +332,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             private UsersControllerTestContext()
             {
                 CreateBuyerServiceMock = new Mock<ICreateBuyerService>();
-                CreateBuyerServiceMock.Setup(x => x.CreateAsync(It.IsAny<CreateBuyerRequest>()))
+                CreateBuyerServiceMock
+                    .Setup(s => s.CreateAsync(It.IsAny<CreateBuyerRequest>()))
                     .ReturnsAsync(() => CreateBuyerResult);
 
                 UsersRepositoryMock = new Mock<IUsersRepository>();
 
                 Users = new List<ApplicationUser>();
-                UsersRepositoryMock.Setup(x => x.FindByOrganisationIdAsync(It.IsAny<Guid>()))
+                UsersRepositoryMock
+                    .Setup(r => r.FindByOrganisationIdAsync(It.IsAny<Guid>()))
                     .ReturnsAsync(() => Users);
 
-                UsersRepositoryMock.Setup(x => x.CreateUserAsync(It.IsAny<ApplicationUser>()));
+                UsersRepositoryMock.Setup(r => r.CreateUserAsync(It.IsAny<ApplicationUser>()));
 
                 Controller = new UsersController(CreateBuyerServiceMock.Object, UsersRepositoryMock.Object);
 
-                UsersRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(() => User);
+                UsersRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(() => User);
 
-                UsersRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<ApplicationUser>()));
+                UsersRepositoryMock.Setup(r => r.UpdateAsync(It.IsAny<ApplicationUser>()));
             }
 
             internal Mock<ICreateBuyerService> CreateBuyerServiceMock { get; }
@@ -359,7 +366,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             internal static UsersControllerTestContext Setup()
             {
-                return new UsersControllerTestContext();
+                return new();
             }
         }
     }

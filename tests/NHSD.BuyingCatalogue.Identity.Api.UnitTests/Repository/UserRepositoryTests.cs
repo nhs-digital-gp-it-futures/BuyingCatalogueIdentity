@@ -11,10 +11,11 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Repository
 {
     [TestFixture]
-    public sealed class UserRepositoryTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class UserRepositoryTests
     {
         [Test]
-        public async Task UpdateAsync_UpdatingUserToDisabled_UpdatesUser()
+        public static async Task UpdateAsync_UpdatingUserToDisabled_UpdatesUser()
         {
             var context = UserRepositoryTestContext.Setup();
 
@@ -23,8 +24,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Repository
                 .WithDisabled(false)
                 .Build();
 
-            context.ContextInMemory.Users.Add(user);
-            context.ContextInMemory.SaveChanges();
+            await context.ContextInMemory.Users.AddAsync(user);
+            await context.ContextInMemory.SaveChangesAsync();
 
             user.MarkAsDisabled();
 
@@ -33,34 +34,31 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Repository
         }
 
         [Test]
-        public void UpdateAsync_UserIsNull_ReturnsNullException()
+        public static void UpdateAsync_UserIsNull_ReturnsNullException()
         {
-            static async Task TestAsync()
+            var context = UserRepositoryTestContext.Setup();
+
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await context.UserRepository.UpdateAsync(null));
+        }
+
+        private sealed class UserRepositoryTestContext
+        {
+            private UserRepositoryTestContext()
             {
-                var context = UserRepositoryTestContext.Setup();
-                await context.UserRepository.UpdateAsync(null);
+                var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase("Add_writes_to_db");
+                ContextInMemory = new ApplicationDbContext(optionsBuilder.Options);
+
+                UserRepository = new UsersRepository(ContextInMemory);
             }
 
-            Assert.ThrowsAsync<ArgumentNullException>(TestAsync);
-        }
-    }
+            public ApplicationDbContext ContextInMemory { get; }
 
-    internal sealed class UserRepositoryTestContext
-    {
-        public ApplicationDbContext ContextInMemory { get; set; }
-        public UsersRepository UserRepository { get; set; }
+            public UsersRepository UserRepository { get; }
 
-        private UserRepositoryTestContext()
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName: "Add_writes_to_db");
-            ContextInMemory = new ApplicationDbContext(optionsBuilder.Options);
-
-            UserRepository = new UsersRepository(ContextInMemory);
-        }
-
-        internal static UserRepositoryTestContext Setup()
-        {
-            return new UserRepositoryTestContext();
+            internal static UserRepositoryTestContext Setup()
+            {
+                return new();
+            }
         }
     }
 }

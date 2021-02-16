@@ -14,32 +14,41 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    internal sealed class PasswordResetCallbackTests
+    internal static class PasswordResetCallbackTests
     {
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_IHttpContextAccessor_LinkGenerator_NullAccessor_ThrowsException()
+        public static void Constructor_IHttpContextAccessor_LinkGenerator_NullAccessor_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(null, Mock.Of<LinkGenerator>(), new Api.Settings.IssuerSettings()));
+            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(
+                null,
+                Mock.Of<LinkGenerator>(),
+                new Settings.IssuerSettings()));
         }
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_IHttpContextAccessor_LinkGenerator_NullGenerator_ThrowsException()
+        public static void Constructor_IHttpContextAccessor_LinkGenerator_NullGenerator_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(Mock.Of<IHttpContextAccessor>(), null,new Api.Settings.IssuerSettings()));
+            Assert.Throws<ArgumentNullException>(() => new PasswordResetCallback(
+                Mock.Of<IHttpContextAccessor>(),
+                null,
+                new Settings.IssuerSettings()));
         }
 
         [Test]
-        public void GetPasswordResetCallback_NullToken_ThrowsException()
+        public static void GetPasswordResetCallback_NullToken_ThrowsException()
         {
-            var callback = new PasswordResetCallback(Mock.Of<IHttpContextAccessor>(), Mock.Of<LinkGenerator>(), new Api.Settings.IssuerSettings());
+            var callback = new PasswordResetCallback(
+                Mock.Of<IHttpContextAccessor>(),
+                Mock.Of<LinkGenerator>(),
+                new Settings.IssuerSettings());
 
             Assert.Throws<ArgumentNullException>(() => callback.GetPasswordResetCallback(null));
         }
 
         [Test]
-        public void GetPasswordResetCallback_GetsExpectedAction()
+        public static void GetPasswordResetCallback_GetsExpectedAction()
         {
             const string expectedToken = "IAmBecomeToken";
             var expectedValues = new RouteValueDictionary
@@ -47,7 +56,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 { "Email", "a.b@c.com" },
                 { "Token", expectedToken },
                 { "action", nameof(AccountController.ResetPassword) },
-                { "controller", "Account" }
+                { "controller", "Account" },
             };
 
             var context = new PasswordResetCallbackContext("https://www.google.co.uk/");
@@ -60,7 +69,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
-        public void GetPasswordResetCallback_ReturnsExpectedValue()
+        public static void GetPasswordResetCallback_ReturnsExpectedValue()
         {
             const string url = "https://nhs.uk/reset";
 
@@ -75,10 +84,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actualUri.Should().Be(expectedUri);
         }
 
-        private class PasswordResetCallbackContext
+        private sealed class PasswordResetCallbackContext
         {
-            private readonly Mock<IHttpContextAccessor> _mockAccessor = new Mock<IHttpContextAccessor>();
-            private readonly Mock<LinkGenerator> _mockGenerator = new Mock<LinkGenerator>();
+            private readonly Mock<IHttpContextAccessor> mockAccessor = new();
+            private readonly Mock<LinkGenerator> mockGenerator = new();
 
             internal PasswordResetCallbackContext(string url)
             {
@@ -86,8 +95,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 mockContext.Setup(c => c.Request).Returns(Mock.Of<HttpRequest>());
                 mockContext.Setup(c => c.Features).Returns(new FeatureCollection());
 
-                _mockAccessor.Setup(a => a.HttpContext).Returns(mockContext.Object);
-                _mockGenerator.Setup(g => g.GetUriByAddress(
+                mockAccessor.Setup(a => a.HttpContext).Returns(mockContext.Object);
+                mockGenerator.Setup(g => g.GetUriByAddress(
                         It.IsAny<HttpContext>(),
                         It.IsAny<RouteValuesAddress>(),
                         It.IsAny<RouteValueDictionary>(),
@@ -110,8 +119,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                     .Returns(url);
             }
 
-            internal PasswordResetCallback Callback => new PasswordResetCallback(
-                _mockAccessor.Object, _mockGenerator.Object, new Api.Settings.IssuerSettings { IssuerUrl = new Uri("http://www.google.com") });
+            internal PasswordResetCallback Callback => new(
+                mockAccessor.Object,
+                mockGenerator.Object,
+                new Settings.IssuerSettings { IssuerUrl = new Uri("http://www.google.com") });
 
             internal RouteValueDictionary RouteValues { get; private set; }
 

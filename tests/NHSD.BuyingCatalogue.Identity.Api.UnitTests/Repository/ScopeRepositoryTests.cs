@@ -6,10 +6,11 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Repository
 {
     [TestFixture]
-    internal sealed class ScopeRepositoryTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class ScopeRepositoryTests
     {
         [Test]
-        public void Scopes_ApiAndIdentityResources_ReturnsExpectedScopes()
+        public static void Scopes_ApiAndIdentityResources_ReturnsExpectedScopes()
         {
             const string scope1 = "Scope1";
             const string scope2 = "Scope2";
@@ -27,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Repository
         }
 
         [Test]
-        public void Scopes_ApiResources_ReturnsExpectedScopes()
+        public static void Scopes_ApiResources_ReturnsExpectedScopes()
         {
             const string apiScope = "ApiScope1";
 
@@ -43,10 +44,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Repository
         }
 
         [Test]
-        public void Scopes_IdentityResources_ReturnsExpectedScopes()
+        public static void Scopes_IdentityResources_ReturnsExpectedScopes()
         {
             const string identityScope = "IdentityScope1";
 
+            // ReSharper disable once StringLiteralTypo
             var expectedScopes = new[] { "identityscope1" };
 
             var identityResources = new[] { new IdentityResourceSetting { ResourceType = identityScope } };

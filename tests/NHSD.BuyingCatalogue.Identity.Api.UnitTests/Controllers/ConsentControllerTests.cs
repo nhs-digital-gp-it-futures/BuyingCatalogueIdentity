@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,17 +15,17 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 {
     [TestFixture]
-    internal sealed class ConsentControllerTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class ConsentControllerTests
     {
         [Test]
-        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_NullConsentService_ThrowsException()
+        public static void Constructor_NullConsentService_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsentController(null));
+            Assert.Throws<ArgumentNullException>(() => _ = new ConsentController(null));
         }
 
         [Test]
-        public void Index_Uri_NullReturnUrl_ThrowsException()
+        public static void Index_Uri_NullReturnUrl_ThrowsException()
         {
             static async Task Index()
             {
@@ -38,7 +37,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Index_Uri_ValidReturnUrl_ReturnsConsentView()
+        public static async Task Index_Uri_ValidReturnUrl_ReturnsConsentView()
         {
             var returnUrl = new Uri("http://www.goodurl.co.uk/");
 
@@ -55,7 +54,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Index_Uri_BadReturnUrl_ReturnsErrorView()
+        public static async Task Index_Uri_BadReturnUrl_ReturnsErrorView()
         {
             using var controller = new ConsentController(Mock.Of<IAgreementConsentService>());
 
@@ -66,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public void Index_ConsentViewModel_NullModel_ThrowsException()
+        public static void Index_ConsentViewModel_NullModel_ThrowsException()
         {
             static async Task Index()
             {
@@ -78,7 +77,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Index_ConsentViewModel_InvalidModelState_ReturnsConsentView()
+        public static async Task Index_ConsentViewModel_InvalidModelState_ReturnsConsentView()
         {
             var expectedModel = new ConsentViewModel();
 
@@ -92,18 +91,19 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Index_ConsentViewModel_ValidReturnUrlAndModel_RedirectsToReturnUrl()
+        public static async Task Index_ConsentViewModel_ValidReturnUrlAndModel_RedirectsToReturnUrl()
         {
             const string subjectId = "SubjectId";
             var returnUrl = new Uri("http://www.goodurl.co.uk/");
 
             var mockConsentService = new Mock<IAgreementConsentService>();
-            mockConsentService.Setup(c => c.GrantConsent(It.Is<Uri>(u => u == returnUrl), It.Is<string>(s => s.Equals(subjectId, StringComparison.Ordinal))))
+            mockConsentService
+                .Setup(c => c.GrantConsent(It.Is<Uri>(u => u == returnUrl), It.Is<string>(s => s.Equals(subjectId, StringComparison.Ordinal))))
                 .ReturnsAsync(Result.Success(returnUrl));
 
             using var controller = new ConsentController(mockConsentService.Object)
             {
-                ControllerContext = ControllerContext(subjectId)
+                ControllerContext = ControllerContext(subjectId),
             };
 
             var result = await controller.Index(
@@ -114,7 +114,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Index_ConsentViewModel_BadReturnUrl_ReturnsErrorView()
+        public static async Task Index_ConsentViewModel_BadReturnUrl_ReturnsErrorView()
         {
             var mockConsentService = new Mock<IAgreementConsentService>();
             mockConsentService.Setup(c => c.GrantConsent(It.IsAny<Uri>(), It.IsAny<string>()))
@@ -122,7 +122,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             using var controller = new ConsentController(mockConsentService.Object)
             {
-                ControllerContext = ControllerContext(string.Empty)
+                ControllerContext = ControllerContext(string.Empty),
             };
 
             var result = await controller.Index(new ConsentViewModel()) as ViewResult;
@@ -139,7 +139,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
 
             return new ControllerContext
             {
-                HttpContext = Mock.Of<HttpContext>(c => c.User == principal)
+                HttpContext = Mock.Of<HttpContext>(c => c.User == principal),
             };
         }
     }

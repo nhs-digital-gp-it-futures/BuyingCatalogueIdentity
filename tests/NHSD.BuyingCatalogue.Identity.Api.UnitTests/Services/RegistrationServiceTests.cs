@@ -88,12 +88,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             await registrationService.SendInitialEmailAsync(new PasswordResetToken("Token", user));
 
-            mockEmailService.Verify(e => e.SendEmailAsync(It.IsNotNull<EmailMessage>()), Times.Once());
+            mockEmailService.Verify(e => e.SendEmailAsync(It.IsNotNull<EmailMessage>()));
         }
 
         [Test]
         public static async Task SendInitialEmailAsync_UsesExpectedTemplate()
         {
+            // ReSharper disable once StringLiteralTypo
             const string subject = "Gozleme";
 
             var template = new EmailMessageTemplate(new EmailAddressTemplate("from@sender.test"))

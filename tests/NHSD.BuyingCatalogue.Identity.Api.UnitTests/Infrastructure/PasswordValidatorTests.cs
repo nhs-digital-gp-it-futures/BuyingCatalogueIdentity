@@ -6,19 +6,21 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
 {
     [TestFixture]
-    public sealed class PasswordValidatorTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class PasswordValidatorTests
     {
         [TestCase("Pass123123")]
         [TestCase("Pass$$$$$$")]
         [TestCase("pass$$$123")]
         [TestCase("PASS$$$123")]
-        public void ValidateAsync_ValidPassword_ReturnsSuccessfulIdentityResult(string password)
+        public static void ValidateAsync_ValidPassword_ReturnsSuccessfulIdentityResult(string password)
         {
             var validator = new PasswordValidator();
             var result = validator.ValidateAsync(null, null, password);
             result.Result.Succeeded.Should().BeTrue();
         }
 
+        // ReSharper disable once StringLiteralTypo
         [TestCase("")]
         [TestCase("Pass12312")]
         [TestCase("pass123123")]
@@ -27,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
         [TestCase("pass$$$$$$")]
         [TestCase("PASS$$$$$$")]
         [TestCase("PASSonetwothree")]
-        public void ValidateAsync_InvalidPassword_ReturnsFailureIdentityResult(string password)
+        public static void ValidateAsync_InvalidPassword_ReturnsFailureIdentityResult(string password)
         {
             var validator = new PasswordValidator();
             var result = validator.ValidateAsync(null, null, password);

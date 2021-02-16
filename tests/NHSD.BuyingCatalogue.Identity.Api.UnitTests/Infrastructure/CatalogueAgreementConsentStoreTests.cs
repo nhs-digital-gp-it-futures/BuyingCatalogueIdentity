@@ -13,11 +13,12 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
 {
     [TestFixture]
-    internal sealed class CatalogueAgreementConsentStoreTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class CatalogueAgreementConsentStoreTests
     {
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_IScopeRepository_IUsersRepository_NullScopeRepository_ThrowsException()
+        public static void Constructor_IScopeRepository_IUsersRepository_NullScopeRepository_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
                 () => new CatalogueAgreementConsentStore(null, Mock.Of<IUsersRepository>()));
@@ -25,14 +26,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Exception testing")]
-        public void Constructor_IScopeRepository_IUsersRepository_NullUsersRepository_ThrowsException()
+        public static void Constructor_IScopeRepository_IUsersRepository_NullUsersRepository_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
                 () => new CatalogueAgreementConsentStore(Mock.Of<IScopeRepository>(), null));
         }
 
         [Test]
-        public void StoreUserConsentAsync_NullConsent_ThrowsException()
+        public static void StoreUserConsentAsync_NullConsent_ThrowsException()
         {
             var store = new CatalogueAgreementConsentStore(Mock.Of<IScopeRepository>(), Mock.Of<IUsersRepository>());
 
@@ -40,7 +41,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
         }
 
         [Test]
-        public async Task StoreUserConsentAsync_MarksCatalogueAgreementSigned()
+        public static async Task StoreUserConsentAsync_MarksCatalogueAgreementSigned()
         {
             const string subjectId = "JulesVerneId";
 
@@ -60,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
         }
 
         [Test]
-        public async Task StoreUserConsentAsync_UpdatesRepository()
+        public static async Task StoreUserConsentAsync_UpdatesRepository()
         {
             var user = ApplicationUserBuilder.Create().Build();
             var mockUsersRepository = new Mock<IUsersRepository>();
@@ -71,11 +72,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
 
             await store.StoreUserConsentAsync(new Consent());
 
-            mockUsersRepository.Verify(r => r.UpdateAsync(It.Is<ApplicationUser>(u => u == user)), Times.Once());
+            mockUsersRepository.Verify(r => r.UpdateAsync(It.Is<ApplicationUser>(u => u == user)));
         }
 
         [Test]
-        public async Task GetUserConsentAsync_CatalogueAgreementNotSigned_ReturnsConsentWithNoScopes()
+        public static async Task GetUserConsentAsync_CatalogueAgreementNotSigned_ReturnsConsentWithNoScopes()
         {
             const string clientId = "SomeClient";
             const string subjectId = "JulesVerneId";
@@ -102,7 +103,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
         }
 
         [Test]
-        public async Task GetUserConsentAsync_CatalogueAgreementSigned_ReturnsConsentWithScopes()
+        public static async Task GetUserConsentAsync_CatalogueAgreementSigned_ReturnsConsentWithScopes()
         {
             const string clientId = "SomeClient";
             const string subjectId = "JulesVerneId";
@@ -138,7 +139,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Infrastructure
         }
 
         [Test]
-        public void RemoveUserConsentAsync_ReturnsCompletedTask()
+        public static void RemoveUserConsentAsync_ReturnsCompletedTask()
         {
             var store = new CatalogueAgreementConsentStore(Mock.Of<IScopeRepository>(), Mock.Of<IUsersRepository>());
 

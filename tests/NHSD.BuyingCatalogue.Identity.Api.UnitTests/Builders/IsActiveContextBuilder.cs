@@ -7,23 +7,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
 {
     internal sealed class IsActiveContextBuilder
     {
-        private string _subjectId;
-        private readonly string _caller;
+        private readonly string caller;
+        private string subjectId;
 
         private IsActiveContextBuilder()
         {
-            _subjectId = string.Empty;
-            _caller = "Test";
+            subjectId = string.Empty;
+            caller = "Test";
         }
 
         internal static IsActiveContextBuilder Create()
         {
-            return new IsActiveContextBuilder();
+            return new();
         }
 
-        internal IsActiveContextBuilder WithSubjectId(string subjectId)
+        internal IsActiveContextBuilder WithSubjectId(string id)
         {
-            _subjectId = subjectId;
+            subjectId = id;
             return this;
         }
 
@@ -31,13 +31,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         {
             List<Claim> claims = new List<Claim>();
 
-            if (_subjectId is object)
-                claims.Add(new Claim(JwtClaimTypes.Subject, _subjectId));
+            if (subjectId is not null)
+                claims.Add(new Claim(JwtClaimTypes.Subject, subjectId));
 
             return new IsActiveContext(
-                new ClaimsPrincipal(new ClaimsIdentity(claims)), 
-                new Client(), 
-                _caller);
+                new ClaimsPrincipal(new ClaimsIdentity(claims)),
+                new Client(),
+                caller);
         }
     }
 }

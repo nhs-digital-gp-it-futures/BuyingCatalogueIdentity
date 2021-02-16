@@ -7,10 +7,11 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
 {
     [TestFixture]
-    internal sealed class ApplicationUserTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class ApplicationUserTests
     {
         [Test]
-        public void UserName_Trimmed()
+        public static void UserName_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -22,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
 
         [TestCase("Test", "TEST")]
         [TestCase("  Test   ", "TEST")]
-        public void NormalizedUserName_SetUserName_ReturnsNormalizedUserName(string input, string expected)
+        public static void NormalizedUserName_SetUserName_ReturnsNormalizedUserName(string input, string expected)
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -33,7 +34,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void NormalizedUserName_Trimmed()
+        public static void NormalizedUserName_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -44,7 +45,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void FirstName_Trimmed()
+        public static void FirstName_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -55,7 +56,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void LastName_Trimmed()
+        public static void LastName_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -66,7 +67,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void DisplayName_ReturnsExpectedValue()
+        public static void DisplayName_ReturnsExpectedValue()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -78,7 +79,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void PhoneNumber_Trimmed()
+        public static void PhoneNumber_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -89,7 +90,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void EmailAddress_Trimmed()
+        public static void EmailAddress_Trimmed()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -101,7 +102,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
 
         [TestCase("a.b@c.com", "A.B@C.COM")]
         [TestCase("  a.b@c.com   ", "A.B@C.COM")]
-        public void NormalizedEmail_SetEmail_ReturnsNormalizedEmail(string input, string expected)
+        public static void NormalizedEmail_SetEmail_ReturnsNormalizedEmail(string input, string expected)
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -112,7 +113,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void MarkAsDisabled_DisabledIsTrue()
+        public static void MarkAsDisabled_DisabledIsTrue()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -125,7 +126,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void MarkCatalogueAgreementAsSigned_CatalogueAgreementSignedIsTrue()
+        public static void MarkCatalogueAgreementAsSigned_CatalogueAgreementSignedIsTrue()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -138,7 +139,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void Create_NullUserName_ThrowsException()
+        public static void Create_NullUserName_ThrowsException()
         {
             static void Test()
             {
@@ -152,7 +153,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void Create_NullFirstName_ThrowsException()
+        public static void Create_NullFirstName_ThrowsException()
         {
             static void Test()
             {
@@ -166,7 +167,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void Create_NullLastName_ThrowsException()
+        public static void Create_NullLastName_ThrowsException()
         {
             static void Test()
             {
@@ -180,7 +181,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void Create_NullPhoneNumber_ThrowsException()
+        public static void Create_NullPhoneNumber_ThrowsException()
         {
             static void Test()
             {
@@ -194,7 +195,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void Create_NullEmailAddress_ThrowsException()
+        public static void Create_NullEmailAddress_ThrowsException()
         {
             static void Test()
             {
@@ -208,7 +209,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void CreateBuyer_ReturnsBuyerOrganisationFunction()
+        public static void CreateBuyer_ReturnsBuyerOrganisationFunction()
         {
             var actual = ApplicationUserBuilder
                 .Create()
@@ -219,7 +220,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void CreateAuthority_ReturnsAuthorityOrganisationFunction()
+        public static void CreateAuthority_ReturnsAuthorityOrganisationFunction()
         {
             var actual = ApplicationUserBuilder
                 .Create()

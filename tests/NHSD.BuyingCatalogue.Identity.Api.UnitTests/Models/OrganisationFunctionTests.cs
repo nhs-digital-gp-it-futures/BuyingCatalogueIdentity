@@ -10,16 +10,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public sealed class OrganisationFunctionTests
+    internal static class OrganisationFunctionTests
     {
         [Test]
-        public void GetAllValues_ReturnsExpectedList()
+        public static void GetAllValues_ReturnsExpectedList()
         {
             var expected = new List<OrganisationFunction> { OrganisationFunction.Authority, OrganisationFunction.Buyer };
 
-            var actual = typeof(OrganisationFunction).GetFields(BindingFlags.Public 
-                                                                | BindingFlags.Static 
-                                                                | BindingFlags.DeclaredOnly)
+            var actual = typeof(OrganisationFunction)
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .Select(fieldInfo => fieldInfo.GetValue(null) as OrganisationFunction);
 
             actual.Should().BeEquivalentTo(expected, config => config.WithoutStrictOrdering());
@@ -29,8 +28,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         [TestCase("AUTHORITY", "Authority")]
         [TestCase("Buyer", "Buyer")]
         [TestCase("BUYER", "Buyer")]
-        public void FromDisplayName_OrganisationFunctionName_ReturnsExpectedDisplayName(
-            string displayNameInput, 
+        public static void FromDisplayName_OrganisationFunctionName_ReturnsExpectedDisplayName(
+            string displayNameInput,
             string expectedDisplayName)
         {
             var actual = OrganisationFunction.FromDisplayName(displayNameInput);
@@ -43,7 +42,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         [TestCase("Buyer ")]
         [TestCase("  Authority ")]
         [TestCase("1234566")]
-        public void FromDisplayName_String_ReturnsNull(string displayNameInput)
+        public static void FromDisplayName_String_ReturnsNull(string displayNameInput)
         {
             var actual = OrganisationFunction.FromDisplayName(displayNameInput);
 
@@ -51,7 +50,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void FromDisplayName_NullDisplayName_ThrowsException()
+        public static void FromDisplayName_NullDisplayName_ThrowsException()
         {
             static void FromDisplayName()
             {
@@ -62,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Models
         }
 
         [Test]
-        public void TwoDifferentOrganisationFunction_AreNotEqual()
+        public static void TwoDifferentOrganisationFunction_AreNotEqual()
         {
             var actual = OrganisationFunction.Buyer.Equals(OrganisationFunction.Authority);
             actual.Should().BeFalse();

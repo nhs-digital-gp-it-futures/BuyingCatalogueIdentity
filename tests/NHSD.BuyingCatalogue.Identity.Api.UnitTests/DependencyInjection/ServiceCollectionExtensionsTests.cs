@@ -17,10 +17,11 @@ using NUnit.Framework;
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
 {
     [TestFixture]
-    internal sealed class ServiceCollectionExtensionsTests
+    [Parallelizable(ParallelScope.All)]
+    internal static class ServiceCollectionExtensionsTests
     {
         [Test]
-        public void AddDataProtection_NullCertificate_ThrowsException()
+        public static void AddDataProtection_NullCertificate_ThrowsException()
         {
             var services = Mock.Of<IServiceCollection>();
 
@@ -29,7 +30,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_NullServiceCollection_ThrowsException()
+        public static void AddDataProtection_NullServiceCollection_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(
                 () => ServiceCollectionExtensions.AddDataProtection(null, null, Mock.Of<ICertificate>()));
@@ -38,7 +39,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         [TestCase(null)]
         [TestCase("")]
         [TestCase("\t")]
-        public void AddDataProtection_NullEmptyWhiteSpaceAppName_DoesNothing(string applicationName)
+        public static void AddDataProtection_NullEmptyWhiteSpaceAppName_DoesNothing(string applicationName)
         {
             var mockServices = new Mock<IServiceCollection>();
             var services = mockServices.Object;
@@ -49,7 +50,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithoutCert_AddsDataProtection()
+        public static void AddDataProtection_WithAppName_WithoutCert_AddsDataProtection()
         {
             var services = new ServiceCollection();
 
@@ -62,7 +63,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithCert_AddsDataProtection()
+        public static void AddDataProtection_WithAppName_WithCert_AddsDataProtection()
         {
             using var x509 = new X509Certificate2();
 
@@ -81,7 +82,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithoutCert_SetsAppDiscriminator()
+        public static void AddDataProtection_WithAppName_WithoutCert_SetsAppDiscriminator()
         {
             var fixture = new Fixture();
             var appName = fixture.Create<string>();
@@ -99,7 +100,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithCert_SetsAppDiscriminator()
+        public static void AddDataProtection_WithAppName_WithCert_SetsAppDiscriminator()
         {
             var fixture = new Fixture();
 
@@ -122,7 +123,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithoutCert_SetsXmlRepository()
+        public static void AddDataProtection_WithAppName_WithoutCert_SetsXmlRepository()
         {
             var services = new ServiceCollection();
 
@@ -138,7 +139,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithCert_SetsXmlRepository()
+        public static void AddDataProtection_WithAppName_WithCert_SetsXmlRepository()
         {
             using var x509 = new X509Certificate2();
 
@@ -160,7 +161,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithoutCert_DoesNotSetXmlEncryptor()
+        public static void AddDataProtection_WithAppName_WithoutCert_DoesNotSetXmlEncryptor()
         {
             var services = new ServiceCollection();
 
@@ -175,7 +176,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
         }
 
         [Test]
-        public void AddDataProtection_WithAppName_WithCert_SetsXmlEncryptor()
+        public static void AddDataProtection_WithAppName_WithCert_SetsXmlEncryptor()
         {
             using var x509 = new X509Certificate2();
 
@@ -194,8 +195,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.DependencyInjection
             options.Value.Should().NotBeNull();
 
             var xmlEncryptor = options.Value.XmlEncryptor;
-            xmlEncryptor .Should().NotBeNull();
-            xmlEncryptor .Should().BeOfType<CertificateXmlEncryptor>();
+            xmlEncryptor.Should().NotBeNull();
+            xmlEncryptor.Should().BeOfType<CertificateXmlEncryptor>();
         }
     }
 }
