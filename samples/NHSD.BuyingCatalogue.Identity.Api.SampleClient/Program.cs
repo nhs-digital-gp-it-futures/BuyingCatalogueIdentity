@@ -13,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             // Discover endpoints from metadata
             using var client = new HttpClient();
 
-            var discoveryDocument = await client.GetDiscoveryDocumentAsync("http://localhost:8070");
+            var discoveryDocument = await client.GetDiscoveryDocumentAsync("https://localhost:9070/identity");
             if (discoveryDocument.IsError)
             {
                 Console.WriteLine(discoveryDocument.Error);
@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleClient
             using var apiClient = new HttpClient();
             apiClient.SetBearerToken(tokenResponse.AccessToken);
 
-            var response = await apiClient.GetAsync(new Uri("http://localhost:8071/Identity"));
+            var response = await apiClient.GetAsync(new Uri("https://localhost:9071"));
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine(response.StatusCode);

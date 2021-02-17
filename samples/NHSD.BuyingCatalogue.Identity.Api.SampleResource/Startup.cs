@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.SampleResource
 {
-    public class Startup
+    public sealed class Startup
     {
         public Startup(IConfiguration configuration)
         {

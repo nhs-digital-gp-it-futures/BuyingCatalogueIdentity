@@ -18,15 +18,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
 {
     public sealed class HomeController : Controller
     {
-        private readonly IConfiguration _configuration;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration configuration;
+        private readonly IHttpClientFactory httpClientFactory;
 
         public HomeController(
             IConfiguration configuration,
             IHttpClientFactory httpClientFactory)
         {
-            _configuration = configuration;
-            _httpClientFactory = httpClientFactory;
+            this.configuration = configuration;
+            this.httpClientFactory = httpClientFactory;
         }
 
         [HttpGet]
@@ -41,11 +41,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-            // Call api
+            // Call API
             using var apiClient = new HttpClient();
 
             apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            var address = _configuration.GetSection("sampleResourceUrl");
+            var address = configuration.GetSection("sampleResourceUrl");
             var response = await apiClient.GetAsync(new Uri(address.Value));
 
             if (!response.IsSuccessStatusCode)
@@ -65,7 +65,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.SampleMvcClient.Controllers
         [Authorize]
         public async Task<IActionResult> UserInfo()
         {
-            var client = _httpClientFactory.CreateClient(HttpClientNames.Identity);
+            var client = httpClientFactory.CreateClient(HttpClientNames.Identity);
 
             using var discoveryDocumentRequest = new DiscoveryDocumentRequest
             {
