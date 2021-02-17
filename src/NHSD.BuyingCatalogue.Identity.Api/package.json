@@ -3,11 +3,11 @@
   "name": "nhsd-buyingcatalogue-identity",
   "private": true,
   "dependencies": {
-    "buying-catalogue-components": "^1.2.4",
-    "nhsuk-frontend": "^3.0.2"
+    "buying-catalogue-components": "^3.3.10",
+    "nhsuk-frontend": "^4.1.0"
   },
   "devDependencies": {
-    "node-sass": "^4.13.1"
+    "node-sass": "^5.0.0"
   },
   "scripts": {
     "build": "npm run build:css",
