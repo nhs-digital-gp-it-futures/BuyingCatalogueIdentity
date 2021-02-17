@@ -7,22 +7,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
     public sealed class ErrorController : Controller
     {
-        private readonly IIdentityServerInteractionService _interactionService;
-        private readonly ILogger<ErrorController> _logger;
+        private readonly IIdentityServerInteractionService interactionService;
+        private readonly ILogger<ErrorController> logger;
 
         public ErrorController(
             IIdentityServerInteractionService interactionService,
             ILogger<ErrorController> logger)
         {
-            _interactionService = interactionService;
-            _logger = logger;
+            this.interactionService = interactionService;
+            this.logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(string errorId)
         {
-            var message = await _interactionService.GetErrorContextAsync(errorId);
-            _logger.LogError("Request for client {ClientId} failed with error code {Error}: {ErrorDescription}",
+            var message = await interactionService.GetErrorContextAsync(errorId);
+            logger.LogError(
+                "Request for client {ClientId} failed with error code {Error}: {ErrorDescription}",
                 message.ClientId,
                 message.Error,
                 message.ErrorDescription);

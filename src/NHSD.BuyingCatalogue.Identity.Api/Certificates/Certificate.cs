@@ -23,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Certificates
 
         public X509Certificate2 Instance { get; }
 
-        public bool IsAvailable => Instance != null;
+        public bool IsAvailable => Instance is not null;
 
         public string Path { get; }
 

@@ -6,20 +6,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
 {
     public sealed class OrganisationFunction : IEquatable<OrganisationFunction>
     {
-        public static readonly OrganisationFunction Authority = new OrganisationFunction(1, nameof(Authority));
-        public static readonly OrganisationFunction Buyer = new OrganisationFunction(2, nameof(Buyer));
+        public static readonly OrganisationFunction Authority = new(1, nameof(Authority));
+        public static readonly OrganisationFunction Buyer = new(2, nameof(Buyer));
 
-        private static readonly IEnumerable<OrganisationFunction> _values = new[] { Authority, Buyer };
-
-        public int Value { get; }
-
-        public string DisplayName { get; }
+        private static readonly IEnumerable<OrganisationFunction> Values = new[] { Authority, Buyer };
 
         private OrganisationFunction(int value, string displayName)
         {
             Value = value;
             DisplayName = displayName ?? throw new ArgumentNullException(nameof(displayName));
         }
+
+        public int Value { get; }
+
+        public string DisplayName { get; }
 
         public static OrganisationFunction FromDisplayName(string displayName)
         {
@@ -28,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
                 throw new ArgumentNullException(nameof(displayName));
             }
 
-            return _values.SingleOrDefault(x => string.Equals(x.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
+            return Values.SingleOrDefault(o => string.Equals(o.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
         }
 
         public override bool Equals(object obj)

@@ -20,12 +20,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
 Contact the account administrator at: {0} or call {1}";
 
-        private readonly ILoginService _loginService;
-        private readonly ILogoutService _logoutService;
-        private readonly IPasswordResetCallback _passwordResetCallback;
-        private readonly IPasswordService _passwordService;
-        private readonly DisabledErrorMessageSettings _disabledErrorMessageSettings;
-        private readonly PublicBrowseSettings _publicBrowseSettings;
+        private readonly ILoginService loginService;
+        private readonly ILogoutService logoutService;
+        private readonly IPasswordResetCallback passwordResetCallback;
+        private readonly IPasswordService passwordService;
+        private readonly DisabledErrorMessageSettings disabledErrorMessageSettings;
+        private readonly PublicBrowseSettings publicBrowseSettings;
 
         public AccountController(
             ILoginService loginService,
@@ -35,24 +35,21 @@ Contact the account administrator at: {0} or call {1}";
             DisabledErrorMessageSettings disabledErrorMessageSettings,
             PublicBrowseSettings publicBrowseSettings)
         {
-            _loginService = loginService;
-            _logoutService = logoutService;
-            _passwordResetCallback = passwordResetCallback;
-            _passwordService = passwordService;
-            _disabledErrorMessageSettings = disabledErrorMessageSettings;
-            _publicBrowseSettings = publicBrowseSettings;
+            this.loginService = loginService;
+            this.logoutService = logoutService;
+            this.passwordResetCallback = passwordResetCallback;
+            this.passwordService = passwordService;
+            this.disabledErrorMessageSettings = disabledErrorMessageSettings;
+            this.publicBrowseSettings = publicBrowseSettings;
         }
 
         [HttpGet]
         public IActionResult Login(Uri returnUrl)
         {
-            if (returnUrl == null)
+            if (returnUrl is null)
                 return RedirectToPublicBrowseLogin();
 
-            LoginViewModel loginViewModel = new LoginViewModel
-            {
-                ReturnUrl = returnUrl
-            };
+            var loginViewModel = new LoginViewModel { ReturnUrl = returnUrl };
 
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -70,13 +67,13 @@ Contact the account administrator at: {0} or call {1}";
 
             var returnUri = viewModel.ReturnUrl;
 
-            if (returnUri == null)
+            if (returnUri is null)
                 return RedirectToPublicBrowseLogin();
 
-            var signInResult = await _loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, returnUri);
+            var signInResult = await loginService.SignInAsync(viewModel.EmailAddress, viewModel.Password, returnUri);
 
             LoginViewModel NewLoginViewModel() =>
-                new LoginViewModel { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.Value?.LoginHint };
+                new() { ReturnUrl = viewModel.ReturnUrl, EmailAddress = signInResult.Value?.LoginHint };
 
             if (!ModelState.IsValid)
                 return View(NewLoginViewModel());
@@ -92,16 +89,16 @@ Contact the account administrator at: {0} or call {1}";
                     ModelState.AddModelError(nameof(LoginViewModel.Password), SignInErrorMessage);
                 }
 
-                if (signInErrors.Contains(LoginUserErrors.UserIsDisabled()))
-                {
-                    var disabledErrorFormat = string.Format(
-                        CultureInfo.CurrentCulture,
-                        UserDisabledErrorMessageTemplate,
-                        _disabledErrorMessageSettings.EmailAddress,
-                        _disabledErrorMessageSettings.PhoneNumber);
+                if (!signInErrors.Contains(LoginUserErrors.UserIsDisabled()))
+                    return View(NewLoginViewModel());
 
-                    ModelState.AddModelError(nameof(LoginViewModel.DisabledError), disabledErrorFormat);
-                }
+                var disabledErrorFormat = string.Format(
+                    CultureInfo.CurrentCulture,
+                    UserDisabledErrorMessageTemplate,
+                    disabledErrorMessageSettings.EmailAddress,
+                    disabledErrorMessageSettings.PhoneNumber);
+
+                ModelState.AddModelError(nameof(LoginViewModel.DisabledError), disabledErrorFormat);
 
                 return View(NewLoginViewModel());
             }
@@ -118,15 +115,15 @@ Contact the account administrator at: {0} or call {1}";
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
-            LogoutRequest logoutRequest = await _logoutService.GetLogoutRequestAsync(logoutId);
+            LogoutRequest logoutRequest = await logoutService.GetLogoutRequestAsync(logoutId);
 
-            await _logoutService.SignOutAsync(logoutRequest);
+            await logoutService.SignOutAsync(logoutRequest);
 
             var redirectUrl = logoutRequest?.PostLogoutRedirectUri;
 
             if (string.IsNullOrWhiteSpace(redirectUrl))
             {
-                redirectUrl = _publicBrowseSettings.LogoutAddress.ToString();
+                redirectUrl = publicBrowseSettings.LogoutAddress.ToString();
             }
 
             return Redirect(redirectUrl);
@@ -160,13 +157,13 @@ Contact the account administrator at: {0} or call {1}";
                 return View(viewModel);
             }
 
-            var resetToken = await _passwordService.GeneratePasswordResetTokenAsync(viewModel.EmailAddress);
-            if (resetToken == null)
+            var resetToken = await passwordService.GeneratePasswordResetTokenAsync(viewModel.EmailAddress);
+            if (resetToken is null)
                 return RedirectToAction(nameof(ForgotPasswordLinkSent));
 
-            await _passwordService.SendResetEmailAsync(
+            await passwordService.SendResetEmailAsync(
                 resetToken.User,
-                _passwordResetCallback.GetPasswordResetCallback(resetToken));
+                passwordResetCallback.GetPasswordResetCallback(resetToken));
 
             return RedirectToAction(nameof(ForgotPasswordLinkSent));
         }
@@ -180,9 +177,9 @@ Contact the account administrator at: {0} or call {1}";
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string email, string token)
         {
-            var isValid = await _passwordService.IsValidPasswordResetTokenAsync(email, token);
-            
-            if(!isValid)
+            var isValid = await passwordService.IsValidPasswordResetTokenAsync(email, token);
+
+            if (!isValid)
             {
                 return RedirectToAction(nameof(ResetPasswordExpired));
             }
@@ -204,21 +201,21 @@ Contact the account administrator at: {0} or call {1}";
                 return View(viewModel);
             }
 
-            var res = await _passwordService.ResetPasswordAsync(viewModel.Email, viewModel.Token, viewModel.Password);
+            var res = await passwordService.ResetPasswordAsync(viewModel.Email, viewModel.Token, viewModel.Password);
             if (res.Succeeded)
             {
                 return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
 
             var invalidPasswordError = res.Errors.FirstOrDefault(error => error.Code == PasswordValidator.InvalidPasswordCode);
-            if (invalidPasswordError != null)
+            if (invalidPasswordError is not null)
             {
                 ModelState.AddModelError(nameof(ResetPasswordViewModel.Password), invalidPasswordError.Description);
                 return View(viewModel);
             }
 
             var invalidTokenError = res.Errors.FirstOrDefault(error => error.Code == PasswordService.InvalidTokenCode);
-            if (invalidTokenError != null)
+            if (invalidTokenError is not null)
             {
                 return RedirectToAction(nameof(ResetPasswordExpired));
             }
@@ -241,7 +238,7 @@ Contact the account administrator at: {0} or call {1}";
 
         private RedirectResult RedirectToPublicBrowseLogin()
         {
-            return Redirect(_publicBrowseSettings.LoginAddress.ToString());
+            return Redirect(publicBrowseSettings.LoginAddress.ToString());
         }
     }
 }

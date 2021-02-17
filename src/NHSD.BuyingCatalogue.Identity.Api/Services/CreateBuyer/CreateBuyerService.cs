@@ -9,10 +9,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
 {
     public sealed class CreateBuyerService : ICreateBuyerService
     {
-        private readonly IApplicationUserValidator _applicationUserValidator;
-        private readonly IUsersRepository _usersRepository;
-        private readonly IPasswordService _passwordService;
-        private readonly IRegistrationService _registrationService;
+        private readonly IApplicationUserValidator applicationUserValidator;
+        private readonly IUsersRepository usersRepository;
+        private readonly IPasswordService passwordService;
+        private readonly IRegistrationService registrationService;
 
         public CreateBuyerService(
             IApplicationUserValidator applicationUserValidator,
@@ -20,10 +20,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
             IPasswordService passwordService,
             IRegistrationService registrationService)
         {
-            _applicationUserValidator = applicationUserValidator ?? throw new ArgumentNullException(nameof(applicationUserValidator));
-            _passwordService = passwordService ?? throw new ArgumentNullException(nameof(passwordService));
-            _registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
-            _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
+            this.applicationUserValidator = applicationUserValidator ?? throw new ArgumentNullException(nameof(applicationUserValidator));
+            this.passwordService = passwordService ?? throw new ArgumentNullException(nameof(passwordService));
+            this.registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
+            this.usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
 
         public async Task<Result<string>> CreateAsync(CreateBuyerRequest createBuyerRequest)
@@ -41,17 +41,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services.CreateBuyer
                 createBuyerRequest.EmailAddress,
                 createBuyerRequest.PrimaryOrganisationId);
 
-            var validationResult = await _applicationUserValidator.ValidateAsync(newApplicationUser);
+            var validationResult = await applicationUserValidator.ValidateAsync(newApplicationUser);
             if (!validationResult.IsSuccess)
                 return Result.Failure<string>(validationResult.Errors);
 
-            await _usersRepository.CreateUserAsync(newApplicationUser);
-            var token = await _passwordService.GeneratePasswordResetTokenAsync(newApplicationUser.Email);
+            await usersRepository.CreateUserAsync(newApplicationUser);
+            var token = await passwordService.GeneratePasswordResetTokenAsync(newApplicationUser.Email);
 
             // TODO: discuss exception handling options
             // TODO: consider moving sending e-mail out of process
             // (the current in-process implementation has a significant impact on response time)
-            await _registrationService.SendInitialEmailAsync(token);
+            await registrationService.SendInitialEmailAsync(token);
 
             return Result.Success(newApplicationUser.Id);
         }

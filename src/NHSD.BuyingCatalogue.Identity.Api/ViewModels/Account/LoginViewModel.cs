@@ -10,7 +10,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.ViewModels.Account
         [EmailAddress(ErrorMessage = ErrorMessages.EmailAddressInvalid)]
         [DisplayName("Email address")]
         public string EmailAddress { get; set; }
-        
+
         [Required(ErrorMessage = ErrorMessages.PasswordRequired)]
         [DataType(DataType.Password)]
         public string Password { get; set; }

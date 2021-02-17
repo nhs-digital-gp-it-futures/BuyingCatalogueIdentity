@@ -10,20 +10,20 @@ using NHSD.BuyingCatalogue.Identity.Common.Results;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Validators
 {
-    public class ApplicationUserValidator : IApplicationUserValidator
+    public sealed class ApplicationUserValidator : IApplicationUserValidator
     {
         private const int MaximumFirstNameLength = 100;
         private const int MaximumLastNameLength = 100;
         private const int MaximumPhoneNumberLength = 35;
         private const int MaximumEmailLength = 256;
 
-        private static readonly EmailAddressAttribute _emailAddressAttribute = new EmailAddressAttribute();
+        private static readonly EmailAddressAttribute EmailAddressAttribute = new();
 
-        private readonly IUsersRepository _usersRepository;
+        private readonly IUsersRepository usersRepository;
 
         public ApplicationUserValidator(IUsersRepository usersRepository)
         {
-            _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
+            this.usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
 
         public async Task<Result> ValidateAsync(ApplicationUser user)
@@ -41,8 +41,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Validators
             return errors.Any() ? Result.Failure(errors) : Result.Success();
         }
 
-        private static void ValidateName( 
-            string firstName, 
+        private static void ValidateName(
+            string firstName,
             string lastName,
             List<ErrorDetails> errors)
         {
@@ -110,14 +110,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Validators
             {
                 errors.Add(ApplicationUserErrors.EmailTooLong());
             }
-            else if (!_emailAddressAttribute.IsValid(email))
+            else if (!EmailAddressAttribute.IsValid(email))
             {
                 errors.Add(ApplicationUserErrors.EmailInvalidFormat());
             }
             else
             {
-                var user = await _usersRepository.GetByEmailAsync(email);
-                if (user is object &&
+                var user = await usersRepository.GetByEmailAsync(email);
+                if (user is not null &&
                     string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase))
                 {
                     errors.Add(ApplicationUserErrors.EmailAlreadyExists());

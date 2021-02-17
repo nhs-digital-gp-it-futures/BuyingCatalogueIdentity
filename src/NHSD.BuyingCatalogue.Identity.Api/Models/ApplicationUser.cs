@@ -5,26 +5,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
 {
     public sealed class ApplicationUser : IdentityUser
     {
-        public string FirstName { get; }
-
-        public string LastName { get; }
-        
-        public string DisplayName => $"{FirstName} {LastName}";
-
-        public Guid PrimaryOrganisationId { get; }
-        
-        public OrganisationFunction OrganisationFunction { get; }
-
-        public bool Disabled { get; private set; }
-
-        public bool CatalogueAgreementSigned { get; private set; }
-
         private ApplicationUser(
             string userName,
-            string firstName, 
-            string lastName, 
-            string phoneNumber, 
-            string email, 
+            string firstName,
+            string lastName,
+            string phoneNumber,
+            string email,
             OrganisationFunction organisationFunction,
             Guid primaryOrganisationId)
         {
@@ -53,6 +39,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
             CatalogueAgreementSigned = false;
         }
 
+        public string FirstName { get; }
+
+        public string LastName { get; }
+
+        public string DisplayName => $"{FirstName} {LastName}";
+
+        public Guid PrimaryOrganisationId { get; }
+
+        public OrganisationFunction OrganisationFunction { get; }
+
+        public bool Disabled { get; private set; }
+
+        public bool CatalogueAgreementSigned { get; private set; }
+
         public static ApplicationUser CreateBuyer(
             string userName,
             string firstName,
@@ -61,13 +61,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
             string email,
             Guid primaryOrganisationId)
         {
-            return new ApplicationUser(
-                userName, 
-                firstName, 
-                lastName, 
-                phoneNumber, 
-                email, 
-                OrganisationFunction.Buyer, 
+            return new(
+                userName,
+                firstName,
+                lastName,
+                phoneNumber,
+                email,
+                OrganisationFunction.Buyer,
                 primaryOrganisationId);
         }
 
@@ -79,13 +79,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
             string email,
             Guid primaryOrganisationId)
         {
-            return new ApplicationUser(
-                userName, 
-                firstName, 
-                lastName, 
-                phoneNumber, 
-                email, 
-                OrganisationFunction.Authority, 
+            return new(
+                userName,
+                firstName,
+                lastName,
+                phoneNumber,
+                email,
+                OrganisationFunction.Authority,
                 primaryOrganisationId);
         }
 

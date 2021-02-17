@@ -10,18 +10,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     internal sealed class AgreementConsentService : IAgreementConsentService
     {
-        private readonly IEventService _eventService;
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IScopeRepository _scopeRepository;
+        private readonly IEventService eventService;
+        private readonly IIdentityServerInteractionService interaction;
+        private readonly IScopeRepository scopeRepository;
 
         public AgreementConsentService(
             IEventService eventService,
             IIdentityServerInteractionService interaction,
             IScopeRepository scopeRepository)
         {
-            _eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
-            _interaction = interaction ?? throw new ArgumentNullException(nameof(interaction));
-            _scopeRepository = scopeRepository ?? throw new ArgumentNullException(nameof(scopeRepository));
+            this.eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
+            this.interaction = interaction ?? throw new ArgumentNullException(nameof(interaction));
+            this.scopeRepository = scopeRepository ?? throw new ArgumentNullException(nameof(scopeRepository));
         }
 
         public async Task<bool> IsValidReturnUrl(Uri returnUrl)
@@ -29,7 +29,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (returnUrl is null)
                 throw new ArgumentNullException(nameof(returnUrl));
 
-            return await _interaction.GetAuthorizationContextAsync(returnUrl.ToString()) != null;
+            return await interaction.GetAuthorizationContextAsync(returnUrl.ToString()) is not null;
         }
 
         public async Task<Result<Uri>> GrantConsent(Uri returnUrl, string subjectId)
@@ -37,22 +37,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (returnUrl is null)
                 throw new ArgumentNullException(nameof(returnUrl));
 
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl.ToString());
+            var context = await interaction.GetAuthorizationContextAsync(returnUrl.ToString());
             if (context is null)
                 return Result.Failure<Uri>();
 
             var consent = new ConsentResponse
             {
                 RememberConsent = true,
-                ScopesConsented = _scopeRepository.Scopes,
+                ScopesConsented = scopeRepository.Scopes,
             };
 
-            await _interaction.GrantConsentAsync(context, consent);
-            await _eventService.RaiseAsync(new ConsentGrantedEvent(
+            await interaction.GrantConsentAsync(context, consent);
+            await eventService.RaiseAsync(new ConsentGrantedEvent(
                 subjectId,
                 context.ClientId,
                 context.ScopesRequested,
-                _scopeRepository.Scopes,
+                scopeRepository.Scopes,
                 true));
 
             return Result.Success(returnUrl);

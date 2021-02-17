@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -50,9 +51,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             builder.AddCssClass(TagHelperConstants.NhsValidationSummary);
             builder.Attributes[TagHelperConstants.Role] = TagHelperConstants.RoleAlert;
             builder.Attributes[TagHelperConstants.LabelledBy] = TagHelperConstants.ErrorSummaryTitle;
-            builder.Attributes[TagHelperConstants.Tabindex] = "-1";
+            builder.Attributes[TagHelperConstants.TabIndex] = "-1";
 
             return builder;
+        }
+
+        private static TagBuilder GetListItemBuilder(string linkElement, string errorMessage)
+        {
+            var listItemBuilder = new TagBuilder(TagHelperConstants.ListItem);
+            var linkBuilder = new TagBuilder(TagHelperConstants.Anchor);
+            linkBuilder.Attributes.Add(TagHelperConstants.Link, $"#{linkElement}");
+            linkBuilder.AddCssClass("bc-c-login-page-error-box-padding");
+            linkBuilder.InnerHtml.Append(errorMessage);
+            listItemBuilder.InnerHtml.AppendHtml(linkBuilder);
+
+            return listItemBuilder;
         }
 
         private TagBuilder GetHeaderBuilder()
@@ -70,7 +83,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             var builder = new TagBuilder(TagHelperConstants.UnorderedList);
             builder.AddCssClass(TagHelperConstants.NhsList);
             builder.AddCssClass(TagHelperConstants.NhsValidationSummaryList);
-            
+
             var viewType = ViewContext.ViewData.Model.GetType();
 
             if (viewType is null)
@@ -78,33 +91,21 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 throw new InvalidOperationException();
             }
 
-            var propertyNames = viewType.GetProperties().Select(x => x.Name).ToList();
+            var propertyNames = viewType.GetProperties().Select(i => i.Name).ToList();
             var orderedStates = ViewContext.ViewData.ModelState
                 .OrderBy(d => propertyNames.IndexOf(d.Key))
                 .ToList();
 
-            foreach (var model in orderedStates)
+            foreach ((var key, ModelStateEntry modelStateEntry) in orderedStates)
             {
-                foreach (var error in model.Value.Errors)
+                foreach (var error in modelStateEntry.Errors)
                 {
-                    var listItem = GetListItemBuilder(model.Key, error.ErrorMessage);
+                    var listItem = GetListItemBuilder(key, error.ErrorMessage);
                     builder.InnerHtml.AppendHtml(listItem);
                 }
             }
 
             return builder;
-        }
-
-        private static TagBuilder GetListItemBuilder(string linkElement, string errorMessage)
-        {
-            var listItemBuilder = new TagBuilder(TagHelperConstants.ListItem);
-            var linkBuilder = new TagBuilder(TagHelperConstants.Anchor);
-            linkBuilder.Attributes.Add(TagHelperConstants.Link, $"#{linkElement}");
-            linkBuilder.AddCssClass("bc-c-login-page-error-box-padding");
-            linkBuilder.InnerHtml.Append(errorMessage);
-            listItemBuilder.InnerHtml.AppendHtml(linkBuilder);
-
-            return listItemBuilder;
         }
     }
 }

@@ -8,23 +8,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Data
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            builder.Property(x => x.FirstName)
+            builder.Property(u => u.FirstName)
                 .HasColumnName("FirstName");
 
-            builder.Property(x => x.LastName)
+            builder.Property(u => u.LastName)
                 .HasColumnName("LastName");
 
-            builder.Property(x => x.PrimaryOrganisationId)
+            builder.Property(u => u.PrimaryOrganisationId)
                 .HasColumnName("PrimaryOrganisationId");
 
-            builder.Property(x => x.OrganisationFunction)
+            builder.Property(u => u.OrganisationFunction)
                 .HasColumnName("OrganisationFunction")
-                .HasConversion(x => x.DisplayName, value => OrganisationFunction.FromDisplayName(value));
+                .HasConversion(o => o.DisplayName, value => OrganisationFunction.FromDisplayName(value));
 
-            builder.Property(x => x.Disabled)
+            builder.Property(u => u.Disabled)
                 .HasColumnName("Disabled");
 
-            builder.Property(x => x.CatalogueAgreementSigned)
+            builder.Property(u => u.CatalogueAgreementSigned)
                 .HasColumnName("CatalogueAgreementSigned");
         }
     }

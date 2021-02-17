@@ -15,14 +15,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
             if (services is null)
                 throw new ArgumentNullException(nameof(services));
 
-
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(Version, new OpenApiInfo
                 {
                     Version = Version,
-                    Title = "IDENTITY API",
-                    Description = "NHS Digital GP IT Buying Catalogue HTTP IDENTITY API"
+                    Title = "Identity API",
+                    Description = "NHS Digital GP IT Buying Catalogue Identity API",
                 });
             });
 
@@ -45,7 +44,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint($"{ (endpointPrefix) }/swagger/{Version}/swagger.json", $"Buying Catalogue Identity API {Version}");
+                options.SwaggerEndpoint($"{endpointPrefix}/swagger/{Version}/swagger.json", $"Buying Catalogue Identity API {Version}");
             });
 
             return app;

@@ -11,9 +11,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     /// </summary>
     internal sealed class RegistrationService : IRegistrationService
     {
-        private readonly IEmailService _emailService;
-        private readonly IPasswordResetCallback _passwordResetCallback;
-        private readonly RegistrationSettings _settings;
+        private readonly IEmailService emailService;
+        private readonly IPasswordResetCallback passwordResetCallback;
+        private readonly RegistrationSettings settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistrationService"/> class using
@@ -27,9 +27,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         /// <exception cref="ArgumentNullException"><paramref name="settings"/> is <see langref="null"/>.</exception>
         public RegistrationService(IEmailService emailService, IPasswordResetCallback passwordResetCallback, RegistrationSettings settings)
         {
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            _passwordResetCallback = passwordResetCallback ?? throw new ArgumentNullException(nameof(passwordResetCallback));
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            this.passwordResetCallback = passwordResetCallback ?? throw new ArgumentNullException(nameof(passwordResetCallback));
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         /// <summary>
@@ -45,10 +45,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             var user = token.User;
 
-            await _emailService.SendEmailAsync(
-                _settings.EmailMessageTemplate,
+            await emailService.SendEmailAsync(
+                settings.EmailMessageTemplate,
                 new EmailAddress(user.Email, user.DisplayName),
-                _passwordResetCallback.GetPasswordResetCallback(token));
+                passwordResetCallback.GetPasswordResetCallback(token));
         }
     }
 }

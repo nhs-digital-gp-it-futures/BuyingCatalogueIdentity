@@ -2,7 +2,7 @@
 {
     internal static class TagHelperConstants
     {
-        // tags
+        // Tags
         internal const string Div = "div";
         internal const string Anchor = "a";
         internal const string Link = "href";
@@ -13,7 +13,7 @@
         internal const string Svg = "svg";
         internal const string Path = "path";
 
-        // attributes
+        // Attributes
         internal const string DataTestId = "data-test-id";
         internal const string For = "asp-for";
         internal const string Id = "id";
@@ -21,12 +21,12 @@
         internal const string Role = "role";
         internal const string RoleAlert = "alert";
         internal const string Type = "type";
-        internal const string Tabindex = "tabindex";
+        internal const string TabIndex = "tabindex";
         internal const string Xmlns = "xmlns";
         internal const string ViewBox = "viewBox";
         internal const string AriaHidden = "aria-hidden";
 
-        // classes
+        // Classes
         internal const string ErrorSummaryTitle = "error-summary-title";
         internal const string NhsErrorMessage = "nhsuk-error-message";
         internal const string NhsFormGroup = "nhsuk-form-group";

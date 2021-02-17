@@ -15,10 +15,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
     {
         internal const string InvalidTokenCode = "InvalidToken";
 
-        private readonly IEmailService _emailService;
-        private readonly IdentityOptions _identityOptions = new();
-        private readonly PasswordResetSettings _settings;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailService emailService;
+        private readonly IdentityOptions identityOptions = new();
+        private readonly PasswordResetSettings settings;
+        private readonly UserManager<ApplicationUser> userManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PasswordService"/> class using
@@ -35,9 +35,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             PasswordResetSettings settings,
             UserManager<ApplicationUser> userManager)
         {
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
         /// <summary>
@@ -55,11 +55,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (string.IsNullOrWhiteSpace(emailAddress))
                 throw new ArgumentException($"{nameof(emailAddress)} must be provided", nameof(emailAddress));
 
-            var user = await _userManager.FindByEmailAsync(emailAddress);
+            var user = await userManager.FindByEmailAsync(emailAddress);
 
-            return user == null
+            return user is null
                 ? null
-                : new PasswordResetToken(await _userManager.GeneratePasswordResetTokenAsync(user), user);
+                : new PasswordResetToken(await userManager.GeneratePasswordResetTokenAsync(user), user);
         }
 
         /// <summary>
@@ -78,8 +78,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (callback is null)
                 throw new ArgumentNullException(nameof(callback));
 
-            await _emailService.SendEmailAsync(
-                _settings.EmailMessageTemplate,
+            await emailService.SendEmailAsync(
+                settings.EmailMessageTemplate,
                 new EmailAddress(user.Email, user.DisplayName),
                 callback);
         }
@@ -98,28 +98,28 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (string.IsNullOrWhiteSpace(token))
                 return false;
 
-            var user = await _userManager.FindByEmailAsync(emailAddress);
+            var user = await userManager.FindByEmailAsync(emailAddress);
             if (user is null)
                 return false;
 
-            return await _userManager.VerifyUserTokenAsync(
+            return await userManager.VerifyUserTokenAsync(
                 user,
-                _identityOptions.Tokens.PasswordResetTokenProvider,
+                identityOptions.Tokens.PasswordResetTokenProvider,
                 UserManager<IdentityUser>.ResetPasswordTokenPurpose,
                 token);
         }
 
         /// <summary>
-        /// Resets the password of the user with the specified <paramref name="emailAddress"/>
+        /// Resets the password of the user with the specified <paramref name="emailAddress"/>.
         /// </summary>
-        /// <param name="emailAddress">The email address of the user</param>
-        /// <param name="token">The validation token for authorizing the password reset</param>
-        /// <param name="newPassword">The value of the new password</param>
-        /// <returns>The result of the password reset operation</returns>
+        /// <param name="emailAddress">The email address of the user.</param>
+        /// <param name="token">The validation token for authorizing the password reset.</param>
+        /// <param name="newPassword">The value of the new password.</param>
+        /// <returns>The result of the password reset operation.</returns>
         public async Task<IdentityResult> ResetPasswordAsync(string emailAddress, string token, string newPassword)
         {
-            var user = await _userManager.FindByEmailAsync(emailAddress);
-            return await _userManager.ResetPasswordAsync(user, token, newPassword);
+            var user = await userManager.FindByEmailAsync(emailAddress);
+            return await userManager.ResetPasswordAsync(user, token, newPassword);
         }
     }
 }
