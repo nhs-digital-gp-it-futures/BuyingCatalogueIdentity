@@ -13,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         public const string TagHelperName = "nhs-back-link";
         public const string BackLinkLabel = "back-link-label";
 
-        public BackLinkTagHelper(IHtmlGenerator generator) 
+        public BackLinkTagHelper(IHtmlGenerator generator)
             : base(generator)
         {
         }

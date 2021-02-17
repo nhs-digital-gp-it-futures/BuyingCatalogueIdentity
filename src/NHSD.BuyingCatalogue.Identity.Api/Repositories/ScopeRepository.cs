@@ -7,7 +7,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
 {
     internal sealed class ScopeRepository : IScopeRepository
     {
-        private readonly List<string> _scopes = new List<string>();
+        private readonly List<string> scopes = new();
 
         [SuppressMessage(
             "Globalization",
@@ -17,13 +17,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
             IEnumerable<ResourceSetting> apiResources,
             IEnumerable<IdentityResourceSetting> identityResources)
         {
-            if (apiResources != null)
-                _scopes.AddRange(apiResources.Select(r => r.ResourceName));
+            if (apiResources is not null)
+                scopes.AddRange(apiResources.Select(r => r.ResourceName));
 
-            if (identityResources != null)
-                _scopes.AddRange(identityResources.Select(r => r.ResourceType.ToLowerInvariant()));
+            if (identityResources is not null)
+                scopes.AddRange(identityResources.Select(r => r.ResourceType.ToLowerInvariant()));
         }
 
-        public IReadOnlyCollection<string> Scopes => _scopes;
+        public IReadOnlyCollection<string> Scopes => scopes;
     }
 }

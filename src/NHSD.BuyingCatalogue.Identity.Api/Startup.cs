@@ -33,42 +33,41 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 {
     public sealed class Startup
     {
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
+        private readonly IConfiguration configuration;
+        private readonly IWebHostEnvironment environment;
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
-            _configuration = configuration;
-            _environment = environment;
+            this.configuration = configuration;
+            this.environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = _configuration.GetConnectionString("CatalogueUsers");
-            var cookieExpiration = _configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
-            var clients = _configuration.GetSection("clients").Get<ClientSettingCollection>();
-            var apiResources = _configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
+            var connectionString = configuration.GetConnectionString("CatalogueUsers");
+            var cookieExpiration = configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
+            var clients = configuration.GetSection("clients").Get<ClientSettingCollection>();
+            var apiResources = configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
 
-            var disabledErrorMessage = _configuration.GetSection("disabledErrorMessage").Get<DisabledErrorMessageSettings>();
-            var identityResources = _configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
-            var passwordResetSettings = _configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
-            var dataProtectionAppName = _configuration.GetValue<string>("dataProtection:applicationName");
+            var disabledErrorMessage = configuration.GetSection("disabledErrorMessage").Get<DisabledErrorMessageSettings>();
+            var identityResources = configuration.GetSection("identityResources").Get<IdentityResourceSettingCollection>();
+            var passwordResetSettings = configuration.GetSection("passwordReset").Get<PasswordResetSettings>();
+            var dataProtectionAppName = configuration.GetValue<string>("dataProtection:applicationName");
 
-            var allowInvalidCertificate = _configuration.GetValue<bool>("AllowInvalidCertificate");
-            var certificateSettings = _configuration.GetSection("certificateSettings").Get<CertificateSettings>();
+            var allowInvalidCertificate = configuration.GetValue<bool>("AllowInvalidCertificate");
+            var certificateSettings = configuration.GetSection("certificateSettings").Get<CertificateSettings>();
             var certificate = new Certificate(certificateSettings, Log.Logger);
 
-            var smtpSettings = _configuration.GetSection("SmtpServer").Get<SmtpSettings>();
-            if (!smtpSettings.AllowInvalidCertificate.HasValue)
-                smtpSettings.AllowInvalidCertificate = allowInvalidCertificate;
+            var smtpSettings = configuration.GetSection("SmtpServer").Get<SmtpSettings>();
+            smtpSettings.AllowInvalidCertificate ??= allowInvalidCertificate;
 
-            var registrationSettings = _configuration.GetSection("Registration").Get<RegistrationSettings>();
+            var registrationSettings = configuration.GetSection("Registration").Get<RegistrationSettings>();
 
-            var issuerUrl = _configuration.GetValue<string>("issuerUrl");
+            var issuerUrl = configuration.GetValue<string>("issuerUrl");
 
             var issuerSettings = new IssuerSettings { IssuerUrl = new Uri(issuerUrl) };
 
-            var publicBrowseSettings = _configuration.GetSection("publicBrowse").Get<PublicBrowseSettings>();
+            var publicBrowseSettings = configuration.GetSection("publicBrowse").Get<PublicBrowseSettings>();
 
             Log.Logger.Information("Clients: {@clients}", clients);
             Log.Logger.Information("Api Resources: {@resources}", apiResources);
@@ -127,9 +126,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     options.UserInteraction.ErrorUrl = "/Error";
                     options.UserInteraction.ErrorIdParameter = "errorId";
                 })
-                .AddInMemoryIdentityResources(identityResources.Select(x => x.ToIdentityResource()))
-                .AddInMemoryApiResources(apiResources.Select(x => x.ToResource()))
-                .AddInMemoryClients(clients.Select(x => x.ToClient()))
+                .AddInMemoryIdentityResources(identityResources.Select(s => s.ToIdentityResource()))
+                .AddInMemoryApiResources(apiResources.Select(s => s.ToResource()))
+                .AddInMemoryClients(clients.Select(s => s.ToClient()))
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<ProfileService>()
                 .AddCustomSigningCredential(certificate, Log.Logger);
@@ -158,8 +157,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     {
                         options.JwtBackChannelHandler = new HttpClientHandler
                         {
-                            ServerCertificateCustomValidationCallback =
-                                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
                         };
                     }
                 });
@@ -171,6 +169,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Account);
                 });
+
                 options.AddPolicy(PolicyName.CanManageOrganisationUsers, policyBuilder =>
                 {
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage);
@@ -185,13 +184,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api
 
             services.AddDataProtection(dataProtectionAppName, certificate);
 
-            if (_environment.IsDevelopment())
+            if (environment.IsDevelopment())
                 services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            var pathBase = _configuration.GetValue<string>("pathBase");
+            var pathBase = configuration.GetValue<string>("pathBase");
 
             if (string.IsNullOrWhiteSpace(pathBase))
             {
@@ -211,7 +210,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 opts.GetLevel = SerilogRequestLoggingOptions.GetLevel;
             });
 
-            if (_environment.IsDevelopment())
+            if (environment.IsDevelopment())
             {
                 IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
@@ -235,12 +234,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
                 {
-                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Live)
+                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Live),
                 });
 
                 endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
                 {
-                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Ready)
+                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Ready),
                 });
             });
         }

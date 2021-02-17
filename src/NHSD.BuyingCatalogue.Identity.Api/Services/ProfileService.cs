@@ -15,37 +15,38 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     public sealed class ProfileService : IProfileService
     {
-        private readonly IUsersRepository _applicationUserRepository;
-
-        private readonly IOrganisationRepository _organisationRepository;
-
-        private static readonly IDictionary<OrganisationFunction, IEnumerable<Claim>> _organisationFunctionClaims =
+        private static readonly IDictionary<OrganisationFunction, IEnumerable<Claim>> OrganisationFunctionClaims =
             new Dictionary<OrganisationFunction, IEnumerable<Claim>>
             {
                 {
                     OrganisationFunction.Authority,
                     new List<Claim>
                     {
-                        new Claim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage),
-                        new Claim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage)
+                        new(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage),
+                        new(ApplicationClaimTypes.Account, ApplicationPermissions.Manage),
                     }
                 },
                 {
-                    OrganisationFunction.Buyer, 
+                    OrganisationFunction.Buyer,
                     new List<Claim>
                     {
-                        new Claim(ApplicationClaimTypes.Organisation, ApplicationPermissions.View),
-                        new Claim(ApplicationClaimTypes.Ordering, ApplicationPermissions.Manage)
+                        new(ApplicationClaimTypes.Organisation, ApplicationPermissions.View),
+                        new(ApplicationClaimTypes.Ordering, ApplicationPermissions.Manage),
                     }
-                }
+                },
             };
 
-        public ProfileService(IUsersRepository applicationUserRepository , IOrganisationRepository organisationRepository)
+        private readonly IUsersRepository applicationUserRepository;
+
+        private readonly IOrganisationRepository organisationRepository;
+
+        public ProfileService(IUsersRepository applicationUserRepository, IOrganisationRepository organisationRepository)
         {
-            _applicationUserRepository = applicationUserRepository ??
-                                         throw new ArgumentNullException(nameof(applicationUserRepository));
-            _organisationRepository = organisationRepository ??
-                                      throw new ArgumentNullException(nameof(organisationRepository));
+            this.applicationUserRepository = applicationUserRepository ??
+                throw new ArgumentNullException(nameof(applicationUserRepository));
+
+            this.organisationRepository = organisationRepository ??
+                throw new ArgumentNullException(nameof(organisationRepository));
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -57,14 +58,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             ApplicationUser user = await GetApplicationUserAsync(context.Subject);
 
-            if (user is object)
+            if (user is not null)
             {
-                var claims =  GetClaimsFromUser(user);
-                var primamryName = await GetPrimaryOrganisationName(user.PrimaryOrganisationId);
-                if (primamryName != null)
+                var claims = GetClaimsFromUser(user);
+                var primaryOrganisationName = await GetPrimaryOrganisationName(user.PrimaryOrganisationId);
+                if (primaryOrganisationName is not null)
                 {
-                    claims.Add(primamryName);
+                    claims.Add(primaryOrganisationName);
                 }
+
                 context.IssuedClaims = claims;
             }
         }
@@ -72,11 +74,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         public async Task<Claim> GetPrimaryOrganisationName(Guid primaryOrganisationId)
         {
             Claim claim = null;
-            var organisationName = (await _organisationRepository.GetByIdAsync(primaryOrganisationId))?.Name;
+            var organisationName = (await organisationRepository.GetByIdAsync(primaryOrganisationId))?.Name;
             if (!organisationName.IsNullOrEmpty())
             {
-                claim = new Claim(ApplicationClaimTypes.PrimaryOrganisationName, organisationName);
+                claim = new Claim(ApplicationClaimTypes.PrimaryOrganisationName, organisationName!);
             }
+
             return claim;
         }
 
@@ -89,18 +92,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             ApplicationUser user = await GetApplicationUserAsync(context.Subject);
 
-            context.IsActive = user is object;
-        }
-
-        private async Task<ApplicationUser> GetApplicationUserAsync(ClaimsPrincipal subject)
-        {
-            if (subject is null)
-            {
-                throw new ArgumentNullException(nameof(subject));
-            }
-
-            string subjectId = subject.GetSubjectId();
-            return await _applicationUserRepository.GetByIdAsync(subjectId);
+            context.IsActive = user is not null;
         }
 
         private static List<Claim> GetClaimsFromUser(ApplicationUser user)
@@ -118,14 +110,14 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         private static IEnumerable<Claim> GetEmailClaims(ApplicationUser user)
         {
             string email = user.Email;
-            if (!string.IsNullOrWhiteSpace(email))
-            {
-                yield return new Claim(JwtClaimTypes.Email, email);
-                yield return new Claim(
-                    JwtClaimTypes.EmailVerified, 
-                    user.EmailConfirmed ? "true" : "false",
-                    ClaimValueTypes.Boolean);
-            }
+            if (string.IsNullOrWhiteSpace(email))
+                yield break;
+
+            yield return new Claim(JwtClaimTypes.Email, email);
+            yield return new Claim(
+                JwtClaimTypes.EmailVerified,
+                user.EmailConfirmed ? "true" : "false",
+                ClaimValueTypes.Boolean);
         }
 
         private static IEnumerable<Claim> GetIdClaims(ApplicationUser user)
@@ -135,11 +127,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 yield return new Claim(JwtClaimTypes.Subject, userId);
 
             string username = user.UserName;
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                yield return new Claim(JwtClaimTypes.PreferredUserName, username);
-                yield return new Claim(JwtRegisteredClaimNames.UniqueName, username);
-            }
+            if (string.IsNullOrWhiteSpace(username))
+                yield break;
+
+            yield return new Claim(JwtClaimTypes.PreferredUserName, username);
+            yield return new Claim(JwtRegisteredClaimNames.UniqueName, username);
         }
 
         private static IEnumerable<Claim> GetNameClaims(ApplicationUser user)
@@ -165,13 +157,24 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             yield return new Claim(ApplicationClaimTypes.OrganisationFunction, organisationFunction.DisplayName);
 
-            if (_organisationFunctionClaims.TryGetValue(organisationFunction, out IEnumerable<Claim> organisationClaims))
+            if (!OrganisationFunctionClaims.TryGetValue(organisationFunction, out IEnumerable<Claim> organisationClaims))
+                yield break;
+
+            foreach (Claim claim in organisationClaims)
             {
-                foreach (Claim claim in organisationClaims)
-                {
-                    yield return claim;
-                }
+                yield return claim;
             }
+        }
+
+        private async Task<ApplicationUser> GetApplicationUserAsync(ClaimsPrincipal subject)
+        {
+            if (subject is null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            string subjectId = subject.GetSubjectId();
+            return await applicationUserRepository.GetByIdAsync(subjectId);
         }
     }
 }

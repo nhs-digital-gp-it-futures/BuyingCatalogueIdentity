@@ -17,11 +17,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
         public const string LabelDataTestIdName = "label-data-test-id";
         public const string ErrorDataTestIdName = "error-data-test-id";
 
-        private readonly IHtmlGenerator _htmlGenerator;
+        private readonly IHtmlGenerator htmlGenerator;
 
         public ValidationInputTagHelper(IHtmlGenerator htmlGenerator)
         {
-            _htmlGenerator = htmlGenerator;
+            this.htmlGenerator = htmlGenerator;
         }
 
         [HtmlAttributeNotBound]
@@ -68,6 +68,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             output.Content.AppendHtml(outerDiv);
         }
 
+        private static TagBuilder GetFormGroupBuilder()
+        {
+            var builder = new TagBuilder(TagHelperConstants.Div);
+            builder.AddCssClass(TagHelperConstants.NhsFormGroup);
+            return builder;
+        }
+
         private TagBuilder GetOuterDivBuilder()
         {
             var builder = new TagBuilder(TagHelperConstants.Div);
@@ -88,16 +95,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             return builder;
         }
 
-        private static TagBuilder GetFormGroupBuilder()
-        {
-            var builder = new TagBuilder(TagHelperConstants.Div);
-            builder.AddCssClass(TagHelperConstants.NhsFormGroup);
-            return builder;
-        }
-
         private TagBuilder GetLabelBuilder()
         {
-            var builder = _htmlGenerator.GenerateLabel(
+            var builder = htmlGenerator.GenerateLabel(
                 ViewContext,
                 For.ModelExplorer,
                 For.Name,
@@ -112,7 +112,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
         private TagBuilder GetValidationBuilder()
         {
-            var builder = _htmlGenerator.GenerateValidationMessage(ViewContext,
+            var builder = htmlGenerator.GenerateValidationMessage(
+                ViewContext,
                 For.ModelExplorer,
                 For.Name,
                 null,
@@ -127,7 +128,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
 
         private TagBuilder GetInputBuilder()
         {
-            var builder = _htmlGenerator.GenerateTextBox(ViewContext,
+            var builder = htmlGenerator.GenerateTextBox(
+                ViewContext,
                 For.ModelExplorer,
                 For.Name,
                 null,
@@ -139,7 +141,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
                 .GetProperty(For.Name)?
                 .GetCustomAttributes<DataTypeAttribute>();
 
-            if (dataTypeAttributes?.Any(x => x.DataType == DataType.Password) == true)
+            if (dataTypeAttributes?.Any(a => a.DataType == DataType.Password) == true)
             {
                 builder.Attributes[TagHelperConstants.Type] = "password";
             }

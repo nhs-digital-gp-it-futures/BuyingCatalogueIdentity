@@ -15,7 +15,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
         {
             get
             {
-                return new Uri(BaseAddress + LoginPath);
+                return new(BaseAddress + LoginPath);
             }
         }
 
@@ -23,7 +23,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
         {
             get
             {
-                return new Uri(BaseAddress + LogoutPath);
+                return new(BaseAddress + LogoutPath);
             }
         }
     }

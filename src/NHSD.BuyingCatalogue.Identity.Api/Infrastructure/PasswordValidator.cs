@@ -17,26 +17,30 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Infrastructure
             const string specialCharacters = "!@#$%^&*";
 
             if (password.Length < 10)
-                return Task.FromResult(IdentityResult.Failed(new IdentityError
-                {
-                    Code = InvalidPasswordCode,
-                    Description = PasswordConditionsNotMet
-                }));
+            {
+                return Task.FromResult(
+                    IdentityResult.Failed(
+                        new IdentityError
+                        {
+                            Code = InvalidPasswordCode,
+                            Description = PasswordConditionsNotMet,
+                        }));
+            }
 
             var validationRules = new List<Func<bool>>
             {
                 () => password.Any(char.IsLower),
                 () => password.Any(char.IsUpper),
                 () => password.Any(char.IsDigit),
-                () => password.Any(x => specialCharacters.Contains(x, StringComparison.InvariantCultureIgnoreCase))
+                () => password.Any(c => specialCharacters.Contains(c, StringComparison.InvariantCultureIgnoreCase)),
             };
 
-            if (validationRules.Count(x => x()) < 3)
+            if (validationRules.Count(r => r()) < 3)
             {
                 return Task.FromResult(IdentityResult.Failed(new IdentityError
                 {
                     Code = InvalidPasswordCode,
-                    Description = PasswordConditionsNotMet
+                    Description = PasswordConditionsNotMet,
                 }));
             }
 

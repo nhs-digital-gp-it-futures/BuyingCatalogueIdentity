@@ -10,16 +10,16 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
 {
     public sealed class UsersRepository : IUsersRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext context;
 
         public UsersRepository(ApplicationDbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<IEnumerable<ApplicationUser>> FindByOrganisationIdAsync(Guid organisationId)
         {
-            return await _context.Users.Where(x => x.PrimaryOrganisationId == organisationId).ToListAsync();
+            return await context.Users.Where(u => u.PrimaryOrganisationId == organisationId).ToListAsync();
         }
 
         public async Task<ApplicationUser> GetByEmailAsync(string email)
@@ -29,11 +29,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
                 throw new ArgumentNullException(nameof(email));
             }
 
-            return await _context.Users.SingleOrDefaultAsync(applicationUser => applicationUser.Email == email);
+            return await context.Users.SingleOrDefaultAsync(applicationUser => applicationUser.Email == email);
         }
 
-        public async Task<ApplicationUser> GetByIdAsync(string userId) 
-            => await _context.Users.FindAsync(userId);
+        public async Task<ApplicationUser> GetByIdAsync(string userId)
+            => await context.Users.FindAsync(userId);
 
         public async Task CreateUserAsync(ApplicationUser user)
         {
@@ -42,8 +42,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(ApplicationUser user)
@@ -53,8 +53,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Repositories
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
         }
     }
 }

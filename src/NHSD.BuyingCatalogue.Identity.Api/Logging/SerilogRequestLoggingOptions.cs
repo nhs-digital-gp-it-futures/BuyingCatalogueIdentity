@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
-using NHSD.BuyingCatalogue.Identity.Api.Infrastructure;
 using Serilog;
 using Serilog.Events;
 
@@ -29,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Logging
             diagnosticContext.Set("Protocol", request.Protocol);
             diagnosticContext.Set("Scheme", request.Scheme);
 
-            // Only set it if available. You're not sending sensitive data in a querystring right?!
+            // Only set it if available. You're not sending sensitive data in a query string right?!
             if (request.QueryString.HasValue)
             {
                 diagnosticContext.Set("QueryString", request.QueryString.Value);
@@ -40,33 +39,35 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Logging
 
             // Retrieve the IEndpointFeature selected for the request
             var endpoint = httpContext.GetEndpoint();
-            if (endpoint != null)
+            if (endpoint is not null)
             {
                 diagnosticContext.Set("EndpointName", endpoint.DisplayName);
             }
+        }
+
+        public static LogEventLevel GetLevel(HttpContext httpContext, double elapsed, Exception exception)
+        {
+            _ = elapsed;
+
+            if (exception is not null)
+                return LogEventLevel.Error;
+
+            if (httpContext is null || httpContext.Response.StatusCode > 499)
+                return LogEventLevel.Error;
+
+            return IsHealthCheck(httpContext)
+                ? LogEventLevel.Verbose
+                : LogEventLevel.Information;
         }
 
         private static bool IsHealthCheck(HttpContext httpContext)
         {
             var endpoint = httpContext.GetEndpoint();
 
-            return endpoint != null && string.Equals(
+            return endpoint is not null && string.Equals(
                 endpoint.DisplayName,
                 HealthCheckEndpointDisplayName,
                 StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static LogEventLevel GetLevel(HttpContext httpContext, double _, Exception exception)
-        {
-            if (exception != null)
-                return LogEventLevel.Error;
-
-            if (httpContext == null || httpContext.Response.StatusCode > 499)
-                return LogEventLevel.Error;
-
-            return IsHealthCheck(httpContext)
-                ? LogEventLevel.Verbose
-                : LogEventLevel.Information;
         }
     }
 }

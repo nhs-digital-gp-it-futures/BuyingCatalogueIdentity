@@ -203,7 +203,7 @@
                     <form asp-controller="Consent" asp-action="Index" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
                         <input type="hidden" asp-for="ReturnUrl" />
 
-                        <div asp-validation-for="AgreeWithTerms" class="nhsuk-form-group @(@ViewData.ModelState.IsValid ? "" : "nhsuk-form-group--error")">
+                        <div asp-validation-for="AgreeWithTerms" class="nhsuk-form-group @(ViewData.ModelState.IsValid ? "" : "nhsuk-form-group--error")">
                             <fieldset class="nhsuk-fieldset" aria-describedby="terms-hint">
                                 <legend class="nhsuk-fieldset__legend nhsuk-fieldset__legend--l">
                                     <h1 class="nhsuk-fieldset__heading">Accept End User Agreement</h1>

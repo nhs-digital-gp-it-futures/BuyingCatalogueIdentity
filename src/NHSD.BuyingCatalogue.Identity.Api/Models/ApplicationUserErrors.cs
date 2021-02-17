@@ -1,4 +1,4 @@
-﻿﻿using NHSD.BuyingCatalogue.Identity.Common.Models;
+﻿using NHSD.BuyingCatalogue.Identity.Common.Models;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Models
 {
@@ -6,52 +6,52 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Models
     {
         public static ErrorDetails FirstNameRequired()
         {
-            return new ErrorDetails("FirstNameRequired", nameof(ApplicationUser.FirstName));
+            return new("FirstNameRequired", nameof(ApplicationUser.FirstName));
         }
 
         public static ErrorDetails FirstNameTooLong()
         {
-            return new ErrorDetails("FirstNameTooLong", nameof(ApplicationUser.FirstName));
+            return new("FirstNameTooLong", nameof(ApplicationUser.FirstName));
         }
 
         public static ErrorDetails LastNameRequired()
         {
-            return new ErrorDetails("LastNameRequired", nameof(ApplicationUser.LastName));
+            return new("LastNameRequired", nameof(ApplicationUser.LastName));
         }
 
         public static ErrorDetails LastNameTooLong()
         {
-            return new ErrorDetails("LastNameTooLong", nameof(ApplicationUser.LastName));
+            return new("LastNameTooLong", nameof(ApplicationUser.LastName));
         }
 
         public static ErrorDetails PhoneNumberRequired()
         {
-            return new ErrorDetails("PhoneNumberRequired", nameof(ApplicationUser.PhoneNumber));
+            return new("PhoneNumberRequired", nameof(ApplicationUser.PhoneNumber));
         }
 
         public static ErrorDetails PhoneNumberTooLong()
         {
-            return new ErrorDetails("PhoneNumberTooLong", nameof(ApplicationUser.PhoneNumber));
+            return new("PhoneNumberTooLong", nameof(ApplicationUser.PhoneNumber));
         }
 
         public static ErrorDetails EmailRequired()
         {
-            return new ErrorDetails("EmailRequired", "EmailAddress");
+            return new("EmailRequired", "EmailAddress");
         }
 
         public static ErrorDetails EmailTooLong()
         {
-            return new ErrorDetails("EmailTooLong", "EmailAddress");
+            return new("EmailTooLong", "EmailAddress");
         }
 
         public static ErrorDetails EmailInvalidFormat()
         {
-            return new ErrorDetails("EmailInvalidFormat", "EmailAddress");
+            return new("EmailInvalidFormat", "EmailAddress");
         }
-        
+
         public static ErrorDetails EmailAlreadyExists()
         {
-            return new ErrorDetails("EmailAlreadyExists", "EmailAddress");
+            return new("EmailAlreadyExists", "EmailAddress");
         }
     }
 }

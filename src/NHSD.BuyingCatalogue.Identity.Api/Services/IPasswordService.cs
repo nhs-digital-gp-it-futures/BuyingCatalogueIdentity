@@ -33,12 +33,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         Task SendResetEmailAsync(ApplicationUser user, Uri callback);
 
         /// <summary>
-        /// Resets the password of the user with the specified <paramref name="emailAddress"/>
+        /// Resets the password of the user with the specified <paramref name="emailAddress"/>.
         /// </summary>
-        /// <param name="emailAddress">The email address of the user</param>
-        /// <param name="token">The validation token for authorizing the password reset</param>
-        /// <param name="newPassword">The value of the new password</param>
-        /// <returns>The result of the password reset operation</returns>
+        /// <param name="emailAddress">The email address of the user.</param>
+        /// <param name="token">The validation token for authorizing the password reset.</param>
+        /// <param name="newPassword">The value of the new password.</param>
+        /// <returns>The result of the password reset operation.</returns>
         public Task<IdentityResult> ResetPasswordAsync(string emailAddress, string token, string newPassword);
 
         /// <summary>

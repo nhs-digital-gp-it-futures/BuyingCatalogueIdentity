@@ -9,33 +9,32 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 {
     internal sealed class PasswordResetCallback : IPasswordResetCallback
     {
-        private readonly IHttpContextAccessor _accessor;
-        private readonly LinkGenerator _generator;
-        private readonly IssuerSettings _issuerSettings;
+        private readonly IHttpContextAccessor accessor;
+        private readonly LinkGenerator generator;
+        private readonly IssuerSettings issuerSettings;
 
         public PasswordResetCallback(IHttpContextAccessor accessor, LinkGenerator generator, IssuerSettings issuerSettings)
         {
-            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
-            _generator = generator ?? throw new ArgumentNullException(nameof(generator));
-            _issuerSettings = issuerSettings ?? throw new ArgumentNullException(nameof(issuerSettings));
+            this.accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
+            this.issuerSettings = issuerSettings ?? throw new ArgumentNullException(nameof(issuerSettings));
         }
 
         public Uri GetPasswordResetCallback(PasswordResetToken token)
         {
-            if (token == null)
+            if (token is null)
                 throw new ArgumentNullException(nameof(token));
 
-            var context = _accessor.HttpContext;
-            var hostString = new HostString(_issuerSettings.IssuerUrl.Authority);
-            
-            var action = _generator.GetUriByAction(
+            var context = accessor.HttpContext;
+            var hostString = new HostString(issuerSettings.IssuerUrl.Authority);
+
+            var action = generator.GetUriByAction(
                 context,
-                nameof(AccountController.ResetPassword), 
+                nameof(AccountController.ResetPassword),
                 nameof(AccountController).TrimController(),
                 new { token.Token, token.User.Email },
-                _issuerSettings.IssuerUrl.Scheme,
-                hostString
-                );
+                issuerSettings.IssuerUrl.Scheme,
+                hostString);
 
             return new Uri(action);
         }

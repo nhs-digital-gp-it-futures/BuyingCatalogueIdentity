@@ -9,11 +9,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
     public sealed class ConsentController : Controller
     {
-        private readonly IAgreementConsentService _consentService;
+        private readonly IAgreementConsentService consentService;
 
         public ConsentController(IAgreementConsentService consentService)
         {
-            _consentService = consentService ?? throw new ArgumentNullException(nameof(consentService));
+            this.consentService = consentService ?? throw new ArgumentNullException(nameof(consentService));
         }
 
         [HttpGet]
@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             if (returnUrl is null)
                 throw new ArgumentNullException(nameof(returnUrl));
 
-            if (await _consentService.IsValidReturnUrl(returnUrl))
+            if (await consentService.IsValidReturnUrl(returnUrl))
                 return View(new ConsentViewModel { ReturnUrl = returnUrl });
 
             return View("Error");
@@ -40,7 +40,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 
             var returnUrl = model.ReturnUrl;
 
-            var result = await _consentService.GrantConsent(returnUrl, User.GetSubjectId());
+            var result = await consentService.GrantConsent(returnUrl, User.GetSubjectId());
             if (result.IsSuccess)
                 return Redirect(returnUrl.ToString());
 

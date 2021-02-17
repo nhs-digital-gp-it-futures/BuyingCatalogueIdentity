@@ -14,11 +14,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
                 "OpenId" => new IdentityResources.OpenId(),
                 "Profile" => new CustomProfileIdentityResource(),
                 "Email" => new IdentityResources.Email(),
-                _ => (null as IdentityResource)
+                _ => null as IdentityResource,
             };
         }
 
-        private class CustomProfileIdentityResource : IdentityResources.Profile
+        private sealed class CustomProfileIdentityResource : IdentityResources.Profile
         {
             public CustomProfileIdentityResource()
             {

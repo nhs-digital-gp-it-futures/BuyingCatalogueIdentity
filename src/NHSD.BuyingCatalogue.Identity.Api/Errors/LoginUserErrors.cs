@@ -6,12 +6,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Errors
     {
         internal static ErrorDetails UserNameOrPasswordIncorrect()
         {
-            return new ErrorDetails("UsernameOrPasswordIsIncorrect");
+            return new("UsernameOrPasswordIsIncorrect");
         }
 
         internal static ErrorDetails UserIsDisabled()
         {
-            return new ErrorDetails("UserIsDisabled");
+            return new("UserIsDisabled");
         }
     }
 }

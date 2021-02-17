@@ -16,10 +16,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
         internal const string ValidateUserMessage = "Invalid credentials";
         internal const string DisabledEventMessage = "User is disabled";
 
-        private readonly IEventService _eventService;
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEventService eventService;
+        private readonly IIdentityServerInteractionService interaction;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
         public LoginService(
             IEventService eventService,
@@ -27,15 +27,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager)
         {
-            _eventService = eventService;
-            _interaction = interaction;
-            _signInManager = signInManager;
-            _userManager = userManager;
+            this.eventService = eventService;
+            this.interaction = interaction;
+            this.signInManager = signInManager;
+            this.userManager = userManager;
         }
 
         public void Dispose()
         {
-            _userManager?.Dispose();
+            userManager?.Dispose();
         }
 
         public async Task<Result<SignInResponse>> SignInAsync(string username, string password, Uri returnUrl)
@@ -45,17 +45,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 return Result.Failure<SignInResponse>(LoginUserErrors.UserNameOrPasswordIncorrect());
             }
 
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await userManager.FindByNameAsync(username);
             if (user is null)
             {
                 return Result.Failure<SignInResponse>(LoginUserErrors.UserNameOrPasswordIncorrect());
             }
 
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl?.ToString());
+            var context = await interaction.GetAuthorizationContextAsync(returnUrl?.ToString());
             var isUserValidResult = await ValidateUserCredentialsAsync(user, password);
             if (!isUserValidResult.IsSuccess)
             {
-                await _eventService.RaiseAsync(new UserLoginFailureEvent(user.UserName, ValidateUserMessage, clientId: context?.ClientId));
+                await eventService.RaiseAsync(new UserLoginFailureEvent(user.UserName, ValidateUserMessage, clientId: context?.ClientId));
 
                 return Result.Failure<SignInResponse>(isUserValidResult.Errors);
             }
@@ -64,7 +64,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             if (!isUserDisabledResult.IsSuccess)
             {
-                await _eventService.RaiseAsync(new UserLoginFailureEvent(user.UserName, DisabledEventMessage, clientId: context?.ClientId));
+                await eventService.RaiseAsync(new UserLoginFailureEvent(user.UserName, DisabledEventMessage, clientId: context?.ClientId));
 
                 return Result.Failure<SignInResponse>(isUserDisabledResult.Errors);
             }
@@ -73,32 +73,32 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             {
                 RedirectUri = context?.RedirectUri,
                 AllowRefresh = true,
-                IsPersistent = false
+                IsPersistent = false,
             };
 
-            await _signInManager.SignInAsync(user, props);
+            await signInManager.SignInAsync(user, props);
 
             await RaiseLoginSuccessAsync(username, context);
 
             // We can trust returnUrl if GetAuthorizationContextAsync returned non-null
-            return Result.Success(new SignInResponse(context is object));
-        }
-
-        private async Task RaiseLoginSuccessAsync(string username, AuthorizationRequest context)
-        {
-            ApplicationUser user = await _userManager.FindByNameAsync(username);
-            await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
-        }
-
-        private async Task<Result> ValidateUserCredentialsAsync(ApplicationUser user, string password)
-        {
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, true);
-            return result.Succeeded ? Result.Success() : Result.Failure(LoginUserErrors.UserNameOrPasswordIncorrect());
+            return Result.Success(new SignInResponse(context is not null));
         }
 
         private static Result ValidateIfUserDisabled(ApplicationUser user)
         {
             return !user.Disabled ? Result.Success() : Result.Failure(LoginUserErrors.UserIsDisabled());
+        }
+
+        private async Task RaiseLoginSuccessAsync(string username, AuthorizationRequest context)
+        {
+            ApplicationUser user = await userManager.FindByNameAsync(username);
+            await eventService.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+        }
+
+        private async Task<Result> ValidateUserCredentialsAsync(ApplicationUser user, string password)
+        {
+            var result = await signInManager.CheckPasswordSignInAsync(user, password, true);
+            return result.Succeeded ? Result.Success() : Result.Failure(LoginUserErrors.UserNameOrPasswordIncorrect());
         }
     }
 }
