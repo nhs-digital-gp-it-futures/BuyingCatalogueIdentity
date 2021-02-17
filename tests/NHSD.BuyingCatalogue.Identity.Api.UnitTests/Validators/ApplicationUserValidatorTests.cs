@@ -145,7 +145,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Validators
             Assert.ThrowsAsync<ArgumentNullException>(async () => await sut.ValidateAsync(null));
         }
 
-        private sealed class TestContextTestCaseData
+        private static class TestContextTestCaseData
         {
             internal static IEnumerable<TestCaseData> InvalidFirstNameCases
             {

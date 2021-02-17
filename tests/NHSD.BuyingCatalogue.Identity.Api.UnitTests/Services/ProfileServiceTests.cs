@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
     internal static class ProfileServiceTests
     {
         [Test]
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Expecting lowercase e-mail address")]
         public static async Task GetProfileDataAsync_GivenAnApplicationUserExistsWithOrganisationFunctionAuthority_ReturnsExpectedClaimList()
         {
             var expectedApplicationUser = ApplicationUserBuilder
@@ -81,6 +83,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
         }
 
         [Test]
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Expecting lowercase e-mail address")]
         public static async Task GetProfileDataAsync_GivenAnApplicationUserExistsWithOrganisationFunctionBuyer_ReturnsExpectedClaimList()
         {
             var expectedApplicationUser = ApplicationUserBuilder
@@ -127,14 +130,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 (FamilyName, expectedApplicationUser.LastName),
                 (Name, $"{expectedApplicationUser.FirstName} {expectedApplicationUser.LastName}"),
                 (Email, expectedApplicationUser.Email),
-                (EmailVerified,
-                    expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
-                (ApplicationClaimTypes.PrimaryOrganisationId,
-                    expectedApplicationUser.PrimaryOrganisationId.ToString()),
-                (ApplicationClaimTypes.PrimaryOrganisationName,
-                    expectedOrganisation.Name),
-                (ApplicationClaimTypes.OrganisationFunction,
-                    expectedApplicationUser.OrganisationFunction.DisplayName),
+                (EmailVerified, expectedApplicationUser.EmailConfirmed.ToString(CultureInfo.CurrentCulture).ToLowerInvariant()),
+                (ApplicationClaimTypes.PrimaryOrganisationId, expectedApplicationUser.PrimaryOrganisationId.ToString()),
+                (ApplicationClaimTypes.PrimaryOrganisationName, expectedOrganisation.Name),
+                (ApplicationClaimTypes.OrganisationFunction, expectedApplicationUser.OrganisationFunction.DisplayName),
                 (ApplicationClaimTypes.Ordering, Manage),
                 (ApplicationClaimTypes.Organisation, View),
             };
