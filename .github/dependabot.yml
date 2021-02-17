@@ -4,3 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "src/NHSD.BuyingCatalogue.Identity.Api/"
+    schedule:
+      interval: "daily"
+    versioning-strategy: increase
