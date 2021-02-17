@@ -14,11 +14,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     [Produces("application/json")]
     public sealed class OdsController : Controller
     {
-        private readonly IOdsRepository _odsRepository;
+        private readonly IOdsRepository odsRepository;
 
         public OdsController(IOdsRepository odsRepository)
         {
-            _odsRepository = odsRepository;
+            this.odsRepository = odsRepository;
         }
 
         [HttpGet]
@@ -28,7 +28,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (string.IsNullOrWhiteSpace(odsCode))
                 return NotFound();
 
-            var odsOrganisation = await _odsRepository.GetBuyerOrganisationByOdsCodeAsync(odsCode);
+            var odsOrganisation = await odsRepository.GetBuyerOrganisationByOdsCodeAsync(odsCode);
 
             if (odsOrganisation is null)
                 return NotFound();
@@ -36,22 +36,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (!(odsOrganisation.IsActive && odsOrganisation.IsBuyerOrganisation))
                 return new StatusCodeResult(StatusCodes.Status406NotAcceptable);
 
+            var addressModel = odsOrganisation.Address is null ? null : new AddressModel
+            {
+                Line1 = odsOrganisation.Address.Line1,
+                Line2 = odsOrganisation.Address.Line2,
+                Line3 = odsOrganisation.Address.Line3,
+                Line4 = odsOrganisation.Address.Line4,
+                Town = odsOrganisation.Address.Town,
+                County = odsOrganisation.Address.County,
+                Postcode = odsOrganisation.Address.Postcode,
+                Country = odsOrganisation.Address.Country,
+            };
+
             return Ok(new OdsOrganisationModel
             {
                 OdsCode = odsOrganisation.OdsCode,
                 OrganisationName = odsOrganisation.OrganisationName,
                 PrimaryRoleId = odsOrganisation.PrimaryRoleId,
-                Address = odsOrganisation.Address is null ? null : new AddressModel
-                {
-                    Line1 = odsOrganisation.Address.Line1,
-                    Line2 = odsOrganisation.Address.Line2,
-                    Line3 = odsOrganisation.Address.Line3,
-                    Line4 = odsOrganisation.Address.Line4,
-                    Town = odsOrganisation.Address.Town,
-                    County = odsOrganisation.Address.County,
-                    Postcode = odsOrganisation.Address.Postcode,
-                    Country = odsOrganisation.Address.Country,
-                }
+                Address = addressModel,
             });
         }
     }

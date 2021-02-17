@@ -9,7 +9,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
 
         internal static Guid GetPrimaryOrganisationId(this ClaimsPrincipal user)
         {
-            return new Guid(user.FindFirst(PrimaryOrganisationIdType).Value);
+            var primaryOrganisationIdClaim = user.FindFirst(PrimaryOrganisationIdType);
+
+            return primaryOrganisationIdClaim is null
+                ? Guid.Empty
+                : new Guid(primaryOrganisationIdClaim.Value);
         }
     }
 }

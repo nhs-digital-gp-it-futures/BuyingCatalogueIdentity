@@ -10,11 +10,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
 {
     public sealed class OrganisationValidator : IOrganisationValidator
     {
-        private readonly IOrganisationRepository _organisationRepository;
+        private readonly IOrganisationRepository organisationRepository;
 
         public OrganisationValidator(IOrganisationRepository organisationRepository)
         {
-            _organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
+            this.organisationRepository = organisationRepository ?? throw new ArgumentNullException(nameof(organisationRepository));
         }
 
         public async Task<Result> ValidateAsync(Organisation organisation)
@@ -22,7 +22,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Validators
             if (organisation is null)
                 throw new ArgumentNullException(nameof(organisation));
 
-            var persistedOrganisation = await _organisationRepository.GetByOdsCodeAsync(organisation.OdsCode);
+            var persistedOrganisation = await organisationRepository.GetByOdsCodeAsync(organisation.OdsCode);
 
             return persistedOrganisation is null
                 ? Result.Success()

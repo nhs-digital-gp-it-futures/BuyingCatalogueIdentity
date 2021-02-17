@@ -6,7 +6,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
     {
         public static ErrorDetails OrganisationAlreadyExists()
         {
-            return new ErrorDetails("OrganisationAlreadyExists");
+            return new("OrganisationAlreadyExists");
         }
     }
 }

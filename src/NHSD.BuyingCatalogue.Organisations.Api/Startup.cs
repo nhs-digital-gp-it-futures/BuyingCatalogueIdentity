@@ -21,15 +21,15 @@ using Serilog;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api
 {
-    public class Startup
+    public sealed class Startup
     {
         private const string BearerToken = "Bearer";
-        private readonly IWebHostEnvironment _environment;
+        private readonly IWebHostEnvironment environment;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
-            _environment = environment;
+            this.environment = environment;
         }
 
         public IConfiguration Configuration { get; }
@@ -43,7 +43,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
             var odsSettings = Configuration.GetSection("Ods").Get<OdsSettings>();
             var allowInvalidCertificate = Configuration.GetValue<bool>("AllowInvalidCertificate");
 
-            IdentityModelEventSource.ShowPII = _environment.IsDevelopment();
+            IdentityModelEventSource.ShowPII = environment.IsDevelopment();
 
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IOdsRepository, OdsRepository>();
@@ -53,8 +53,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
 
             services.AddTransient<IOrganisationValidator, OrganisationValidator>();
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
             services.AddSingleton(odsSettings);
 
@@ -73,8 +72,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     {
                         options.BackchannelHttpHandler = new HttpClientHandler
                         {
-                            ServerCertificateCustomValidationCallback =
-                                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
                         };
                     }
                 });
@@ -93,6 +91,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation);
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Account);
                 });
+
                 options.AddPolicy(PolicyName.CanManageOrganisationUsers, policyBuilder =>
                 {
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Organisation, ApplicationPermissions.Manage);
@@ -102,6 +101,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             app.UseSerilogRequestLogging(opts =>
@@ -124,12 +124,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
                 {
-                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Live)
+                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Live),
                 });
 
                 endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
                 {
-                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Ready)
+                    Predicate = healthCheckRegistration => healthCheckRegistration.Tags.Contains(HealthCheckTags.Ready),
                 });
             });
 

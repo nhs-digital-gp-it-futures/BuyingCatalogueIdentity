@@ -11,11 +11,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
     internal sealed class ServiceRecipientRepository : IServiceRecipientRepository
     {
-        private readonly OdsSettings _settings;
+        private readonly OdsSettings settings;
 
         public ServiceRecipientRepository(OdsSettings settings)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         public async Task<IEnumerable<ServiceRecipient>> GetServiceRecipientsByParentOdsCode(string odsCode)
@@ -24,11 +24,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
             var costCentres = new List<ServiceRecipient>();
             int offset = 0;
-            int searchLimit = _settings.GetChildOrganisationSearchLimit;
+            int searchLimit = settings.GetChildOrganisationSearchLimit;
 
             while (!retrievedAll)
             {
-                var query = _settings.ApiBaseUrl
+                var query = settings.ApiBaseUrl
                     .AppendPathSegment("organisations")
                     .SetQueryParam("RelTypeId", "RE4")
                     .SetQueryParam("TargetOrgId", odsCode)
@@ -43,12 +43,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
                 var serviceRecipientResponse = await query.GetJsonAsync<ServiceRecipientResponse>();
 
-                if (serviceRecipientResponse.Organisations == null)
+                if (serviceRecipientResponse.Organisations is null)
                 {
                     break;
                 }
 
-                var centres = serviceRecipientResponse.Organisations.Where(o => o.PrimaryRoleId == _settings.GpPracticeRoleId);
+                var centres = serviceRecipientResponse.Organisations.Where(o => o.PrimaryRoleId == settings.GpPracticeRoleId);
                 costCentres.AddRange(centres);
 
                 retrievedAll = serviceRecipientResponse.Organisations.Count() != searchLimit;

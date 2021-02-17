@@ -4,6 +4,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
 {
     public sealed class CreateOrganisationRequest
     {
+        public CreateOrganisationRequest(
+            string organisationName,
+            string odsCode,
+            string primaryRoleId,
+            bool catalogueAgreementSigned,
+            Address address)
+        {
+            OrganisationName = organisationName;
+            OdsCode = odsCode;
+            PrimaryRoleId = primaryRoleId;
+            CatalogueAgreementSigned = catalogueAgreementSigned;
+            Address = address;
+        }
+
         public string OrganisationName { get; }
 
         public string OdsCode { get; }
@@ -13,14 +27,5 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Services
         public bool CatalogueAgreementSigned { get; }
 
         public Address Address { get; }
-
-        public CreateOrganisationRequest(string organisationName, string odsCode, string primaryRoleId, bool catalogueAgreementSigned, Address address)
-        {
-            OrganisationName = organisationName;
-            OdsCode = odsCode;
-            PrimaryRoleId = primaryRoleId;
-            CatalogueAgreementSigned = catalogueAgreementSigned;
-            Address = address;
-        }
     }
 }

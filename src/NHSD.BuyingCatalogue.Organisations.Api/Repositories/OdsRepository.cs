@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
+using JetBrains.Annotations;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 
@@ -11,16 +13,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 {
     internal sealed class OdsRepository : IOdsRepository
     {
-        private readonly OdsSettings _settings;
+        private readonly OdsSettings settings;
 
         public OdsRepository(OdsSettings settings)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         public async Task<OdsOrganisation> GetBuyerOrganisationByOdsCodeAsync(string odsCode)
         {
-            var response = await _settings.ApiBaseUrl
+            var response = await settings.ApiBaseUrl
                 .AppendPathSegment("organisations")
                 .AppendPathSegment(odsCode)
                 .AllowHttpStatus("3xx,4xx")
@@ -35,18 +37,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
                 PrimaryRoleId = GetPrimaryRoleId(odsOrganisation),
                 Address = OdsResponseAddressToAddress(odsOrganisation.GeoLoc.Location),
                 IsActive = IsActive(odsOrganisation),
-                IsBuyerOrganisation = IsBuyerOrganisation(odsOrganisation)
+                IsBuyerOrganisation = IsBuyerOrganisation(odsOrganisation),
             };
         }
 
         private static bool IsActive(OdsResponseOrganisation organisation)
         {
             return organisation.Status.Equals("Active", StringComparison.OrdinalIgnoreCase);
-        }
-
-        private bool IsBuyerOrganisation(OdsResponseOrganisation organisation)
-        {
-            return _settings.BuyerOrganisationRoleIds.Contains(GetPrimaryRoleId(organisation));
         }
 
         private static string GetPrimaryRoleId(OdsResponseOrganisation organisation)
@@ -56,7 +53,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         private static Address OdsResponseAddressToAddress(OdsResponseAddress odsAddress)
         {
-            return new Address
+            return new()
             {
                 Line1 = odsAddress.AddrLn1,
                 Line2 = odsAddress.AddrLn2,
@@ -69,45 +66,73 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             };
         }
 
-        private class OdsResponse
+        private bool IsBuyerOrganisation(OdsResponseOrganisation organisation)
         {
-            public OdsResponseOrganisation Organisation { get; set; }
+            return settings.BuyerOrganisationRoleIds.Contains(GetPrimaryRoleId(organisation));
         }
 
-        private class OdsResponseOrganisation
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OdsResponse
         {
-            public string Name { get; set; }
-            public string Status { get; set; }
-            public GeoLoc GeoLoc { get; set; }
-            public OdsResponseRoles Roles { get; set; }
+            public OdsResponseOrganisation Organisation { get; init; }
         }
 
-        private class GeoLoc
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OdsResponseOrganisation
         {
-            public OdsResponseAddress Location { get; set; }
+            public string Name { get; init; }
+
+            public string Status { get; init; }
+
+            public GeoLoc GeoLoc { get; init; }
+
+            public OdsResponseRoles Roles { get; init; }
         }
 
-        private class OdsResponseAddress
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class GeoLoc
         {
-            public string AddrLn1 { get; set; }
-            public string AddrLn2 { get; set; }
-            public string AddrLn3 { get; set; }
-            public string AddrLn4 { get; set; }
-            public string Town { get; set; }
-            public string County { get; set; }
-            public string PostCode { get; set; }
-            public string Country { get; set; }
+            public OdsResponseAddress Location { get; init; }
         }
 
-        private class OdsResponseRoles
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OdsResponseAddress
         {
-            public List<OdsResponseRole> Role { get; set; }
+            // ReSharper disable once IdentifierTypo
+            public string AddrLn1 { get; init; }
+
+            // ReSharper disable once IdentifierTypo
+            public string AddrLn2 { get; init; }
+
+            // ReSharper disable once IdentifierTypo
+            public string AddrLn3 { get; init; }
+
+            // ReSharper disable once IdentifierTypo
+            public string AddrLn4 { get; init; }
+
+            public string Town { get; init; }
+
+            public string County { get; init; }
+
+            public string PostCode { get; init; }
+
+            public string Country { get; init; }
         }
 
-        private class OdsResponseRole
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        private sealed class OdsResponseRoles
         {
-            public string id { get; set; }
-            public bool primaryRole { get; set; }
+            public List<OdsResponseRole> Role { get; init; }
+        }
+
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:Element should begin with upper-case letter", Justification = "ODS naming")]
+        [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "ODS naming")]
+        private sealed class OdsResponseRole
+        {
+            public string id { get; init; }
+
+            public bool primaryRole { get; init; }
         }
     }
 }
