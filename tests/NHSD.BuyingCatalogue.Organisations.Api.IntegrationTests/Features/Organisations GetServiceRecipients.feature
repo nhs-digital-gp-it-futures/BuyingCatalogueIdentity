@@ -12,7 +12,7 @@ Background:
         | 234 | Organisation 1   | Jane      | Doe      | buyer@doe.com | 01234567890 | false    | W3AkP4s5w0rd | Buyer                |
 
 @7412
-Scenario: 1. Get a list of service recipients from an organisation
+Scenario: Get a list of service recipients from an organisation
     Given Ods Child Organisations exist for organisation Ods 1
         | Name               | OdsCode | PrimaryRoleId |
         | Ods Organisation 1 | B1G     | RO177         |
@@ -32,7 +32,7 @@ Scenario: 1. Get a list of service recipients from an organisation
         | Ods Organisation 3 | B3G     |
 
 @7412
-Scenario: 2. Get a list of service recipients from an organisation with no children
+Scenario: Get a list of service recipients from an organisation with no children
     Given Ods Child Organisations exist for organisation Ods 1
         | Name               | OdsCode | PrimaryRoleId |
     Given a user is logged in
@@ -45,7 +45,7 @@ Scenario: 2. Get a list of service recipients from an organisation with no child
         | Organisation 1     | Ods 1   |
 
 @7412
-Scenario: 3. A buyer user cannot access the service recipients for an organisation they dont belong to
+Scenario: A buyer user cannot access the service recipients for an organisation they dont belong to
     Given a user is logged in
         | Username      | Password     | Scope        |
         | buyer@doe.com | W3AkP4s5w0rd | Organisation |
@@ -53,12 +53,12 @@ Scenario: 3. A buyer user cannot access the service recipients for an organisati
     Then a response with status code 403 is returned
 
 @7412
-Scenario: 4. If a user is not authorised, they cannot view a list of service recipients
+Scenario: If a user is not authorised, they cannot view a list of service recipients
     When the user makes a request to retrieve the service recipients with an organisation name Organisation 1
     Then a response with status code 401 is returned
 
 @7412
-Scenario: 5. Service Failure
+Scenario: Service Failure
     Given a user is logged in
         | Username      | Password     | Scope        |
         | buyer@doe.com | W3AkP4s5w0rd | Organisation |
