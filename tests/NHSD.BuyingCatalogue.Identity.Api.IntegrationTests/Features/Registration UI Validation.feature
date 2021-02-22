@@ -27,7 +27,7 @@ Scenario: The Registration page title is displayed correctly
 @4828
 Scenario: The Registration page description is displayed correctly
     Then the page contains element with Data ID registration-page-description
-    And element with Data ID registration-page-description has tag h2
+    And element with Data ID registration-page-description has tag p
     And element with Data ID registration-page-description has text This is how to register for a user account. You’ll need one to place orders on the Buying Catalogue.
      
 @4828

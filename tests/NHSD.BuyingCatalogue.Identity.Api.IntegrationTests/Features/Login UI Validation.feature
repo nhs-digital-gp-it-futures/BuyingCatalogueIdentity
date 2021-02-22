@@ -20,7 +20,7 @@ Scenario: The Login page title is displayed correctly
 @3540
 Scenario: The Login page description is displayed correctly
     Then the page contains element with Data ID page-description
-    And element with Data ID page-description has tag h2
+    And element with Data ID page-description has tag p
     And element with Data ID page-description has text Enter your details to place a new order or complete an order you’ve already started.
 
 @3540
