@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             var user = token.User;
 
             await emailService.SendEmailAsync(
-                settings.EmailMessageTemplate,
+                settings.EmailMessage,
                 new EmailAddress(user.Email, user.DisplayName),
                 passwordResetCallback.GetPasswordResetCallback(token));
         }
