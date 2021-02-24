@@ -71,7 +71,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 PlainTextContent = "Text",
             };
 
-            var settings = new RegistrationSettings { EmailMessageTemplate = inputMessage };
+            var settings = new RegistrationSettings { EmailMessage = inputMessage };
             var mockEmailService = new Mock<IEmailService>();
             var mockPasswordResetCallback = Mock.Of<IPasswordResetCallback>(
                 c => c.GetPasswordResetCallback(It.IsAny<PasswordResetToken>()) == new Uri("https://www.google.co.uk/"));
@@ -106,7 +106,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var registrationService = new RegistrationService(
                 mockEmailService,
                 Mock.Of<IPasswordResetCallback>(),
-                new RegistrationSettings { EmailMessageTemplate = template });
+                new RegistrationSettings { EmailMessage = template });
 
             await registrationService.SendInitialEmailAsync(
                 new PasswordResetToken("Token", ApplicationUserBuilder.Create().Build()));
@@ -130,7 +130,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var registrationService = new RegistrationService(
                 mockEmailService,
                 Mock.Of<IPasswordResetCallback>(),
-                new RegistrationSettings { EmailMessageTemplate = template });
+                new RegistrationSettings { EmailMessage = template });
 
             await registrationService.SendInitialEmailAsync(new PasswordResetToken("Token", user));
 
@@ -157,7 +157,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var registrationService = new RegistrationService(
                 mockEmailService,
                 passwordResetCallback,
-                new RegistrationSettings { EmailMessageTemplate = template });
+                new RegistrationSettings { EmailMessage = template });
 
             await registrationService.SendInitialEmailAsync(
                 new PasswordResetToken("Token", ApplicationUserBuilder.Create().Build()));
