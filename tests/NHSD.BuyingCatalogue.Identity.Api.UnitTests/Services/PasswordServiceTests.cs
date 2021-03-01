@@ -157,7 +157,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var mockEmailService = new Mock<IEmailService>();
             var registrationService = new PasswordService(
                 mockEmailService.Object,
-                new PasswordResetSettings { EmailMessageTemplate = template },
+                new PasswordResetSettings { EmailMessage = template },
                 MockUserManager.Object);
 
             await registrationService.SendResetEmailAsync(
@@ -181,7 +181,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var mockEmailService = new MockEmailService();
             var registrationService = new PasswordService(
                 mockEmailService,
-                new PasswordResetSettings { EmailMessageTemplate = template },
+                new PasswordResetSettings { EmailMessage = template },
                 MockUserManager.Object);
 
             await registrationService.SendResetEmailAsync(
@@ -206,7 +206,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             var registrationService = new PasswordService(
                 mockEmailService,
-                new PasswordResetSettings { EmailMessageTemplate = template },
+                new PasswordResetSettings { EmailMessage = template },
                 MockUserManager.Object);
 
             await registrationService.SendResetEmailAsync(
@@ -232,7 +232,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             var mockEmailService = new MockEmailService();
             var registrationService = new PasswordService(
                 mockEmailService,
-                new PasswordResetSettings { EmailMessageTemplate = template },
+                new PasswordResetSettings { EmailMessage = template },
                 MockUserManager.Object);
 
             await registrationService.SendResetEmailAsync(
