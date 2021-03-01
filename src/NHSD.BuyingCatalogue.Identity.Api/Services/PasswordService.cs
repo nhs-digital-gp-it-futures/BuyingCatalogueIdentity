@@ -79,7 +79,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 throw new ArgumentNullException(nameof(callback));
 
             await emailService.SendEmailAsync(
-                settings.EmailMessageTemplate,
+                settings.EmailMessage,
                 new EmailAddress(user.Email, user.DisplayName),
                 callback);
         }

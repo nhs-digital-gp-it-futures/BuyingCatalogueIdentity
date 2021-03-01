@@ -11,6 +11,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Settings
         /// Gets or sets the sender, subject and content of
         /// the password reset e-mail message.
         /// </summary>
-        public EmailMessageTemplate EmailMessageTemplate { get; set; }
+        public EmailMessageTemplate EmailMessage { get; set; }
     }
 }
