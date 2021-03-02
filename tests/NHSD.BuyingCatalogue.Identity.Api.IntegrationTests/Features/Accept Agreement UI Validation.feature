@@ -38,7 +38,7 @@ Scenario: The Accept Agreement page title is displayed correctly
 @3924
 Scenario: The Accept Agreement page description is displayed correctly
     Then the page contains element with Data ID page-description
-    And element with Data ID page-description has tag h2
+    And element with Data ID page-description has tag p
     And element with Data ID page-description has text Please read this agreement carefully before using the NHS Digital Buying Catalogue
 
 @3924

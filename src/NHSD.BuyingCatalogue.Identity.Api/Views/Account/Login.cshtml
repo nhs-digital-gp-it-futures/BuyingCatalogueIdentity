@@ -10,7 +10,7 @@
                 <div class="nhsuk-grid-column-two-thirds">
                     <div data-test-id="error-summary" nhs-validation-summary title="There is a problem"></div>
                     <h1 data-test-id="page-title" class="nhsuk-heading-xl nhsuk-u-margin-bottom-2">@ViewData["PageTitle"]</h1>
-                    <h2 data-test-id="page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</h2>
+                    <p data-test-id="page-description" class="nhsuk-heading-s nhsuk-u-margin-bottom-5">@ViewData["PageDescription"]</p>
 
                         <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
                             <input type="hidden" asp-for="ReturnUrl" />

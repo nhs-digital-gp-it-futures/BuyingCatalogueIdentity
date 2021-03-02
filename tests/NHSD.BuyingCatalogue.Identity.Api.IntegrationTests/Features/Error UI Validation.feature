@@ -30,7 +30,7 @@ Scenario: The Title of the page is displayed
 @3540
 Scenario: The Description of the page is displayed
     Then the page contains element with Data ID error-page-description
-    And element with Data ID error-page-description has tag h2
+    And element with Data ID error-page-description has tag p
     And element with Data ID error-page-description has text An error occurred while processing your request.
     
 @3540

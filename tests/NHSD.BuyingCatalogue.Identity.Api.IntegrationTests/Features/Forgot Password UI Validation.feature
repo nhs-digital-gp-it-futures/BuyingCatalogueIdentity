@@ -27,7 +27,7 @@ Scenario: The Forgot Password page title is displayed correctly
 @3926
 Scenario: The Forgot Password page description is displayed correctly
     Then the page contains element with Data ID page-description
-    And element with Data ID page-description has tag h2
+    And element with Data ID page-description has tag p
     And element with Data ID page-description has text You'll be sent a link to the address you provide so you can choose a password.
 
 @3926

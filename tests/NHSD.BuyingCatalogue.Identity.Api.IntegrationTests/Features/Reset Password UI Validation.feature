@@ -27,7 +27,7 @@ Scenario: The Reset Password page title is displayed correctly
 @3926
 Scenario: The Reset Password page description is displayed correctly
     Then the page contains element with Data ID page-description
-    And element with Data ID page-description has tag h2
+    And element with Data ID page-description has tag p
     And element with Data ID page-description has text Please read the password policy before proceeding.
 
 @3926

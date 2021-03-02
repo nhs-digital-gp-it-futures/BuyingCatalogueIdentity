@@ -25,7 +25,7 @@ Scenario: The Forgot Password Link Sent page title is displayed correctly
 @3926
 Scenario: The The Forgot Password Link Sent page description is displayed correctly
     Then the page contains element with Data ID page-description
-    And element with Data ID page-description has tag h2
+    And element with Data ID page-description has tag p
     And element with Data ID page-description has text A link to set your password has been sent to the email address you provided.
 
 @3926
