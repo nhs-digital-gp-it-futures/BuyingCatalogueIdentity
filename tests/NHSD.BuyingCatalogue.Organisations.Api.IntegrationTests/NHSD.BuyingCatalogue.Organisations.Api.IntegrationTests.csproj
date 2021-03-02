@@ -47,7 +47,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
-    <PackageReference Include="WireMock.Net.RestClient" Version="1.4.5" />
+    <PackageReference Include="WireMock.Net.RestClient" Version="1.4.6" />
   </ItemGroup>
 
   <ItemGroup>
