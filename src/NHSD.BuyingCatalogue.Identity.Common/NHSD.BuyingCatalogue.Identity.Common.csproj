@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.Network" Version="5.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.Network" Version="5.0.4" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="5.0.2" />
     <PackageReference Include="MailKit" Version="2.10.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321">
