@@ -31,7 +31,7 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Flurl.Http" Version="3.0.1" />
-    <PackageReference Include="IdentityModel" Version="5.0.1" />
+    <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
