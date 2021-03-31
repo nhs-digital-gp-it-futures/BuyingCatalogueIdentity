@@ -3,7 +3,7 @@
   "name": "nhsd-buyingcatalogue-identity",
   "private": true,
   "dependencies": {
-    "buying-catalogue-components": "^4.1.1",
+    "buying-catalogue-components": "^4.1.2",
     "nhsuk-frontend": "^5.0.0"
   },
   "devDependencies": {
