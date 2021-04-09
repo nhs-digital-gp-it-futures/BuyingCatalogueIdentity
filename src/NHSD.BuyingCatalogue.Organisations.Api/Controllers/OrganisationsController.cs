@@ -195,5 +195,82 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return model.OrderBy(m => m.Name).ToList();
         }
+
+        [HttpGet]
+        [Route("{id}/related-organisations")]
+        public async Task<ActionResult<IEnumerable<RelatedOrganisationModel>>> GetRelatedOrganisationsAsync(Guid id)
+        {
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
+
+            if (organisation is null || organisation.RelatedOrganisations is null)
+            {
+                return NotFound();
+            }
+
+            return organisation.RelatedOrganisations.Select(ro => ro.ChildOrganisation).Select(ro => new RelatedOrganisationModel() { OrganisationId = ro.OrganisationId, Name = ro.Name, OdsCode = ro.OdsCode }).ToList();
+        }
+
+        [HttpGet]
+        [Route("{id}/unrelated-organisations")]
+        public async Task<ActionResult<IEnumerable<RelatedOrganisationModel>>> GetUnrelatedOrganisationsAsync(Guid id)
+        {
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
+
+            if (organisation is null)
+            {
+                return NotFound();
+            }
+
+            IEnumerable<Organisation> organisationsList = await organisationRepository.ListOrganisationsAsync();
+
+            if (organisation.RelatedOrganisations is not null)
+            {
+                var listOfRelatedOrganisationsGuids = organisation.RelatedOrganisations.Select(ro => ro.ChildOrganisation).Select(ro => ro.OrganisationId).ToList();
+
+                var unrelatedOrganisations = organisationsList.Where(o => !listOfRelatedOrganisationsGuids.Any(ro => ro == o.OrganisationId)).Where(o => o.OrganisationId != organisation.OrganisationId); // second where to clear out calling org
+
+                return unrelatedOrganisations.Select(uo => new RelatedOrganisationModel() { OrganisationId = uo.OrganisationId, Name = uo.Name, OdsCode = uo.OdsCode }).ToList();
+            }
+
+            return organisationsList.Where(o => o.OrganisationId != organisation.OrganisationId)
+                                    .Select(uo => new RelatedOrganisationModel() { OrganisationId = uo.OrganisationId, Name = uo.Name, OdsCode = uo.OdsCode })
+                                    .ToList();
+        }
+
+        [Authorize(Policy = PolicyName.CanManageOrganisations)]
+        [HttpPost]
+        [Route("{id}/related-organisations")]
+        public async Task<ActionResult> CreateRelatedOrganisationAsync(Guid id, [FromBody] CreateRelatedOrganisationModel model)
+        {
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
+
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id, false);
+
+            if (organisation is null)
+            {
+                return NotFound();
+            }
+
+            var relatedOrganisation = await organisationRepository.GetByIdAsync(model.RelatedOrganisationId);
+
+            if (relatedOrganisation is null)
+            {
+                return BadRequest();
+            }
+
+            if (organisation.RelatedOrganisations.Any(ro => ro.RelatedOrganisationId == model.RelatedOrganisationId))
+            {
+                return BadRequest();
+            }
+
+            var newRelatedOrganisation = new RelatedOrganisation() { Organisation = organisation, ChildOrganisation = relatedOrganisation};
+
+            organisation.RelatedOrganisations.Add(newRelatedOrganisation);
+
+            await organisationRepository.UpdateAsync(organisation);
+
+            return NoContent();
+        }
     }
 }
