@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
@@ -17,5 +18,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
         public bool CatalogueAgreementSigned { get; set; }
 
         public DateTime LastUpdated { get; set; }
+
+        public ICollection<RelatedOrganisation> RelatedOrganisations { get; private set; }
     }
 }
