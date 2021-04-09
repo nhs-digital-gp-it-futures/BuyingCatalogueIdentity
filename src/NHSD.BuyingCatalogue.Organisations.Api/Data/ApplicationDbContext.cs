@@ -18,6 +18,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
             if (modelBuilder is null)
                 throw new ArgumentNullException(nameof(modelBuilder));
 
+            modelBuilder.Entity<RelatedOrganisation>()
+                         .HasOne(or => or.ChildOrganisation)
+                         .WithMany()
+                         .HasForeignKey(or => or.RelatedOrganisationId);
+
+            modelBuilder.Entity<RelatedOrganisation>()
+                        .HasOne(or => or.Organisation)
+                        .WithMany(o => o.RelatedOrganisations)
+                        .HasForeignKey(or => or.OrganisationId);
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new OrganisationEntityTypeConfiguration());
