@@ -202,7 +202,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         {
             var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
 
-            if (organisation is null || organisation.RelatedOrganisations is null)
+            if (organisation is null || organisation.RelatedOrganisations is null || organisation.RelatedOrganisations.Count == 0)
             {
                 return NotFound();
             }
@@ -223,7 +223,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             IEnumerable<Organisation> organisationsList = await organisationRepository.ListOrganisationsAsync();
 
-            if (organisation.RelatedOrganisations is not null)
+            if (organisation.RelatedOrganisations is not null || organisation.RelatedOrganisations.Count > 0)
             {
                 var listOfRelatedOrganisationsGuids = organisation.RelatedOrganisations.Select(ro => ro.ChildOrganisation).Select(ro => ro.OrganisationId).ToList();
 
@@ -245,7 +245,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
 
-            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id, false);
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
 
             if (organisation is null)
             {
@@ -264,7 +264,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return BadRequest();
             }
 
-            var newRelatedOrganisation = new RelatedOrganisation() { Organisation = organisation, ChildOrganisation = relatedOrganisation};
+            var newRelatedOrganisation = new RelatedOrganisation() { Organisation = organisation, ChildOrganisation = relatedOrganisation };
 
             organisation.RelatedOrganisations.Add(newRelatedOrganisation);
 
