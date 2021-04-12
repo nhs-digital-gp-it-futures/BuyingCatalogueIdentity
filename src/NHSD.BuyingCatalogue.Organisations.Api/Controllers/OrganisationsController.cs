@@ -207,7 +207,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            return organisation.RelatedOrganisations.Select(ro => ro.ChildOrganisation).Select(ro => new RelatedOrganisationModel() { OrganisationId = ro.OrganisationId, Name = ro.Name, OdsCode = ro.OdsCode }).ToList();
+            return organisation.RelatedOrganisations.Select(ro => ro.ChildOrganisation)
+                                                    .Select(ro => new RelatedOrganisationModel() { OrganisationId = ro.OrganisationId, Name = ro.Name, OdsCode = ro.OdsCode })
+                                                    .ToList();
         }
 
         [HttpGet]
@@ -225,9 +227,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             if (organisation.RelatedOrganisations is not null || organisation.RelatedOrganisations.Count > 0)
             {
-                var listOfRelatedOrganisationsGuids = organisation.RelatedOrganisations.Select(ro => ro.ChildOrganisation).Select(ro => ro.OrganisationId).ToList();
+                var listOfRelatedOrganisationsGuids = organisation.RelatedOrganisations
+                                                                  .Select(ro => ro.ChildOrganisation).Select(ro => ro.OrganisationId).ToList();
 
-                var unrelatedOrganisations = organisationsList.Where(o => !listOfRelatedOrganisationsGuids.Any(ro => ro == o.OrganisationId)).Where(o => o.OrganisationId != organisation.OrganisationId); // second where to clear out calling org
+                var unrelatedOrganisations = organisationsList.Where(o => !listOfRelatedOrganisationsGuids
+                                                              .Any(ro => ro == o.OrganisationId))
+                                                              .Where(o => o.OrganisationId != organisation.OrganisationId); // second where to clear out calling org
 
                 return unrelatedOrganisations.Select(uo => new RelatedOrganisationModel() { OrganisationId = uo.OrganisationId, Name = uo.Name, OdsCode = uo.OdsCode }).ToList();
             }
