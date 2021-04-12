@@ -19,6 +19,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 
         public DateTime LastUpdated { get; set; }
 
-        public ICollection<RelatedOrganisation> RelatedOrganisations { get; private set; }
+        public ICollection<RelatedOrganisation> RelatedOrganisations { get; private set; } = new List<RelatedOrganisation>();
     }
 }
