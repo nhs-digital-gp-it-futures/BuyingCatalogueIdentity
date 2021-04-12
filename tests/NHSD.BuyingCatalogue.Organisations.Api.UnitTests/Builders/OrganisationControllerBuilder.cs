@@ -65,6 +65,37 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
+        internal OrganisationControllerBuilder WithGetOrganisationWithRelatedOrganisations(Organisation result)
+        {
+            var mockGetWithRelated = new Mock<IOrganisationRepository>();
+            mockGetWithRelated.Setup(r => r.GetByIdWithRelatedOrganisationsAsync(result.OrganisationId)).ReturnsAsync(result);
+
+            organisationRepository = mockGetWithRelated.Object;
+            return this;
+        }
+
+        internal OrganisationControllerBuilder WithListOrganisationAndOrganisationWithRelatedOrganisations(IEnumerable<Organisation> result, Organisation org)
+        {
+            var mockListWithRelatedOrganisation = new Mock<IOrganisationRepository>();
+
+            mockListWithRelatedOrganisation.Setup(r => r.ListOrganisationsAsync()).ReturnsAsync(result);
+            mockListWithRelatedOrganisation.Setup(r => r.GetByIdWithRelatedOrganisationsAsync(org.OrganisationId)).ReturnsAsync(org);
+
+            organisationRepository = mockListWithRelatedOrganisation.Object;
+            return this;
+        }
+
+        internal OrganisationControllerBuilder WithGetByIdWithRelatedAndGetByIdForRelatedAndUpdateAsync(Organisation primaryOrg, Organisation relatedOrg)
+        {
+            var mock = new Mock<IOrganisationRepository>();
+            mock.Setup(r => r.GetByIdWithRelatedOrganisationsAsync(primaryOrg.OrganisationId)).ReturnsAsync(primaryOrg);
+            mock.Setup(r => r.GetByIdAsync(relatedOrg.OrganisationId)).ReturnsAsync(relatedOrg);
+            mock.Setup(r => r.UpdateAsync(It.IsAny<Organisation>()));
+
+            organisationRepository = mock.Object;
+            return this;
+        }
+
         internal OrganisationControllerBuilder WithUpdateOrganisation(Organisation organisation)
         {
             var repositoryMock = new Mock<IOrganisationRepository>();
