@@ -230,8 +230,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 var listOfRelatedOrganisationsGuids = organisation.RelatedOrganisations
                                                                   .Select(ro => ro.ChildOrganisation).Select(ro => ro.OrganisationId).ToList();
 
-                var unrelatedOrganisations = organisationsList.Where(o => !listOfRelatedOrganisationsGuids
-                                                              .Any(ro => ro == o.OrganisationId))
+                var unrelatedOrganisations = organisationsList.Where(o => !listOfRelatedOrganisationsGuids.Any(ro => ro == o.OrganisationId))
                                                               .Where(o => o.OrganisationId != organisation.OrganisationId); // second where to clear out calling org
 
                 return unrelatedOrganisations.Select(uo => new RelatedOrganisationModel() { OrganisationId = uo.OrganisationId, Name = uo.Name, OdsCode = uo.OdsCode }).ToList();
