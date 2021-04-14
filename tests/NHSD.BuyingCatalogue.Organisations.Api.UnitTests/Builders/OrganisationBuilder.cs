@@ -75,7 +75,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
         internal Organisation Build()
         {
-            Organisation org = new()
+            var org = new Organisation
             {
                 OrganisationId = organisationId,
                 Name = name,
