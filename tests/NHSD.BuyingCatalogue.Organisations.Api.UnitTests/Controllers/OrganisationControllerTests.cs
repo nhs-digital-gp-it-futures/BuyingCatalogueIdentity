@@ -144,9 +144,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var organisationList = organisationResult.Organisations.ToList();
 
-            organisationList[0].Should().BeEquivalentTo(org1, config => config.Excluding(o => o.LastUpdated).Excluding(o => o.RelatedOrganisations).Excluding(o => o.ParentRelatedOrganisations));
-            organisationList[1].Should().BeEquivalentTo(org2, config => config.Excluding(o => o.LastUpdated).Excluding(o => o.RelatedOrganisations).Excluding(o => o.ParentRelatedOrganisations));
-            organisationList[2].Should().BeEquivalentTo(org3, config => config.Excluding(o => o.LastUpdated).Excluding(o => o.RelatedOrganisations).Excluding(o => o.ParentRelatedOrganisations));
+            organisationList[0].Should().BeEquivalentTo(
+                org1,
+                config => config
+                    .Excluding(o => o.LastUpdated)
+                    .Excluding(o => o.RelatedOrganisations)
+                    .Excluding(o => o.ParentRelatedOrganisations));
+
+            organisationList[1].Should().BeEquivalentTo(
+                org2,
+                config => config
+                    .Excluding(o => o.LastUpdated)
+                    .Excluding(o => o.RelatedOrganisations)
+                    .Excluding(o => o.ParentRelatedOrganisations));
+
+            organisationList[2].Should().BeEquivalentTo(
+                org3,
+                config => config
+                    .Excluding(o => o.LastUpdated)
+                    .Excluding(o => o.RelatedOrganisations)
+                    .Excluding(o => o.ParentRelatedOrganisations));
         }
 
         [Test]
@@ -196,7 +213,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.Should().BeEquivalentTo(
                 organisation,
-                conf => conf.Excluding(c => c.LastUpdated).Excluding(c => c.RelatedOrganisations).Excluding(c => c.ParentRelatedOrganisations));
+                conf => conf
+                    .Excluding(c => c.LastUpdated)
+                    .Excluding(c => c.RelatedOrganisations)
+                    .Excluding(c => c.ParentRelatedOrganisations));
         }
 
         [Test]
@@ -214,7 +234,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.Should().BeEquivalentTo(
                 organisation,
-                conf => conf.Excluding(c => c.LastUpdated).Excluding(c => c.RelatedOrganisations).Excluding(c => c.ParentRelatedOrganisations));
+                conf => conf
+                    .Excluding(c => c.LastUpdated)
+                    .Excluding(c => c.RelatedOrganisations)
+                    .Excluding(c => c.ParentRelatedOrganisations));
         }
 
         [Test]
@@ -474,7 +497,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var relatedOrganisation = OrganisationBuilder.Create(2).Build();
 
-            var relatedOrganisationModel = new CreateRelatedOrganisationModel() { RelatedOrganisationId = relatedOrganisation.OrganisationId };
+            var relatedOrganisationModel = new CreateRelatedOrganisationModel { RelatedOrganisationId = relatedOrganisation.OrganisationId };
 
             var controller = OrganisationControllerBuilder
                 .Create()
@@ -501,7 +524,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static async Task CreateRelatedOrganisationsAsync_OrganisationExists_RelatedOrganisationDoesntExist_ReturnsBadRequest()
+        public static async Task CreateRelatedOrganisationsAsync_OrganisationExists_RelatedOrganisationDoesNotExist_ReturnsBadRequest()
         {
             var organisation = OrganisationBuilder.Create(1).Build();
 
