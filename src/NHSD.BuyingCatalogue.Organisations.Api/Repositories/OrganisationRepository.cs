@@ -34,11 +34,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         public async Task<IEnumerable<Organisation>> GetUnrelatedOrganisations(Organisation organisation)
         {
-            return await context.Organisations
-                .Where(o => o.OrganisationId != organisation.OrganisationId)
-                .Where(o => !organisation.RelatedOrganisations.Any(ro => o.OrganisationId == ro.OrganisationId))
-                .OrderBy(o => o.Name)
-                .ToListAsync();
+            return await context.Organisations.Where(o => o != organisation && !o.ParentRelatedOrganisations.Contains(organisation)).ToListAsync();
         }
 
         public async Task<Organisation> GetByOdsCodeAsync(string odsCode)
