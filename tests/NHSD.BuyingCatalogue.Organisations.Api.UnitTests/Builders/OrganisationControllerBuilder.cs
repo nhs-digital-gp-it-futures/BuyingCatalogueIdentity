@@ -74,17 +74,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
-        internal OrganisationControllerBuilder WithGetUnrelatedOrganisationsAndGetByIdWithRelated(IEnumerable<Organisation> result, Organisation org)
-        {
-            var mockGetUnrelatedOrganisations = new Mock<IOrganisationRepository>();
-
-            mockGetUnrelatedOrganisations.Setup(r => r.GetByIdWithRelatedOrganisationsAsync(org.OrganisationId)).ReturnsAsync(org);
-            mockGetUnrelatedOrganisations.Setup(r => r.GetUnrelatedOrganisations(org)).ReturnsAsync(result);
-
-            organisationRepository = mockGetUnrelatedOrganisations.Object;
-            return this;
-        }
-
         internal OrganisationControllerBuilder WithGetByIdWithRelatedAndGetByIdForRelatedAndUpdateAsync(Organisation primaryOrg, Organisation relatedOrg)
         {
             var mock = new Mock<IOrganisationRepository>();
