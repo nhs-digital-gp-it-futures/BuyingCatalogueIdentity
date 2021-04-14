@@ -22,16 +22,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
                 .HasMany(o => o.RelatedOrganisations)
                 .WithMany(o => o.ParentRelatedOrganisations)
                 .UsingEntity<RelatedOrganisation>(
-                ro => ro.HasOne(ro => ro.Organisation)
-                      .WithMany()
-                      .HasForeignKey(ro => ro.OrganisationId)
-                      .HasConstraintName("FK_RelatedOrganisations_OrganisationId")
-                      .OnDelete(DeleteBehavior.Cascade),
-                ro => ro.HasOne(ro => ro.ChildOrganisation)
-                     .WithMany()
-                     .HasForeignKey(ro => ro.RelatedOrganisationId)
-                     .HasConstraintName("FK_RelatedOrganisations_RelatedOrganisationId")
-                     .OnDelete(DeleteBehavior.Cascade));
+                relatedOrganisation => relatedOrganisation
+                                         .HasOne(ro => ro.ChildOrganisation)
+                                         .WithMany()
+                                         .HasConstraintName("FK_RelatedOrganisations_RelatedOrganisationId")
+                                         .OnDelete(DeleteBehavior.Cascade),
+                relatedOrganisation => relatedOrganisation
+                                         .HasOne(ro => ro.Organisation)
+                                         .WithMany()
+                                         .HasConstraintName("FK_RelatedOrganisations_OrganisationId")
+                                         .OnDelete(DeleteBehavior.Cascade));
 
             base.OnModelCreating(modelBuilder);
 
