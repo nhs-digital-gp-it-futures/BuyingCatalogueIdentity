@@ -535,7 +535,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithGetOrganisationWithRelatedOrganisations(organisation)
                 .Build();
 
-            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced Organisation {nonExistingRelatedOrganisationId} cannot be found.")));
+            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {nonExistingRelatedOrganisationId} cannot be found.")));
 
             var result = await controller.CreateRelatedOrganisationAsync(organisation.OrganisationId, new CreateRelatedOrganisationModel { RelatedOrganisationId = nonExistingRelatedOrganisationId });
 
@@ -556,7 +556,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithGetByIdWithRelatedAndGetByIdForRelatedAndUpdateAsync(organisation, relatedOrganisation)
                 .Build();
 
-            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced Organisation {relatedOrganisation.OrganisationId} is already Related to {organisation.OrganisationId}.")));
+            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {relatedOrganisation.OrganisationId} is already related to {organisation.OrganisationId}.")));
 
             var result = await controller.CreateRelatedOrganisationAsync(organisation.OrganisationId, new CreateRelatedOrganisationModel { RelatedOrganisationId = relatedOrganisationId });
 
