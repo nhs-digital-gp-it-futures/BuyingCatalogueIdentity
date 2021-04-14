@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 {
-    public class RelatedOrganisationModel
+    public sealed class RelatedOrganisationModel
     {
-        public Guid OrganisationId { get; set; }
+        public Guid OrganisationId { get; init; }
 
-        public string Name { get; set; }
+        public string Name { get; init; }
 
-        public string OdsCode { get; set; }
+        public string OdsCode { get; init; }
     }
 }

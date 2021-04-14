@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
@@ -14,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         private string primaryRoleId;
         private bool catalogueAgreementSigned;
         private Address address;
-        private RelatedOrganisation relatedOrganisation;
+        private Organisation relatedOrganisation;
 
         private OrganisationBuilder(int index)
         {
@@ -70,13 +69,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
         internal OrganisationBuilder WithRelatedOrganisation(Guid relatedOrganisationId)
         {
-            relatedOrganisation = new()
-            {
-                OrganisationId = organisationId,
-                RelatedOrganisationId = relatedOrganisationId,
-                Organisation = Build(),
-                ChildOrganisation = BuildRelatedOrganisation(relatedOrganisationId),
-            };
+            relatedOrganisation = BuildRelatedOrganisation(relatedOrganisationId);
             return this;
         }
 
@@ -93,7 +86,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
                 LastUpdated = lastUpdated,
             };
 
-            if (relatedOrganisation != null)
+            if (relatedOrganisation is not null)
             {
                 org.RelatedOrganisations.Add(relatedOrganisation);
             }
@@ -101,8 +94,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return org;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1204:Static elements should appear before instance elements", Justification = "This Doesn't Actually need to be at the top")]
-        internal static Organisation BuildRelatedOrganisation(Guid index)
+        private static Organisation BuildRelatedOrganisation(Guid index)
         {
             return new()
             {

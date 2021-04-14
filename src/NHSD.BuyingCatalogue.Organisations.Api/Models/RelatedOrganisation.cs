@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
     [Table("RelatedOrganisations")]
-    public class RelatedOrganisation
+    public sealed class RelatedOrganisation
     {
         public Guid OrganisationId { get; set; }
 

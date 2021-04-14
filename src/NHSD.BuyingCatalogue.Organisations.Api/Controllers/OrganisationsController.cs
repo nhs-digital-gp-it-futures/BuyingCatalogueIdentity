@@ -202,14 +202,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         {
             var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
 
-            if (organisation is null || organisation.RelatedOrganisations is null || organisation.RelatedOrganisations.Count == 0)
+            if (organisation is null)
             {
                 return NotFound();
             }
 
-            return organisation.RelatedOrganisations.Select(ro => ro.ChildOrganisation)
-                                                    .Select(ro => new RelatedOrganisationModel() { OrganisationId = ro.OrganisationId, Name = ro.Name, OdsCode = ro.OdsCode })
-                                                    .ToList();
+            return organisation.RelatedOrganisations
+                .Select(ro => new RelatedOrganisationModel { OrganisationId = ro.OrganisationId, Name = ro.Name, OdsCode = ro.OdsCode })
+                .ToList();
         }
 
         [HttpGet]
@@ -223,22 +223,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            IEnumerable<Organisation> organisationsList = await organisationRepository.ListOrganisationsAsync();
+            var unrelatedOrganisations = await organisationRepository.GetUnrelatedOrganisations(organisation);
 
-            if (organisation.RelatedOrganisations is not null || organisation.RelatedOrganisations.Count > 0)
-            {
-                var listOfRelatedOrganisationsGuids = organisation.RelatedOrganisations
-                                                                  .Select(ro => ro.ChildOrganisation).Select(ro => ro.OrganisationId).ToList();
-
-                var unrelatedOrganisations = organisationsList.Where(o => !listOfRelatedOrganisationsGuids.Any(ro => ro == o.OrganisationId))
-                                                              .Where(o => o.OrganisationId != organisation.OrganisationId); // second where to clear out calling org
-
-                return unrelatedOrganisations.Select(uo => new RelatedOrganisationModel() { OrganisationId = uo.OrganisationId, Name = uo.Name, OdsCode = uo.OdsCode }).ToList();
-            }
-
-            return organisationsList.Where(o => o.OrganisationId != organisation.OrganisationId)
-                                    .Select(uo => new RelatedOrganisationModel() { OrganisationId = uo.OrganisationId, Name = uo.Name, OdsCode = uo.OdsCode })
-                                    .ToList();
+            return unrelatedOrganisations.Select(uo => new RelatedOrganisationModel() { OrganisationId = uo.OrganisationId, Name = uo.Name, OdsCode = uo.OdsCode }).ToList();
         }
 
         [Authorize(Policy = PolicyName.CanManageOrganisations)]
@@ -260,17 +247,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             if (relatedOrganisation is null)
             {
-                return BadRequest();
+                return BadRequest(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced Organisation {model.RelatedOrganisationId} cannot be found.")));
             }
 
-            if (organisation.RelatedOrganisations.Any(ro => ro.RelatedOrganisationId == model.RelatedOrganisationId))
+            if (organisation.RelatedOrganisations.Any(ro => ro.OrganisationId == model.RelatedOrganisationId))
             {
-                return BadRequest();
+                return BadRequest(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced Organisation {model.RelatedOrganisationId} is already Related to {organisation.OrganisationId}.")));
             }
 
-            var newRelatedOrganisation = new RelatedOrganisation() { Organisation = organisation, ChildOrganisation = relatedOrganisation };
-
-            organisation.RelatedOrganisations.Add(newRelatedOrganisation);
+            organisation.RelatedOrganisations.Add(relatedOrganisation);
 
             await organisationRepository.UpdateAsync(organisation);
 
