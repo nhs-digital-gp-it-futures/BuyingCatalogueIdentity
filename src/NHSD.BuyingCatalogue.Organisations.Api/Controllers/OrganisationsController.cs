@@ -247,12 +247,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             if (relatedOrganisation is null)
             {
-                return BadRequest(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced Organisation {model.RelatedOrganisationId} cannot be found.")));
+                return BadRequest(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {model.RelatedOrganisationId} cannot be found.")));
             }
 
             if (organisation.RelatedOrganisations.Any(ro => ro.OrganisationId == model.RelatedOrganisationId))
             {
-                return BadRequest(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced Organisation {model.RelatedOrganisationId} is already Related to {organisation.OrganisationId}.")));
+                return BadRequest(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {model.RelatedOrganisationId} is already related to {organisation.OrganisationId}.")));
             }
 
             organisation.RelatedOrganisations.Add(relatedOrganisation);
