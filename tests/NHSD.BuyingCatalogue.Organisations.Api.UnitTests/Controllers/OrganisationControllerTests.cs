@@ -144,9 +144,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var organisationList = organisationResult.Organisations.ToList();
 
-            organisationList[0].Should().BeEquivalentTo(org1, config => config.Excluding(o => o.LastUpdated));
-            organisationList[1].Should().BeEquivalentTo(org2, config => config.Excluding(o => o.LastUpdated));
-            organisationList[2].Should().BeEquivalentTo(org3, config => config.Excluding(o => o.LastUpdated));
+            organisationList[0].Should().BeEquivalentTo(
+                org1,
+                config => config
+                    .Excluding(o => o.LastUpdated)
+                    .Excluding(o => o.RelatedOrganisations)
+                    .Excluding(o => o.ParentRelatedOrganisations));
+
+            organisationList[1].Should().BeEquivalentTo(
+                org2,
+                config => config
+                    .Excluding(o => o.LastUpdated)
+                    .Excluding(o => o.RelatedOrganisations)
+                    .Excluding(o => o.ParentRelatedOrganisations));
+
+            organisationList[2].Should().BeEquivalentTo(
+                org3,
+                config => config
+                    .Excluding(o => o.LastUpdated)
+                    .Excluding(o => o.RelatedOrganisations)
+                    .Excluding(o => o.ParentRelatedOrganisations));
         }
 
         [Test]
@@ -196,7 +213,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.Should().BeEquivalentTo(
                 organisation,
-                conf => conf.Excluding(c => c.LastUpdated));
+                conf => conf
+                    .Excluding(c => c.LastUpdated)
+                    .Excluding(c => c.RelatedOrganisations)
+                    .Excluding(c => c.ParentRelatedOrganisations));
         }
 
         [Test]
@@ -214,7 +234,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.Should().BeEquivalentTo(
                 organisation,
-                conf => conf.Excluding(c => c.LastUpdated));
+                conf => conf
+                    .Excluding(c => c.LastUpdated)
+                    .Excluding(c => c.RelatedOrganisations)
+                    .Excluding(c => c.ParentRelatedOrganisations));
         }
 
         [Test]
@@ -409,6 +432,135 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
             expected = expected.OrderBy(m => m.Name).ToList();
 
             response.Should().BeEquivalentTo(new ActionResult<List<ServiceRecipientsModel>>(expected), config => config.WithStrictOrdering());
+        }
+
+        [Test]
+        public static async Task GetOrganisationsAsync_OrganisationExists_ReturnsOrganisationAndRelatedOrganisation()
+        {
+            Guid relatedOrganisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithAddress(Address1).WithRelatedOrganisation(relatedOrganisationId).Build();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetOrganisationWithRelatedOrganisations(organisation)
+                .Build();
+
+            var result = await controller.GetRelatedOrganisationsAsync(organisation.OrganisationId);
+
+            var expected = new List<RelatedOrganisationModel>
+            {
+                new()
+                {
+                    OrganisationId = organisation.RelatedOrganisations.First().OrganisationId,
+                    Name = organisation.RelatedOrganisations.First().Name,
+                    OdsCode = organisation.RelatedOrganisations.First().OdsCode,
+                },
+            };
+
+            result.Should().BeEquivalentTo(new ActionResult<List<RelatedOrganisationModel>>(expected));
+        }
+
+        [Test]
+        public static async Task GetRelatedOrganisationsAsync_OrganisationExists_NoRelatedOrganisations_ReturnsEmptyList()
+        {
+            var organisation = OrganisationBuilder.Create(1).WithAddress(Address1).Build();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetOrganisationWithRelatedOrganisations(organisation)
+                .Build();
+
+            var result = await controller.GetRelatedOrganisationsAsync(organisation.OrganisationId);
+
+            result.Should().BeEquivalentTo(new ActionResult<List<RelatedOrganisationModel>>(new List<RelatedOrganisationModel>()));
+        }
+
+        [Test]
+        public static async Task GetRelatedOrganisationsAsync_OrganisationDoesNotExist_ReturnsNotFound()
+        {
+            var nonExistentOrganisationId = Guid.NewGuid();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .Build();
+
+            var result = await controller.GetRelatedOrganisationsAsync(nonExistentOrganisationId);
+
+            result.Should().BeEquivalentTo(new ActionResult<List<RelatedOrganisationModel>>(new NotFoundResult()));
+        }
+
+        [Test]
+        public static async Task CreateRelatedOrganisationAsync_RelatedOrganisationReturnsSuccess_ReturnsRelatedOrganisation()
+        {
+            var organisation = OrganisationBuilder.Create(1).Build();
+
+            var relatedOrganisation = OrganisationBuilder.Create(2).Build();
+
+            var relatedOrganisationModel = new CreateRelatedOrganisationModel { RelatedOrganisationId = relatedOrganisation.OrganisationId };
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetByIdWithRelatedAndGetByIdForRelatedAndUpdateAsync(organisation, relatedOrganisation)
+                .Build();
+
+            var result = await controller.CreateRelatedOrganisationAsync(organisation.OrganisationId, relatedOrganisationModel);
+
+            result.Should().BeOfType<NoContentResult>();
+        }
+
+        [Test]
+        public static async Task CreateRelatedOrganisationsAsync_OrganisationDoesNotExists_ReturnsNotFound()
+        {
+            var organisationId = Guid.NewGuid();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .Build();
+
+            var result = await controller.CreateRelatedOrganisationAsync(organisationId, new CreateRelatedOrganisationModel());
+
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public static async Task CreateRelatedOrganisationsAsync_OrganisationExists_RelatedOrganisationDoesNotExist_ReturnsBadRequest()
+        {
+            var organisation = OrganisationBuilder.Create(1).Build();
+
+            var nonExistingRelatedOrganisationId = Guid.NewGuid();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetOrganisationWithRelatedOrganisations(organisation)
+                .Build();
+
+            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {nonExistingRelatedOrganisationId} cannot be found.")));
+
+            var result = await controller.CreateRelatedOrganisationAsync(organisation.OrganisationId, new CreateRelatedOrganisationModel { RelatedOrganisationId = nonExistingRelatedOrganisationId });
+
+            result.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public static async Task CreateRelatedOrganisationsAsync_OrganisationExists_RelatedAlreadyExists_ReturnsBadRequest()
+        {
+            var relatedOrganisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithRelatedOrganisation(relatedOrganisationId).Build();
+
+            var relatedOrganisation = OrganisationBuilder.Create(2).WithOrganisationId(relatedOrganisationId).Build();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetByIdWithRelatedAndGetByIdForRelatedAndUpdateAsync(organisation, relatedOrganisation)
+                .Build();
+
+            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {relatedOrganisation.OrganisationId} is already related to {organisation.OrganisationId}.")));
+
+            var result = await controller.CreateRelatedOrganisationAsync(organisation.OrganisationId, new CreateRelatedOrganisationModel { RelatedOrganisationId = relatedOrganisationId });
+
+            result.Should().BeEquivalentTo(expected);
         }
     }
 }

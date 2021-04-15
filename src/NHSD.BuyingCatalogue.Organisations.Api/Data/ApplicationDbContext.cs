@@ -18,6 +18,21 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
             if (modelBuilder is null)
                 throw new ArgumentNullException(nameof(modelBuilder));
 
+            modelBuilder.Entity<Organisation>()
+                .HasMany(o => o.RelatedOrganisations)
+                .WithMany(o => o.ParentRelatedOrganisations)
+                .UsingEntity<RelatedOrganisation>(
+                relatedOrganisation => relatedOrganisation
+                                         .HasOne(ro => ro.ChildOrganisation)
+                                         .WithMany()
+                                         .HasConstraintName("FK_RelatedOrganisations_RelatedOrganisationId")
+                                         .OnDelete(DeleteBehavior.Cascade),
+                relatedOrganisation => relatedOrganisation
+                                         .HasOne(ro => ro.Organisation)
+                                         .WithMany()
+                                         .HasConstraintName("FK_RelatedOrganisations_OrganisationId")
+                                         .OnDelete(DeleteBehavior.Cascade));
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new OrganisationEntityTypeConfiguration());

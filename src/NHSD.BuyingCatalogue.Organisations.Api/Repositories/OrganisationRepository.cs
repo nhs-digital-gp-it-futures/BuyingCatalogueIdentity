@@ -27,6 +27,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
             return await context.Organisations.FirstOrDefaultAsync(org => org.OrganisationId == id);
         }
 
+        public async Task<Organisation> GetByIdWithRelatedOrganisationsAsync(Guid id)
+        {
+            return await context.Organisations.Include(o => o.RelatedOrganisations).FirstOrDefaultAsync(org => org.OrganisationId == id);
+        }
+
+        public async Task<IEnumerable<Organisation>> GetUnrelatedOrganisations(Organisation organisation)
+        {
+            return await context.Organisations.Where(o => o != organisation && !o.ParentRelatedOrganisations.Contains(organisation)).ToListAsync();
+        }
+
         public async Task<Organisation> GetByOdsCodeAsync(string odsCode)
         {
             return await context.Organisations.FirstOrDefaultAsync(org => org.OdsCode == odsCode);

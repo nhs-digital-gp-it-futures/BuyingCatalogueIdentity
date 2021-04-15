@@ -13,6 +13,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         private string primaryRoleId;
         private bool catalogueAgreementSigned;
         private Address address;
+        private Organisation relatedOrganisation;
 
         private OrganisationBuilder(int index)
         {
@@ -66,9 +67,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return this;
         }
 
+        internal OrganisationBuilder WithRelatedOrganisation(Guid relatedOrganisationId)
+        {
+            relatedOrganisation = BuildRelatedOrganisation(relatedOrganisationId);
+            return this;
+        }
+
         internal Organisation Build()
         {
-            return new()
+            var org = new Organisation
             {
                 OrganisationId = organisationId,
                 Name = name,
@@ -77,6 +84,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
                 CatalogueAgreementSigned = catalogueAgreementSigned,
                 Address = address,
                 LastUpdated = lastUpdated,
+            };
+
+            if (relatedOrganisation is not null)
+            {
+                org.RelatedOrganisations.Add(relatedOrganisation);
+            }
+
+            return org;
+        }
+
+        private static Organisation BuildRelatedOrganisation(Guid index)
+        {
+            return new()
+            {
+                OrganisationId = index,
+                Name = $"Organisation {index}",
+                OdsCode = $"ODS {index}",
+                PrimaryRoleId = $"ID {index}",
+                CatalogueAgreementSigned = true,
+                Address = null,
+                LastUpdated = DateTime.UtcNow,
             };
         }
     }
