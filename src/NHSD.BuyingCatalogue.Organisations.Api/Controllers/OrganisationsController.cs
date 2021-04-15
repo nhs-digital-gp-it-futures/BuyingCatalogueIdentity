@@ -274,12 +274,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 return NotFound();
             }
 
-            if (!organisation.RelatedOrganisations.Any(ro => ro.OrganisationId == relatedOrganisationId))
-            {
-                return NoContent();
-            }
-
-            var relatedOrganisation = organisation.RelatedOrganisations.Single(ro => ro.OrganisationId == relatedOrganisationId);
+            var relatedOrganisation = organisation.RelatedOrganisations.SingleOrDefault(ro => ro.OrganisationId == relatedOrganisationId);
 
             if (organisation.RelatedOrganisations.Remove(relatedOrganisation))
             {

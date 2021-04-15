@@ -597,23 +597,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_NoRelationships_ReturnsNoContent()
-        {
-            var relatedOrganisationId = Guid.NewGuid();
-
-            var organisation = OrganisationBuilder.Create(1).Build();
-
-            var controller = OrganisationControllerBuilder
-                .Create()
-                .WithGetOrganisationWithRelatedOrganisations(organisation)
-                .Build();
-
-            var result = await controller.DeleteRelatedOrganisationAsync(organisation.OrganisationId, relatedOrganisationId);
-
-            result.Should().BeOfType<NoContentResult>();
-        }
-
-        [Test]
         public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_HasRelationships_RelatedOrganisationNotRelated_ReturnsNoContent()
         {
             var relatedOrganisationId = Guid.NewGuid();
