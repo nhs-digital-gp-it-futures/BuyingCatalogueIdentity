@@ -67,10 +67,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async Task<ActionResult> GetByIdAsync(Guid id)
+        [Route("{organisationId}")]
+        public async Task<ActionResult> GetByIdAsync(Guid organisationId)
         {
-            var organisation = await organisationRepository.GetByIdAsync(id);
+            var organisation = await organisationRepository.GetByIdAsync(organisationId);
 
             if (organisation is null)
             {
@@ -102,15 +102,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         [Authorize(Policy = PolicyName.CanManageOrganisations)]
         [HttpPut]
-        [Route("{id}")]
-        public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid id, UpdateOrganisationModel model)
+        [Route("{organisationId}")]
+        public async Task<ActionResult> UpdateOrganisationByIdAsync(Guid organisationId, UpdateOrganisationModel model)
         {
             if (model is null)
             {
                 throw new ArgumentNullException(nameof(model));
             }
 
-            var organisation = await organisationRepository.GetByIdAsync(id);
+            var organisation = await organisationRepository.GetByIdAsync(organisationId);
 
             if (organisation is null)
             {
@@ -165,16 +165,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{id}/service-recipients")]
-        public async Task<ActionResult<IEnumerable<ServiceRecipientsModel>>> GetServiceRecipientsAsync(Guid id)
+        [Route("{organisationId}/service-recipients")]
+        public async Task<ActionResult<IEnumerable<ServiceRecipientsModel>>> GetServiceRecipientsAsync(Guid organisationId)
         {
             var primaryOrganisationId = User.GetPrimaryOrganisationId();
-            if (primaryOrganisationId != id)
+            if (primaryOrganisationId != organisationId)
             {
                 return Forbid();
             }
 
-            var organisation = await organisationRepository.GetByIdAsync(id);
+            var organisation = await organisationRepository.GetByIdAsync(organisationId);
 
             if (organisation is null)
             {
@@ -197,10 +197,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{id}/related-organisations")]
-        public async Task<ActionResult<IEnumerable<RelatedOrganisationModel>>> GetRelatedOrganisationsAsync(Guid id)
+        [Route("{organisationId}/related-organisations")]
+        public async Task<ActionResult<IEnumerable<RelatedOrganisationModel>>> GetRelatedOrganisationsAsync(Guid organisationId)
         {
-            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(organisationId);
 
             if (organisation is null)
             {
@@ -213,10 +213,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{id}/unrelated-organisations")]
-        public async Task<ActionResult<IEnumerable<RelatedOrganisationModel>>> GetUnrelatedOrganisationsAsync(Guid id)
+        [Route("{organisationId}/unrelated-organisations")]
+        public async Task<ActionResult<IEnumerable<RelatedOrganisationModel>>> GetUnrelatedOrganisationsAsync(Guid organisationId)
         {
-            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(organisationId);
 
             if (organisation is null)
             {
@@ -230,13 +230,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
         [Authorize(Policy = PolicyName.CanManageOrganisations)]
         [HttpPost]
-        [Route("{id}/related-organisations")]
-        public async Task<ActionResult> CreateRelatedOrganisationAsync(Guid id, [FromBody] CreateRelatedOrganisationModel model)
+        [Route("{organisationId}/related-organisations")]
+        public async Task<ActionResult> CreateRelatedOrganisationAsync(Guid organisationId, [FromBody] CreateRelatedOrganisationModel model)
         {
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
 
-            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(organisationId);
 
             if (organisation is null)
             {
@@ -256,6 +256,32 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             }
 
             organisation.RelatedOrganisations.Add(relatedOrganisation);
+
+            await organisationRepository.UpdateAsync(organisation);
+
+            return NoContent();
+        }
+
+        [Authorize(Policy = PolicyName.CanAccessOrganisations)]
+        [HttpDelete]
+        [Route("{organisationId}/related-organisations/{relatedOrganisationId}")]
+        public async Task<ActionResult> DeleteRelatedOrganisationAsync(Guid organisationId, Guid relatedOrganisationId)
+        {
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(organisationId);
+
+            if (organisation is null)
+            {
+                return NotFound();
+            }
+
+            if (!organisation.RelatedOrganisations.Any(ro => ro.OrganisationId == relatedOrganisationId))
+            {
+                return BadRequest(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {organisationId} has no relationship to {relatedOrganisationId}.")));
+            }
+
+            var relatedOrganisation = organisation.RelatedOrganisations.Where(ro => ro.OrganisationId == relatedOrganisationId).First();
+
+            organisation.RelatedOrganisations.Remove(relatedOrganisation);
 
             await organisationRepository.UpdateAsync(organisation);
 

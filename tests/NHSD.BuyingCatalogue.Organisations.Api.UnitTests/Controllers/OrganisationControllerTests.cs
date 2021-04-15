@@ -562,5 +562,78 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             result.Should().BeEquivalentTo(expected);
         }
+
+        [Test]
+        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_RelatedExists_DeletesRelationship_ReturnsNoContent()
+        {
+            var relatedOrganisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithRelatedOrganisation(relatedOrganisationId).Build();
+
+            var relatedOrganisation = OrganisationBuilder.Create(2).WithOrganisationId(relatedOrganisationId).Build();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetByIdWithRelatedAndGetByIdForRelatedAndUpdateAsync(organisation, relatedOrganisation)
+                .Build();
+
+            var result = await controller.DeleteRelatedOrganisationAsync(organisation.OrganisationId, relatedOrganisationId);
+
+            result.Should().BeOfType<NoContentResult>();
+        }
+
+        [Test]
+        public static async Task DeleteRelatedOrganisationAsync_OrganisationDoesNotExist_ReturnsNotFound()
+        {
+            var organisationId = Guid.NewGuid();
+
+            var relatedOrganisationId = Guid.NewGuid();
+
+            var controller = OrganisationControllerBuilder.Create().Build();
+
+            var result = await controller.DeleteRelatedOrganisationAsync(organisationId, relatedOrganisationId);
+
+            result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Test]
+        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_NoRelationships_ReturnsBadRequest()
+        {
+            var relatedOrganisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).Build();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetOrganisationWithRelatedOrganisations(organisation)
+                .Build();
+
+            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {organisation.OrganisationId} has no relationship to {relatedOrganisationId}.")));
+
+            var result = await controller.DeleteRelatedOrganisationAsync(organisation.OrganisationId, relatedOrganisationId);
+
+            result.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_HasRelationships_RelatedOrganisationNotRelated_ReturnsBadRequest()
+        {
+            var relatedOrganisationId = Guid.NewGuid();
+
+            var unrelatedOrganisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithRelatedOrganisation(relatedOrganisationId).Build();
+
+            var controller = OrganisationControllerBuilder
+                .Create()
+                .WithGetOrganisationWithRelatedOrganisations(organisation)
+                .Build();
+
+            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {organisation.OrganisationId} has no relationship to {unrelatedOrganisationId}.")));
+
+            var result = await controller.DeleteRelatedOrganisationAsync(organisation.OrganisationId, unrelatedOrganisationId);
+
+            result.Should().BeEquivalentTo(expected);
+        }
     }
 }
