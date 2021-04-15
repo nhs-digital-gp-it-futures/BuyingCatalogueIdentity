@@ -597,7 +597,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_NoRelationships_ReturnsBadRequest()
+        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_NoRelationships_ReturnsNoContent()
         {
             var relatedOrganisationId = Guid.NewGuid();
 
@@ -608,15 +608,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithGetOrganisationWithRelatedOrganisations(organisation)
                 .Build();
 
-            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {organisation.OrganisationId} has no relationship to {relatedOrganisationId}.")));
-
             var result = await controller.DeleteRelatedOrganisationAsync(organisation.OrganisationId, relatedOrganisationId);
 
-            result.Should().BeEquivalentTo(expected);
+            result.Should().BeOfType<NoContentResult>();
         }
 
         [Test]
-        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_HasRelationships_RelatedOrganisationNotRelated_ReturnsBadRequest()
+        public static async Task DeleteRelatedOrganisationAsync_OrganisationExists_HasRelationships_RelatedOrganisationNotRelated_ReturnsNoContent()
         {
             var relatedOrganisationId = Guid.NewGuid();
 
@@ -629,11 +627,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 .WithGetOrganisationWithRelatedOrganisations(organisation)
                 .Build();
 
-            var expected = new BadRequestObjectResult(new ErrorMessageViewModel(FormattableString.Invariant($"The referenced organisation {organisation.OrganisationId} has no relationship to {unrelatedOrganisationId}.")));
-
             var result = await controller.DeleteRelatedOrganisationAsync(organisation.OrganisationId, unrelatedOrganisationId);
 
-            result.Should().BeEquivalentTo(expected);
+            result.Should().BeOfType<NoContentResult>();
         }
     }
 }
