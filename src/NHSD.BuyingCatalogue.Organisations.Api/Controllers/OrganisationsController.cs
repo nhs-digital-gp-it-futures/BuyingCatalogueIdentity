@@ -261,5 +261,27 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
 
             return NoContent();
         }
+
+        [Authorize(Policy = PolicyName.CanAccessOrganisations)]
+        [HttpDelete]
+        [Route("{id}/related-organisations/{relatedOrganisationId}")]
+        public async Task<ActionResult> DeleteRelatedOrganisationAsync(Guid id, Guid relatedOrganisationId)
+        {
+            var organisation = await organisationRepository.GetByIdWithRelatedOrganisationsAsync(id);
+
+            if (organisation is null)
+            {
+                return NotFound();
+            }
+
+            var relatedOrganisation = organisation.RelatedOrganisations.SingleOrDefault(ro => ro.OrganisationId == relatedOrganisationId);
+
+            if (organisation.RelatedOrganisations.Remove(relatedOrganisation))
+            {
+                await organisationRepository.UpdateAsync(organisation);
+            }
+
+            return NoContent();
+        }
     }
 }
