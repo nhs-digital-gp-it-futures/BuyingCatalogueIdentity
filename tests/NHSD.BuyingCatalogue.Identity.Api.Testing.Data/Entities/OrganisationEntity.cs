@@ -63,5 +63,22 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                 sql,
                 new { organisationName });
         }
+
+        public async Task InsertRelatedOrganisation(string connectionString, Guid relatedOrganisationId)
+        {
+            const string sql = @"
+            INSERT INTO dbo.RelatedOrganisations
+            (
+	            OrganisationId,
+	            RelatedOrganisationId
+            )
+            VALUES
+            (
+	            @OrganisationId,
+	            @relatedOrganisationId
+            );";
+
+            await SqlRunner.ExecuteAsync(connectionString, sql, new { OrganisationId, relatedOrganisationId });
+        }
     }
 }

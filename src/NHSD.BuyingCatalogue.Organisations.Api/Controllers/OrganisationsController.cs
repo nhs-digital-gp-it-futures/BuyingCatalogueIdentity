@@ -262,7 +262,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             return NoContent();
         }
 
-        [Authorize(Policy = PolicyName.CanAccessOrganisations)]
+        [Authorize(Policy = PolicyName.CanManageOrganisations)]
         [HttpDelete]
         [Route("{id}/related-organisations/{relatedOrganisationId}")]
         public async Task<ActionResult> DeleteRelatedOrganisationAsync(Guid id, Guid relatedOrganisationId)
