@@ -27,6 +27,9 @@ namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
         public async Task PutJsonAsync(Uri url, object payload, params object[] pathSegments) =>
             response.Result = (await CreateCommonRequest(url, pathSegments).PutJsonAsync(payload)).ResponseMessage;
 
+        public async Task DeleteAsync(Uri url, params object[] pathSegments) =>
+            response.Result = (await CreateCommonRequest(url, pathSegments).DeleteAsync()).ResponseMessage;
+
         private IFlurlRequest CreateCommonRequest(Uri url, params object[] pathSegments)
         {
             return url

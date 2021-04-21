@@ -25,6 +25,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private readonly Config config;
 
         private readonly Uri organisationUrl;
+        private readonly string relatedOrganisationsPath;
+        private readonly string unrelatedOrganisationsPath;
 
         public OrganisationsSteps(ScenarioContext context, Response response, Request request, Config config)
         {
@@ -34,6 +36,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             this.config = config;
 
             organisationUrl = new Uri(config.OrganisationsApiBaseUrl, "/api/v1/Organisations/");
+            relatedOrganisationsPath = "related-organisations";
+            unrelatedOrganisationsPath = "unrelated-organisations";
         }
 
         [Given(@"Organisations exist")]
@@ -138,6 +142,87 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             actual.Should().BeEquivalentTo(expected);
         }
 
+        [Given(@"Organisation (.*) has a Parent Relationship to Organisation (.*)")]
+        public async Task GivenOrganisationHasAParentRelationshipToOrganisation(string primaryOrgName, string relatedOrgName)
+        {
+            var primaryOrganisation = await GetOrganisationEntityByName(primaryOrgName);
+            var relatedOrganisation = await GetOrganisationEntityByName(relatedOrgName);
+
+            await primaryOrganisation.InsertRelatedOrganisation(config.ConnectionString, relatedOrganisation.OrganisationId);
+        }
+
+        [When(@"a GET request for RelatedOrganisations is made for an Organisation with name (.*)")]
+        public async Task WhenAGetRequestForRelatedOrganisationsIsMadeForAnOrganisationWithNameOrganisation(string organisationName)
+        {
+            var organisationId = GetOrganisationIdFromName(organisationName);
+
+            await request.GetAsync(organisationUrl, organisationId, relatedOrganisationsPath);
+        }
+
+        [When(@"a GET request for UnrelatedOrganisations is made for an Organisation with name (.*)")]
+        public async Task WhenAGetRequestForUnrelatedOrganisationsIsMadeForAnOrganisationWithNameOrganisations(string organisationName)
+        {
+            var organisationId = GetOrganisationIdFromName(organisationName);
+
+            await request.GetAsync(organisationUrl, organisationId, unrelatedOrganisationsPath);
+        }
+
+        [When(@"a POST request to RelatedOrganisations is made to add an Organisation with name (.*) as a child of an Organisation with name (.*)")]
+        public async Task WhenAPostRequestForRelatedOrganisationsIsMadeToAddAnOrganisationWithNameOrganisationsAsAChildOfAnOrganisationWithNameOrganisation(string childOrganisationName, string parentOrganisationName)
+        {
+            var parentOrganisationId = GetOrganisationIdFromName(parentOrganisationName);
+
+            var childOrganisationId = GetOrganisationIdFromName(childOrganisationName);
+
+            await request.PostJsonAsync(organisationUrl, TransformRelatedOrganisationIdIntoPayload(childOrganisationId), parentOrganisationId, relatedOrganisationsPath);
+        }
+
+        [When(@"a DELETE request to RelatedOrganisations is made to delete the relationship between a parent Organisation with name (.*) and a child Organisation with name (.*)")]
+        public async Task WhenADeleteRequestToRelatedOrganisationsIsMadeToDeleteTheRelationshipBetweenAParentOrganisationWithNameOrganisationAndAChildOrganisationWithNameOrganisation(string parentOrganisationName, string childOrganisationName)
+        {
+            var parentOrganisationId = GetOrganisationIdFromName(parentOrganisationName);
+
+            var childOrganisationId = GetOrganisationIdFromName(childOrganisationName);
+
+            await request.DeleteAsync(organisationUrl, parentOrganisationId, relatedOrganisationsPath, childOrganisationId);
+        }
+
+        [Then(@"the RelatedOrganisation is returned with the following values")]
+        public async Task ThenTheRelatedOrganisationIsReturnedWithTheFollowingValues(Table table)
+        {
+            var expectedRelatedOrganisation = table.CreateSet<RelatedOrganisationTable>().FirstOrDefault();
+
+            JToken responseBody = (await response.ReadBodyAsJsonAsync())?.FirstOrDefault();
+
+            var organisation = CreateRelatedOrganisation(responseBody);
+
+            organisation.Should().BeEquivalentTo(expectedRelatedOrganisation, options => options.WithStrictOrdering());
+        }
+
+        [Then(@"a list of Related Organisations is returned with the following values")]
+        public async Task ThenAListOfRelatedOrganisationsIsReturnedWithTheFollowingValues(Table table)
+        {
+            var expectedUnrelatedOrganisations = table.CreateSet<RelatedOrganisationTable>().ToList();
+
+            JToken responseBody = await response.ReadBodyAsJsonAsync();
+
+            var organisations = (await response.ReadBodyAsJsonAsync())?.Select(CreateRelatedOrganisation);
+
+            organisations.Should().BeEquivalentTo(expectedUnrelatedOrganisations, options => options.WithStrictOrdering());
+        }
+
+        [Then(@"a list of Related Organisations is returned that does not contain the following values")]
+        public async Task ThenAListOfRelatedOrganisationsIsReturnedThatDoesNotContainTheFollowingValues(Table table)
+        {
+            var unexpectedRelatedOrganisations = table.CreateSet<RelatedOrganisationTable>().ToList();
+
+            JToken responseBody = await response.ReadBodyAsJsonAsync();
+
+            var organisations = (await response.ReadBodyAsJsonAsync())?.Select(CreateRelatedOrganisation);
+
+            organisations.Should().NotContain(unexpectedRelatedOrganisations);
+        }
+
         private static object CreateOrganisation(JToken token)
         {
             return new
@@ -154,6 +239,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                 County = token.SelectToken("address.county")?.ToString(),
                 Postcode = token.SelectToken("address.postcode")?.ToString(),
                 Country = token.SelectToken("address.country")?.ToString(),
+            };
+        }
+
+        private static object CreateRelatedOrganisation(JToken token)
+        {
+            return new
+            {
+                Name = token.SelectToken("name")?.ToString(),
+                OdsCode = token.SelectToken("odsCode")?.ToString(),
             };
         }
 
@@ -176,6 +270,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     data.Postcode,
                     data.Country,
                 },
+            };
+        }
+
+        private static object TransformRelatedOrganisationIdIntoPayload(Guid childOrganisationId)
+        {
+            return new
+            {
+                relatedOrganisationId = childOrganisationId,
             };
         }
 
@@ -241,6 +343,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             public string Postcode { get; init; }
 
             public string Country { get; init; }
+        }
+
+        private sealed class RelatedOrganisationTable
+        {
+            public string Name { get; init; }
+
+            public string OdsCode { get; init; }
         }
     }
 }

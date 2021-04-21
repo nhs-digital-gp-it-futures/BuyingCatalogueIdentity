@@ -43,6 +43,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps.Common
             actual.Should().BeEquivalentTo(expected);
         }
 
+        [Then(@"a response with an empty body is returned")]
+        public async Task ThenTheResponseBodyShouldBeEmpty()
+        {
+            var jsonbody = await response.ReadBodyAsJsonAsync();
+
+            jsonbody.Should().BeEmpty();
+        }
+
         [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class ResponseErrorsTable
         {

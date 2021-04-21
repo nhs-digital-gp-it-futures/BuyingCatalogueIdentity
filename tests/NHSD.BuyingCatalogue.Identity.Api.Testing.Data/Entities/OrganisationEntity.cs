@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Models;
@@ -62,6 +63,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities
                 connectionString,
                 sql,
                 new { organisationName });
+        }
+
+        public async Task InsertRelatedOrganisation(string connectionString, Guid relatedOrganisationId)
+        {
+            const string sql = @"
+            INSERT INTO dbo.RelatedOrganisations
+            (
+	            OrganisationId,
+	            RelatedOrganisationId
+            )
+            VALUES
+            (
+	            @OrganisationId,
+	            @relatedOrganisationId
+            );";
+
+            await SqlRunner.ExecuteAsync(connectionString, sql, new { OrganisationId, relatedOrganisationId });
         }
     }
 }

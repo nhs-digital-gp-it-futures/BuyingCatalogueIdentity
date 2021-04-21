@@ -18,6 +18,7 @@ namespace NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils
             await databaseConnection.ExecuteAsync("ALTER ROLE db_datawriter ADD MEMBER [NHSD-ISAPI];");
 
             // ReSharper restore StringLiteralTypo
+            await databaseConnection.ExecuteAsync("DELETE FROM RelatedOrganisations;");
             await databaseConnection.ExecuteAsync("DELETE FROM Organisations;");
             await databaseConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE [Email] NOT IN ('user@agency.com', 'AliceSmith@email.com', 'BobSmith@email.com', 'SueSmith@email.com');");
         }
