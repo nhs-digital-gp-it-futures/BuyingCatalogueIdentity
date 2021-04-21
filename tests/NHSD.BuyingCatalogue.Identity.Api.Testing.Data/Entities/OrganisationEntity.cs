@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Models;
