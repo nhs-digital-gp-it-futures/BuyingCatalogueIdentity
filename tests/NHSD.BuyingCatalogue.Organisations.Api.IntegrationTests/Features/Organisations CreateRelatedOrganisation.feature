@@ -8,7 +8,7 @@ Background:
         | Name                  | OdsCode | PrimaryRoleId | CatalogueAgreementSigned | Line1 | Line2      | Line3           | Line4       | Town        | County          | Postcode | Country |
         | PrimaryOrganisation   | Ods 1   | ID 1          | true                     | 12    | Brick Lane | Central Area    | City Centre | Leeds       | West Yorkshire  | LS1 1AW  | England |
         | RelatedOrganisation   | Ods 2   | ID 2          | false                    | 15    | Sun Ave    | End of the Road | Suburb      | York        | North Yorkshire | YO11 4LO | England |
-        | UnRelatedOrganisation | Ods 3   | ID 3          | false                    | 18    | Moon Road  | Gherkin Way     | Council Dump| Blackpool   | North Yorkshire | BL69 4BZ | England |
+        | UnrelatedOrganisation | Ods 3   | ID 3          | false                    | 18    | Moon Road  | Gherkin Way     | Council Dump| Blackpool   | North Yorkshire | BL69 4BZ | England |
     And Users exist
         | Id     | OrganisationName      | FirstName | LastName | Email                | PhoneNumber | Disabled | Password        | OrganisationFunction |
         | 012345 | PrimaryOrganisation   | Penny     | Lane     | PennyLane@email.com  | 01234567890 | false    | S0mePa$$w0rd    | Buyer                |
@@ -41,8 +41,8 @@ Scenario: The Organisation does not exist
     Given a user is logged in
         | Username             | Password        | Scope        |
         | PostmanPat@email.com | An0therPa$$w0rd | Organisation |
-    And an Organisation with name NonExistantOrganisation does not exist
-    When a POST request to RelatedOrganisations is made to add an Organisation with name RelatedOrganisation as a child of an Organisation with name NonExistantOrganisation
+    And an Organisation with name NonExistentOrganisation does not exist
+    When a POST request to RelatedOrganisations is made to add an Organisation with name RelatedOrganisation as a child of an Organisation with name NonExistentOrganisation
     Then a response with status code 404 is returned
 
 @5150
@@ -50,8 +50,8 @@ Scenario: The Related Organisation does not exist
     Given a user is logged in
         | Username             | Password        | Scope        |
         | PostmanPat@email.com | An0therPa$$w0rd | Organisation |
-    And an Organisation with name NonExistantOrganisation does not exist
-    When a POST request to RelatedOrganisations is made to add an Organisation with name NonExistantOrganisation as a child of an Organisation with name PrimaryOrganisation
+    And an Organisation with name NonExistentOrganisation does not exist
+    When a POST request to RelatedOrganisations is made to add an Organisation with name NonExistentOrganisation as a child of an Organisation with name PrimaryOrganisation
     Then a response with status code 400 is returned
 
 

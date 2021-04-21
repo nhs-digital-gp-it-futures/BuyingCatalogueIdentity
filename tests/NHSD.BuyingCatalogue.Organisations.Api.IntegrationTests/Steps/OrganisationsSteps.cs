@@ -204,8 +204,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         {
             var expectedUnrelatedOrganisations = table.CreateSet<RelatedOrganisationTable>().ToList();
 
-            JToken responseBody = await response.ReadBodyAsJsonAsync();
-
             var organisations = (await response.ReadBodyAsJsonAsync())?.Select(CreateRelatedOrganisation);
 
             organisations.Should().BeEquivalentTo(expectedUnrelatedOrganisations, options => options.WithStrictOrdering());
@@ -215,8 +213,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         public async Task ThenAListOfRelatedOrganisationsIsReturnedThatDoesNotContainTheFollowingValues(Table table)
         {
             var unexpectedRelatedOrganisations = table.CreateSet<RelatedOrganisationTable>().ToList();
-
-            JToken responseBody = await response.ReadBodyAsJsonAsync();
 
             var organisations = (await response.ReadBodyAsJsonAsync())?.Select(CreateRelatedOrganisation);
 
@@ -345,6 +341,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             public string Country { get; init; }
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class RelatedOrganisationTable
         {
             public string Name { get; init; }
