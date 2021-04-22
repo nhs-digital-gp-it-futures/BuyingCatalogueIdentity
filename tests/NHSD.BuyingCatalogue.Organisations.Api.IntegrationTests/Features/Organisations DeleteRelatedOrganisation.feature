@@ -41,7 +41,6 @@ Scenario: An authority user can delete an existing Organisation relationship tha
          | Name                | OdsCode |
          | RelatedOrganisation | Ods 2   |
 
-
 Scenario: An authority user tries to delete a relationship that does not exist
     Given a user is logged in
         | Username             | Password        | Scope        |
