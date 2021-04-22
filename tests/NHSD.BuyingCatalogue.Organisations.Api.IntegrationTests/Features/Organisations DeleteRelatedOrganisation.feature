@@ -27,6 +27,21 @@ Scenario: An authority user can delete an existing Organisation relationship
     And a response with an empty body is returned
 
 @5151
+Scenario: An authority user can delete an existing Organisation relationship that will not effect another relationship of the same type
+    Given a user is logged in
+        | Username             | Password        | Scope        |
+        | PostmanPat@email.com | An0therPa$$w0rd | Organisation |
+        And Organisation PrimaryOrganisation has a Parent Relationship to Organisation RelatedOrganisation
+        And Organisation UnrelatedOrganisation has a Parent Relationship to Organisation RelatedOrganisation
+    When a DELETE request to RelatedOrganisations is made to delete the relationship between a parent Organisation with name PrimaryOrganisation and a child Organisation with name RelatedOrganisation
+    Then a response with status code 204 is returned
+    When a GET request for RelatedOrganisations is made for an Organisation with name UnrelatedOrganisation
+    Then a response with status code 200 is returned
+    And the RelatedOrganisation is returned with the following values
+         | Name                | OdsCode |
+         | RelatedOrganisation | Ods 2   |
+
+
 Scenario: An authority user tries to delete a relationship that does not exist
     Given a user is logged in
         | Username             | Password        | Scope        |
