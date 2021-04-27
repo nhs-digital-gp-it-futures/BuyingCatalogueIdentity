@@ -97,12 +97,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             claims.Should().Contain(expectedClaims);
         }
 
-
         [Then(@"the access token should be empty")]
         public void ThenTheAccessTokenShouldBeEmpty()
         {
             context.Get(ScenarioContextKeys.AccessToken, string.Empty).Should().BeEmpty();
-        }        
+        }
 
         [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class UserTable
