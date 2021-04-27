@@ -70,7 +70,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
         public async Task<IEnumerable<Claim>> GetPrimaryOrganisationClaims(Guid primaryOrganisationId)
         {
-            List<Claim> claims = new List<Claim>();
+            var claims = new List<Claim>();
 
             var primaryOrganisation = await organisationRepository.GetByIdAsync(primaryOrganisationId);
 
@@ -82,9 +82,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
                 claims.Add(new Claim(ApplicationClaimTypes.PrimaryOrganisationName, primaryOrganisation.Name));
             }
 
-            claims.AddRange(primaryOrganisation.RelatedOrganisations
-                                .Select(ro =>
-                                new Claim(ApplicationClaimTypes.RelatedOrganisationId, ro.OrganisationId.ToString())));
+            claims.AddRange(primaryOrganisation.RelatedOrganisations.Select(
+                ro => new Claim(ApplicationClaimTypes.RelatedOrganisationId, ro.OrganisationId.ToString())));
 
             return claims;
         }
