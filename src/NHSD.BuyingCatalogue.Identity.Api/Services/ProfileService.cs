@@ -74,15 +74,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
 
             var primaryOrganisation = await organisationRepository.GetByIdAsync(primaryOrganisationId);
 
-            if (primaryOrganisation is not null)
-            {
-                if (!primaryOrganisation.Name.IsNullOrEmpty())
-                {
-                    claims.Add(new Claim(ApplicationClaimTypes.PrimaryOrganisationName, primaryOrganisation.Name));
-                }
+            if (primaryOrganisation is null)
+                return claims;
 
-                claims.AddRange(primaryOrganisation.RelatedOrganisations.Select(ro => new Claim(ApplicationClaimTypes.RelatedOrganisationId, ro.OrganisationId.ToString())).ToArray());
+            if (!primaryOrganisation.Name.IsNullOrEmpty())
+            {
+                claims.Add(new Claim(ApplicationClaimTypes.PrimaryOrganisationName, primaryOrganisation.Name));
             }
+
+            claims.AddRange(primaryOrganisation.RelatedOrganisations
+                                .Select(ro =>
+                                new Claim(ApplicationClaimTypes.RelatedOrganisationId, ro.OrganisationId.ToString())));
 
             return claims;
         }

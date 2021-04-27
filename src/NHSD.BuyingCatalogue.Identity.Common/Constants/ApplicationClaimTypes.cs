@@ -5,7 +5,6 @@
         public const string PrimaryOrganisationId = "primaryOrganisationId";
         public const string PrimaryOrganisationName = "primaryOrganisationName";
         public const string RelatedOrganisationId = "relatedOrganisationId";
-        public const string RelatedOrganisationName = "relatedOrganisationName";
         public const string OrganisationFunction = "organisationFunction";
         public const string Organisation = "organisation";
         public const string Account = "account";
