@@ -74,7 +74,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder
             organisationEntity.AddressObject.Line3 = line3;
             return this;
         }
-
         public OrganisationEntityBuilder WithAddressLine4(string line4)
         {
             organisationEntity.AddressObject.Line4 = line4;

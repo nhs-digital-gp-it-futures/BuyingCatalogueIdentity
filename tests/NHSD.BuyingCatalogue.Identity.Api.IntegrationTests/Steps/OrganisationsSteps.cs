@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.Entities;
 using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
@@ -20,6 +22,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             this.context = context;
             this.settings = settings;
+        }
+
+        public static async Task<OrganisationEntity> GetOrganisationEntityByName(string name, string connectionString)
+        {
+            return await OrganisationEntity.GetByNameAsync(connectionString, name);
         }
 
         [Given(@"Organisations exist")]
@@ -52,6 +59,15 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
             }
 
             context[ScenarioContextKeys.OrganisationMapDictionary] = organisationDictionary;
+        }
+
+        [Given(@"Organisation (.*) has a Parent Relationship to Organisation (.*)")]
+        public async Task GivenOrganisationHasAParentRelationshipToOrganisation(string primaryOrgName, string relatedOrgName)
+        {
+            var primaryOrganisation = await GetOrganisationEntityByName(primaryOrgName, settings.ConnectionString);
+            var relatedOrganisation = await GetOrganisationEntityByName(relatedOrgName, settings.ConnectionString);
+
+            await primaryOrganisation.InsertRelatedOrganisation(settings.ConnectionString, relatedOrganisation.OrganisationId);
         }
 
         [UsedImplicitly(ImplicitUseTargetFlags.Members)]

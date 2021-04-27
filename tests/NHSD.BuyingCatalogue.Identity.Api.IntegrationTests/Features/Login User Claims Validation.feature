@@ -8,6 +8,7 @@ Background:
         | Name           | OdsCode |
         | Organisation 1 | Ods 1   |
         | Organisation 2 | Ods 2   |
+        | Organisation 3 | Ods 3   |
     And Users exist
         | Id     | OrganisationName | FirstName | LastName | Email                  | PhoneNumber | Disabled | Password        | OrganisationFunction |
         | 012345 |                  | Penny     | Lane     | PennyLane@email.com    | 01234567890 | false    | S0mePa$$w0rd    | Buyer                |
@@ -66,7 +67,7 @@ Scenario: Get the claims of a buyer user with invalid primary organisation id
 
 Scenario: Get the claims of a buyer user with valid primary organisation id
     Given a user is logged in
-        | Username            | Password     | Scope   |
+        | Username               | Password     | Scope   |
         | SnakePliskin@email.com | S0mePa$$w0rd | profile |
     And the claims contains the following information
         | ClaimType               | ClaimValue             |
@@ -131,3 +132,36 @@ Scenario: Get the claims of an authority user with invalid primary organisation 
         | scope                | Organisation         |
         | organisation         | Manage               |
         | account              | Manage               |
+@5447
+Scenario: Get the relatedOrganisation claim of an Authority user with valid primary organisation id
+    Given Organisation Organisation 2 has a Parent Relationship to Organisation Organisation 1
+    And a user is logged in
+        | Username             | Password        | Scope        |
+        | PostmanPat@email.com | An0therPa$$w0rd | Organisation |
+    Then the claims contain RelatedOrganisationIds of these Organisations
+        | OrganisationName |
+        | Organisation 1   |
+
+@5447
+Scenario: Get the multiple relatedOrganisation claims of an Authority user with valid primary organisation id
+    Given Organisation Organisation 2 has a Parent Relationship to Organisation Organisation 1
+    And Organisation Organisation 2 has a Parent Relationship to Organisation Organisation 3
+    And a user is logged in
+        | Username             | Password        | Scope        |
+        | PostmanPat@email.com | An0therPa$$w0rd | Organisation |
+    Then the claims contain RelatedOrganisationIds of these Organisations
+        | OrganisationName |
+        | Organisation 1   |
+        | Organisation 3   |
+
+@5447
+Scenario: Get the multiple relatedOrganisation claims of a Buyer user with a valid primary organisation id
+    Given Organisation Organisation 1 has a Parent Relationship to Organisation Organisation 2
+    And Organisation Organisation 1 has a Parent Relationship to Organisation Organisation 3
+    And a user is logged in
+        | Username               | Password     | Scope   |
+        | SnakePliskin@email.com | S0mePa$$w0rd | profile |
+    Then the claims contain RelatedOrganisationIds of these Organisations
+        | OrganisationName |
+        | Organisation 2   |
+        | Organisation 3   |
