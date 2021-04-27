@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
@@ -61,26 +62,31 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Services
             if (user is not null)
             {
                 var claims = GetClaimsFromUser(user);
-                var primaryOrganisationName = await GetPrimaryOrganisationName(user.PrimaryOrganisationId);
-                if (primaryOrganisationName is not null)
-                {
-                    claims.Add(primaryOrganisationName);
-                }
+                claims.AddRange(await GetPrimaryOrganisationClaims(user.PrimaryOrganisationId));
 
                 context.IssuedClaims = claims;
             }
         }
 
-        public async Task<Claim> GetPrimaryOrganisationName(Guid primaryOrganisationId)
+        public async Task<IEnumerable<Claim>> GetPrimaryOrganisationClaims(Guid primaryOrganisationId)
         {
-            Claim claim = null;
-            var organisationName = (await organisationRepository.GetByIdAsync(primaryOrganisationId))?.Name;
-            if (!organisationName.IsNullOrEmpty())
+            List<Claim> claims = new List<Claim>();
+
+            var primaryOrganisation = await organisationRepository.GetByIdAsync(primaryOrganisationId);
+
+            if (primaryOrganisation is null)
+                return claims;
+
+            if (!primaryOrganisation.Name.IsNullOrEmpty())
             {
-                claim = new Claim(ApplicationClaimTypes.PrimaryOrganisationName, organisationName!);
+                claims.Add(new Claim(ApplicationClaimTypes.PrimaryOrganisationName, primaryOrganisation.Name));
             }
 
-            return claim;
+            claims.AddRange(primaryOrganisation.RelatedOrganisations
+                                .Select(ro =>
+                                new Claim(ApplicationClaimTypes.RelatedOrganisationId, ro.OrganisationId.ToString())));
+
+            return claims;
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
