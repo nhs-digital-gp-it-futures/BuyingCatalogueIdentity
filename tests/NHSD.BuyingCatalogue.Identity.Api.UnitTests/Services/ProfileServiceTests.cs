@@ -189,8 +189,25 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expectedClaimTypes);
         }
 
-        [TestCase("someone@email.com", Subject, Email, EmailVerified, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering, ApplicationClaimTypes.Organisation)]
-        [TestCase("", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Ordering, ApplicationClaimTypes.Organisation)]
+        [TestCase(
+            "someone@email.com",
+            Subject,
+            Email,
+            EmailVerified,
+            ApplicationClaimTypes.PrimaryOrganisationId,
+            ApplicationClaimTypes.PrimaryOrganisationName,
+            ApplicationClaimTypes.OrganisationFunction,
+            ApplicationClaimTypes.Ordering,
+            ApplicationClaimTypes.Organisation)]
+
+        [TestCase(
+            "",
+            Subject,
+            ApplicationClaimTypes.PrimaryOrganisationId,
+            ApplicationClaimTypes.PrimaryOrganisationName,
+            ApplicationClaimTypes.OrganisationFunction,
+            ApplicationClaimTypes.Ordering,
+            ApplicationClaimTypes.Organisation)]
         public static async Task GetProfileDataAsync_GivenApplicationUserWithEmail_ReturnExpectedClaimList(
             string expectedEmail,
             params string[] expectedClaimTypes)
@@ -288,8 +305,23 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestCase("Authority", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Organisation, ApplicationClaimTypes.Account)]
-        [TestCase("Buyer", Subject, ApplicationClaimTypes.PrimaryOrganisationId, ApplicationClaimTypes.PrimaryOrganisationName, ApplicationClaimTypes.OrganisationFunction, ApplicationClaimTypes.Organisation, ApplicationClaimTypes.Ordering)]
+        [TestCase(
+            "Authority",
+            Subject,
+            ApplicationClaimTypes.PrimaryOrganisationId,
+            ApplicationClaimTypes.PrimaryOrganisationName,
+            ApplicationClaimTypes.OrganisationFunction,
+            ApplicationClaimTypes.Organisation,
+            ApplicationClaimTypes.Account)]
+
+        [TestCase(
+            "Buyer",
+            Subject,
+            ApplicationClaimTypes.PrimaryOrganisationId,
+            ApplicationClaimTypes.PrimaryOrganisationName,
+            ApplicationClaimTypes.OrganisationFunction,
+            ApplicationClaimTypes.Organisation,
+            ApplicationClaimTypes.Ordering)]
         public static async Task GetProfileDataAsync_GivenApplicationUserWithOrganisationFunction_ReturnExpectedClaimList(
             string organisationFunctionDisplayName,
             params string[] expectedClaimTypes)
@@ -424,6 +456,70 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
 
             applicationUserRepositoryMock.Verify(
                 r => r.GetByIdAsync(It.Is<string>(param => expectedUserId.Equals(param, StringComparison.Ordinal))));
+        }
+
+        [TestCase(
+            "Authority",
+            Subject,
+            ApplicationClaimTypes.PrimaryOrganisationId,
+            ApplicationClaimTypes.PrimaryOrganisationName,
+            ApplicationClaimTypes.OrganisationFunction,
+            ApplicationClaimTypes.Organisation,
+            ApplicationClaimTypes.Account,
+            ApplicationClaimTypes.RelatedOrganisationId,
+            ApplicationClaimTypes.RelatedOrganisationId)]
+        [TestCase(
+            "Buyer",
+            Subject,
+            ApplicationClaimTypes.PrimaryOrganisationId,
+            ApplicationClaimTypes.PrimaryOrganisationName,
+            ApplicationClaimTypes.OrganisationFunction,
+            ApplicationClaimTypes.Organisation,
+            ApplicationClaimTypes.Ordering,
+            ApplicationClaimTypes.RelatedOrganisationId,
+            ApplicationClaimTypes.RelatedOrganisationId)]
+        public static async Task GetProfileDataAsync_UserPrimaryOrganisationHasMultipleRelatedOrganisation_ReturnsExpectedClaimsList(
+            string organisationFunctionDisplayName,
+            params string[] expectedClaimTypes)
+        {
+            var expectedApplicationUser = ApplicationUserBuilder
+                .Create()
+                .WithUsername(string.Empty)
+                .WithFirstName(string.Empty)
+                .WithLastName(string.Empty)
+                .WithEmailAddress(string.Empty)
+                .WithOrganisationFunction(OrganisationFunction.FromDisplayName(organisationFunctionDisplayName))
+                .Build();
+
+            Mock<IUsersRepository> applicationUserRepositoryMock = new Mock<IUsersRepository>();
+            applicationUserRepositoryMock
+                .Setup(r => r.GetByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(expectedApplicationUser);
+
+            var expectedOrganisation = OrganisationBuilder
+                .Create()
+                .WithRelatedOrganisations(new() { Guid.NewGuid(), Guid.NewGuid() })
+                .Build();
+
+            Mock<IOrganisationRepository> organisationRepositoryMock = new Mock<IOrganisationRepository>();
+            organisationRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedOrganisation);
+
+            var sut = ProfileServiceBuilder
+                .Create()
+                .WithUserRepository(applicationUserRepositoryMock.Object)
+                .WithOrganisationRepository(organisationRepositoryMock.Object)
+                .Build();
+
+            var profileDataRequestContext = ProfileDataRequestContextBuilder
+                .Create()
+                .WithSubjectId(expectedApplicationUser.Id)
+                .Build();
+
+            await sut.GetProfileDataAsync(profileDataRequestContext);
+
+            var actual = profileDataRequestContext.IssuedClaims.Select(item => item.Type);
+            actual.Should().BeEquivalentTo(expectedClaimTypes);
         }
 
         [Test]

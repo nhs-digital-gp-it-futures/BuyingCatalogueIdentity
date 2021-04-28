@@ -7,6 +7,7 @@ using FluentAssertions;
 using IdentityModel.Client;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
+using NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Support;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -17,11 +18,13 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
     internal sealed class AuthorisedSteps
     {
         private readonly ScenarioContext context;
+        private readonly Settings settings;
 
-        public AuthorisedSteps(IConfiguration configuration, ScenarioContext context)
+        public AuthorisedSteps(IConfiguration configuration, ScenarioContext context, Settings settings)
         {
             Configuration = configuration;
             this.context = context;
+            this.settings = settings;
         }
 
         private IConfiguration Configuration { get; }
@@ -74,6 +77,20 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         public void GivenTheClaimsContainsOrganisation(Table table)
         {
             var expectedClaims = table.Rows.Select(r => (ClaimType: r["ClaimType"], ClaimValue: r["ClaimValue"]));
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(context.Get(ScenarioContextKeys.AccessToken, string.Empty));
+            var claims = token.Claims.Select(c => (ClaimType: c.Type, ClaimValue: c.Value));
+            claims.Should().Contain(expectedClaims);
+        }
+
+        [Then(@"the claims contain RelatedOrganisationIds of these Organisations")]
+        public void ThenTheClaimsContainRelatedOrganisationIdsOfTheseOrganisations(Table table)
+        {
+            var expectedClaims = table.Rows.Select(
+                async r => await OrganisationsSteps
+                .GetOrganisationEntityByName(r["OrganisationName"], settings.ConnectionString))
+                .Select(r => (ClaimType: "relatedOrganisationId", ClaimValue: r.Result.OrganisationId.ToString()));
+
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(context.Get(ScenarioContextKeys.AccessToken, string.Empty));
             var claims = token.Claims.Select(c => (ClaimType: c.Type, ClaimValue: c.Value));
