@@ -33,8 +33,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Builders
         internal OrganisationBuilder WithRelatedOrganisations(List<Guid> relatedOrganisations)
         {
             this.relatedOrganisations = relatedOrganisations
-                                        .Select((value, index) => new { value, Name = string.Format(CultureInfo.CurrentCulture, "HealthTrust {0}", index) })
-                                        .Select(ro => new Organisation { OrganisationId = ro.value, Name = ro.Name });
+                .Select((value, index) => new { value, Name = string.Format(CultureInfo.CurrentCulture, "HealthTrust {0}", index) })
+                .Select(ro => new Organisation { OrganisationId = ro.value, Name = ro.Name });
+
             return this;
         }
     }

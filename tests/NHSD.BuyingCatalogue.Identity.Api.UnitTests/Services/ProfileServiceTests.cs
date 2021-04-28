@@ -458,8 +458,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Services
                 r => r.GetByIdAsync(It.Is<string>(param => expectedUserId.Equals(param, StringComparison.Ordinal))));
         }
 
-        [Test]
-
         [TestCase(
             "Authority",
             Subject,
