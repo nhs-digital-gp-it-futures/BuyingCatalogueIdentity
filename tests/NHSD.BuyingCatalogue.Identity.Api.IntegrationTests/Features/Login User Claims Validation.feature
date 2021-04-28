@@ -135,13 +135,13 @@ Scenario: Get the claims of an authority user with invalid primary organisation 
 
 @5447
 Scenario: Get the relatedOrganisation claim of a Buyer user with valid primary organisation id
-    Given Organisation Organisation 2 has a Parent Relationship to Organisation Organisation 1
+    Given Organisation Organisation 1 has a Parent Relationship to Organisation Organisation 2
     And a user is logged in
         | Username               | Password     | Scope   |
         | SnakePliskin@email.com | S0mePa$$w0rd | profile |
     Then the claims contain RelatedOrganisationIds of these Organisations
         | OrganisationName |
-        | Organisation 1   |
+        | Organisation 2   |
 
 @5447
 Scenario: Get the multiple relatedOrganisation claims of a Buyer user with a valid primary organisation id
