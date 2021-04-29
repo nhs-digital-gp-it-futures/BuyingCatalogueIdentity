@@ -41,7 +41,10 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
                     {
                         AuthorizationUrl = authorizationUrl,
                         TokenUrl = tokenUrl,
-                        Scopes = new Dictionary<string, string> { { "Ordering", "Organisation" } },
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { "Organisation", "Required for accessing the organisations API (OAPI)" },
+                        },
                     },
                 },
             };
@@ -53,8 +56,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Extensions
                     new OpenApiInfo
                     {
                         Version = Version,
-                        Title = "ORGANISATIONS API",
-                        Description = "NHS Digital GP IT Buying Catalogue HTTP ORGANISATIONS API",
+                        Title = "Organisations API",
+                        Description = "NHS Digital GP IT Buying Catalogue Organisations API",
                     });
 
                 options.AddSecurityDefinition("oauth2", openApiSecurityScheme);
