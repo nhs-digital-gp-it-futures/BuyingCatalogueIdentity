@@ -169,7 +169,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
         public async Task<ActionResult<IEnumerable<ServiceRecipientsModel>>> GetServiceRecipientsAsync(Guid id)
         {
             var primaryOrganisationId = User.GetPrimaryOrganisationId();
-            if (primaryOrganisationId != id)
+            if (!User.IsAuthorisedForOrganisation(id.ToString()))
             {
                 return Forbid();
             }
