@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -405,6 +406,59 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
 
             var controller = OrganisationControllerBuilder
                 .Create(organisationId)
+                .WithGetOrganisation(organisation)
+                .WithServiceRecipients(new List<ServiceRecipient> { serviceRecipient2, serviceRecipient1 })
+                .Build();
+
+            var response = await controller.GetServiceRecipientsAsync(organisation.OrganisationId);
+
+            var expected = new List<ServiceRecipientsModel>
+            {
+                new()
+                {
+                    Name = organisation.Name,
+                    OdsCode = organisation.OdsCode,
+                },
+                new()
+                {
+                    Name = serviceRecipient1.Name,
+                    OdsCode = serviceRecipient1.OrgId,
+                },
+                new()
+                {
+                    Name = serviceRecipient2.Name,
+                    OdsCode = serviceRecipient2.OrgId,
+                },
+            };
+            expected = expected.OrderBy(m => m.Name).ToList();
+
+            response.Should().BeEquivalentTo(new ActionResult<List<ServiceRecipientsModel>>(expected), config => config.WithStrictOrdering());
+        }
+
+        [Test]
+        public static async Task GetServiceRecipientsAsync_OrganisationExists_IsRelatedOrganisation_ReturnsTheOrganisationServiceRecipients()
+        {
+            var organisationId = Guid.NewGuid();
+
+            var relatedOrganisationId = Guid.NewGuid();
+
+            var organisation = OrganisationBuilder.Create(1).WithOrganisationId(relatedOrganisationId).Build();
+
+            var serviceRecipient1 = ServiceRecipientBuilder
+                .Create(1)
+                .Build();
+            var serviceRecipient2 = ServiceRecipientBuilder
+                .Create(2)
+                .Build();
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim("primaryOrganisationId", organisationId.ToString()),
+                new Claim("relatedOrganisationId", relatedOrganisationId.ToString()),
+            };
+
+            var controller = OrganisationControllerBuilder
+                .Create(claims)
                 .WithGetOrganisation(organisation)
                 .WithServiceRecipients(new List<ServiceRecipient> { serviceRecipient2, serviceRecipient1 })
                 .Build();

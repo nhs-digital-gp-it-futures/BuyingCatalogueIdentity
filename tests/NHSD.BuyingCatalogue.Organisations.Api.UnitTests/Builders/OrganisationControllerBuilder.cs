@@ -31,9 +31,23 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "mock"));
         }
 
+        private OrganisationControllerBuilder(List<Claim> claims)
+        {
+            createOrganisationService = Mock.Of<ICreateOrganisationService>();
+            organisationRepository = Mock.Of<IOrganisationRepository>();
+            serviceRecipientRepository = Mock.Of<IServiceRecipientRepository>();
+
+            claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "mock"));
+        }
+
         internal static OrganisationControllerBuilder Create(Guid primaryOrganisationId = default)
         {
             return new(primaryOrganisationId);
+        }
+
+        internal static OrganisationControllerBuilder Create(List<Claim> claims)
+        {
+            return new(claims);
         }
 
         internal OrganisationControllerBuilder WithServiceRecipients(IEnumerable<ServiceRecipient> result)
