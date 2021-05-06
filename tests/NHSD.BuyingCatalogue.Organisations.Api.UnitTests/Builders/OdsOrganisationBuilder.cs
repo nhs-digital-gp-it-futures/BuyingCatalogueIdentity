@@ -5,7 +5,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class OdsOrganisationBuilder
     {
-        private Guid organisationId;
+        private readonly Guid organisationId;
         private readonly string odsCode;
         private readonly string name;
         private readonly string primaryRoleId;
