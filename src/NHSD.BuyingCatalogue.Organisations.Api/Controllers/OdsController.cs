@@ -51,6 +51,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             return Ok(new OdsOrganisationModel
             {
                 OdsCode = odsOrganisation.OdsCode,
+                OrganisationId = odsOrganisation.OrganisationId,
                 OrganisationName = odsOrganisation.OrganisationName,
                 PrimaryRoleId = odsOrganisation.PrimaryRoleId,
                 Address = addressModel,
