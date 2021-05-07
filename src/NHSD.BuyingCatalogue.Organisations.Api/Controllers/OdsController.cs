@@ -38,11 +38,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (!(odsOrganisation.IsActive && odsOrganisation.IsBuyerOrganisation))
                 return new StatusCodeResult(StatusCodes.Status406NotAcceptable);
 
-            var organisation = await organisationRepository.GetByOdsCodeAsync(odsCode);
-
-            if (organisation == null)
-                return NotFound();
-
             var addressModel = odsOrganisation.Address is null ? null : new AddressModel
             {
                 Line1 = odsOrganisation.Address.Line1,
@@ -55,10 +50,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 Country = odsOrganisation.Address.Country,
             };
 
+            var organisation = await organisationRepository.GetByOdsCodeAsync(odsCode);
+
             return Ok(new OdsOrganisationModel
             {
                 OdsCode = odsOrganisation.OdsCode,
-                OrganisationId = organisation.OrganisationId,
+                OrganisationId = organisation?.OrganisationId,
                 OrganisationName = odsOrganisation.OrganisationName,
                 PrimaryRoleId = odsOrganisation.PrimaryRoleId,
                 Address = addressModel,

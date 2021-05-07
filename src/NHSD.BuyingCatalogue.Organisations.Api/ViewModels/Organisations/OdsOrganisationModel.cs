@@ -6,7 +6,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
     {
         public string OdsCode { get; set; }
 
-        public Guid OrganisationId { get; set; }
+        public Guid? OrganisationId { get; set; }
 
         public string OrganisationName { get; set; }
 

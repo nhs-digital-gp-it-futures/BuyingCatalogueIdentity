@@ -49,20 +49,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static async Task GetByOdsCodeAsync_OrganisationDoesNotExist_ReturnsNotFound()
-        {
-            var buyerOrganisation = OdsOrganisationBuilder.Create(1, true).Build();
-            using var controller = OdsControllerBuilder
-                .Create()
-                .WithGetByOdsCode(buyerOrganisation, null)
-                .Build();
-
-            var result = await controller.GetByOdsCodeAsync(buyerOrganisation.OdsCode);
-
-            result.Should().BeEquivalentTo(new NotFoundResult());
-        }
-
-        [Test]
         public static async Task GetByOdsCodeAsync_OrganisationIsNotBuyerOrganisation_ReturnsNotAccepted()
         {
             var nonBuyerOrganisation = OdsOrganisationBuilder.Create(1).Build();
@@ -96,6 +82,28 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
                 {
                     OdsCode = buyerOrganisation.OdsCode,
                     OrganisationId = organisation.OrganisationId,
+                    OrganisationName = buyerOrganisation.OrganisationName,
+                    PrimaryRoleId = buyerOrganisation.PrimaryRoleId,
+                });
+        }
+
+        [Test]
+        public static async Task GetByOdsCodeAsync_OrganisationDoesNotExists_ReturnsOrganisationWithNullOrganisationId()
+        {
+            var buyerOrganisation = OdsOrganisationBuilder.Create(1, true).Build();
+            using var controller = OdsControllerBuilder
+                .Create()
+                .WithGetByOdsCode(buyerOrganisation, null)
+                .Build();
+
+            var response = await controller.GetByOdsCodeAsync(buyerOrganisation.OdsCode);
+
+            response.Should().BeOfType<OkObjectResult>();
+            response.As<OkObjectResult>().Value.Should().BeEquivalentTo(
+                new OdsOrganisationModel
+                {
+                    OdsCode = buyerOrganisation.OdsCode,
+                    OrganisationId = null,
                     OrganisationName = buyerOrganisation.OrganisationName,
                     PrimaryRoleId = buyerOrganisation.PrimaryRoleId,
                 });
