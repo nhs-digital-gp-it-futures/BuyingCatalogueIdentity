@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NHSD.BuyingCatalogue.Organisations.Api.Models
+﻿namespace NHSD.BuyingCatalogue.Organisations.Api.Models
 {
     public sealed class OdsOrganisation
     {
