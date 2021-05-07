@@ -8,7 +8,7 @@ Background:
         | Name               | OdsCode | PrimaryRoleId | Status    | AddressLine1 | AddressLine2    | AddressLine3    | AddressLine4 | Town     | County          | Postcode | Country |
         | Ods Organisation 1 | B1G     | Buyer         | Active    | 12           | Brick Lane      | Central Area    | City Centre  | Leeds    | West Yorkshire  | LS1 1AW  | England |
         | Ods Organisation 2 | B2G     | Buyer         | Disbanded | 37           | Sand Brick Lane | Central Area    | City Centre  | Bradford | West Yorkshire  | BD4 1FK  | England |
-        | Ods Organisation 3 | B3G     | AlsoBuyer     | Active    | 21           | Jump Street     | All over        | Suburb       | Metairie | Louisiana       | 504      | USA     |
+        | Ods Organisation 3 | B3G     | 153XP         | Active    | 21           | Jump Street     | All over        | Suburb       | Metairie | Louisiana       | 504      | USA     |
         | Ods Organisation 4 | N0G     | 153XP         | Active    | 15           | Sun Ave         | End of the Road | Suburb       | York     | North Yorkshire | YO11 4LO | England |
     And Organisations exist
         | Name           | OdsCode |
@@ -38,7 +38,7 @@ Scenario: Get the details of a single buyer organisation with different buyer ro
     Then a response with status code 200 is returned
     And the Ods Organisation is returned with the following values
         | OrganisationName   | OdsCode | PrimaryRoleId | Line1 | Line2       | Line3    | Line4  | Town     | County    | Postcode | Country |
-        | Ods Organisation 3 | B3G     | AlsoBuyer     | 21    | Jump Street | All over | Suburb | Metairie | Louisiana | 504      | USA     |
+        | Ods Organisation 3 | B3G     | 153XP         | 21    | Jump Street | All over | Suburb | Metairie | Louisiana | 504      | USA     |
 
 @3536
 Scenario: Organisation is not found
