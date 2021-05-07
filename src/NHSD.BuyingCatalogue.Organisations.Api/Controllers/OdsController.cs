@@ -15,10 +15,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     public sealed class OdsController : Controller
     {
         private readonly IOdsRepository odsRepository;
+        private readonly IOrganisationRepository organisationRepository;
 
-        public OdsController(IOdsRepository odsRepository)
+        public OdsController(IOdsRepository odsRepository, IOrganisationRepository organisationRepository)
         {
             this.odsRepository = odsRepository;
+            this.organisationRepository = organisationRepository;
         }
 
         [HttpGet]
@@ -36,6 +38,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             if (!(odsOrganisation.IsActive && odsOrganisation.IsBuyerOrganisation))
                 return new StatusCodeResult(StatusCodes.Status406NotAcceptable);
 
+            var organisation = await organisationRepository.GetByOdsCodeAsync(odsCode);
+
+            if (organisation == null)
+                return NotFound();
+
             var addressModel = odsOrganisation.Address is null ? null : new AddressModel
             {
                 Line1 = odsOrganisation.Address.Line1,
@@ -51,7 +58,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
             return Ok(new OdsOrganisationModel
             {
                 OdsCode = odsOrganisation.OdsCode,
-                OrganisationId = odsOrganisation.OrganisationId,
+                OrganisationId = organisation.OrganisationId,
                 OrganisationName = odsOrganisation.OrganisationName,
                 PrimaryRoleId = odsOrganisation.PrimaryRoleId,
                 Address = addressModel,

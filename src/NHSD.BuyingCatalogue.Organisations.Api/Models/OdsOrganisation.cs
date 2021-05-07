@@ -6,8 +6,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Models
     {
         public string OdsCode { get; set; }
 
-        public Guid OrganisationId { get; set; }
-
         public string OrganisationName { get; set; }
 
         public string PrimaryRoleId { get; set; }

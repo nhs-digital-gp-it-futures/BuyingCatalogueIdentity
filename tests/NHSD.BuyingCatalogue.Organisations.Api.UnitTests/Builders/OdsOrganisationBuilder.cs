@@ -5,7 +5,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 {
     internal sealed class OdsOrganisationBuilder
     {
-        private readonly Guid organisationId;
         private readonly string odsCode;
         private readonly string name;
         private readonly string primaryRoleId;
@@ -15,7 +14,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
         private OdsOrganisationBuilder(int index, bool isActiveBuyerOrganisation)
         {
-            organisationId = Guid.NewGuid();
             name = $"Organisation {index}";
             odsCode = $"ODS {index}";
             primaryRoleId = $"ID {index}";
@@ -34,7 +32,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return new()
             {
                 OdsCode = odsCode,
-                OrganisationId = organisationId,
                 OrganisationName = name,
                 PrimaryRoleId = primaryRoleId,
                 Address = address,
