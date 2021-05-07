@@ -24,19 +24,21 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
         internal OdsControllerBuilder WithGetByOdsCode(OdsOrganisation result, Organisation organisation)
         {
             var odsRepositoryMock = new Mock<IOdsRepository>();
-            if (result != null)
+            if (result is not null)
             {
                 odsRepositoryMock.Setup(r => r.GetBuyerOrganisationByOdsCodeAsync(result.OdsCode)).ReturnsAsync(result);
             }
+
             odsRepository = odsRepositoryMock.Object;
 
             var orgRepositoryMock = new Mock<IOrganisationRepository>();
-            if (organisation != null)
+            if (organisation is not null)
             {
                 orgRepositoryMock
                     .Setup(o => o.GetByOdsCodeAsync(result == null ? organisation.OdsCode : result.OdsCode))
                     .ReturnsAsync(organisation);
             }
+
             orgRepository = orgRepositoryMock.Object;
 
             return this;
