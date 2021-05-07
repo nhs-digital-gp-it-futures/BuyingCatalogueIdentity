@@ -47,7 +47,6 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                     .Create()
                     .WithName(org.Name)
                     .WithOdsCode(org.OdsCode)
-                    .WithPrimaryRoleId(org.PrimaryRoleId)
                     .WithAddressLine1(org.AddressLine1)
                     .WithAddressLine2(org.AddressLine2)
                     .WithAddressLine3(org.AddressLine3)
