@@ -8,10 +8,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
     internal sealed class OdsControllerBuilder
     {
         private IOdsRepository odsRepository;
+        private IOrganisationRepository orgRepository;
 
         private OdsControllerBuilder()
         {
             odsRepository = Mock.Of<IOdsRepository>();
+            orgRepository = Mock.Of<IOrganisationRepository>();
         }
 
         internal static OdsControllerBuilder Create()
@@ -19,12 +21,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
             return new();
         }
 
-        internal OdsControllerBuilder WithGetByOdsCode(OdsOrganisation result)
+        internal OdsControllerBuilder WithGetByOdsCode(OdsOrganisation result, Organisation organisation)
         {
             var odsRepositoryMock = new Mock<IOdsRepository>();
-            odsRepositoryMock.Setup(r => r.GetBuyerOrganisationByOdsCodeAsync(It.IsAny<string>())).ReturnsAsync(result);
+            if (result is not null)
+            {
+                odsRepositoryMock.Setup(r => r.GetBuyerOrganisationByOdsCodeAsync(result.OdsCode)).ReturnsAsync(result);
+            }
 
             odsRepository = odsRepositoryMock.Object;
+
+            var orgRepositoryMock = new Mock<IOrganisationRepository>();
+            if (organisation is not null)
+            {
+                orgRepositoryMock
+                    .Setup(o => o.GetByOdsCodeAsync(result == null ? organisation.OdsCode : result.OdsCode))
+                    .ReturnsAsync(organisation);
+            }
+
+            orgRepository = orgRepositoryMock.Object;
+
             return this;
         }
 
@@ -36,7 +52,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders
 
         internal OdsController Build()
         {
-            return new(odsRepository);
+            return new(odsRepository, orgRepository);
         }
     }
 }

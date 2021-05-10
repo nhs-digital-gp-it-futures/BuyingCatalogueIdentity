@@ -3,9 +3,11 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using NHSD.BuyingCatalogue.Organisations.Api.Controllers;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Builders;
+using NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations;
 using NUnit.Framework;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
@@ -17,14 +19,31 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         [TestCase(null)]
         [TestCase("")]
         [TestCase("\t")]
-        public static async Task GetByOdsCodeAsync_OrganisationDoesNotExist_ReturnsNotFound(string odsCode)
+        public static async Task GetByOdsCodeAsync_InvalidOdsCode_ReturnsNotFound(string invalidCode)
         {
+            var mockOdsRepository = new Mock<IOdsRepository>();
+            var mockOrganisationRepository = new Mock<IOrganisationRepository>();
+            using var controller = new OdsController(
+                mockOdsRepository.Object,
+                mockOrganisationRepository.Object);
+
+            var result = await controller.GetByOdsCodeAsync(invalidCode);
+
+            mockOdsRepository.Verify(r => r.GetBuyerOrganisationByOdsCodeAsync(It.IsAny<string>()), Times.Never);
+            mockOrganisationRepository.Verify(r => r.GetByOdsCodeAsync(It.IsAny<string>()), Times.Never);
+            result.Should().BeEquivalentTo(new NotFoundResult());
+        }
+
+        [Test]
+        public static async Task GetByOdsCodeAsync_OdsOrganisationDoesNotExist_ReturnsNotFound()
+        {
+            var organisation = OrganisationBuilder.Create(1).WithOdsCode("some-code").Build();
             using var controller = OdsControllerBuilder
                 .Create()
-                .WithGetByOdsCode(null)
+                .WithGetByOdsCode(null, organisation)
                 .Build();
 
-            var result = await controller.GetByOdsCodeAsync(odsCode);
+            var result = await controller.GetByOdsCodeAsync(organisation.OdsCode);
 
             result.Should().BeEquivalentTo(new NotFoundResult());
         }
@@ -33,36 +52,61 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Controllers
         public static async Task GetByOdsCodeAsync_OrganisationIsNotBuyerOrganisation_ReturnsNotAccepted()
         {
             var nonBuyerOrganisation = OdsOrganisationBuilder.Create(1).Build();
+            var organisation = OrganisationBuilder.Create(1).WithOdsCode(nonBuyerOrganisation.OdsCode).Build();
             using var controller = OdsControllerBuilder
                 .Create()
-                .WithGetByOdsCode(nonBuyerOrganisation)
+                .WithGetByOdsCode(nonBuyerOrganisation, organisation)
                 .Build();
 
-            // ReSharper disable StringLiteralTypo
-            var response = await controller.GetByOdsCodeAsync("dolor eternum");
+            var response = await controller.GetByOdsCodeAsync(nonBuyerOrganisation.OdsCode);
 
-            // ReSharper restore StringLiteralTypo
-            response.Should().BeOfType<StatusCodeResult>();
-
-            response.Should().BeEquivalentTo(new StatusCodeResult(StatusCodes.Status406NotAcceptable));
+            response.As<StatusCodeResult>().StatusCode.Should().Be((int)StatusCodes.Status406NotAcceptable);
         }
 
         [Test]
         public static async Task GetByOdsCodeAsync_OrganisationExists_ReturnsActiveBuyerOrganisation()
         {
             var buyerOrganisation = OdsOrganisationBuilder.Create(1, true).Build();
+            var organisation = OrganisationBuilder.Create(1).WithOdsCode(buyerOrganisation.OdsCode).Build();
 
             using var controller = OdsControllerBuilder
                 .Create()
-                .WithGetByOdsCode(buyerOrganisation)
+                .WithGetByOdsCode(buyerOrganisation, organisation)
                 .Build();
 
             var response = await controller.GetByOdsCodeAsync(buyerOrganisation.OdsCode);
 
             response.Should().BeOfType<OkObjectResult>();
             response.As<OkObjectResult>().Value.Should().BeEquivalentTo(
-                buyerOrganisation,
-                options => options.Excluding(o => o.IsActive).Excluding(o => o.IsBuyerOrganisation));
+                new OdsOrganisationModel
+                {
+                    OdsCode = buyerOrganisation.OdsCode,
+                    OrganisationId = organisation.OrganisationId,
+                    OrganisationName = buyerOrganisation.OrganisationName,
+                    PrimaryRoleId = buyerOrganisation.PrimaryRoleId,
+                });
+        }
+
+        [Test]
+        public static async Task GetByOdsCodeAsync_OrganisationDoesNotExists_ReturnsOrganisationWithNullOrganisationId()
+        {
+            var buyerOrganisation = OdsOrganisationBuilder.Create(1, true).Build();
+            using var controller = OdsControllerBuilder
+                .Create()
+                .WithGetByOdsCode(buyerOrganisation, null)
+                .Build();
+
+            var response = await controller.GetByOdsCodeAsync(buyerOrganisation.OdsCode);
+
+            response.Should().BeOfType<OkObjectResult>();
+            response.As<OkObjectResult>().Value.Should().BeEquivalentTo(
+                new OdsOrganisationModel
+                {
+                    OdsCode = buyerOrganisation.OdsCode,
+                    OrganisationId = null,
+                    OrganisationName = buyerOrganisation.OrganisationName,
+                    PrimaryRoleId = buyerOrganisation.PrimaryRoleId,
+                });
         }
 
         [Test]

@@ -1,8 +1,12 @@
-﻿namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
+﻿using System;
+
+namespace NHSD.BuyingCatalogue.Organisations.Api.ViewModels.Organisations
 {
     public sealed class OdsOrganisationModel
     {
         public string OdsCode { get; set; }
+
+        public Guid? OrganisationId { get; set; }
 
         public string OrganisationName { get; set; }
 

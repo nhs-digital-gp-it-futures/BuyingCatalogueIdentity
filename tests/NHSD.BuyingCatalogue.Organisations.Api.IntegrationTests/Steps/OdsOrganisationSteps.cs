@@ -5,6 +5,7 @@ using FluentAssertions;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NHSD.BuyingCatalogue.Identity.Api.Testing.Data.EntityBuilder;
 using NHSD.BuyingCatalogue.Identity.Common.IntegrationTests.Utils;
 using NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Utils;
 using TechTalk.SpecFlow;
@@ -20,12 +21,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         private readonly OdsApiSteps api;
 
         private readonly Uri organisationUrl;
+        private readonly Config config;
 
         public OdsOrganisationSteps(Response response, Request request, Config config, OdsApiSteps api)
         {
             this.response = response;
             this.request = request;
             this.api = api;
+            this.config = config;
             organisationUrl = new Uri(config.OrganisationsApiBaseUrl, "api/v1/ods");
         }
 
@@ -39,6 +42,22 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
                 var odsApiOrganisation = TransformIntoOdsApiFormat(org);
                 var odsApiOrganisationAsJson = JsonConvert.SerializeObject(odsApiOrganisation);
                 await api.SetUpGetEndpoint(org.OdsCode, odsApiOrganisationAsJson);
+
+                var organisation = OrganisationEntityBuilder
+                    .Create()
+                    .WithId(org.Id)
+                    .WithName(org.Name)
+                    .WithOdsCode(org.OdsCode)
+                    .WithAddressLine1(org.AddressLine1)
+                    .WithAddressLine2(org.AddressLine2)
+                    .WithAddressLine3(org.AddressLine3)
+                    .WithAddressLine4(org.AddressLine4)
+                    .WithAddressTown(org.Town)
+                    .WithAddressCounty(org.County)
+                    .WithAddressPostcode(org.PostCode)
+                    .WithAddressCountry(org.Country)
+                    .Build();
+                await organisation.InsertAsync(config.ConnectionString);
             }
         }
 
@@ -85,6 +104,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             {
                 Organisation = new
                 {
+                    data.Id,
                     data.Name,
                     data.Status,
                     Geoloc = new
@@ -138,6 +158,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class OdsApiResponseTable
         {
+            public Guid Id { get; set; }
+
             public string Name { get; init; }
 
             public string OdsCode { get; init; }

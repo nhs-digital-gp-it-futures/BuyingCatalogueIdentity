@@ -15,10 +15,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
     public sealed class OdsController : Controller
     {
         private readonly IOdsRepository odsRepository;
+        private readonly IOrganisationRepository organisationRepository;
 
-        public OdsController(IOdsRepository odsRepository)
+        public OdsController(IOdsRepository odsRepository, IOrganisationRepository organisationRepository)
         {
             this.odsRepository = odsRepository;
+            this.organisationRepository = organisationRepository;
         }
 
         [HttpGet]
@@ -48,9 +50,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Controllers
                 Country = odsOrganisation.Address.Country,
             };
 
+            var organisation = await organisationRepository.GetByOdsCodeAsync(odsCode);
+
             return Ok(new OdsOrganisationModel
             {
                 OdsCode = odsOrganisation.OdsCode,
+                OrganisationId = organisation?.OrganisationId,
                 OrganisationName = odsOrganisation.OrganisationName,
                 PrimaryRoleId = odsOrganisation.PrimaryRoleId,
                 Address = addressModel,
