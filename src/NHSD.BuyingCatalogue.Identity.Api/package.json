@@ -7,7 +7,7 @@
     "nhsuk-frontend": "^5.0.0"
   },
   "devDependencies": {
-    "node-sass": "^5.0.0"
+    "node-sass": "^6.0.0"
   },
   "scripts": {
     "build": "npm run build:css",
