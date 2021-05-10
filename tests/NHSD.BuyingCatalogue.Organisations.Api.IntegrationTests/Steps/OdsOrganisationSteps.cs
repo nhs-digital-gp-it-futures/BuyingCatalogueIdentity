@@ -45,6 +45,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
 
                 var organisation = OrganisationEntityBuilder
                     .Create()
+                    .WithId(org.Id)
                     .WithName(org.Name)
                     .WithOdsCode(org.OdsCode)
                     .WithAddressLine1(org.AddressLine1)
@@ -103,6 +104,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
             {
                 Organisation = new
                 {
+                    data.Id,
                     data.Name,
                     data.Status,
                     Geoloc = new
@@ -156,6 +158,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.IntegrationTests.Steps
         [UsedImplicitly(ImplicitUseTargetFlags.Members)]
         private sealed class OdsApiResponseTable
         {
+            public Guid Id { get; set; }
+
             public string Name { get; init; }
 
             public string OdsCode { get; init; }
