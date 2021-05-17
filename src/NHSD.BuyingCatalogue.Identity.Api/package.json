@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "buying-catalogue-components": "^4.3.0",
-    "nhsuk-frontend": "^5.0.0"
+    "nhsuk-frontend": "^5.1.0"
   },
   "devDependencies": {
     "node-sass": "^6.0.0"
