@@ -1,4 +1,5 @@
-﻿@using NHSD.BuyingCatalogue.Identity.Api.Settings
+﻿@using NHSD.BuyingCatalogue.Identity.Api.Extensions
+@using NHSD.BuyingCatalogue.Identity.Api.Settings
 @inject PublicBrowseSettings PublicBrowseSettings
 
 <!DOCTYPE html>
@@ -68,6 +69,10 @@
                                 }
                             </style>
                         </defs>
+                        @if (Context.Request.ShowCookieConsent())
+                        {
+                            <partial name="_CookieConsent"/>
+                        }
                         <title data-test-id="header-logo-title">NHS Digital logo</title>
                         <rect class="cls-1" x="4" y="3.97" width="197" height="74" />
                         <path class="cls-2" d="M16,118.46H27.15c12.49,0,23.53,4.2,23.53,20.38s-11,20.37-23.53,20.37H16V118.46Zm8.17,34.33h4.55c6.83,0,13.43-5.08,13.43-14s-6.6-14-13.43-14H24.17v27.91Z" transform="translate(-16 -12.03)" />

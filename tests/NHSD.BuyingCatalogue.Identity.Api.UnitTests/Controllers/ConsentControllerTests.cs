@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 using NHSD.BuyingCatalogue.Identity.Common.Results;
 using NUnit.Framework;
 
@@ -131,6 +136,62 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             result.ViewName.Should().Be("Error");
         }
 
+        [Test]
+        public static void DismissCookieBanner_AllowAnonymousAttribute_Present()
+        {
+            typeof(ConsentController)
+                .GetMethod(nameof(ConsentController.DismissCookieBanner))
+                .GetCustomAttribute<AllowAnonymousAttribute>()
+                .Should()
+                .NotBeNull();
+        }
+
+        [Test]
+        public static void DismissCookieBanner_HttpGetAttribute_ExpectedTemplate()
+        {
+            typeof(ConsentController)
+                .GetMethod(nameof(ConsentController.DismissCookieBanner))
+                .GetCustomAttribute<HttpGetAttribute>()
+                .Template
+                .Should()
+                .Be("/dismiss-cookie-banner");
+        }
+
+        [Test]
+        public static void DismissCookieBanner_Sets_ExpectedCookie()
+        {
+            var expected = $"/organisation/09D/order/{Guid.NewGuid()}";
+            using var controller = new ConsentController(new Mock<IAgreementConsentService>().Object)
+            {
+                ControllerContext = ControllerContext(Mock.Of<IResponseCookies>(), expected),
+            };
+
+            var actual = controller.DismissCookieBanner().As<RedirectResult>();
+
+            actual.Should().NotBeNull();
+            actual.Url.Should().Be(expected);
+        }
+
+        [Test]
+        public static void DismissCookieBanner_Sets_RedirectsToReferer()
+        {
+            var responseCookies = new Mock<IResponseCookies>();
+            using var controller = new ConsentController(new Mock<IAgreementConsentService>().Object)
+            {
+                ControllerContext = ControllerContext(responseCookies.Object, "/account"),
+            };
+
+            controller.DismissCookieBanner();
+
+            responseCookies.Verify(
+                r => r.Append(
+                    Cookies.BuyingCatalogueConsent,
+                    "true",
+                    It.Is<CookieOptions>(
+                        c => c.Expires.GetValueOrDefault() > DateTime.Now.AddYears(1).AddHours(-1)
+                            && c.Expires.GetValueOrDefault() < DateTime.Now.AddYears(1))));
+        }
+
         private static ControllerContext ControllerContext(string subjectId)
         {
             var claims = new[] { new Claim(JwtClaimTypes.Subject, subjectId) };
@@ -140,6 +201,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             return new ControllerContext
             {
                 HttpContext = Mock.Of<HttpContext>(c => c.User == principal),
+            };
+        }
+
+        private static ControllerContext ControllerContext(IResponseCookies responseCookies, string referer)
+        {
+            var headerDictionary = new HeaderDictionary { { HeaderNames.Referer, new StringValues(referer) } };
+            var request = Mock.Of<HttpRequest>(r => r.Headers == headerDictionary);
+            var response = Mock.Of<HttpResponse>(
+                r => r.Cookies == responseCookies);
+            return new ControllerContext
+            {
+                HttpContext = Mock.Of<HttpContext>(c => c.Request == request && c.Response == response),
             };
         }
     }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent;
+using NHSD.BuyingCatalogue.Identity.Common.Constants;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
 {
@@ -45,6 +48,18 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
                 return Redirect(returnUrl.ToString());
 
             return View("Error");
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/dismiss-cookie-banner")]
+        public IActionResult DismissCookieBanner()
+        {
+            Response.Cookies.Append(Cookies.BuyingCatalogueConsent, "true", new CookieOptions
+            {
+                Expires = DateTime.Now.AddYears(1),
+            });
+
+            return Redirect(Request.GetTypedHeaders().Referer.ToString());
         }
     }
 }
