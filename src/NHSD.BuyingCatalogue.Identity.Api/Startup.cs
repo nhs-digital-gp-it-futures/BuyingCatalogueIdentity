@@ -46,6 +46,8 @@ namespace NHSD.BuyingCatalogue.Identity.Api
         {
             var connectionString = configuration.GetConnectionString("CatalogueUsers");
             var cookieExpiration = configuration.GetSection("cookieExpiration").Get<CookieExpirationSettings>();
+            cookieExpiration.ConsentExpiration = configuration.GetValue<TimeSpan>(Cookies.BuyingCatalogueConsentExpiration);
+
             var clients = configuration.GetSection("clients").Get<ClientSettingCollection>();
             var apiResources = configuration.GetSection("resources").Get<ApiResourceSettingCollection>();
 

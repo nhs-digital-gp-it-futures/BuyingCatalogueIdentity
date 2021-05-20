@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
+using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
 
@@ -13,10 +14,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
     public sealed class ConsentController : Controller
     {
         private readonly IAgreementConsentService consentService;
+        private readonly CookieExpirationSettings cookieExpiration;
 
-        public ConsentController(IAgreementConsentService consentService)
+        public ConsentController(IAgreementConsentService consentService, CookieExpirationSettings cookieExpiration)
         {
             this.consentService = consentService ?? throw new ArgumentNullException(nameof(consentService));
+            this.cookieExpiration = cookieExpiration ?? throw new ArgumentNullException(nameof(cookieExpiration));
         }
 
         [HttpGet]
@@ -56,7 +59,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         {
             Response.Cookies.Append(Cookies.BuyingCatalogueConsent, "true", new CookieOptions
             {
-                Expires = DateTime.Now.AddYears(1),
+                Expires = DateTime.Now.Add(cookieExpiration.ConsentExpiration),
             });
 
             return Redirect(Request.GetTypedHeaders().Referer.ToString());
