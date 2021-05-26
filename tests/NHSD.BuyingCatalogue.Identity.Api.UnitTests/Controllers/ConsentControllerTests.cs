@@ -137,16 +137,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static void DismissCookieBanner_AllowAnonymousAttribute_Present()
-        {
-            typeof(ConsentController)
-                .GetMethod(nameof(ConsentController.DismissCookieBanner))
-                .GetCustomAttribute<AllowAnonymousAttribute>()
-                .Should()
-                .NotBeNull();
-        }
-
-        [Test]
         public static void DismissCookieBanner_HttpGetAttribute_ExpectedTemplate()
         {
             typeof(ConsentController)
