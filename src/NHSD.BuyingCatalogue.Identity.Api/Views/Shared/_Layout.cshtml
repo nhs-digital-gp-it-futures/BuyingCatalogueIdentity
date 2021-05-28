@@ -1,4 +1,5 @@
-﻿@using NHSD.BuyingCatalogue.Identity.Api.Settings
+﻿@using NHSD.BuyingCatalogue.Identity.Api.Extensions
+@using NHSD.BuyingCatalogue.Identity.Api.Settings
 @inject PublicBrowseSettings PublicBrowseSettings
 
 <!DOCTYPE html>
@@ -47,8 +48,11 @@
 
 <body>
     <a class="nhsuk-skip-link" href="#maincontent">Skip to main content</a>
-
-    <header data-test-id="header-banner" class="bc-c-header nhsuk-header nhsuk-header--organisation nhsuk-header--white nhsuk-u-padding-top-3 nhsuk-u-padding-bottom-2" role="banner">
+    @if (Context.Request.ShowCookieConsent())
+    {
+        <partial name="_CookieConsent" model="@PublicBrowseSettings.BaseAddress" />
+    }
+    <header data-test-id="header-banner" class="bc-c-header nhsuk-header nhsuk-header--organisation nhsuk-header--white nhsuk-u-margin-top-1 nhsuk-u-padding-top-3 nhsuk-u-padding-bottom-2" role="banner">
         <div class="nhsuk-width-container">
             <div class="nhsuk-header__logo">
                 <a data-test-id="header-logo" class="nhsuk-header__link" href="@PublicBrowseSettings.BaseAddress" aria-label="Buying Catalogue Homepage">
