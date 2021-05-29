@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Flurl.Http;
 using Flurl.Http.Testing;
+using LazyCache;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts;
 using NUnit.Framework;
 
@@ -78,12 +80,21 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [Test]
         public static async Task GetBuyerOrganisationByOdsCode_WithNotFoundResponseFromOdsApi_Returns_Null()
         {
+            const string odsCode = "ods-code-839";
             var context = OdsRepositoryTestContext.Setup();
+            var cachingService = new CachingService();
+            cachingService.CacheProvider.Remove($"Ods-Org-{odsCode}");
+            var repository = new OdsRepository(context.OdsSettings, cachingService);
             using var httpTest = new HttpTest();
-            httpTest.RespondWithJson(new { ErrorCode = 404, ErrorText = "Not Found." }, 404);
+            httpTest
+                .ForCallsTo($"Ods-Org-{odsCode}")
+                .RespondWithJson(new { ErrorCode = 404, ErrorText = "Not Found." }, 404);
 
-            var result = await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            var result = await repository.GetBuyerOrganisationByOdsCodeAsync(odsCode);
 
+            httpTest.ShouldHaveCalled($"{context.OdsSettings.ApiBaseUrl}/organisations/{odsCode}")
+                .WithVerb(HttpMethod.Get)
+                .Times(1);
             result.Should().BeNull();
         }
 

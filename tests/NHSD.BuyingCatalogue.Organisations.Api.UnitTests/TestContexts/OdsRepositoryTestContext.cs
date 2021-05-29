@@ -13,6 +13,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
                 BuyerOrganisationRoleIds = new[] { "RO98", "RO177", "RO213", "RO272" },
             };
 
+            LazyCache.CachingService.DefaultCacheProvider.Value.Remove($"Ods-Org-XYZ");
+
             OdsRepository = new OdsRepository(OdsSettings, new LazyCache.CachingService());
         }
 
