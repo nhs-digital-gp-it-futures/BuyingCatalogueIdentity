@@ -98,6 +98,8 @@ namespace NHSD.BuyingCatalogue.Organisations.Api
                     policyBuilder.RequireClaim(ApplicationClaimTypes.Account, ApplicationPermissions.Manage);
                 });
             });
+
+            services.AddLazyCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

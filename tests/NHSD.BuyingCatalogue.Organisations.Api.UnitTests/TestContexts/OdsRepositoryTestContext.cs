@@ -13,7 +13,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
                 BuyerOrganisationRoleIds = new[] { "RO98", "RO177", "RO213", "RO272" },
             };
 
-            OdsRepository = new OdsRepository(OdsSettings);
+            OdsRepository = new OdsRepository(OdsSettings, new LazyCache.CachingService());
         }
 
         public OdsRepository OdsRepository { get; set; }

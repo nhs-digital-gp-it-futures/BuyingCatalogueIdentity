@@ -98,12 +98,14 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         }
 
         [Test]
-        public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_Once()
+        public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_OnceForMultipleCalls()
         {
             var context = OdsRepositoryTestContext.Setup();
             using var httpTest = new HttpTest();
             httpTest.RespondWith(status: 200, body: ValidResponseBody);
 
+            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
             httpTest.ShouldHaveCalled($"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}")
@@ -115,7 +117,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
         public static void Constructor_IOdsRepository_OdsSettings_NullSettings_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new OdsRepository(null));
+            Assert.Throws<ArgumentNullException>(() => new OdsRepository(null, new LazyCache.CachingService()));
         }
     }
 }
