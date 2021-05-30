@@ -82,17 +82,19 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         {
             const string odsCode = "ods-code-839";
             var context = OdsRepositoryTestContext.Setup();
+            var url = $"{context.OdsSettings.ApiBaseUrl}/organisations/{odsCode}";
             var cachingService = new CachingService();
             cachingService.CacheProvider.Remove($"Ods-Org-{odsCode}");
+
             var repository = new OdsRepository(context.OdsSettings, cachingService);
             using var httpTest = new HttpTest();
             httpTest
-                .ForCallsTo($"Ods-Org-{odsCode}")
+                .ForCallsTo(url)
                 .RespondWithJson(new { ErrorCode = 404, ErrorText = "Not Found." }, 404);
 
             var result = await repository.GetBuyerOrganisationByOdsCodeAsync(odsCode);
 
-            httpTest.ShouldHaveCalled($"{context.OdsSettings.ApiBaseUrl}/organisations/{odsCode}")
+            httpTest.ShouldHaveCalled(url)
                 .WithVerb(HttpMethod.Get)
                 .Times(1);
             result.Should().BeNull();
@@ -112,14 +114,17 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_OnceForMultipleCalls()
         {
             var context = OdsRepositoryTestContext.Setup();
+            var url = $"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}";
             using var httpTest = new HttpTest();
-            httpTest.RespondWith(status: 200, body: ValidResponseBody);
+            httpTest
+                .ForCallsTo(url)
+                .RespondWith(status: 200, body: ValidResponseBody);
 
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
-            httpTest.ShouldHaveCalled($"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}")
+            httpTest.ShouldHaveCalled(url)
                 .WithVerb(HttpMethod.Get)
                 .Times(1);
         }
