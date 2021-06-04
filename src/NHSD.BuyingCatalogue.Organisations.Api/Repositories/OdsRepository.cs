@@ -25,8 +25,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
 
         public async Task<OdsOrganisation> GetBuyerOrganisationByOdsCodeAsync(string odsCode)
         {
+            if (string.IsNullOrWhiteSpace(odsCode))
+                throw new ArgumentException($"A valid {nameof(odsCode)} is required for this call");
+
             var response = await appCache.GetOrAddAsync(
-                $"Ods-Org-{odsCode}",
+                odsCode,
                 () => settings.ApiBaseUrl
                     .AppendPathSegment("organisations")
                     .AppendPathSegment(odsCode)

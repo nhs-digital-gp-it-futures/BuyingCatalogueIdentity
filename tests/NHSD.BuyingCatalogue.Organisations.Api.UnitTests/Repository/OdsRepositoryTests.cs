@@ -8,7 +8,6 @@ using Flurl.Http.Testing;
 using LazyCache;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
-using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts;
 using NUnit.Framework;
 
@@ -84,7 +83,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             var context = OdsRepositoryTestContext.Setup();
             var url = $"{context.OdsSettings.ApiBaseUrl}/organisations/{odsCode}";
             var cachingService = new CachingService();
-            cachingService.CacheProvider.Remove($"Ods-Org-{odsCode}");
+            cachingService.CacheProvider.Remove(odsCode);
 
             var repository = new OdsRepository(context.OdsSettings, cachingService);
             using var httpTest = new HttpTest();
@@ -100,6 +99,20 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             result.Should().BeNull();
         }
 
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("   ")]
+        public static void GetBuyerOrganisationByOdsCode_InvalidOdsCode_ThrowsException(string invalid)
+        {
+            var context = OdsRepositoryTestContext.Setup();
+            using var httpTest = new HttpTest();
+            httpTest.RespondWith(status: 500);
+
+            Assert.ThrowsAsync<ArgumentException>(
+                async () => await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(invalid))
+                .Message.Should().Be($"A valid odsCode is required for this call");
+        }
+
         [Test]
         public static void GetBuyerOrganisationByOdsCode_WithInternalServerErrorResponseFromOdsApi_Throws()
         {
@@ -107,7 +120,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             using var httpTest = new HttpTest();
             httpTest.RespondWith(status: 500);
 
-            Assert.ThrowsAsync<FlurlHttpException>(async () => await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(string.Empty));
+            Assert.ThrowsAsync<FlurlHttpException>(async () => await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync("invalid"));
         }
 
         [Test]
@@ -133,7 +146,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
         public static void Constructor_IOdsRepository_OdsSettings_NullSettings_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new OdsRepository(null, new LazyCache.CachingService()));
+            Assert.Throws<ArgumentNullException>(() => new OdsRepository(null, new CachingService()));
         }
     }
 }
