@@ -181,7 +181,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             responseCookies.Verify(
                 r => r.Append(
                     Cookies.BuyingCatalogueConsent,
-                    "true",
+                    It.Is<string>(v => HasValidDateTime(v)),
                     It.Is<CookieOptions>(
                         c => c.Expires.GetValueOrDefault() > DateTime.Now.AddHours(hours).AddMinutes(-2)
                             && c.Expires.GetValueOrDefault() < DateTime.Now.AddHours(hours))));
@@ -210,5 +210,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 HttpContext = Mock.Of<HttpContext>(c => c.Request == request && c.Response == response),
             };
         }
+
+        private static bool HasValidDateTime(string input) =>
+            DateTime.TryParse(input, out var dateTime) && dateTime > DateTime.Now.AddMinutes(-2)
+            && dateTime < DateTime.Now;
     }
 }

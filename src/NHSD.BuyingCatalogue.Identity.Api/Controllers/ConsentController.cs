@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -56,10 +57,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [HttpGet("/dismiss-cookie-banner")]
         public IActionResult DismissCookieBanner()
         {
-            Response.Cookies.Append(Cookies.BuyingCatalogueConsent, "true", new CookieOptions
-            {
-                Expires = DateTime.Now.Add(cookieExpiration.ConsentExpiration),
-            });
+            Response.Cookies.Append(
+                Cookies.BuyingCatalogueConsent,
+                DateTime.Now.ToString("g", CultureInfo.CurrentCulture),
+                new CookieOptions { Expires = DateTime.Now.Add(cookieExpiration.ConsentExpiration), });
 
             return Redirect(Request.GetTypedHeaders().Referer.ToString());
         }
