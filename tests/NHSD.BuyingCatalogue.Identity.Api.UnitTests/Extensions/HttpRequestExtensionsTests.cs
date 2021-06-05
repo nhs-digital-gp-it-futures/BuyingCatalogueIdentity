@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -17,21 +16,32 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
     internal static class HttpRequestExtensionsTests
     {
         [Test]
-        public static void ShowCookieConsent_CookiePresent_ReturnsFalse()
+        public static void ShowCookieConsent_Gets_CallsCookieCollection()
+        {
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupGet(h => h.Cookies)
+                .Returns(new MockRequestCookieCollection(new Dictionary<string, string>()));
+
+            httpRequest.Object.ShowCookieConsent(null);
+
+            httpRequest.VerifyGet(h => h.Cookies);
+        }
+
+        [Test]
+        public static void ShowCookieConsent_NoConsentCookiePresent_ReturnsTrue()
         {
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(h => h.Cookies)
                 .Returns(new MockRequestCookieCollection(
-                    new Dictionary<string, string> { { Cookies.BuyingCatalogueConsent, "04-22-2020" }, }));
+                    new Dictionary<string, string> { { "some-cookie", "some-value" }, }));
 
             var actual = httpRequest.Object.ShowCookieConsent(null);
 
-            httpRequest.VerifyGet(h => h.Cookies);
-            actual.Should().BeFalse();
+            actual.Should().BeTrue();
         }
 
         [Test]
-        public static void ShowCookieConsent_CookieWithDateValueBeforePolicyDate_ReturnsTrue()
+        public static void ShowCookieConsent_ConsentCookieWithDateValueBeforePolicyDate_ReturnsTrue()
         {
             var policyDate = DateTime.Now.AddDays(-10);
             var httpRequest = new Mock<HttpRequest>();
@@ -41,14 +51,32 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
                     {
                         {
                             Cookies.BuyingCatalogueConsent,
-                            policyDate.AddHours(-2).ToString("g", CultureInfo.CurrentCulture)
+                            policyDate.AddHours(-4).ToCookieDataString()
                         },
                     }));
 
             var actual = httpRequest.Object.ShowCookieConsent(policyDate);
 
-            httpRequest.VerifyGet(h => h.Cookies);
             actual.Should().BeTrue();
+        }
+
+        [Test]
+        public static void ShowCookieConsent_ConsentCookiePresent_NoPolicDate_ReturnsFalse()
+        {
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupGet(h => h.Cookies)
+                .Returns(new MockRequestCookieCollection(
+                    new Dictionary<string, string>
+                    {
+                        {
+                            Cookies.BuyingCatalogueConsent,
+                            DateTime.Now.AddHours(-4).ToCookieDataString()
+                        },
+                    }));
+
+            var actual = httpRequest.Object.ShowCookieConsent(null);
+
+            actual.Should().BeFalse();
         }
 
         [Test]
@@ -62,13 +90,12 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
                     {
                         {
                             Cookies.BuyingCatalogueConsent,
-                            policyDate.AddHours(+1).ToString("g", CultureInfo.CurrentCulture)
+                            policyDate.AddHours(+1).ToCookieDataString()
                         },
                     }));
 
             var actual = httpRequest.Object.ShowCookieConsent(policyDate);
 
-            httpRequest.VerifyGet(h => h.Cookies);
             actual.Should().BeFalse();
         }
 
@@ -86,7 +113,6 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
 
             var actual = httpRequest.Object.ShowCookieConsent(policyDate);
 
-            httpRequest.VerifyGet(h => h.Cookies);
             actual.Should().BeFalse();
         }
 
@@ -101,7 +127,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
                     {
                         {
                             Cookies.BuyingCatalogueConsent,
-                            policyDate.AddDays(-23).ToString("g", CultureInfo.CurrentCulture)
+                            policyDate.AddDays(-23).ToCookieDataString()
                         },
                     }));
 
@@ -121,7 +147,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
                     {
                         {
                             Cookies.BuyingCatalogueConsent,
-                            DateTime.Now.AddDays(-23).ToString("g", CultureInfo.CurrentCulture)
+                            DateTime.Now.AddDays(-23).ToCookieDataString()
                         },
                     }));
 

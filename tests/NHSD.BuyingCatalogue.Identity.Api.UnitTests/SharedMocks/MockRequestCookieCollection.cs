@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.SharedMocks
 {
-    public class MockRequestCookieCollection : IRequestCookieCollection
+    public sealed class MockRequestCookieCollection : IRequestCookieCollection
     {
         private readonly IDictionary<string, string> dictionary;
 
