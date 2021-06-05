@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using JetBrains.Annotations;
+using LazyCache;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 
@@ -14,19 +15,26 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Repositories
     internal sealed class OdsRepository : IOdsRepository
     {
         private readonly OdsSettings settings;
+        private readonly IAppCache appCache;
 
-        public OdsRepository(OdsSettings settings)
+        public OdsRepository(OdsSettings settings, IAppCache appCache)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.appCache = appCache;
         }
 
         public async Task<OdsOrganisation> GetBuyerOrganisationByOdsCodeAsync(string odsCode)
         {
-            var response = await settings.ApiBaseUrl
-                .AppendPathSegment("organisations")
-                .AppendPathSegment(odsCode)
-                .AllowHttpStatus("3xx,4xx")
-                .GetJsonAsync<OdsResponse>();
+            if (string.IsNullOrWhiteSpace(odsCode))
+                throw new ArgumentException($"A valid {nameof(odsCode)} is required for this call");
+
+            var response = await appCache.GetOrAddAsync(
+                odsCode,
+                () => settings.ApiBaseUrl
+                    .AppendPathSegment("organisations")
+                    .AppendPathSegment(odsCode)
+                    .AllowHttpStatus("3xx,4xx")
+                    .GetJsonAsync<OdsResponse>());
 
             var odsOrganisation = response?.Organisation;
 

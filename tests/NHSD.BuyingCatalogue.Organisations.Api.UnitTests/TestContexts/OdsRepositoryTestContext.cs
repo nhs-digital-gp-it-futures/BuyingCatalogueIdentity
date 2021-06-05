@@ -1,4 +1,5 @@
-﻿using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+﻿using LazyCache;
+using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
@@ -13,7 +14,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts
                 BuyerOrganisationRoleIds = new[] { "RO98", "RO177", "RO213", "RO272" },
             };
 
-            OdsRepository = new OdsRepository(OdsSettings);
+            LazyCache.CachingService.DefaultCacheProvider.Value.Remove("XYZ");
+
+            OdsRepository = new OdsRepository(OdsSettings, new CachingService());
         }
 
         public OdsRepository OdsRepository { get; set; }

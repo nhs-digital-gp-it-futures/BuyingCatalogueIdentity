@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Flurl.Http;
 using Flurl.Http.Testing;
+using LazyCache;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts;
@@ -78,13 +79,38 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [Test]
         public static async Task GetBuyerOrganisationByOdsCode_WithNotFoundResponseFromOdsApi_Returns_Null()
         {
+            const string odsCode = "ods-code-839";
+            var context = OdsRepositoryTestContext.Setup();
+            var url = $"{context.OdsSettings.ApiBaseUrl}/organisations/{odsCode}";
+            var cachingService = new CachingService();
+            cachingService.CacheProvider.Remove(odsCode);
+
+            var repository = new OdsRepository(context.OdsSettings, cachingService);
+            using var httpTest = new HttpTest();
+            httpTest
+                .ForCallsTo(url)
+                .RespondWithJson(new { ErrorCode = 404, ErrorText = "Not Found." }, 404);
+
+            var result = await repository.GetBuyerOrganisationByOdsCodeAsync(odsCode);
+
+            httpTest.ShouldHaveCalled(url)
+                .WithVerb(HttpMethod.Get)
+                .Times(1);
+            result.Should().BeNull();
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("   ")]
+        public static void GetBuyerOrganisationByOdsCode_InvalidOdsCode_ThrowsException(string invalid)
+        {
             var context = OdsRepositoryTestContext.Setup();
             using var httpTest = new HttpTest();
-            httpTest.RespondWithJson(new { ErrorCode = 404, ErrorText = "Not Found." }, 404);
+            httpTest.RespondWith(status: 500);
 
-            var result = await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
-
-            result.Should().BeNull();
+            Assert.ThrowsAsync<ArgumentException>(
+                async () => await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(invalid))
+                .Message.Should().Be($"A valid odsCode is required for this call");
         }
 
         [Test]
@@ -94,19 +120,24 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             using var httpTest = new HttpTest();
             httpTest.RespondWith(status: 500);
 
-            Assert.ThrowsAsync<FlurlHttpException>(async () => await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(string.Empty));
+            Assert.ThrowsAsync<FlurlHttpException>(async () => await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync("invalid"));
         }
 
         [Test]
-        public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_Once()
+        public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_OnceForMultipleCalls()
         {
             var context = OdsRepositoryTestContext.Setup();
+            var url = $"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}";
             using var httpTest = new HttpTest();
-            httpTest.RespondWith(status: 200, body: ValidResponseBody);
+            httpTest
+                .ForCallsTo(url)
+                .RespondWith(status: 200, body: ValidResponseBody);
 
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
-            httpTest.ShouldHaveCalled($"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}")
+            httpTest.ShouldHaveCalled(url)
                 .WithVerb(HttpMethod.Get)
                 .Times(1);
         }
@@ -115,7 +146,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Testing")]
         public static void Constructor_IOdsRepository_OdsSettings_NullSettings_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new OdsRepository(null));
+            Assert.Throws<ArgumentNullException>(() => new OdsRepository(null, new CachingService()));
         }
     }
 }
