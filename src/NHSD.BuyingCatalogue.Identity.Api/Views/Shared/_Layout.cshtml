@@ -1,6 +1,7 @@
 ﻿@using NHSD.BuyingCatalogue.Identity.Api.Extensions
 @using NHSD.BuyingCatalogue.Identity.Api.Settings
 @inject PublicBrowseSettings PublicBrowseSettings
+@inject CookieExpirationSettings CookieExpirationSettings
 
 <!DOCTYPE html>
 <!--[if lt IE 9]><html class="ie8" lang="en"><![endif]-->
@@ -48,7 +49,7 @@
 
 <body>
     <a class="nhsuk-skip-link" href="#maincontent">Skip to main content</a>
-    @if (Context.Request.ShowCookieConsent())
+    @if (Context.Request.ShowCookieConsent(CookieExpirationSettings.BuyingCatalogueCookiePolicyDate))
     {
         <partial name="_CookieConsent" model="@PublicBrowseSettings.BaseAddress" />
     }

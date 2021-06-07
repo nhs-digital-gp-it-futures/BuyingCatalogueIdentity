@@ -4,13 +4,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
+using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent;
 using NHSD.BuyingCatalogue.Identity.Common.Constants;
@@ -148,7 +148,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static void DismissCookieBanner_Sets_ExpectedCookie()
+        public static void DismissCookieBanner_Redirects_ToReferrer()
         {
             var expected = $"/organisation/09D/order/{Guid.NewGuid()}";
             using var controller = new ConsentController(new Mock<IAgreementConsentService>().Object, new Settings.CookieExpirationSettings())
@@ -163,7 +163,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static void DismissCookieBanner_Sets_RedirectsToReferer()
+        public static void DismissCookieBanner_Sets_ExpectedCookie()
         {
             const int hours = 50;
             var settings = new Settings.CookieExpirationSettings
@@ -181,7 +181,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
             responseCookies.Verify(
                 r => r.Append(
                     Cookies.BuyingCatalogueConsent,
-                    "true",
+                    It.Is<string>(v => HasCorrectData(v)),
                     It.Is<CookieOptions>(
                         c => c.Expires.GetValueOrDefault() > DateTime.Now.AddHours(hours).AddMinutes(-2)
                             && c.Expires.GetValueOrDefault() < DateTime.Now.AddHours(hours))));
@@ -210,5 +210,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 HttpContext = Mock.Of<HttpContext>(c => c.Request == request && c.Response == response),
             };
         }
+
+        private static bool HasCorrectData(string input) =>
+            input.ExtractCookieCreationDate() is { } dateTime && dateTime > DateTime.Now.AddMinutes(-2)
+            && dateTime < DateTime.Now;
     }
 }
