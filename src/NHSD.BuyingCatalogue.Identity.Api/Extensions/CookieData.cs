@@ -1,6 +1,6 @@
 ﻿namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
 {
-    public class CookieData
+    public sealed class CookieData
     {
         public bool CookieValue { get; set; }
 

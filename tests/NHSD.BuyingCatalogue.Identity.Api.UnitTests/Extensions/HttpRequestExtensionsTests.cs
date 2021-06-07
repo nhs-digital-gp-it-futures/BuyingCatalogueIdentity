@@ -61,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
         }
 
         [Test]
-        public static void ShowCookieConsent_ConsentCookiePresent_NoPolicDate_ReturnsFalse()
+        public static void ShowCookieConsent_ConsentCookiePresent_NoPolicyDate_ReturnsFalse()
         {
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(h => h.Cookies)

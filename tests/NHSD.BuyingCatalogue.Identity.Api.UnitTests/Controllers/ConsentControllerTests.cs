@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Moq;
-using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Identity.Api.Controllers;
 using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
@@ -149,7 +148,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
         }
 
         [Test]
-        public static void DismissCookieBanner_Redirects_ToReferer()
+        public static void DismissCookieBanner_Redirects_ToReferrer()
         {
             var expected = $"/organisation/09D/order/{Guid.NewGuid()}";
             using var controller = new ConsentController(new Mock<IAgreementConsentService>().Object, new Settings.CookieExpirationSettings())
