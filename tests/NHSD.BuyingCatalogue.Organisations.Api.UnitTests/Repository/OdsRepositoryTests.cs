@@ -11,6 +11,7 @@ using Flurl.Http.Testing;
 using LazyCache;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
+using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts;
 using NUnit.Framework;
 
@@ -129,8 +130,15 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [Test]
         public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_OnceForMultipleCalls()
         {
-            var context = OdsRepositoryTestContext.Setup();
-            var url = $"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}";
+            var baseUrl = "https://fakeodsserver.net/ORD/2-0-0";
+            var repository = new OdsRepository(
+                new OdsSettings
+                {
+                    ApiBaseUrl = baseUrl,
+                    BuyerOrganisationRoleIds = new[] { "RO98", "RO177", "RO213", "RO272" },
+                },
+                new CachingService());
+            var url = $"{baseUrl}/organisations/{OdsCode}";
             using var httpTest = new HttpTest();
             httpTest
                 .ForCallsTo(url)
@@ -143,9 +151,9 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
                 calls.Clear();
             }
 
-            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
-            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
-            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await repository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await repository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await repository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
             httpTest.ShouldHaveCalled(url)
                 .WithVerb(HttpMethod.Get)
