@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NHSD.BuyingCatalogue.Identity.Api.Extensions;
 using NHSD.BuyingCatalogue.Identity.Api.Services;
 using NHSD.BuyingCatalogue.Identity.Api.Settings;
 using NHSD.BuyingCatalogue.Identity.Api.ViewModels.Consent;
@@ -56,10 +56,10 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
         [HttpGet("/dismiss-cookie-banner")]
         public IActionResult DismissCookieBanner()
         {
-            Response.Cookies.Append(Cookies.BuyingCatalogueConsent, "true", new CookieOptions
-            {
-                Expires = DateTime.Now.Add(cookieExpiration.ConsentExpiration),
-            });
+            Response.Cookies.Append(
+                Cookies.BuyingCatalogueConsent,
+                DateTime.Now.ToCookieDataString(),
+                new CookieOptions { Expires = DateTime.Now.Add(cookieExpiration.ConsentExpiration), });
 
             return Redirect(Request.GetTypedHeaders().Referer.ToString());
         }
