@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Flurl;
 using Flurl.Http;
 using Flurl.Http.Testing;
 using LazyCache;
@@ -132,6 +135,13 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             httpTest
                 .ForCallsTo(url)
                 .RespondWith(status: 200, body: ValidResponseBody);
+            if (httpTest.GetType()
+                .GetField("_calls", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?
+                .GetValue(httpTest) is ConcurrentQueue<FlurlCall> calls)
+            {
+                calls.Clear();
+            }
 
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
             await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
