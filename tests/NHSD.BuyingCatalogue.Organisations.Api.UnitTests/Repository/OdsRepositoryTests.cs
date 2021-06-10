@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Flurl.Http;
@@ -10,7 +8,6 @@ using Flurl.Http.Testing;
 using LazyCache;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 using NHSD.BuyingCatalogue.Organisations.Api.Repositories;
-using NHSD.BuyingCatalogue.Organisations.Api.Settings;
 using NHSD.BuyingCatalogue.Organisations.Api.UnitTests.TestContexts;
 using NUnit.Framework;
 
@@ -130,30 +127,16 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
         [Ignore("Fails intermittently on server")]
         public static async Task GetBuyerOrganisationByOdsCode_CallsOdsApi_OnceForMultipleCalls()
         {
-            var baseUrl = "https://fakeodsserver.net/ORD/2-0-0";
-            var repository = new OdsRepository(
-                new OdsSettings
-                {
-                    ApiBaseUrl = baseUrl,
-                    BuyerOrganisationRoleIds = new[] { "RO98", "RO177", "RO213", "RO272" },
-                },
-                new CachingService());
-            var url = $"{baseUrl}/organisations/{OdsCode}";
+            var context = OdsRepositoryTestContext.Setup();
+            var url = $"{context.OdsSettings.ApiBaseUrl}/organisations/{OdsCode}";
             using var httpTest = new HttpTest();
             httpTest
                 .ForCallsTo(url)
                 .RespondWith(status: 200, body: ValidResponseBody);
-            if (httpTest.GetType()
-                .GetField("_calls", BindingFlags.Instance | BindingFlags.NonPublic)
-                ?
-                .GetValue(httpTest) is ConcurrentQueue<FlurlCall> calls)
-            {
-                calls.Clear();
-            }
 
-            await repository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
-            await repository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
-            await repository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
+            await context.OdsRepository.GetBuyerOrganisationByOdsCodeAsync(OdsCode);
 
             httpTest.ShouldHaveCalled(url)
                 .WithVerb(HttpMethod.Get)
