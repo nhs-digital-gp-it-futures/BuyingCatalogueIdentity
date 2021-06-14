@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
 {
@@ -15,9 +15,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
             CookieData cookieData;
             try
             {
-                cookieData = JsonConvert.DeserializeObject<CookieData>(input);
+                cookieData = JsonSerializer.Deserialize<CookieData>(input);
             }
-            catch (JsonReaderException)
+            catch (JsonException)
             {
                 return null;
             }
@@ -33,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
 
         public static string ToCookieDataString(this DateTime dateTime)
         {
-            return JsonConvert.SerializeObject(
+            return JsonSerializer.Serialize(
                 new CookieData
                 {
                     CookieValue = true,
