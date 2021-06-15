@@ -2,10 +2,10 @@
 <section data-test-id="cookie-banner" class="bc-c-cookies nhsuk-header--white nhsuk-u-padding-top-3" aria-labelledby="cookies" role="banner">
     <div class="nhsuk-width-container">
         <h2 class="nhsuk-heading-m">Cookies on the Buying Catalogue</h2>
-        <p class="hsuk-body">We've put small files called cookies on your device to make the Buying Catalogue website work.</p>
-        <p class="hsuk-body">You can read more about our <a href="@Model/privacy-policy">cookies and privacy policy</a>.</p>
+        <p class="nhsuk-body-m">We've put small files called cookies on your device to make the Buying Catalogue website work.</p>
+        <p class="nhsuk-body-m">You can read more about our <a href="@Model/privacy-policy">cookies and privacy policy</a>.</p>
         <div data-test-id="cookie-dismiss">
-            <a class="nhsuk-button nhsuk-button--primary" href="@Model/identity/dismiss-cookie-banner" draggable="false">
+            <a class="nhsuk-button" asp-controller="Consent" asp-action="DismissCookieBanner" draggable="false">
                 Dismiss
             </a>
         </div>

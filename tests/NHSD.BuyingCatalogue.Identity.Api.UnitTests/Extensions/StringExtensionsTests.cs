@@ -17,7 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
 
             var actual = expected.ToCookieDataString().ExtractCookieCreationDate();
 
-            actual.GetValueOrDefault().Should().BeCloseTo(expected);
+            actual.Should().BeCloseTo(expected);
         }
 
         [Test]
@@ -27,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
 
             var actual = JsonConvert.SerializeObject(cookieData).ExtractCookieCreationDate();
 
-            actual.HasValue.Should().BeFalse();
+            actual.Should().Be(DateTime.MinValue);
         }
 
         [TestCase(null)]
@@ -36,11 +36,11 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
         [TestCase("some-string")]
         [TestCase("{\"CookieValue\":true,\"CreationDate\":'invalid'}")]
         [TestCase("{\"cookievalue\":abc,\"creationdate\":1633439729761.933}")]
-        public static void ExtractCookieCreationDate_StringInvalid_ReturnsNull(string invalid)
+        public static void ExtractCookieCreationDate_StringInvalid_ReturnsMinDateTime(string invalid)
         {
             var actual = invalid.ExtractCookieCreationDate();
 
-            actual.HasValue.Should().BeFalse();
+            actual.Should().Be(DateTime.MinValue);
         }
 
         [Test]

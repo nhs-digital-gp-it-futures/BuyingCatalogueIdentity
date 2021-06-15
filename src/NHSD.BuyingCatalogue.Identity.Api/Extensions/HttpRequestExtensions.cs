@@ -18,7 +18,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
                 return false;
 
             return buyingCatalogueCookiePolicyDate.Value <= DateTime.Now
-                && consentCookieValue.ExtractCookieCreationDate() is { } creationDate
+                && consentCookieValue.ExtractCookieCreationDate() is var creationDate
                 && creationDate < buyingCatalogueCookiePolicyDate.Value;
         }
     }

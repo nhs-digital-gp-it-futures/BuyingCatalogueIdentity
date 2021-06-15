@@ -53,7 +53,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Controllers
             return View("Error");
         }
 
-        [HttpGet("/dismiss-cookie-banner")]
+        [HttpGet]
         public IActionResult DismissCookieBanner()
         {
             Response.Cookies.Append(
