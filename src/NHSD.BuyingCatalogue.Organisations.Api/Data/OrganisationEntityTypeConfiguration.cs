@@ -12,11 +12,12 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
             builder
                 .Property(entity => entity.Address)
                 .HasConversion(
-                    addressEntity => JsonSerializer.Serialize(addressEntity, new JsonSerializerOptions
-                    {
-                        IgnoreNullValues = true,
-                    }),
-                    addressEntity => JsonSerializer.Deserialize<Address>(addressEntity, null));
+                    addressEntity => JsonSerializer.Serialize(
+                        addressEntity,
+                        new JsonSerializerOptions { IgnoreNullValues = true }),
+                    addressEntity => JsonSerializer.Deserialize<Address>(
+                        addressEntity,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }));
         }
     }
 }
