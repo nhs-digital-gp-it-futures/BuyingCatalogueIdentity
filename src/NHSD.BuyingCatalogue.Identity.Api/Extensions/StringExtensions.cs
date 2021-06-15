@@ -18,7 +18,9 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
             CookieData cookieData;
             try
             {
-                cookieData = JsonSerializer.Deserialize<CookieData>(input);
+                cookieData = JsonSerializer.Deserialize<CookieData>(
+                    input,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
             catch (JsonException)
             {
