@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
 {
@@ -7,24 +7,27 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
     {
         private static readonly DateTime StartTimeUtc = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        public static DateTime? ExtractCookieCreationDate(this string input)
+        public static DateTime ExtractCookieCreationDate(this string input)
         {
+            // Will force banner to be displayed and cookie rewritten with correct data when banner is dismissed again
+            static DateTime ForceBannerDisplay() => DateTime.MinValue;
+
             if (input is null)
-                return null;
+                return ForceBannerDisplay();
 
             CookieData cookieData;
             try
             {
-                cookieData = JsonConvert.DeserializeObject<CookieData>(input);
+                cookieData = JsonSerializer.Deserialize<CookieData>(input);
             }
-            catch (JsonReaderException)
+            catch (JsonException)
             {
-                return null;
+                return ForceBannerDisplay();
             }
 
             var milliseconds = cookieData?.CreationDate.GetValueOrDefault() ?? 0;
             if (milliseconds < 1)
-                return null;
+                return ForceBannerDisplay();
 
             return TimeZoneInfo.ConvertTimeFromUtc(
                 StartTimeUtc + TimeSpan.FromMilliseconds(milliseconds),
@@ -33,7 +36,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.Extensions
 
         public static string ToCookieDataString(this DateTime dateTime)
         {
-            return JsonConvert.SerializeObject(
+            return JsonSerializer.Serialize(
                 new CookieData
                 {
                     CookieValue = true,

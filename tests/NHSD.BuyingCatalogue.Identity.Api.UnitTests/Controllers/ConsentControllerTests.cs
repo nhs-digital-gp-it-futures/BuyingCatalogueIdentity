@@ -144,7 +144,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Controllers
                 .GetCustomAttribute<HttpGetAttribute>()
                 .Template
                 .Should()
-                .Be("/dismiss-cookie-banner");
+                .BeNull();
         }
 
         [Test]

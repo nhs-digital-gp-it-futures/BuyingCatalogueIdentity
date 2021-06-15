@@ -33,7 +33,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(h => h.Cookies)
                 .Returns(new MockRequestCookieCollection(
-                    new Dictionary<string, string> { { "some-cookie", "some-value" }, }));
+                    new Dictionary<string, string> { { "some-cookie", "some-value" } }));
 
             var actual = httpRequest.Object.ShowCookieConsent(null);
 
@@ -103,17 +103,17 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
         [TestCase("")]
         [TestCase("    ")]
         [TestCase("some-value")]
-        public static void ShowCookieConsent_CookieWithInvalidValue_ReturnsFalse(string invalid)
+        public static void ShowCookieConsent_CookieWithInvalidValue_ReturnsTrue(string invalid)
         {
             var policyDate = DateTime.Now.AddDays(-10);
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(h => h.Cookies)
                 .Returns(new MockRequestCookieCollection(
-                    new Dictionary<string, string> { { Cookies.BuyingCatalogueConsent, invalid }, }));
+                    new Dictionary<string, string> { { Cookies.BuyingCatalogueConsent, invalid } }));
 
             var actual = httpRequest.Object.ShowCookieConsent(policyDate);
 
-            actual.Should().BeFalse();
+            actual.Should().BeTrue();
         }
 
         [Test]

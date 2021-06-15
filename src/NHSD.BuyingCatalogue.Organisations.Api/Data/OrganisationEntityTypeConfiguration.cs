@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
 using NHSD.BuyingCatalogue.Organisations.Api.Models;
 
 namespace NHSD.BuyingCatalogue.Organisations.Api.Data
@@ -12,11 +12,11 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.Data
             builder
                 .Property(entity => entity.Address)
                 .HasConversion(
-                    addressEntity => JsonConvert.SerializeObject(addressEntity, new JsonSerializerSettings
+                    addressEntity => JsonSerializer.Serialize(addressEntity, new JsonSerializerOptions
                     {
-                        NullValueHandling = NullValueHandling.Ignore,
+                        IgnoreNullValues = true,
                     }),
-                    addressEntity => JsonConvert.DeserializeObject<Address>(addressEntity));
+                    addressEntity => JsonSerializer.Deserialize<Address>(addressEntity, null));
         }
     }
 }
