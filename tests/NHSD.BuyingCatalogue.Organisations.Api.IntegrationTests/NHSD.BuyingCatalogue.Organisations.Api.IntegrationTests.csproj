@@ -39,7 +39,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-    <PackageReference Include="SpecFlow" Version="3.8.14" />
+    <PackageReference Include="SpecFlow" Version="3.9.8" />
     <PackageReference Include="SpecFlow.NUnit" Version="3.8.14" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.8.14" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333">
