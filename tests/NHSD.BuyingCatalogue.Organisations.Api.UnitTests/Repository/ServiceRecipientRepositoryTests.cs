@@ -27,7 +27,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             context.Http.RespondWith(status: 200, body: json);
 
             var response = await context.Repository.GetServiceRecipientsByParentOdsCode(OdsCode);
-            response.Should().BeEquivalentTo(childOrg);
+            response.Should().BeEquivalentTo(new[] { childOrg });
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             context.Http.RespondWith(status: 200, body: jsonPageThree);
 
             var response = await context.Repository.GetServiceRecipientsByParentOdsCode(OdsCode);
-            response.Should().BeEquivalentTo(childOne, childTwo);
+            response.Should().BeEquivalentTo(new[] { childOne, childTwo });
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Repository
             context.Http.RespondWith(status: 200, body: jsonPageOne);
 
             var response = await context.Repository.GetServiceRecipientsByParentOdsCode(OdsCode);
-            response.Should().BeEquivalentTo(childOne);
+            response.Should().BeEquivalentTo(new[] { childOne });
         }
 
         [Test]

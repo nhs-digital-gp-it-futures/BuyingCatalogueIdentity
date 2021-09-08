@@ -17,7 +17,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.UnitTests.Extensions
 
             var actual = expected.ToCookieDataString().ExtractCookieCreationDate();
 
-            actual.Should().BeCloseTo(expected);
+            actual.Should().BeCloseTo(expected, TimeSpan.FromSeconds(30));
         }
 
         [Test]

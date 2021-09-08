@@ -101,7 +101,7 @@ namespace NHSD.BuyingCatalogue.Organisations.Api.UnitTests.Services
                 {
                     actual.Should().BeEquivalentTo(expected, c => c
                         .Excluding(o => o.OrganisationId)
-                        .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000))
+                        .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
                         .WhenTypeIs<DateTime>());
                     actual.OrganisationId.Should().NotBeEmpty();
                     calledBack = true;
