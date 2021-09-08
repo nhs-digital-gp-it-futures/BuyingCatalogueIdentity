@@ -98,7 +98,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var element = seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var attribute = element.GetAttribute("href").Split("?")[0];
-            attribute.Should().EndWithEquivalent(link);
+            attribute.Should().EndWithEquivalentOf(link);
         }
 
         [Then(@"element with Data ID ([^\s]+) is email link to address (.*)")]
@@ -106,7 +106,7 @@ namespace NHSD.BuyingCatalogue.Identity.Api.IntegrationTests.Steps
         {
             var element = seleniumContext.WebDriver.FindElement(By.CssSelector($"[data-test-id={dataId}]"));
             var attribute = element.GetAttribute("href");
-            attribute.Should().StartWithEquivalent($"mailto:{emailAddress}");
+            attribute.Should().StartWithEquivalentOf($"mailto:{emailAddress}");
         }
 
         [Then(@"element with Data ID ([^\s]+) has the accessibility text (.*)")]
